@@ -106,6 +106,23 @@ public class UIUtil {
    * Color hex for parents link in Git History in graphite theme.
    */
   public static final String PARENTS_LINK_HEX_COLOR_GRAPHITE = "#60d1f0";
+  /**
+   * Not searched files in git history color on graphite theme, when searching for the history of a file or folder.
+   */
+  public static final Color NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME = new Color(160, 160, 160);
+  /**
+   * Not searched files in git history color on light/classic theme, when searching for the history of a file or folder.
+   */
+  public static final Color NOT_SEARCHED_FILES_COLOR_LIGHT_THEME = Color.LIGHT_GRAY;
+  /**
+   * Searched files in git history color on graphite theme, when searching for the history of a file or folder.
+   */
+  public static final Color SEARCHED_FILES_COLOR_GRAPHITE_THEME = Color.LIGHT_GRAY;
+  /**
+   * Searched files in git history color on light/classic theme, when searching for the history of a file or folder.
+   */
+  public static final Color SEARCHED_FILES_COLOR_LIGHT_THEME = Color.BLACK;
+  
   
   /**
    * Hidden constructor.

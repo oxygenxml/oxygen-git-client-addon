@@ -18,6 +18,9 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
+import com.oxygenxml.git.view.util.UIUtil;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Renderer for the staged/unstaged tables.
@@ -29,6 +32,11 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * Tells if a contextual menu is presented over the table.
    */
   private BooleanSupplier contextMenuShowing;
+  
+  /**
+   * The file/folder to show history.
+   */
+  private String searchedFilePath;
   
   /**
    * The border for padding.
@@ -49,6 +57,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
   public StagingResourcesTableCellRenderer(BooleanSupplier contextMenuShowing) {
     this.contextMenuShowing = contextMenuShowing;
   }
+  
   
   /**
    * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
@@ -88,13 +97,16 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
           tooltipText = tooltipText.replace("/" + fileName, "");
           tooltipText = fileName + " - " + tooltipText;
         }
-      }
-      
+      } 
     }
+    
+    updateForegroundText(labelText, tableCellRendererComponent);
     
     tableCellRendererComponent.setIcon(icon);
     tableCellRendererComponent.setToolTipText(tooltipText);
     tableCellRendererComponent.setText(labelText);
+    
+    
     
     // Active/inactive table selection
     if (table.isRowSelected(row)) {
@@ -107,7 +119,40 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     } else {
       tableCellRendererComponent.setBackground(table.getBackground());
     }
+    
 
     return tableCellRendererComponent;
   }
+
+
+  /**
+   * Set the value for the searched file.
+   * 
+   * @param selectedFilePath The new searched file.
+   */
+  public void setSearchedFilePath(String selectedFilePath) {
+    this.searchedFilePath = selectedFilePath;
+  }
+  
+  
+  /**
+   * Updates the text foreground.
+   *  
+   * @param currentFilePath                The current file path.
+   * @param tableCellRendererComponent     The displayed Jlabel. 
+   */
+  private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
+    if(searchedFilePath instanceof String && 
+        !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
+      tableCellRendererComponent.setForeground(
+          PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
+          UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
+    } else {
+      tableCellRendererComponent.setForeground(
+          PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
+              UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
+    }
+  }
+  
+  
 }
