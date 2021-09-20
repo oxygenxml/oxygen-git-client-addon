@@ -21,7 +21,7 @@ import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
  */
 @XmlRootElement(name = "Options")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Options {
+public class Options implements OptionsInterface {
   
   /**
    * A cache for the SSH questions and the user answer.

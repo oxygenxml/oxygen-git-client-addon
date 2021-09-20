@@ -219,7 +219,7 @@ public class OptionsManager {
    * Init and get the options.
    * @return The initialized options.
    */
-  private Options getOptions() {
+  private OptionsInterface getOptions() {
 	  loadOptions();
 	  return options;
   }
@@ -295,6 +295,7 @@ public class OptionsManager {
    * @param path The location/path of the repository.
    */
   public void removeRepositoryLocation(String path) {
+    // TODO Bad technique. make the removval and set the new paths back into options.
     getOptions().getRepositoryLocations().getLocations().remove(path);
 
     saveOptions();
@@ -306,6 +307,7 @@ public class OptionsManager {
    * @param paths The locations/paths of the repositories to remove.
    */
   public void removeRepositoryLocations(Collection<String> paths) {
+    // TODO Bad technique. make the removval and set the new paths back into options.
     getOptions().getRepositoryLocations().getLocations().removeAll(paths);
 
     saveOptions();
