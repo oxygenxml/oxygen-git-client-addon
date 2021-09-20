@@ -115,7 +115,7 @@ public interface OptionsInterface {
    * @param sshPromptAnswers A cache for asking the user for connection message.
    */
   @SuppressWarnings("java:S1319")
-  public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) ;
+  public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) ;
 
   /**
    * @return A cache for asking the user for connection message.

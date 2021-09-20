@@ -199,7 +199,7 @@ public class OptionsWithTags implements OptionsInterface {
   }
 
   @Override
-  public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) {
+  public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
     // TODO Auto-generated method stub
 
   }

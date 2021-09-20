@@ -291,8 +291,9 @@ public class Options implements OptionsInterface {
 	 * @param sshPromptAnswers A cache for asking the user for connection message.
 	 */
 	@SuppressWarnings("java:S1319")
-	public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) {
-    this.sshPromptAnswers = sshPromptAnswers;
+	public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
+	  this.sshPromptAnswers.clear();
+    this.sshPromptAnswers.putAll(sshPromptAnswers);;
   }
 	
 	/**
