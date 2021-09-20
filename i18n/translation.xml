@@ -10,7 +10,7 @@
         <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
         <val lang="en_US">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
         <val lang="de_DE">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="fr_FR">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="fr_FR">Impossible d''effectuer un pull des ({0}) modifications car des conflits ont été détectés entre les modifications locales dans les fichiers répertoriés ci-dessous et les modifications distantes entrantes.\nEffectuez un commit, une remise ou abandonnez les modifications locales en conflit et réessayez.</val>
         <val lang="ja_JP">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
         <val lang="nl_NL">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
     </key>
@@ -18,7 +18,7 @@
         <comment>The message displayed to the user when a stash cannot be deleted.</comment>
         <val lang="en_US">Cannot delete stashed changes. Details:</val>
         <val lang="de_DE">Cannot delete stashed changes. Details:</val>
-        <val lang="fr_FR">Cannot delete stashed changes. Details:</val>
+        <val lang="fr_FR">Impossible de supprimer les modifications remisées. Détails:</val>
         <val lang="ja_JP">Cannot delete stashed changes. Details:</val>
         <val lang="nl_NL">Cannot delete stashed changes. Details:</val>
     </key>
@@ -26,7 +26,7 @@
         <comment>The message displayed to the user when a stash cannot be created.</comment>
         <val lang="en_US">Cannot stash changes. Details: </val>
         <val lang="de_DE">Cannot stash changes. Details: </val>
-        <val lang="fr_FR">Cannot stash changes. Details: </val>
+        <val lang="fr_FR">Impossible de remiser les modifications. Détails: </val>
         <val lang="ja_JP">Cannot stash changes. Details: </val>
         <val lang="nl_NL">Cannot stash changes. Details: </val>
     </key>
@@ -36,8 +36,8 @@
 			\nCommit, stash or discard your changes before you switch branches.</val>
         <val lang="de_DE">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
 			\nCommit, stash or discard your changes before you switch branches.</val>
-	    <val lang="fr_FR">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit, stash or discard your changes before you switch branches.</val>
+        <val lang="fr_FR">Les modifications hors commit n'ont pas pu être déplacées vers la nouvelle branche car elles sont en conflit avec les modifications commitées sur cette branche.
+            \nEffectuez un commit, une remise ou abandonnez vos modifications avant de changer de branche.</val>
         <val lang="ja_JP">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
 			\nCommit, stash or discard your changes before you switch branches.</val>
         <val lang="nl_NL">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
@@ -49,8 +49,8 @@
         there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
         <val lang="de_DE">The new branch was created, but it could not be checked out because 
         there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
-        <val lang="fr_FR">The new branch was created, but it could not be checked out because 
-        there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
+        <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite car 
+        il y a des modifications hors commit dans votre copie de travail.\nEffectuez un commit, une remise ou abandonnez les modifications pour changer de branche.</val>
         <val lang="ja_JP">The new branch was created, but it could not be checked out because 
         there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
         <val lang="nl_NL">The new branch was created, but it could not be checked out because 
@@ -63,8 +63,8 @@
         	\nYou can stash them on this branch for later use or move them to the new branch.</val>
         <val lang="de_DE">You have uncommitted changes on the current branch.
         	\nYou can stash them on this branch for later use or move them to the new branch.</val>
-        <val lang="fr_FR">You have uncommitted changes on the current branch.
-        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
+        <val lang="fr_FR">Vous avez des modifications hors commit sur la branche actuelle.
+            \nVous pouvez les remiser sur cette branche pour une utilisation ultérieure ou les déplacer vers la nouvelle branche.</val>
         <val lang="ja_JP">You have uncommitted changes on the current branch.
         	\nYou can stash them on this branch for later use or move them to the new branch.</val>
         <val lang="nl_NL">You have uncommitted changes on the current branch.
@@ -74,7 +74,7 @@
         <comment>The tooltip for delete all stashes button.</comment>
         <val lang="en_US">Delete all stashed changes from the repository.</val>
         <val lang="de_DE">Delete all stashed changes from the repository.</val>
-        <val lang="fr_FR">Delete all stashed changes from the repository.</val>
+        <val lang="fr_FR">Supprime toutes les modifications remisées du dépôt.</val>
         <val lang="ja_JP">Delete all stashed changes from the repository.</val>
         <val lang="nl_NL">Delete all stashed changes from the repository.</val>
     </key>
@@ -82,7 +82,7 @@
         <comment>Message for include untracked files.</comment>
         <val lang="en_US">Include untracked files</val>
         <val lang="de_DE">Include untracked files</val>
-        <val lang="fr_FR">Include untracked files</val>
+        <val lang="fr_FR">Inclure les fichiers non suivis</val>
         <val lang="ja_JP">Include untracked files</val>
         <val lang="nl_NL">Include untracked files</val>
     </key>
@@ -90,7 +90,7 @@
         <comment>Other.</comment>
         <val lang="en_US">Other</val>
         <val lang="de_DE">Other</val>
-        <val lang="fr_FR">Other</val>
+        <val lang="fr_FR">Autre</val>
         <val lang="ja_JP">Other</val>
         <val lang="nl_NL">Other</val>
     </key>
@@ -98,7 +98,7 @@
         <comment>Stashes</comment>
         <val lang="en_US">Stashes</val>
         <val lang="de_DE">Stashes</val>
-        <val lang="fr_FR">Stashes</val>
+        <val lang="fr_FR">Remises</val>
         <val lang="ja_JP">Stashes</val>
         <val lang="nl_NL">Stashes</val>
     </key>
@@ -106,7 +106,7 @@
         <comment>Description</comment>
         <val lang="en_US">Description</val>
         <val lang="de_DE">Description</val>
-        <val lang="fr_FR">Description</val>
+        <val lang="fr_FR" skipTranslation="true">Description</val>
         <val lang="ja_JP">Description</val>
         <val lang="nl_NL">Description</val>
     </key>
@@ -114,7 +114,7 @@
         <comment>The text for the tooltip that explains the Open action for a Git History resource.</comment>
         <val lang="en_US">Opens this version of the file as read-only.</val>
         <val lang="de_DE">Opens this version of the file as read-only.</val>
-        <val lang="fr_FR">Opens this version of the file as read-only.</val>
+        <val lang="fr_FR">Ouvre cette version du fichier en lecture seule.</val>
         <val lang="ja_JP">Opens this version of the file as read-only.</val>
         <val lang="nl_NL">Opens this version of the file as read-only.</val>
     </key>
@@ -122,7 +122,7 @@
         <comment>ID</comment>
         <val lang="en_US">ID</val>
         <val lang="de_DE">ID</val>
-        <val lang="fr_FR">ID</val>
+        <val lang="fr_FR" skipTranslation="true">ID</val>
         <val lang="ja_JP">ID</val>
         <val lang="nl_NL">ID</val>
     </key>
@@ -130,7 +130,7 @@
         <comment>Unable to apply stash message.</comment>
         <val lang="en_US">Unable to apply stash</val>
         <val lang="de_DE">Unable to apply stash</val>
-        <val lang="fr_FR">Unable to apply stash</val>
+        <val lang="fr_FR">Impossible d'appliquer la remise</val>
         <val lang="ja_JP">Unable to apply stash</val>
         <val lang="nl_NL">Unable to apply stash</val>
     </key>
@@ -138,7 +138,7 @@
         <comment>The message presents user when are staged changes before to apply a stash.</comment>
         <val lang="en_US">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
         <val lang="de_DE">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
-        <val lang="fr_FR">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
+        <val lang="fr_FR">Impossible d'appliquer la remise alors que des modifications sont réservées. Effectuez un commit, une remise ou libérez avant de réessayer.</val>
         <val lang="ja_JP">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
         <val lang="nl_NL">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
     </key>
@@ -146,7 +146,7 @@
         <comment>Stash apply</comment>
         <val lang="en_US">Stash apply</val>
         <val lang="de_DE">Stash apply</val>
-        <val lang="fr_FR">Stash apply</val>
+        <val lang="fr_FR">Appliquer la remise</val>
         <val lang="ja_JP">Stash apply</val>
         <val lang="nl_NL">Stash apply</val>
     </key>
@@ -155,7 +155,7 @@
         <comment>The title for the create Tag Commit dialog</comment>
         <val lang="en_US">Create tag</val>
         <val lang="de_DE">Create tag</val>
-        <val lang="fr_FR">Create tag</val>
+        <val lang="fr_FR">Créer une étiquette</val>
         <val lang="ja_JP">Create tag</val>
         <val lang="nl_NL">Create tag</val>
     </key>
@@ -163,7 +163,7 @@
         <comment>The message for the create Tag action</comment>
         <val lang="en_US">Create tag...</val>
         <val lang="de_DE">Create tag...</val>
-        <val lang="fr_FR">Create tag...</val>
+        <val lang="fr_FR">Créer une étiquette...</val>
         <val lang="ja_JP">Create tag...</val>
         <val lang="nl_NL">Create tag...</val>
     </key>
@@ -171,7 +171,7 @@
         <comment>The message in the label for Tag title</comment>
         <val lang="en_US">Tag name</val>
         <val lang="de_DE">Tag name</val>
-        <val lang="fr_FR">Tag name</val>
+        <val lang="fr_FR">Nom de l'étiquette</val>
         <val lang="ja_JP">Tag name</val>
         <val lang="nl_NL">Tag name</val>
     </key>
@@ -179,7 +179,7 @@
         <comment>The message in the label for Tag message</comment>
         <val lang="en_US">Message</val>
         <val lang="de_DE">Message</val>
-        <val lang="fr_FR">Message</val>
+        <val lang="fr_FR" skipTranslation="true">Message</val>
         <val lang="ja_JP">Message</val>
         <val lang="nl_NL">Message</val>
     </key>
@@ -187,7 +187,7 @@
         <comment>The message for the checkbox for Tag pushing</comment>
         <val lang="en_US">Push tag</val>
         <val lang="de_DE">Push tag</val>
-        <val lang="fr_FR">Push tag</val>
+        <val lang="fr_FR">Effectuer un push de l'étiquette</val>
         <val lang="ja_JP">Push tag</val>
         <val lang="nl_NL">Push tag</val>
     </key>
@@ -195,7 +195,7 @@
         <comment>The message for error when we already have a tag with this name</comment>
         <val lang="en_US">Tag already exists</val>
         <val lang="de_DE">Tag already exists</val>
-        <val lang="fr_FR">Tag already exists</val>
+        <val lang="fr_FR">L'étiquette existe déjà</val>
         <val lang="ja_JP">Tag already exists</val>
         <val lang="nl_NL">Tag already exists</val>
     </key>
@@ -203,7 +203,7 @@
         <comment>The message for error when we have a tag with spaces</comment>
         <val lang="en_US">Spaces are not allowed in tags</val>
         <val lang="de_DE">Spaces are not allowed in tags</val>
-        <val lang="fr_FR">Spaces are not allowed in tags</val>
+        <val lang="fr_FR">Les espaces ne sont pas autorisés dans les étiquettes</val>
         <val lang="ja_JP">Spaces are not allowed in tags</val>
         <val lang="nl_NL">Spaces are not allowed in tags</val>
     </key>
@@ -211,7 +211,7 @@
         <comment>The message for error when we have a tag with invalid chars</comment>
         <val lang="en_US">Tag contains not allowed characters</val>
         <val lang="de_DE">Tag contains not allowed characters</val>
-        <val lang="fr_FR">Tag contains not allowed characters</val>
+        <val lang="fr_FR">L'étiquette contient des caractères non autorisés</val>
         <val lang="ja_JP">Tag contains not allowed characters</val>
         <val lang="nl_NL">Tag contains not allowed characters</val>
     </key>
@@ -219,7 +219,7 @@
         <comment>The first column name in the table with the tags (column for the tag name)</comment>
         <val lang="en_US">Name</val>
         <val lang="de_DE">Name</val>
-        <val lang="fr_FR">Name</val>
+        <val lang="fr_FR">Nom</val>
         <val lang="ja_JP">Name</val>
         <val lang="nl_NL">Name</val>
     </key>
@@ -227,7 +227,7 @@
         <comment></comment>
         <val lang="en_US">Message</val>
         <val lang="de_DE">Message</val>
-        <val lang="fr_FR">Message</val>
+        <val lang="fr_FR" skipTranslation="true">Message</val>
         <val lang="ja_JP">Message</val>
         <val lang="nl_NL">Message</val>
     </key>
@@ -235,7 +235,7 @@
         <comment>Displays the message "Push"</comment>
         <val lang="en_US">Push</val>
         <val lang="de_DE">Push</val>
-        <val lang="fr_FR">Push</val>
+        <val lang="fr_FR" skipTranslation="true">Push</val>
         <val lang="ja_JP">Push</val>
         <val lang="nl_NL">Push</val>
     </key>
@@ -243,7 +243,7 @@
         <comment>The title of the dialog for deleting a tag</comment>
         <val lang="en_US">Delete tag</val>
         <val lang="de_DE">Delete tag</val>
-        <val lang="fr_FR">Delete tag</val>
+        <val lang="fr_FR">Supprimer une étiquette</val>
         <val lang="ja_JP">Delete tag</val>
         <val lang="nl_NL">Delete tag</val>
     </key>
@@ -251,7 +251,7 @@
         <comment>The message of the dialog for deleting a tag</comment>
         <val lang="en_US">Are you sure you want to delete this tag?</val>
         <val lang="de_DE">Are you sure you want to delete this tag?</val>
-        <val lang="fr_FR">Are you sure you want to delete this tag?</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer cette étiquette ?</val>
         <val lang="ja_JP">Are you sure you want to delete this tag?</val>
         <val lang="nl_NL">Are you sure you want to delete this tag?</val>
     </key>
@@ -260,7 +260,7 @@
         <comment>Displays the message "Tags" for the Tags showing Dialog </comment>
         <val lang="en_US">Tags</val>
         <val lang="de_DE">Tags</val>
-        <val lang="fr_FR">Tags</val>
+        <val lang="fr_FR">Étiquettes</val>
         <val lang="ja_JP">Tags</val>
         <val lang="nl_NL">Tags</val>
     </key>
@@ -268,7 +268,7 @@
         <comment>Displays the message for the Details menu item in the popup of the Tags Dialog</comment>
         <val lang="en_US">Show details</val>
         <val lang="de_DE">Show details</val>
-        <val lang="fr_FR">Show details</val>
+        <val lang="fr_FR">Afficher les détails</val>
         <val lang="ja_JP">Show details</val>
         <val lang="nl_NL">Show details</val>
     </key>
@@ -276,7 +276,7 @@
         <comment>The title for the Tag Details Dialog</comment>
         <val lang="en_US">Tag Details</val>
         <val lang="de_DE">Tag Details</val>
-        <val lang="fr_FR">Tag Details</val>
+        <val lang="fr_FR">Détails de l'étiquette</val>
         <val lang="ja_JP">Tag Details</val>
         <val lang="nl_NL">Tag Details</val>
     </key>
@@ -284,7 +284,7 @@
         <comment>The text of the label for the Tag Details Dialog tag name</comment>
         <val lang="en_US">Tag name</val>
         <val lang="de_DE">Tag name</val>
-        <val lang="fr_FR">Tag name</val>
+        <val lang="fr_FR">Nom de l'étiquette</val>
         <val lang="ja_JP">Tag name</val>
         <val lang="nl_NL">Tag name</val>
     </key>
@@ -292,7 +292,7 @@
         <comment>The text of the label for the Tag Details Dialog tagger details</comment>
         <val lang="en_US">Author</val>
         <val lang="de_DE">Author</val>
-        <val lang="fr_FR">Author</val>
+        <val lang="fr_FR">Auteur</val>
         <val lang="ja_JP">Author</val>
         <val lang="nl_NL">Author</val>
     </key>
@@ -300,7 +300,7 @@
         <comment>The text of the label for the Tag Details Dialog Date</comment>
         <val lang="en_US">Date</val>
         <val lang="de_DE">Date</val>
-        <val lang="fr_FR">Date</val>
+        <val lang="fr_FR" skipTranslation="true">Date</val>
         <val lang="ja_JP">Date</val>
         <val lang="nl_NL">Date</val>
     </key>
@@ -308,7 +308,7 @@
         <comment>The text of the label for the Tag Details Dialog Message</comment>
         <val lang="en_US">Message</val>
         <val lang="de_DE">Message</val>
-        <val lang="fr_FR">Message</val>
+        <val lang="fr_FR" skipTranslation="true">Message</val>
         <val lang="ja_JP">Message</val>
         <val lang="nl_NL">Message</val>
     </key>
@@ -316,7 +316,7 @@
         <comment>The text of the label for the Tag Details Dialog Commit</comment>
         <val lang="en_US">Commit</val>
         <val lang="de_DE">Commit</val>
-        <val lang="fr_FR">Commit</val>
+        <val lang="fr_FR" skipTranslation="true">Commit</val>
         <val lang="ja_JP">Commit</val>
         <val lang="nl_NL">Commit</val>
     </key>
@@ -324,7 +324,7 @@
         <comment>The text of the label for the Tag Details Dialog Commit author</comment>
         <val lang="en_US">Author</val>
         <val lang="de_DE">Author</val>
-        <val lang="fr_FR">Author</val>
+        <val lang="fr_FR">Auteur</val>
         <val lang="ja_JP">Author</val>
         <val lang="nl_NL">Author</val>
     </key>
@@ -332,7 +332,7 @@
         <comment>The tooltip for the toolbar tags icon</comment>
         <val lang="en_US">Show Tags</val>
         <val lang="de_DE">Show Tags</val>
-        <val lang="fr_FR">Show Tags</val>
+        <val lang="fr_FR">Affiche les étiquettes</val>
         <val lang="ja_JP">Show Tags</val>
         <val lang="nl_NL">Show Tags</val>
     </key>
@@ -341,7 +341,7 @@
         <comment>The message presents user that the stash was kept.</comment>
         <val lang="en_US">The stash entry was kept just in case you need it again.</val>
         <val lang="de_DE">The stash entry was kept just in case you need it again.</val>
-        <val lang="fr_FR">The stash entry was kept just in case you need it again.</val>
+        <val lang="fr_FR">L'entrée remisée a été conservée au cas où vous en auriez à nouveau besoin.</val>
         <val lang="ja_JP">The stash entry was kept just in case you need it again.</val>
         <val lang="nl_NL">The stash entry was kept just in case you need it again.</val>
     </key>
@@ -349,7 +349,7 @@
         <comment>The message presents user solutions to can apply the stash.</comment>
         <val lang="en_US">Commit, stash or revert your local changes first.</val>
         <val lang="de_DE">Commit, stash or revert your local changes first.</val>
-        <val lang="fr_FR">Commit, stash or revert your local changes first.</val>
+        <val lang="fr_FR">Commencez par effectuer un commit, une remise ou rétablir vos modifications locales.</val>
         <val lang="ja_JP">Commit, stash or revert your local changes first.</val>
         <val lang="nl_NL">Commit, stash or revert your local changes first.</val>
     </key>
@@ -357,7 +357,7 @@
         <comment>The text to tell user about adding stash description.</comment>
         <val lang="en_US">You can enter a message to describe the stash</val>
         <val lang="de_DE">You can enter a message to describe the stash</val>
-        <val lang="fr_FR">You can enter a message to describe the stash</val>
+        <val lang="fr_FR">Vous pouvez saisir un message pour décrire la remise.</val>
         <val lang="ja_JP">You can enter a message to describe the stash</val>
         <val lang="nl_NL">You can enter a message to describe the stash</val>
     </key>
@@ -365,7 +365,7 @@
         <comment>The informative message for stash.</comment>
         <val lang="en_US">This will stash your current changes and return your working copy to a clean state.</val>
         <val lang="de_DE">This will stash your current changes and return your working copy to a clean state.</val>
-        <val lang="fr_FR">This will stash your current changes and return your working copy to a clean state.</val>
+        <val lang="fr_FR">Cela mettra en remise vos modifications actuelles et remettra votre copie de travail dans un état propre.</val>
         <val lang="ja_JP">This will stash your current changes and return your working copy to a clean state.</val>
         <val lang="nl_NL">This will stash your current changes and return your working copy to a clean state.</val>
     </key>
@@ -373,7 +373,7 @@
         <comment>The text to tell user to confirm the stash deleting</comment>
         <val lang="en_US">Are you sure you want to delete the selected stashed changes?</val>
         <val lang="de_DE">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="fr_FR">Are you sure you want to delete the selected stashed changes?</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer les modifications remisées sélectionnées?</val>
         <val lang="ja_JP">Are you sure you want to delete the selected stashed changes?</val>
         <val lang="nl_NL">Are you sure you want to delete the selected stashed changes?</val>
     </key>
@@ -381,7 +381,7 @@
         <comment>The message for generated conflicts from stash</comment>
         <val lang="en_US">The stash entry was applied, but the following files have conflicts now.</val>
         <val lang="de_DE">The stash entry was applied, but the following files have conflicts now.</val>
-        <val lang="fr_FR">The stash entry was applied, but the following files have conflicts now.</val>
+        <val lang="fr_FR">L'entrée remisée a été appliquée, mais les fichiers suivants sont maintenant en conflit.</val>
         <val lang="ja_JP">The stash entry was applied, but the following files have conflicts now.</val>
         <val lang="nl_NL">The stash entry was applied, but the following files have conflicts now.</val>
     </key>
@@ -389,7 +389,7 @@
         <comment>Message when is unnable to compare</comment>
         <val lang="en_US">Unable to compare.</val>
         <val lang="de_DE">Unable to compare.</val>
-        <val lang="fr_FR">Unable to compare.</val>
+        <val lang="fr_FR">Impossible de comparer.</val>
         <val lang="ja_JP">Unable to compare.</val>
         <val lang="nl_NL">Unable to compare.</val>
     </key>
@@ -397,7 +397,7 @@
         <comment>Affected files.</comment>
         <val lang="en_US">Affected files</val>
         <val lang="de_DE">Affected files</val>
-        <val lang="fr_FR">Affected files</val>
+        <val lang="fr_FR">Fichiers concernés</val>
         <val lang="ja_JP">Affected files</val>
         <val lang="nl_NL">Affected files</val>
     </key>
@@ -405,7 +405,7 @@
         <comment>Delete all.</comment>
         <val lang="en_US">Delete all</val>
         <val lang="de_DE">Delete all</val>
-        <val lang="fr_FR">Delete all</val>
+        <val lang="fr_FR">Tout supprimer</val>
         <val lang="ja_JP">Delete all</val>
         <val lang="nl_NL">Delete all</val>
     </key>
@@ -413,7 +413,7 @@
         <comment>Delete all stashes.</comment>
         <val lang="en_US">Delete all stashes</val>
         <val lang="de_DE">Delete all stashes</val>
-        <val lang="fr_FR">Delete all stashes</val>
+        <val lang="fr_FR">Supprimer les remises</val>
         <val lang="ja_JP">Delete all stashes</val>
         <val lang="nl_NL">Delete all stashes</val>
     </key>
@@ -421,7 +421,7 @@
         <comment>The message for confirmation clear all stashes message.</comment>
         <val lang="en_US">Are you sure you want to delete all the stashes?</val>
         <val lang="de_DE">Are you sure you want to delete all the stashes?</val>
-        <val lang="fr_FR">Are you sure you want to delete all the stashes?</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer toutes les remises?</val>
         <val lang="ja_JP">Are you sure you want to delete all the stashes?</val>
         <val lang="nl_NL">Are you sure you want to delete all the stashes?</val>
     </key>
@@ -429,7 +429,7 @@
         <comment>Stash changes.</comment>
         <val lang="en_US">Stash changes</val>
         <val lang="de_DE">Stash changes</val>
-        <val lang="fr_FR">Stash changes</val>
+        <val lang="fr_FR">Remiser les modifications</val>
         <val lang="ja_JP">Stash changes</val>
         <val lang="nl_NL">Stash changes</val>
     </key>
@@ -437,7 +437,7 @@
         <comment>The tooltip for apply stash button.</comment>
         <val lang="en_US">Apply the selected stashed changes.</val>
         <val lang="de_DE">Apply the selected stashed changes.</val>
-        <val lang="fr_FR">Apply the selected stashed changes.</val>
+        <val lang="fr_FR">Applique les modifications remisées sélectionnées.</val>
         <val lang="ja_JP">Apply the selected stashed changes.</val>
         <val lang="nl_NL">Apply the selected stashed changes.</val>
     </key>
@@ -445,7 +445,7 @@
         <comment>The tooltip for delete stash button.</comment>
         <val lang="en_US">Delete the selected stashed changes.</val>
         <val lang="de_DE">Delete the selected stashed changes.</val>
-        <val lang="fr_FR">Delete the selected stashed changes.</val>
+        <val lang="fr_FR">Supprime les modifications remisées sélectionnées.</val>
         <val lang="ja_JP">Delete the selected stashed changes.</val>
         <val lang="nl_NL">Delete the selected stashed changes.</val>
     </key>
@@ -453,7 +453,7 @@
         <comment>Delete Stash.</comment>
         <val lang="en_US">Delete stash</val>
         <val lang="de_DE">Delete stash</val>
-        <val lang="fr_FR">Delete stash</val>
+        <val lang="fr_FR">Supprimer la remise</val>
         <val lang="ja_JP">Delete stash</val>
         <val lang="nl_NL">Delete stash</val>
     </key>
@@ -461,7 +461,7 @@
         <comment>The checkbox text for delete stash after applied successfully.</comment>
         <val lang="en_US">Delete stash after being applied</val>
         <val lang="de_DE">Delete stash after being applied</val>
-        <val lang="fr_FR">Delete stash after being applied</val>
+        <val lang="fr_FR">Effacer la remise après l'avoir appliquée</val>
         <val lang="ja_JP">Delete stash after being applied</val>
         <val lang="nl_NL">Delete stash after being applied</val>
     </key>
@@ -469,7 +469,7 @@
         <comment>List Stashes.</comment>
         <val lang="en_US">List stashes</val>
         <val lang="de_DE">List stashes</val>
-        <val lang="fr_FR">List stashes</val>
+        <val lang="fr_FR">Lister les remises</val>
         <val lang="ja_JP">List stashes</val>
         <val lang="nl_NL">List stashes</val>
     </key>
@@ -477,7 +477,7 @@
         <comment>Action name.</comment>
         <val lang="en_US">Reset file to this commit</val>
         <val lang="de_DE">Reset file to this commit</val>
-        <val lang="fr_FR">Reset file to this commit</val>
+        <val lang="fr_FR">Réinitialiser le fichier à ce commit</val>
         <val lang="ja_JP">Reset file to this commit</val>
         <val lang="nl_NL">Reset file to this commit</val>
     </key>
@@ -485,7 +485,7 @@
         <comment>Checkout this version of a file at a given revision.</comment>
         <val lang="en_US">Reset "{0}" to this commit</val>
         <val lang="de_DE">Reset "{0}" to this commit</val>
-        <val lang="fr_FR">Reset "{0}" to this commit</val>
+        <val lang="fr_FR">Réinitialiser "{0}" à ce commit</val>
         <val lang="ja_JP">Reset "{0}" to this commit</val>
         <val lang="nl_NL">Reset "{0}" to this commit</val>
     </key>
@@ -494,7 +494,7 @@
         before trying to push.</comment>
         <val lang="en_US">Perform at least one local commit before trying to push again.</val>
         <val lang="de_DE">Perform at least one local commit before trying to push again.</val>
-        <val lang="fr_FR">Perform at least one local commit before trying to push again.</val>
+        <val lang="fr_FR">Effectuez au moins un commit local avant d'essayer un nouveau push.</val>
         <val lang="ja_JP">Perform at least one local commit before trying to push again.</val>
         <val lang="nl_NL">Perform at least one local commit before trying to push again.</val>
     </key>
@@ -502,7 +502,7 @@
         <comment>"Unborn branch X".</comment>
         <val lang="en_US">branch "{0}" is empty.</val>
         <val lang="de_DE">branch "{0}" is empty.</val>
-        <val lang="fr_FR">branch "{0}" is empty.</val>
+        <val lang="fr_FR">la branche "{0}" est vide.</val>
         <val lang="ja_JP">branch "{0}" is empty.</val>
         <val lang="nl_NL">branch "{0}" is empty.</val>
     </key>
@@ -510,7 +510,7 @@
         <comment>Rebase.</comment>
         <val lang="en_US">rebase</val>
         <val lang="de_DE">Rebase</val>
-        <val lang="fr_FR">rebase</val>
+        <val lang="fr_FR" skipTranslation="true">rebase</val>
         <val lang="ja_JP">rebase</val>
         <val lang="nl_NL">rebase</val>
     </key>
@@ -655,7 +655,7 @@
         <comment>Stash</comment>
         <val lang="en_US">Stash</val>
         <val lang="de_DE">Stash</val>
-        <val lang="fr_FR" skipTranslation="true">Stash</val>
+        <val lang="fr_FR">Remiser</val>
         <val lang="ja_JP">Stash</val>
         <val lang="nl_NL">Stash</val>
     </key>
@@ -663,7 +663,7 @@
         <comment>Apply</comment>
         <val lang="en_US">Apply</val>
         <val lang="de_DE">Apply</val>
-        <val lang="fr_FR">Apply</val>
+        <val lang="fr_FR">Appliquer</val>
         <val lang="ja_JP">Apply</val>
         <val lang="nl_NL">Apply</val>
     </key>
