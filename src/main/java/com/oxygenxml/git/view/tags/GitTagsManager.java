@@ -173,7 +173,11 @@ public class GitTagsManager {
    * @throws GitAPIException
    */
   public static int getNoOfTags() throws GitAPIException {
-    List<Ref> refs = GitAccess.getInstance().getGit().tagList().call();
+	  GitAccess gitAccess = GitAccess.getInstance();
+    List<Ref> refs = null;
+    if(gitAccess.isRepoInitialized()) {
+    	refs = gitAccess.getGit().tagList().call();
+    }
     int noOfTags = refs == null ? 0 : refs.size();
     return noOfTags;
   }
