@@ -100,7 +100,11 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
       } 
     }
     
-    updateForegroundText(labelText, tableCellRendererComponent);
+    if(isSelected) {
+      tableCellRendererComponent.setForeground(table.getSelectionForeground());
+    } else {
+      updateForegroundText(labelText, tableCellRendererComponent); 
+    }
     
     tableCellRendererComponent.setIcon(icon);
     tableCellRendererComponent.setToolTipText(tooltipText);
