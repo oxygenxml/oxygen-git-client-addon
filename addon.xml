@@ -6,7 +6,7 @@
         <xt:location
             href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/${project.version}/${project.build.finalName}-plugin.jar"/>
         <xt:version>${project.version}</xt:version>
-        <xt:oxy_version>21.1+</xt:oxy_version>
+        <xt:oxy_version>22.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
         <xt:name>Git Client</xt:name>
@@ -53,6 +53,7 @@
 				    performed on that branch (such as the author and the date of the commit).</li>
 			    <li>An information message that is shown when starting Oxygen while being on a detached HEAD now presents more information
 				about the checked out commit (ID, author, date, message).</li>
+				<li>The add-on's minimum compatible Oxygen version was increased to version 22.0.</li>
                         </ol>
                     </div>
                     <div>
