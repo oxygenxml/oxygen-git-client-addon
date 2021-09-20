@@ -2434,16 +2434,18 @@ public class GitAccess {
    * @return the list of all stashes.
    */
   public Collection<RevCommit> listStashes() {
-    fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
-     Collection<RevCommit> stashedRefsCollection = null;
-    try {
-      StashListCommand stashList = git.stashList();
-      stashedRefsCollection = stashList.call();
-      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()));
-    } catch (Exception e) {
-      LOGGER.debug(e, e);
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()), e);
-    }
+	  fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
+	  Collection<RevCommit> stashedRefsCollection = null;
+	  if(git != null) {
+		  try {
+			  StashListCommand stashList = git.stashList();
+			  stashedRefsCollection = stashList.call();
+			  fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()));
+		  } catch (Exception e) {
+			  LOGGER.debug(e, e);
+			  fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()), e);
+		  }
+	  }
     return stashedRefsCollection;
   }
 
