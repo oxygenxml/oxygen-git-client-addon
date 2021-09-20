@@ -1,6 +1,5 @@
 package com.oxygenxml.git.options;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
@@ -31,7 +30,7 @@ public interface OptionsInterface {
 
   public ProjectsTestedForGit getProjectsTestsForGit() ;
 
-  public void setPrjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) ;
+  public void setProjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) ;
 
   public RepositoryLocations getRepositoryLocations() ;
 
@@ -115,7 +114,7 @@ public interface OptionsInterface {
    * @param sshPromptAnswers A cache for asking the user for connection message.
    */
   @SuppressWarnings("java:S1319")
-  public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) ;
+  public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) ;
 
   /**
    * @return A cache for asking the user for connection message.

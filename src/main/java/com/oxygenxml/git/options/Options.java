@@ -127,59 +127,73 @@ public class Options implements OptionsInterface {
 	@XmlElement(name = "isAutoPushWhenCommitting")
 	private boolean isAutoPushWhenCommitting = false;
 
-	public boolean isAutoPushWhenCommitting() {
+	@Override
+  public boolean isAutoPushWhenCommitting() {
     return isAutoPushWhenCommitting;
   }
 	
-	public void setAutoPushWhenCommitting(boolean isAutoPushWhenCommitting) {
+	@Override
+  public void setAutoPushWhenCommitting(boolean isAutoPushWhenCommitting) {
     this.isAutoPushWhenCommitting = isAutoPushWhenCommitting;
   }
 	
+  @Override
   public PullType getDefaultPullType() {
     return defaultPullType;
   }
 
+  @Override
   public void setDefaultPullType(PullType defaultPullType) {
     this.defaultPullType = defaultPullType;
   }
   
+  @Override
   public ResourcesViewMode getUnstagedResViewMode() {
     return unstagedResViewMode;
   }
 
+  @Override
   public void setUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) {
     this.unstagedResViewMode = unstagedResViewMode;
   }
 
+  @Override
   public ResourcesViewMode getStagedResViewMode() {
     return stagedResViewMode;
   }
 
+  @Override
   public void setStagedResViewMode(ResourcesViewMode stagedResViewMode) {
     this.stagedResViewMode = stagedResViewMode;
   }
 
+  @Override
   public DestinationPaths getDestinationPaths() {
 		return destinationPaths;
 	}
 
-	public void setDestinationPaths(DestinationPaths destinationPaths) {
+	@Override
+  public void setDestinationPaths(DestinationPaths destinationPaths) {
 		this.destinationPaths = destinationPaths;
 	}
 
-	public ProjectsTestedForGit getProjectsTestsForGit() {
+	@Override
+  public ProjectsTestedForGit getProjectsTestsForGit() {
 		return projectsTestsForGit;
 	}
 
-	public void setPrjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) {
+	@Override
+  public void setProjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) {
 		this.projectsTestsForGit = prjectsTestsForGit;
 	}
 
-	public RepositoryLocations getRepositoryLocations() {
+	@Override
+  public RepositoryLocations getRepositoryLocations() {
 		return repositoryLocations;
 	}
 
-	public void setRepositoryLocations(RepositoryLocations repositoryLocations) {
+	@Override
+  public void setRepositoryLocations(RepositoryLocations repositoryLocations) {
 		this.repositoryLocations = repositoryLocations;
 	}
 	
@@ -188,6 +202,7 @@ public class Options implements OptionsInterface {
    * 
    * @param notifyAboutNewRemoteCommits Option chosen about if to verify or not.
    */
+  @Override
   public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
     this.notifyAboutNewRemoteCommits = notifyAboutNewRemoteCommits;
   }
@@ -196,6 +211,7 @@ public class Options implements OptionsInterface {
    * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
    * checkout a newly created local branch.
    */
+  @Override
   public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) {
     this.isCheckoutNewlyCreatedLocalBranch = isCheckoutNewlyCreatedLocalBranch;
   }
@@ -205,6 +221,7 @@ public class Options implements OptionsInterface {
    * 
    * @return Option stored about to verify or not.
    */
+  @Override
   public boolean isNotifyAboutNewRemoteCommits() {
     return notifyAboutNewRemoteCommits;
   }
@@ -212,10 +229,12 @@ public class Options implements OptionsInterface {
   /**
    * @return <code>true</code> to automatically checkout a newly created local branch.
    */
+  @Override
   public boolean isCheckoutNewlyCreatedLocalBranch() {
     return isCheckoutNewlyCreatedLocalBranch;
   }
   
+  @Override
   public Map<String, String> getWarnOnChangeCommitId() {
     return warnOnChangeCommitId;
   }
@@ -229,6 +248,7 @@ public class Options implements OptionsInterface {
    * @return The commit ID that comes from  {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
    */
   
+  @Override
   public String getWarnOnChangeCommitId(String repositoryId) {
     return warnOnChangeCommitId.getOrDefault(repositoryId,"");
   }
@@ -242,15 +262,18 @@ public class Options implements OptionsInterface {
    * @param commitId     The newest commit ID, obtained from 
    *                     {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
    */
+  @Override
   public void setWarnOnChangeCommitId(String repositoryId, String commitId) {
     warnOnChangeCommitId.put(repositoryId, commitId);
   }
 
-	public String getSelectedRepository() {
+	@Override
+  public String getSelectedRepository() {
 		return selectedRepository;
 	}
 
-	public void setSelectedRepository(String selectedRepository) {
+	@Override
+  public void setSelectedRepository(String selectedRepository) {
 		this.selectedRepository = selectedRepository;
 	}
 
@@ -259,7 +282,8 @@ public class Options implements OptionsInterface {
    * 
    * @return The user credentials.
    */
-	public UserCredentialsList getUserCredentialsList() {
+	@Override
+  public UserCredentialsList getUserCredentialsList() {
 		return userCredentialsList;
 	}
 
@@ -267,38 +291,46 @@ public class Options implements OptionsInterface {
 	 * The list with user credentials.
 	 * @param userCredentialsList
 	 */
-	public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
+	@Override
+  public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
 		this.userCredentialsList = userCredentialsList;
 	}
 
-	public CommitMessages getCommitMessages() {
+	@Override
+  public CommitMessages getCommitMessages() {
 		return commitMessages;
 	}
 
-	public void setCommitMessages(CommitMessages commitMessages) {
+	@Override
+  public void setCommitMessages(CommitMessages commitMessages) {
 		this.commitMessages = commitMessages;
 	}
 
-	public String getPassphrase() {
+	@Override
+  public String getPassphrase() {
 		return passphrase;
 	}
 
-	public void setPassphrase(String passphrase) {
+	@Override
+  public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
 	}
 	
 	/**
 	 * @param sshPromptAnswers A cache for asking the user for connection message.
 	 */
-	@SuppressWarnings("java:S1319")
-	public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) {
-    this.sshPromptAnswers = sshPromptAnswers;
+	@Override
+  @SuppressWarnings("java:S1319")
+	public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
+	  this.sshPromptAnswers.clear();
+    this.sshPromptAnswers.putAll(sshPromptAnswers);
   }
 	
 	/**
 	 * @return A cache for asking the user for connection message.
 	 */
-	public Map<String, Boolean> getSshPromptAnswers() {
+	@Override
+  public Map<String, Boolean> getSshPromptAnswers() {
     return sshPromptAnswers;
   }
 
@@ -307,20 +339,23 @@ public class Options implements OptionsInterface {
 	 *  
 	 * @param whatToDo What to do.
 	 */
-	public void setWhenRepoDetectedInProject(WhenRepoDetectedInProject whatToDo) {
+	@Override
+  public void setWhenRepoDetectedInProject(WhenRepoDetectedInProject whatToDo) {
 	  this.whenRepoDetectedInProject = whatToDo;
 	}
 
 	/**
 	 * @return what to do when a repo is detected inside an Oxygen project.
 	 */
-	public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
+	@Override
+  public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
 	  return whenRepoDetectedInProject;
 	}
 	
 	 /**
    * @return <code>true</code> to update submodules after a pull.
    */
+  @Override
   public boolean getUpdateSubmodulesOnPull() {
     return updateSubmodulesOnPull;
   }
@@ -330,6 +365,7 @@ public class Options implements OptionsInterface {
    * 
    * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
    */
+  @Override
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     this.updateSubmodulesOnPull = updateSubmodules;
   }
@@ -337,6 +373,7 @@ public class Options implements OptionsInterface {
 	/**
    * @return the list of personal access token info items.
    */
+  @Override
   public PersonalAccessTokenInfoList getPersonalAccessTokensList() {
     return paTokensList;
   }
@@ -344,6 +381,7 @@ public class Options implements OptionsInterface {
   /**
    * @param paTokensList the list of personal access token info items to set.
    */
+  @Override
   public void setPersonalAccessTokensList(PersonalAccessTokenInfoList paTokensList) {
     this.paTokensList = paTokensList;
   }

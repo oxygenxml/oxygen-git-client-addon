@@ -13,6 +13,8 @@ import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
 public class OptionsWithTags implements OptionsInterface {
   
+  private static final String TRUE = "true";
+  private static final String FALSE = "false";
   private WSOptionsStorage wsOptionsStorage;
 
   public OptionsWithTags(WSOptionsStorage wsOptionsStorage) {
@@ -21,7 +23,7 @@ public class OptionsWithTags implements OptionsInterface {
 
   @Override
   public boolean isAutoPushWhenCommitting() {
-    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.AUTO_PUSH_WHEN_COMMITTING, "false"));
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.AUTO_PUSH_WHEN_COMMITTING, FALSE));
   }
 
   @Override
@@ -31,61 +33,75 @@ public class OptionsWithTags implements OptionsInterface {
 
   @Override
   public PullType getDefaultPullType() {
-    // TODO Auto-generated method stub
-    return null;
+    String pullType = wsOptionsStorage.getOption(OptionTags.DEFAULT_PULL_TYPE, String.valueOf(PullType.MERGE_FF));
+    return PullType.valueOf(pullType);
   }
 
   @Override
   public void setDefaultPullType(PullType defaultPullType) {
-    // TODO Auto-generated method stub
+    wsOptionsStorage.setOption(OptionTags.DEFAULT_PULL_TYPE, String.valueOf(defaultPullType));
 
   }
 
   @Override
   public ResourcesViewMode getUnstagedResViewMode() {
-    // TODO Auto-generated method stub
-    return null;
+    String unstagedResViewMode = wsOptionsStorage.getOption(OptionTags.UNSTAGED_RES_VIEW_MODE, String.valueOf(ResourcesViewMode.FLAT_VIEW));
+    return ResourcesViewMode.valueOf(unstagedResViewMode);
   }
 
   @Override
   public void setUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) {
-    // TODO Auto-generated method stub
+    wsOptionsStorage.setOption(OptionTags.UNSTAGED_RES_VIEW_MODE, String.valueOf(unstagedResViewMode));
 
   }
 
   @Override
   public ResourcesViewMode getStagedResViewMode() {
-    // TODO Auto-generated method stub
-    return null;
+    String stagedResViewMode = wsOptionsStorage.getOption(OptionTags.STAGED_RES_VIEW_MODE, String.valueOf(ResourcesViewMode.FLAT_VIEW));
+    return ResourcesViewMode.valueOf(stagedResViewMode);
   }
 
   @Override
   public void setStagedResViewMode(ResourcesViewMode stagedResViewMode) {
-    // TODO Auto-generated method stub
+    wsOptionsStorage.setOption(OptionTags.STAGED_RES_VIEW_MODE, String.valueOf(stagedResViewMode));
 
   }
 
   @Override
   public DestinationPaths getDestinationPaths() {
-    // TODO Auto-generated method stub
-    return null;
+    String[] stringDestinationPaths = wsOptionsStorage.getStringArrayOption(OptionTags.DESTINATION_PATHS, new String[0]);
+    DestinationPaths destinationPaths = new DestinationPaths();
+    destinationPaths.setPaths(Arrays.asList(stringDestinationPaths));
+    
+    return destinationPaths;
   }
 
   @Override
   public void setDestinationPaths(DestinationPaths destinationPaths) {
-    // TODO Auto-generated method stub
+    List<String> destPaths = destinationPaths.getPaths();
+    
+    wsOptionsStorage.setStringArrayOption(
+        OptionTags.DESTINATION_PATHS,
+        destPaths != null ? destPaths.toArray(new String[0]) : new String[0]);
 
   }
 
   @Override
   public ProjectsTestedForGit getProjectsTestsForGit() {
-    // TODO Auto-generated method stub
-    return null;
+    String[] stringProjectsTestedForGit = wsOptionsStorage.getStringArrayOption(OptionTags.PROJECTS_TESTED_FOR_GIT, new String[0]);
+    ProjectsTestedForGit projectsTestedForGit = new ProjectsTestedForGit();
+    projectsTestedForGit.setPaths(Arrays.asList(stringProjectsTestedForGit));
+    
+    return projectsTestedForGit;
   }
 
   @Override
-  public void setPrjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) {
-    // TODO Auto-generated method stub
+  public void setProjectsTestsForGit(ProjectsTestedForGit projectsTestsForGit) {
+    List<String> projTests = projectsTestsForGit.getPaths();
+    
+    wsOptionsStorage.setStringArrayOption(
+        OptionTags.PROJECTS_TESTED_FOR_GIT,
+        projTests != null? projTests.toArray(new String[0]) : new String[0]) ;
 
   }
 
@@ -107,130 +123,166 @@ public class OptionsWithTags implements OptionsInterface {
         locations != null ? locations.toArray(new String[0]) : new String[0]);
   }
 
+  /**
+   * Set when to verify for remote changes in the repository.
+   * 
+   * @param notifyAboutNewRemoteCommits Option chosen about if to verify or not.
+   */
   @Override
   public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
-    // TODO Auto-generated method stub
-
+    wsOptionsStorage.setOption(OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS, String.valueOf(notifyAboutNewRemoteCommits));
+    
   }
-
+  
+  /**
+   * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
+   * checkout a newly created local branch.
+   */
   @Override
   public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) {
-    // TODO Auto-generated method stub
-
+    wsOptionsStorage.setOption(OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS, String.valueOf(isCheckoutNewlyCreatedLocalBranch));
+    
   }
 
+  /**
+   * Get the option about when to verify about remote changes in the repository.
+   * 
+   * @return Option stored about to verify or not.
+   */
   @Override
   public boolean isNotifyAboutNewRemoteCommits() {
-    // TODO Auto-generated method stub
-    return false;
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS, FALSE));
   }
 
+  /**
+   * @return <code>true</code> to automatically checkout a newly created local branch.
+   */
   @Override
   public boolean isCheckoutNewlyCreatedLocalBranch() {
-    // TODO Auto-generated method stub
-    return false;
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH, FALSE));
   }
 
   @Override
   public Map<String, String> getWarnOnChangeCommitId() {
-    // TODO Auto-generated method stub
-    return null;
+    String[] stringArrayOption = wsOptionsStorage.getStringArrayOption(OptionTags.WARN_ON_CHANGE_COMMIT_ID, new String[0]);
+
+    return arrayToMap(stringArrayOption);
   }
 
   @Override
   public String getWarnOnChangeCommitId(String repositoryId) {
-    // TODO Auto-generated method stub
-    return null;
+    String[] stringArrayOption = wsOptionsStorage.getStringArrayOption(OptionTags.WARN_ON_CHANGE_COMMIT_ID, new String[0]);
+    Map<String, String> warnOnChangeCommitId = arrayToMap(stringArrayOption);
+    
+    return warnOnChangeCommitId.getOrDefault(repositoryId, "");
   }
 
   @Override
   public void setWarnOnChangeCommitId(String repositoryId, String commitId) {
-    // TODO Auto-generated method stub
+    String[] stringArrayOption = wsOptionsStorage.getStringArrayOption(OptionTags.WARN_ON_CHANGE_COMMIT_ID, new String[0]);
+    Map<String, String> oldOpt = arrayToMap(stringArrayOption);
+    oldOpt.put(repositoryId, commitId);
     
+    String[] newOpt = mapToArray(oldOpt);
+    wsOptionsStorage.setStringArrayOption(OptionTags.WARN_ON_CHANGE_COMMIT_ID, newOpt);
   }
   
 
   @Override
   public String getSelectedRepository() {
-    // TODO Auto-generated method stub
-    return null;
+    return wsOptionsStorage.getOption(OptionTags.SELECTED_REPOSITORY, "");
+    
   }
 
   @Override
   public void setSelectedRepository(String selectedRepository) {
-    // TODO Auto-generated method stub
+    wsOptionsStorage.setOption(OptionTags.SELECTED_REPOSITORY, selectedRepository);
 
   }
 
   @Override
   public UserCredentialsList getUserCredentialsList() {
-    // TODO Auto-generated method stub
     return null;
+    //TODO: ...
   }
 
   @Override
   public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
-    // TODO Auto-generated method stub
-
+   //TODO: ...
   }
 
   @Override
   public CommitMessages getCommitMessages() {
-    // TODO Auto-generated method stub
-    return null;
+    String[] stringArrayOption = wsOptionsStorage.getStringArrayOption(OptionTags.COMMIT_MESSAGES, new String[0]);
+    
+    CommitMessages commitMessages = new CommitMessages();
+    commitMessages.setMessages(Arrays.asList(stringArrayOption));
+    return commitMessages;
   }
 
   @Override
   public void setCommitMessages(CommitMessages commitMessages) {
-    // TODO Auto-generated method stub
-
+    List<String> comMessages = commitMessages.getMessages();
+    
+    wsOptionsStorage.setStringArrayOption(
+        OptionTags.COMMIT_MESSAGES,
+        comMessages != null ? comMessages.toArray(new String[0]) : new String[0] );
+    
   }
 
   @Override
   public String getPassphrase() {
-    // TODO Auto-generated method stub
-    return null;
+    return wsOptionsStorage.getOption(OptionTags.PASSPHRASE, "");
+    
   }
 
   @Override
   public void setPassphrase(String passphrase) {
-    // TODO Auto-generated method stub
+   wsOptionsStorage.setOption(OptionTags.PASSPHRASE, passphrase);
 
   }
 
   @Override
-  public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) {
-    // TODO Auto-generated method stub
-
+  public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
+    String[] newOpt = mapToArray(sshPromptAnswers);
+    wsOptionsStorage.setStringArrayOption(OptionTags.WARN_ON_CHANGE_COMMIT_ID, newOpt);
   }
 
   @Override
   public Map<String, Boolean> getSshPromptAnswers() {
-    // TODO Auto-generated method stub
-    return null;
+    String[] stringArrayOption = wsOptionsStorage.getStringArrayOption(OptionTags.SSH_PROMPT_ANSWERS, new String[0]);
+    Map<String, String> sshPromptAnswers = arrayToMap(stringArrayOption);
+    
+    Map<String, Boolean> sshPromptAnswersWithBool = new HashMap<>();
+    
+    for (Map.Entry<String, String> entry: sshPromptAnswers.entrySet()) {
+      sshPromptAnswersWithBool.put(entry.getKey(), Boolean.parseBoolean(entry.getValue()));
+    }
+    
+    return sshPromptAnswersWithBool;
   }
 
   @Override
   public void setWhenRepoDetectedInProject(WhenRepoDetectedInProject whatToDo) {
-    // TODO Auto-generated method stub
+    wsOptionsStorage.setOption(OptionTags.WHEN_REPO_DETECTED_IN_PROJECT, String.valueOf(whatToDo));
 
   }
 
   @Override
   public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
-    // TODO Auto-generated method stub
-    return null;
+    String whenRepoDetected = wsOptionsStorage.getOption(OptionTags.WHEN_REPO_DETECTED_IN_PROJECT, String.valueOf(WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC));
+    return WhenRepoDetectedInProject.valueOf(whenRepoDetected);
   }
 
   @Override
   public boolean getUpdateSubmodulesOnPull() {
-    // TODO Auto-generated method stub
-    return false;
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.UPDATE_SUBMODULES_ON_PULL, TRUE));
+    
   }
 
   @Override
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
-    // TODO Auto-generated method stub
+   wsOptionsStorage.setOption(OptionTags.UPDATE_SUBMODULES_ON_PULL, String.valueOf(updateSubmodules));
 
   }
 
@@ -245,5 +297,46 @@ public class OptionsWithTags implements OptionsInterface {
     // TODO Auto-generated method stub
 
   }
-
+  
+  /**
+   * Used to convert an array to a Map
+   * 
+   * @param array the array that we want to convert to a Map
+   * 
+   * @return a Map
+   */
+  private static Map<String, String> arrayToMap(String[] array) {
+    Map<String, String> map = new HashMap<>();
+    
+    if (array.length%2 == 1) {
+      return map;
+    }
+    
+    for (int i = 0; i <= array.length/2; i = i+2) {
+      map.put(array[i], array[i+1]);
+    }
+    return map;
+  }
+  
+  /**
+   * Used to convert a Map to an array
+   * 
+   * @param Map<String, String> the map that we want to convert to an array
+   * 
+   * @return an array
+   */
+  private static String[] mapToArray(Map<String, ?> map) {
+    String[] array = new String[2 * map.size()];
+    
+    int i = 0;
+    for (Map.Entry<String, ?> entry: map.entrySet()) {
+      array[i] = entry.getKey();
+      i++;
+      array[i] = String.valueOf(entry.getValue());
+      i++;
+    }
+    
+    return array;
+  }
+  
 }
