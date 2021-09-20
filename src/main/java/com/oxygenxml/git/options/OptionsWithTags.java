@@ -246,6 +246,7 @@ public class OptionsWithTags implements OptionsInterface {
   public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
     String[] newOpt = mapToArray(sshPromptAnswers);
     wsOptionsStorage.setStringArrayOption(OptionTags.WARN_ON_CHANGE_COMMIT_ID, newOpt);
+
   }
 
   @Override
