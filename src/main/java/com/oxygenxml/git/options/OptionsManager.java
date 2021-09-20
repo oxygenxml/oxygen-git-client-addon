@@ -1,8 +1,5 @@
 package com.oxygenxml.git.options;
 
-import java.io.File;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,22 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
-import org.apache.log4j.Logger;
-
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
-import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
@@ -45,24 +33,6 @@ public class OptionsManager {
    * Maximum number of destinations stored in history.
    */
   private static final int DESTINATIONS_MAX_COUNT = 20;
-  /**
-   * The initial key used to saved options.
-   */
-  private static final String OLD_GIT_PLUGIN_OPTIONS = "MY_PLUGIN_OPTIONS";
-  /**
-   * A proper name for the options.
-   */
-  private static final String GIT_PLUGIN_OPTIONS = "GIT_PLUGIN_OPTIONS";
-
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = Logger.getLogger(OptionsManager.class);
-
-  /**
-   * The filename in which all the options are saved
-   */
-  private static final String OPTIONS_FILENAME_FOR_TESTS = "Options.xml";
 
   /**
    * Constant for how many commits messages to be saved
@@ -77,7 +47,7 @@ public class OptionsManager {
   /**
    * All Repositories that were selected by the user with their options
    */
-  private Options options = null;
+  private OptionsInterface options = null;
 
   /**
    * Singleton instance.
@@ -102,108 +72,15 @@ public class OptionsManager {
    */
   private void loadOptions() {
     if (options == null) {
-      options = new Options();
-      try {
-        JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        if (OxygenGitPlugin.getInstance() == null) {
-          // Running outside Oxygen, for example from tests.
-          File optionsFileForTests = getOptionsFileForTests();
-          if (optionsFileForTests.exists()) {
-            options = (Options) jaxbUnmarshaller.unmarshal(optionsFileForTests);
-          } else {
-            LOGGER.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
-          }
-        } else {
-          // Running in Oxygen's context. Save inside Oxygen's options. 
-          String option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
-              .getOption(OLD_GIT_PLUGIN_OPTIONS, null);
-
-          if (option != null) {
-            // Backwards.
-            // 1. Load
-            options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
-                PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
-            // 2. Reset
-            PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(OLD_GIT_PLUGIN_OPTIONS, null);
-            // 3. Save with the new option
-            saveOptions();
-          } else {
-            option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().getOption(GIT_PLUGIN_OPTIONS,
-                null);
-            // Load the new key if exists.
-            if (option != null) {
-              options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
-                  PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
-            }
-          }
-
-        }
-      } catch (JAXBException e) {
-        LOGGER.warn("Options not loaded: " + e, e);
-      }
-
+      OptionsLoader.loadOptions();
     }
-  }
-
-  /**
-   * !!! FOR TESTS !!!
-   * 
-   * Creates the the options file and returns it
-   * 
-   * @return the options file
-   */
-  private File getOptionsFileForTests() {
-    File baseDir = null;
-    if (OxygenGitPlugin.getInstance() != null) {
-      baseDir = OxygenGitPlugin.getInstance().getDescriptor().getBaseDir();
-    } else {
-      baseDir = new File("src/test/resources");
-    }
-    return new File(baseDir, OPTIONS_FILENAME_FOR_TESTS);
   }
 
   /**
    * Save options.
    */
   public void saveOptions() {
-    boolean save = true;
-    StringWriter optionsWriter = new StringWriter();
-    
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-    try {
-      Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
-
-      JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
-      Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-      jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-      if (OxygenGitPlugin.getInstance() == null) {
-        jaxbMarshaller.marshal(getOptions(), getOptionsFileForTests());
-      } else {
-        jaxbMarshaller.marshal(getOptions(), optionsWriter);
-      }
-    } catch (JAXBException e) {
-      save = false;
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e, e);
-      }
-    } finally {
-      Thread.currentThread().setContextClassLoader(contextClassLoader);
-    }
-    
-    if (save) {
-      // pluginWorkspace and optionsStorage can be null from tests.
-      PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-      if (pluginWorkspace != null) {
-        WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
-        if (optionsStorage != null) {
-          optionsStorage.setOption(
-              GIT_PLUGIN_OPTIONS,
-              pluginWorkspace.getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
-        }
-      }
-    }
-
+    // TODO Not needed anymore. See from where it is used and remove it.
   }
   
   /**
@@ -258,6 +135,10 @@ public class OptionsManager {
    *          - options to be saved
    */
   public void addRepository(String repositoryOption) {
+    // TODO Not cool.  getOptions().setRepositoryLocations() should be used. It makes
+    // assumptions that the returned list is not a clone. With the new tag-based 
+    // options, clones are always returned.
+   
     LinkedList<String> locations = (LinkedList<String>) getOptions().getRepositoryLocations().getLocations();
     locations.remove(repositoryOption);
     locations.addFirst(repositoryOption);
