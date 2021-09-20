@@ -7,7 +7,7 @@
 	<parent>
 	    <groupId>com.oxygenxml</groupId>
 	    <artifactId>oxygen-superpom-standard</artifactId>
-	    <version>22.0.0.0</version>
+	    <version>22.1.0.0</version>
   	</parent>
   	
     <developers>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>com.oxygenxml</groupId>
 			<artifactId>oxygen-sdk</artifactId>
-			<version>22.0.0.0</version>
+			<version>22.1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -119,9 +119,14 @@
 
 		<!-- EXM-47243 Log4j is declared in superpom. We don't want to add this as runtime dependency-->
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.14.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
         
