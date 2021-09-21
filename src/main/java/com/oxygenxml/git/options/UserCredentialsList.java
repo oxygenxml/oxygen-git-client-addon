@@ -8,7 +8,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.utils.Equaler;
+
+import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 
 /**
  * Entity for the JAXB to store the user credentials
@@ -18,8 +22,10 @@ import com.oxygenxml.git.utils.Equaler;
  */
 @XmlRootElement(name = "userCredentials")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserCredentialsList {
+public class UserCredentialsList implements ExternalPersistentObject {
 
+  private static final Logger LOGGER = Logger.getLogger(UserCredentialsList.class);
+  
 	/**
 	 * List with the credentials
 	 */
@@ -55,5 +61,36 @@ public class UserCredentialsList {
 	  }
 	  return toReturn;
 	}
+
+  @Override
+  public void checkValid()  {
+    //Consider it to be valid.
+  }
+	
+  @Override
+  public String[] getNotPersistentFieldNames() {
+    return new String[0];
+  }
+	
+  @SuppressWarnings("java:S2975")
+  @Override
+  public Object clone() {
+    try {
+      UserCredentialsList clone =(UserCredentialsList) super.clone();
+      List<UserAndPasswordCredentials> cloneUserAndPass = new ArrayList<>();
+      
+      if (credentials != null) {
+        for (UserAndPasswordCredentials uAPCred : credentials) {
+          cloneUserAndPass.add((UserAndPasswordCredentials) uAPCred.clone());
+        }
+      }
+      clone.setCredentials(cloneUserAndPass);
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      LOGGER.error(e, e);
+    }
+
+    return new PersonalAccessTokenInfoList();
+  }
 
 }

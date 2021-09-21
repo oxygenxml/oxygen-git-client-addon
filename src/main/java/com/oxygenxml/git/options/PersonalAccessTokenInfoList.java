@@ -8,15 +8,21 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.utils.Equaler;
+
+import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 
 /**
  * Entity for JAXB to store the user personal access tokens.
  */
 @XmlRootElement(name = "personalAccessTokens")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PersonalAccessTokenInfoList {
+public class PersonalAccessTokenInfoList implements ExternalPersistentObject {
 
+  private static final Logger LOGGER = Logger.getLogger(PersonalAccessTokenInfoList.class);
+  
 	/**
 	 * List with the token info items.
 	 */
@@ -54,5 +60,36 @@ public class PersonalAccessTokenInfoList {
 	  }
 	  return toReturn;
 	}
+  
+  @SuppressWarnings("java:S2975")
+  @Override
+  public Object clone() {
+    try {
+      PersonalAccessTokenInfoList clone =(PersonalAccessTokenInfoList) super.clone();
+      List<PersonalAccessTokenInfo> cloneTokensAccessTokenInfos = new ArrayList<>();
+      
+      if (personalAccessTokens != null) {
+        for (PersonalAccessTokenInfo token : personalAccessTokens) {
+          cloneTokensAccessTokenInfos.add((PersonalAccessTokenInfo) token.clone());
+        }
+      }
+      clone.setPersonalAccessTokens(cloneTokensAccessTokenInfos);
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      LOGGER.error(e, e);
+    }
+
+    return new PersonalAccessTokenInfoList();
+  }
+
+  @Override
+  public void checkValid() {
+    // We consider it to be valid.
+  }
+
+  @Override
+  public String[] getNotPersistentFieldNames() {
+    return new String[0];
+  }
 
 }

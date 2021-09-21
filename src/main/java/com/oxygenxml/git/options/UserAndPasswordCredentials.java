@@ -5,15 +5,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.utils.Equaler;
+
+import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 
 /**
  * Git user credentials POJO for the JAXB
  */
 @XmlRootElement(name = "credential")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserAndPasswordCredentials extends CredentialsBase {
+public class UserAndPasswordCredentials extends CredentialsBase implements ExternalPersistentObject {
 
+  /**
+   * Logger 
+   */
+  private static final Logger LOGGER = Logger.getLogger(UserAndPasswordCredentials.class);
+  
 	/**
 	 * Git username
 	 */
@@ -102,4 +111,25 @@ public class UserAndPasswordCredentials extends CredentialsBase {
 	  return toReturn;
 	}
 
+  @Override
+  public void checkValid() {
+    //Consider it to be valid.
+  }
+
+  @Override
+  public String[] getNotPersistentFieldNames() {
+    return new String[0];
+  }
+	
+	
+  @SuppressWarnings("java:S2975")
+	@Override
+  public Object clone() {
+	  try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      LOGGER.error(e, e);
+    }
+	  return new UserAndPasswordCredentials();
+	}
 }
