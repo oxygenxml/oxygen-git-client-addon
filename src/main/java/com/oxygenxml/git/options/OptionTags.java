@@ -96,5 +96,10 @@ public interface OptionTags {
    */
   public static final String SSH_PROMPT_ANSWERS = "git.ssh.prompt.answers";
 
+  /**
+   * A list of personal access token + host entries. Only one personal access token per host.
+   */
+  public static final String PERSONAL_ACCES_TOKENS_LIST = "git.personal.acces.tokens.list";
+
 
 }

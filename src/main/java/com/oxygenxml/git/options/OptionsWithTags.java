@@ -202,13 +202,12 @@ public class OptionsWithTags implements OptionsInterface {
 
   @Override
   public UserCredentialsList getUserCredentialsList() {
-    return null;
-    //TODO: ...
+    return (UserCredentialsList) wsOptionsStorage.getPersistentObjectOption(OptionTags.USER_CREDENTIALS_LIST, new UserCredentialsList());
   }
 
   @Override
   public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
-   //TODO: ...
+    wsOptionsStorage.setPersistentObjectOption(OptionTags.USER_CREDENTIALS_LIST, userCredentialsList);
   }
 
   @Override
@@ -289,14 +288,12 @@ public class OptionsWithTags implements OptionsInterface {
 
   @Override
   public PersonalAccessTokenInfoList getPersonalAccessTokensList() {
-    // TODO Auto-generated method stub
-    return null;
+    return (PersonalAccessTokenInfoList) wsOptionsStorage.getPersistentObjectOption(OptionTags.PERSONAL_ACCES_TOKENS_LIST, new PersonalAccessTokenInfoList());
   }
 
   @Override
   public void setPersonalAccessTokensList(PersonalAccessTokenInfoList paTokensList) {
-    // TODO Auto-generated method stub
-
+    wsOptionsStorage.setPersistentObjectOption(OptionTags.PERSONAL_ACCES_TOKENS_LIST, paTokensList);
   }
   
   /**
