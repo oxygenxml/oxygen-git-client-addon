@@ -32,6 +32,7 @@ import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 @SuppressWarnings("java:S110")
 public class LoginDialog extends OKCancelDialog {
@@ -178,7 +179,7 @@ public class LoginDialog extends OKCancelDialog {
     buttonGroup.add(tokenAuthRadio);
     
     // Token field
-    tokenTextField = new JTextField();
+    tokenTextField = OxygenUIComponentsFactory.createTextField();
     gbc.insets = new Insets(
         0,
         INNER_PANELS_LEFT_INSET,
@@ -257,7 +258,7 @@ public class LoginDialog extends OKCancelDialog {
 		userAndPassPanel.add(lbUsername, c);
 
 		// Username text field
-		tfUsername = new JTextField();
+		tfUsername = OxygenUIComponentsFactory.createTextField();
 		tfUsername.setPreferredSize(new Dimension(250, tfUsername.getPreferredSize().height));
 		c.insets = new Insets(
         0,
