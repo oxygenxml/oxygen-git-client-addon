@@ -289,12 +289,6 @@ public class CommitAndStatusPanel extends JPanel {
       });
 	
 	/**
-	 * <code>true</code> if the multiline tooltip is available.
-	 */
-	private static final boolean IS_MULTILINE_TOOLTIP_AVAILABLE = 
-	    UIUtil.getInstallMultilineTooltipMethod() != null;
-	
-	/**
 	 * Git controller.
 	 */
   private GitController gitController;
@@ -590,14 +584,6 @@ public class CommitAndStatusPanel extends JPanel {
 		  public JToolTip createToolTip() {
 		    JToolTip tooltip = super.createToolTip();
 		    return UIUtil.createMultilineTooltip(statusLabel).orElseGet(() -> tooltip);
-		  }
-		  
-		  @Override
-		  public void setToolTipText(String text) {
-		    if (text != null && !IS_MULTILINE_TOOLTIP_AVAILABLE) {
-		      text = text.replaceAll("\\s+", " ");
-		    }
-		    super.setToolTipText(text);
 		  }
 		};
 		statusLabel.addComponentListener(new ComponentAdapter() {

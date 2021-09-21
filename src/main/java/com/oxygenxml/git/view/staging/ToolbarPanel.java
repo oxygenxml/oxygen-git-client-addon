@@ -311,11 +311,11 @@ public class ToolbarPanel extends JPanel {
           // selected this is triggered.
           // TODO Maybe the change of repository should triggered a fetch and a notification should
           // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
-          new Thread(() -> {
+          GitOperationScheduler.getInstance().schedule(() -> {
             fetch(true);
             // After the fetch is done, update the toolbar icons.
             refresh();
-          }).start();
+            });
         } else if (operation == GitOperation.ABORT_REBASE 
             || operation == GitOperation.CONTINUE_REBASE 
             || operation == GitOperation.COMMIT
