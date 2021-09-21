@@ -69,7 +69,7 @@ public class OptionsLoader {
     newOptions.setUnstagedResViewMode(oldOptions.getUnstagedResViewMode()) ;
     newOptions.setStagedResViewMode(oldOptions.getStagedResViewMode()) ;
     newOptions.setDestinationPaths(oldOptions.getDestinationPaths()) ;
-    newOptions.setPrjectsTestsForGit(oldOptions.getProjectsTestsForGit()) ;
+    newOptions.setProjectsTestsForGit(oldOptions.getProjectsTestsForGit()) ;
     newOptions.setRepositoryLocations(oldOptions.getRepositoryLocations()) ;
     newOptions.setNotifyAboutNewRemoteCommits(oldOptions.isNotifyAboutNewRemoteCommits()) ;
     newOptions.setCheckoutNewlyCreatedLocalBranch(oldOptions.isCheckoutNewlyCreatedLocalBranch()) ;
