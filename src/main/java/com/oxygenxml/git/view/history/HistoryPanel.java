@@ -622,6 +622,7 @@ public class HistoryPanel extends JPanel {
         // upstream branch.
         tryFetch();
 
+        ((StagingResourcesTableModel)affectedFilesTable.getModel()).setSearchedPath(filePath);
         File directory = gitAccess.getWorkingCopy();
         historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
             + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
