@@ -72,7 +72,7 @@ public class OptionsManager {
    */
   private void loadOptions() {
     if (options == null) {
-      OptionsLoader.loadOptions();
+      options = OptionsLoader.loadOptions();
     }
   }
 
