@@ -28,7 +28,6 @@ import com.oxygenxml.git.options.PersonalAccessTokenInfo;
 import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -44,14 +43,6 @@ public class LoginDialog extends OKCancelDialog {
    * Left inset for the inner panels.
    */
   private static final int INNER_PANELS_LEFT_INSET = 21;
-  /**
-   * Dialog preferred height.
-   */
-  private static final int DLG_PREF_HEIGHT = PlatformDetectionUtil.isMacOS() ? 305 : 250; // NOSONAR
-  /**
-   * Dialog preferred width.
-   */
-  private static final int DLG_PREF_WIDTH = 400;
   /**
    * The translator for the messages that are displayed in this dialog
    */
@@ -118,7 +109,6 @@ public class LoginDialog extends OKCancelDialog {
 		
 		createGUI();
 
-		this.setPreferredSize(new Dimension(DLG_PREF_WIDTH, DLG_PREF_HEIGHT));
 		this.setResizable(false);
 		this.pack();
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
