@@ -430,8 +430,8 @@ public class ToolbarPanel extends JPanel {
 		addCloneRepositoryButton();
 		addPushAndPullButtons();
 		addBranchSelectButton(branchManagementViewPresenter);
-		addSubmoduleSelectButton();
 		addStashButton();
+		addSubmoduleSelectButton();
 		addHistoryButton(historyController);
 		addTagsShowButton();
 		addSettingsButton();
