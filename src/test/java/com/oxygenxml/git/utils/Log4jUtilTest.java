@@ -15,6 +15,7 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.eclipse.jgit.util.FS;
 import org.junit.After;
 import org.junit.Assert;
@@ -69,6 +70,8 @@ public class Log4jUtilTest {
       Appender appender = (Appender) iterator.next();
       System.out.println("appender: " + appender.getName());
     }
+    ConfigurationSource configurationSource = config.getConfigurationSource();
+    System.out.println("configurationSource: " + configurationSource.getLocation());
     Filter filter = config.getFilter();
     System.out.println("filter: " + filter);
     
