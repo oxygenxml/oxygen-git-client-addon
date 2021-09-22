@@ -303,14 +303,14 @@ public class OptionsWithTags implements OptionsInterface {
    * 
    * @return a Map
    */
-  private static Map<String, String> arrayToMap(String[] array) {
+  public static Map<String, String> arrayToMap(String[] array) {
     Map<String, String> map = new HashMap<>();
     
-    if (array.length%2 == 1) {
+    if (array.length%2 == 1 || array.length == 0) {
       return map;
     }
     
-    for (int i = 0; i <= array.length/2; i = i+2) {
+    for (int i = 0; i <= array.length-2; i = i+2) {
       map.put(array[i], array[i+1]);
     }
     return map;
@@ -323,7 +323,7 @@ public class OptionsWithTags implements OptionsInterface {
    * 
    * @return an array
    */
-  private static String[] mapToArray(Map<String, ?> map) {
+  public static String[] mapToArray(Map<String, ?> map) {
     String[] array = new String[2 * map.size()];
     
     int i = 0;
