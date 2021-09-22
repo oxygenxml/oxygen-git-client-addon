@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.xml.bind.annotation.XmlEnum;
 
+import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -224,5 +225,29 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   @Override
   public String getKey() {
     return KEY;
+  }
+  /**
+   * The options that will be saved inside the project file when this page is switched to project level
+   * inside the preferences dialog.
+   * 
+   * @return The options presented in this page.
+   * 
+   * @since 24.0
+   */
+  public String[] getProjectLevelOptionKeys() {
+    return new String[] {
+        OptionTags.AUTO_PUSH_WHEN_COMMITTING,
+        OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS,
+        OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH,
+        OptionTags.DESTINATION_PATHS,
+        OptionTags.DEFAULT_PULL_TYPE,
+        OptionTags.UNSTAGED_RES_VIEW_MODE,
+        OptionTags.STAGED_RES_VIEW_MODE,
+        OptionTags.USER_CREDENTIALS_LIST,
+        OptionTags.COMMIT_MESSAGES,
+        OptionTags.WHEN_REPO_DETECTED_IN_PROJECT,
+        OptionTags.UPDATE_SUBMODULES_ON_PULL,
+        OptionTags.WARN_ON_CHANGE_COMMIT_ID,
+    };
   }
 }
