@@ -136,7 +136,7 @@ public class OptionsManager {
    *          - options to be saved
    */
   public void addRepository(String repositoryOption) {
-    List<String> locations = new ArrayList<String>(getOptions().getRepositoryLocations().getLocations());
+    List<String> locations = new ArrayList<>(getOptions().getRepositoryLocations().getLocations());
     locations.remove(repositoryOption);
     locations.add(0, repositoryOption);
     if(locations.size() > HISTORY_MAX_COUNT) {
@@ -173,7 +173,7 @@ public class OptionsManager {
    * @param path The location/path of the repository.
    */
   public void removeRepositoryLocation(String path) {
-    List<String> locations = getOptions().getRepositoryLocations().getLocations();
+    List<String> locations = new ArrayList<>( getOptions().getRepositoryLocations().getLocations() );
     locations.remove(path);
     
     RepositoryLocations newRepositoryLocations = new RepositoryLocations();
@@ -187,7 +187,7 @@ public class OptionsManager {
    * @param paths The locations/paths of the repositories to remove.
    */
   public void removeRepositoryLocations(Collection<String> paths) {
-    List<String> locations = getOptions().getRepositoryLocations().getLocations(); 
+    List<String> locations = new ArrayList<>( getOptions().getRepositoryLocations().getLocations() ); 
     locations.removeAll(paths);
     
     RepositoryLocations newRepositoryLocations = new RepositoryLocations();
@@ -206,8 +206,8 @@ public class OptionsManager {
     String decryptedTokenValue = null;
     if (host != null) {
       String tokenVal = null;
-      List<PersonalAccessTokenInfo> tokens = getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
-      if (tokens != null) { 
+      List<PersonalAccessTokenInfo> tokens = new ArrayList<>( getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+      if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) { 
         for (PersonalAccessTokenInfo token : tokens) {
           if (host.equals(token.getHost())) {
             tokenVal = token.getTokenValue();
@@ -265,8 +265,8 @@ public class OptionsManager {
       uc.setUsername(userAndPasswordCredentials.getUsername());
       uc.setHost(userAndPasswordCredentials.getHost());
 
-      List<UserAndPasswordCredentials> credentials = getOptions().getUserCredentialsList().getCredentials();
-      if (credentials != null) {
+      List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
+      if (getOptions().getUserCredentialsList().getCredentials() == null) {
         for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
           UserAndPasswordCredentials alreadyHere = iterator.next();
           if (alreadyHere.getHost().equals(uc.getHost())) {
@@ -305,8 +305,8 @@ public class OptionsManager {
       PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken);
       
       List<PersonalAccessTokenInfo> personalAccessTokens = 
-          getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
-      if (personalAccessTokens != null) {
+          new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+      if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) {
         for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
           PersonalAccessTokenInfo alreadyHere = iterator.next();
           if (alreadyHere.getHost().equals(paTokenInfo.getHost())) {
@@ -370,7 +370,7 @@ public class OptionsManager {
    */
   private List<CredentialsBase> getAllCredentials() {
     List<CredentialsBase> allCredentials = new ArrayList<>();
-    List<UserAndPasswordCredentials> userAndPassCredentialsList = getOptions().getUserCredentialsList().getCredentials();
+    List<UserAndPasswordCredentials> userAndPassCredentialsList =  getOptions().getUserCredentialsList().getCredentials();
     if (userAndPassCredentialsList != null) { 
       allCredentials.addAll(userAndPassCredentialsList);
     }
@@ -399,7 +399,7 @@ public class OptionsManager {
    *          - the last commitMessage
    */
   public void saveCommitMessage(String commitMessage) {
-    List<String> messages = getOptions().getCommitMessages().getMessages();
+    List<String> messages = new ArrayList<>( getOptions().getCommitMessages().getMessages());
     if (messages.contains(commitMessage)) {
       messages.remove(commitMessage);
     }
@@ -431,7 +431,7 @@ public class OptionsManager {
    *          - the project path to be saved
    */
   public void saveProjectTestedForGit(String projectPath) {
-    List<String> projectsPath = getOptions().getProjectsTestsForGit().getPaths();
+    List<String> projectsPath =  new ArrayList<>( getOptions().getProjectsTestsForGit().getPaths() );
     projectsPath.add(projectPath);
     if (projectsPath.size() > MAXIMUM_PROJECTS_TESTED) {
       projectsPath.remove(0);
