@@ -135,10 +135,6 @@ public class OptionsManager {
    *          - options to be saved
    */
   public void addRepository(String repositoryOption) {
-    // TODO Not cool.  getOptions().setRepositoryLocations() should be used. It makes
-    // assumptions that the returned list is not a clone. With the new tag-based 
-    // options, clones are always returned.
-   
     LinkedList<String> locations = (LinkedList<String>) getOptions().getRepositoryLocations().getLocations();
     locations.remove(repositoryOption);
     locations.addFirst(repositoryOption);
@@ -146,7 +142,9 @@ public class OptionsManager {
       locations.removeLast();
     }
     
-    saveOptions();
+    RepositoryLocations newRepositoryLocations = new RepositoryLocations();
+    newRepositoryLocations.setLocations(locations);
+    getOptions().setRepositoryLocations(newRepositoryLocations);
   }
 
   /**
@@ -157,8 +155,6 @@ public class OptionsManager {
    */
   public void saveSelectedRepository(String path) {
     getOptions().setSelectedRepository(path);
-
-    saveOptions();
   }
 
   /**
@@ -176,10 +172,12 @@ public class OptionsManager {
    * @param path The location/path of the repository.
    */
   public void removeRepositoryLocation(String path) {
-    // TODO Bad technique. make the removval and set the new paths back into options.
-    getOptions().getRepositoryLocations().getLocations().remove(path);
-
-    saveOptions();
+    List<String> locations = getOptions().getRepositoryLocations().getLocations();
+    locations.remove(path);
+    
+    RepositoryLocations newRepositoryLocations = new RepositoryLocations();
+    newRepositoryLocations.setLocations(locations);
+    getOptions().setRepositoryLocations(newRepositoryLocations);
   }
   
   /**
@@ -188,10 +186,12 @@ public class OptionsManager {
    * @param paths The locations/paths of the repositories to remove.
    */
   public void removeRepositoryLocations(Collection<String> paths) {
-    // TODO Bad technique. make the removval and set the new paths back into options.
-    getOptions().getRepositoryLocations().getLocations().removeAll(paths);
-
-    saveOptions();
+    List<String> locations = getOptions().getRepositoryLocations().getLocations(); 
+    locations.removeAll(paths);
+    
+    RepositoryLocations newRepositoryLocations = new RepositoryLocations();
+    newRepositoryLocations.setLocations(locations);
+    getOptions().setRepositoryLocations(newRepositoryLocations);
   }
   
   /**
@@ -253,7 +253,10 @@ public class OptionsManager {
   private void saveUserAndPasswordCredentials(UserAndPasswordCredentials userAndPasswordCredentials) {
     if (userAndPasswordCredentials == null) {
       // Reset
-      getOptions().getUserCredentialsList().setCredentials(null);
+      UserCredentialsList resetedUserCredentialsList = getOptions().getUserCredentialsList();
+      resetedUserCredentialsList.setCredentials(null);
+      getOptions().setUserCredentialsList(resetedUserCredentialsList);
+      
     } else {
       String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
           .getUtilAccess().encrypt(userAndPasswordCredentials.getPassword());
@@ -274,12 +277,17 @@ public class OptionsManager {
           }
         }
         credentials.add(uc);
-        getOptions().getUserCredentialsList().setCredentials(credentials);
+        
+        UserCredentialsList newUserCredentialsList = getOptions().getUserCredentialsList(); 
+        newUserCredentialsList.setCredentials(credentials);
+        getOptions().setUserCredentialsList(newUserCredentialsList);
+        
       } else {
-        getOptions().getUserCredentialsList().setCredentials(Arrays.asList(uc));
+        UserCredentialsList newUsrCredentialsList = getOptions().getUserCredentialsList(); 
+        newUsrCredentialsList.setCredentials(Arrays.asList(uc));
+        getOptions().setUserCredentialsList(newUsrCredentialsList);
       }
     }
-    saveOptions();
   }
   
   /**
@@ -290,7 +298,10 @@ public class OptionsManager {
   private void savePersonalAccessToken(PersonalAccessTokenInfo tokenInfo) {
     if (tokenInfo == null) {
       // Reset
-      getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(null);
+      PersonalAccessTokenInfoList resetedPersonalAccessTokenInfoList = getOptions().getPersonalAccessTokensList(); 
+      resetedPersonalAccessTokenInfoList.setPersonalAccessTokens(null);
+      getOptions().setPersonalAccessTokensList(resetedPersonalAccessTokenInfoList);
+      
     } else {
       StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       String encryptedToken = pluginWS.getUtilAccess().encrypt(tokenInfo.getTokenValue());
@@ -308,12 +319,18 @@ public class OptionsManager {
           }
         }
         personalAccessTokens.add(paTokenInfo);
-        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(personalAccessTokens);
+        
+        PersonalAccessTokenInfoList newPersonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
+        newPersonalAccessTokensList.setPersonalAccessTokens(personalAccessTokens);
+        getOptions().setPersonalAccessTokensList(newPersonalAccessTokensList);
+        
       } else {
-        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(Arrays.asList(paTokenInfo));
+        
+        PersonalAccessTokenInfoList newPrsonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
+        newPrsonalAccessTokensList.setPersonalAccessTokens(Arrays.asList(paTokenInfo));
+        getOptions().setPersonalAccessTokensList(newPrsonalAccessTokensList);
       }
     }
-    saveOptions();
   }
 
   /**
@@ -393,9 +410,11 @@ public class OptionsManager {
     if (messages.size() > PREVIOUSLY_COMMITED_MESSAGES) {
       messages.remove(messages.size() - 1);
     }
-    getOptions().getCommitMessages().setMessages(messages);
-
-    saveOptions();
+    
+    CommitMessages newCommitMessages = new CommitMessages();
+    newCommitMessages.setMessages(messages);
+    getOptions().setCommitMessages(newCommitMessages);
+    
   }
 
   /**
@@ -420,9 +439,10 @@ public class OptionsManager {
     if (projectsPath.size() > MAXIMUM_PROJECTS_TESTED) {
       projectsPath.remove(0);
     }
-    getOptions().getProjectsTestsForGit().setPaths(projectsPath);
-
-    saveOptions();
+    
+    ProjectsTestedForGit newProjectsTestedForGit = new ProjectsTestedForGit();
+    newProjectsTestedForGit.setPaths(projectsPath);
+    getOptions().setProjectsTestsForGit(newProjectsTestedForGit);
   }
 
   /**
@@ -439,8 +459,10 @@ public class OptionsManager {
     if (destinationPaths.size() > DESTINATIONS_MAX_COUNT) {
       destinationPaths.removeLast();
     }
-
-    saveOptions();
+    
+    DestinationPaths newDestinationPaths = new DestinationPaths();
+    newDestinationPaths.setPaths(destinationPaths);
+    getOptions().setDestinationPaths(newDestinationPaths);
   }
 
   /**
