@@ -42,6 +42,7 @@ public class OptionsLoader {
    */
   public static OptionsInterface loadOptions() {
     OptionsInterface options = loadOldJaxbOptions();
+    logger.info("Old options " + options);
     if (options != null) {
       // Reset old keys.
       resetOldJaxbOptions();
@@ -50,6 +51,8 @@ public class OptionsLoader {
     } else {
       options = new OptionsWithTags(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
     }
+    
+    logger.info("Goinf with the new : " + options);
     
     return options;
   }
@@ -62,6 +65,7 @@ public class OptionsLoader {
    * @return A new instance of options that uses tags.
    */
   private static OptionsInterface copyOldOptionsIntoNewTagsOptions(OptionsInterface oldOptions) {
+    logger.info("Use " + PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
     OptionsInterface newOptions = new OptionsWithTags(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
     
     newOptions.setAutoPushWhenCommitting(oldOptions.isAutoPushWhenCommitting());

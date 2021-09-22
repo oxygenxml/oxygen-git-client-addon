@@ -1,6 +1,5 @@
 package com.oxygenxml.git.options;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.utils.Equaler;
 
 import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
+import ro.sync.options.SerializableList;
 
 /**
  * Entity for JAXB to store the user personal access tokens.
@@ -27,20 +27,20 @@ public class PersonalAccessTokenInfoList implements ExternalPersistentObject {
 	 * List with the token info items.
 	 */
 	@XmlElement(name = "personalAccessToken")
-	private List<PersonalAccessTokenInfo> personalAccessTokens = new ArrayList<>();
+	private SerializableList<PersonalAccessTokenInfo> personalAccessTokens = new SerializableList<>();
 	
 	/**
    * @return a copy of the list containing personal access token info items.
    */
   public List<PersonalAccessTokenInfo> getPersonalAccessTokens() {
-    return personalAccessTokens != null ? new ArrayList<>(personalAccessTokens) : null;
+    return personalAccessTokens != null ? new SerializableList<>(personalAccessTokens) : new SerializableList<>();
   }
 
   /**
    * @param personalAccessTokens the personal access token info items to set
    */
   public void setPersonalAccessTokens(List<PersonalAccessTokenInfo> personalAccessTokens) {
-    this.personalAccessTokens = personalAccessTokens != null ? new ArrayList<>(personalAccessTokens) : null;
+    this.personalAccessTokens = personalAccessTokens != null ? new SerializableList<>(personalAccessTokens) : new SerializableList<>();
   }
 
   @Override
@@ -66,7 +66,7 @@ public class PersonalAccessTokenInfoList implements ExternalPersistentObject {
   public Object clone() {
     try {
       PersonalAccessTokenInfoList clone =(PersonalAccessTokenInfoList) super.clone();
-      List<PersonalAccessTokenInfo> cloneTokensAccessTokenInfos = new ArrayList<>();
+      SerializableList<PersonalAccessTokenInfo> cloneTokensAccessTokenInfos = new SerializableList<>();
       
       if (personalAccessTokens != null) {
         for (PersonalAccessTokenInfo token : personalAccessTokens) {
