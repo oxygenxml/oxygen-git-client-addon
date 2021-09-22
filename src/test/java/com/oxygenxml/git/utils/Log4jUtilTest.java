@@ -27,8 +27,8 @@ public class Log4jUtilTest {
     writer = new StringWriter();
     
     newAppender = org.apache.logging.log4j.core.appender.WriterAppender.createAppender(null, null, writer, "My.appender", false, true);
-    LoggerContext.getContext().getRootLogger().addAppender(
-        newAppender);
+    LoggerContext.getContext().getConfiguration().getRootLogger().addAppender(
+        newAppender, org.apache.logging.log4j.Level.ERROR, null);
     
     Log4jUtil.setupLog4JLogger();
   }
