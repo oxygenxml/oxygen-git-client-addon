@@ -146,15 +146,17 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * @param tableCellRendererComponent     The displayed Jlabel. 
    */
   private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
-    if(searchedFilePath instanceof String && 
-        !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
-      tableCellRendererComponent.setForeground(
-          PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
-          UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
-    } else {
-      tableCellRendererComponent.setForeground(
-          PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
-              UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
+    if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme() != null) {
+      if(searchedFilePath instanceof String && 
+          !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
+        tableCellRendererComponent.setForeground(
+            PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
+                UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
+      } else {
+        tableCellRendererComponent.setForeground(
+            PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
+                UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
+      }
     }
   }
   

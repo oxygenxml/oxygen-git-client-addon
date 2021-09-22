@@ -6,8 +6,8 @@ import java.io.StringWriter;
 import java.security.AccessControlException;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.WriterAppender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.WriterAppender;
 import org.eclipse.jgit.util.FS;
 import org.junit.After;
 import org.junit.Assert;
@@ -24,19 +24,18 @@ public class Log4jUtilTest {
 
   @Before
   public void setUp() throws Exception {
-    newAppender = new WriterAppender();
-    newAppender.setLayout(new SimpleLayout());
     writer = new StringWriter();
-    newAppender.setWriter(writer);
     
-    Logger.getRootLogger().addAppender(newAppender);
+    newAppender = org.apache.logging.log4j.core.appender.WriterAppender.createAppender(null, null, writer, "My.appender", false, true);
+    LoggerContext.getContext().getRootLogger().addAppender(
+        newAppender);
     
     Log4jUtil.setupLog4JLogger();
   }
   
   @After
   public void tearDown() throws Exception {
-    Logger.getRootLogger().removeAppender(newAppender);
+    LoggerContext.getContext().getRootLogger().removeAppender(newAppender);
   }
 
   /**
@@ -52,9 +51,12 @@ public class Log4jUtilTest {
     //=====================
     
     Exception ex = new IOException("A test");
-    Logger.getLogger(FS.class).error(ex,  ex);
-    Assert.assertTrue("The log must pass: " + writer.toString(), writer.toString().startsWith("ERROR - java.io.IOException: A test"));
+    LoggerContext.getContext().getLogger(FS.class).error(ex,  ex);
 
+    Assert.assertTrue("The log must pass: " + writer.toString(), writer.toString().contains("java.io.IOException: A test"));
+
+    Assert.assertFalse("The log must pass: " + writer.toString(), writer.toString().contains("java.security.AccessControlException"));
+    
     //=====================
     // An AccessControlException issued through a specific class logger. It should be filtered.
     //=====================
@@ -72,8 +74,8 @@ public class Log4jUtilTest {
     writer.getBuffer().setLength(0);
     perm = new FilePermission(".probe-64fe0316-10fa-4fa1-b163-d79366318e4b", "write");
     ex = new AccessControlException("access denied "+ perm, perm);
-    Logger.getLogger(Log4jUtilTest.class).error(ex,  ex);
+    LoggerContext.getContext().getLogger(Log4jUtilTest.class).error(ex,  ex);
     
-    Assert.assertTrue("The log must pass: " + writer.toString(), writer.toString().startsWith("ERROR - java.security.AccessControlException: access denied (\"java.io.FilePermission\" \".probe-64fe0316-10fa-4fa1-b163-d79366318e4b\" \"write\")"));
+    Assert.assertTrue("The log must pass: " + writer.toString(), writer.toString().startsWith("java.security.AccessControlException: access denied (\"java.io.FilePermission\" \".probe-64fe0316-10fa-4fa1-b163-d79366318e4b\" \"write\")"));
   }
 }

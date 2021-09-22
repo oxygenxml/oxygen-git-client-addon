@@ -97,7 +97,7 @@ public class OptionsLoader {
    * Resets the old Jaxb-related options.
    */
   private static void resetOldJaxbOptions() {
-    if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
+    if (PluginWorkspaceProvider.getPluginWorkspace() != null && PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage() != null) {
       PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(OLD_GIT_PLUGIN_OPTIONS, null);
       PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS, null);
     }

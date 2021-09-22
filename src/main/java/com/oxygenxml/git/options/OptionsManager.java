@@ -136,11 +136,11 @@ public class OptionsManager {
    *          - options to be saved
    */
   public void addRepository(String repositoryOption) {
-    LinkedList<String> locations = (LinkedList<String>) getOptions().getRepositoryLocations().getLocations();
+    List<String> locations = getOptions().getRepositoryLocations().getLocations();
     locations.remove(repositoryOption);
-    locations.addFirst(repositoryOption);
+    locations.add(0, repositoryOption);
     if(locations.size() > HISTORY_MAX_COUNT) {
-      locations.removeLast();
+      locations.remove(locations.size() - 1);
     }
     
     RepositoryLocations newRepositoryLocations = new RepositoryLocations();
