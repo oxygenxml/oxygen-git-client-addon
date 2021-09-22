@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
@@ -253,9 +254,7 @@ public class OptionsManager {
   private void saveUserAndPasswordCredentials(UserAndPasswordCredentials userAndPasswordCredentials) {
     if (userAndPasswordCredentials == null) {
       // Reset
-      UserCredentialsList resetedUserCredentialsList = getOptions().getUserCredentialsList();
-      resetedUserCredentialsList.setCredentials(null);
-      getOptions().setUserCredentialsList(resetedUserCredentialsList);
+      getOptions().setUserCredentialsList(new UserCredentialsList());
       
     } else {
       String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
@@ -298,9 +297,7 @@ public class OptionsManager {
   private void savePersonalAccessToken(PersonalAccessTokenInfo tokenInfo) {
     if (tokenInfo == null) {
       // Reset
-      PersonalAccessTokenInfoList resetedPersonalAccessTokenInfoList = getOptions().getPersonalAccessTokensList(); 
-      resetedPersonalAccessTokenInfoList.setPersonalAccessTokens(null);
-      getOptions().setPersonalAccessTokensList(resetedPersonalAccessTokenInfoList);
+      getOptions().setPersonalAccessTokensList(new PersonalAccessTokenInfoList());
       
     } else {
       StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
@@ -513,8 +510,9 @@ public class OptionsManager {
    * @param answer The answer.
    */
   public void saveSshPrompt(String prompt, boolean answer) {
-    getOptions().getSshPromptAnswers().put(prompt, answer);
-    saveOptions();
+    Map<String, Boolean> sshPromptAnswers = getOptions().getSshPromptAnswers(); 
+    sshPromptAnswers.put(prompt, answer);
+    getOptions().setSshQuestions(sshPromptAnswers);
   }
 
   /**
