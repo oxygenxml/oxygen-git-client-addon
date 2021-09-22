@@ -136,7 +136,7 @@ public class OptionsManager {
    *          - options to be saved
    */
   public void addRepository(String repositoryOption) {
-    List<String> locations = getOptions().getRepositoryLocations().getLocations();
+    List<String> locations = new ArrayList<String>(getOptions().getRepositoryLocations().getLocations());
     locations.remove(repositoryOption);
     locations.add(0, repositoryOption);
     if(locations.size() > HISTORY_MAX_COUNT) {
