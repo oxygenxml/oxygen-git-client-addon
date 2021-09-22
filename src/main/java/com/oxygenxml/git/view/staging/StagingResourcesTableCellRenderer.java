@@ -80,12 +80,11 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         tooltipText = renderingInfo.getTooltip();
       }
     } else if (value instanceof FileStatus) {
-      String location = ((FileStatus) value).getFileLocation();
+      String location = ((FileStatus)value).getFileLocation();
       setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       
       FontMetrics metrics = getFontMetrics(getFont());
-      location = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
-      labelText = location;
+      labelText = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
       
       String description = ((FileStatus) value).getDescription();
       if (description != null) {
@@ -96,7 +95,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         if (!fileName.equals(tooltipText)) {
           tooltipText = tooltipText.replace("/" + fileName, "");
           tooltipText = fileName + " - " + tooltipText;
-        }
+        } 
       } 
     }
     
@@ -154,7 +153,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     } else {
       tableCellRendererComponent.setForeground(
           PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
-              UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
+              UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);;
     }
   }
   
