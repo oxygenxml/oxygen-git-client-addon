@@ -4,10 +4,17 @@ import java.io.FilePermission;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.AccessControlException;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.WriterAppender;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.eclipse.jgit.util.FS;
 import org.junit.After;
 import org.junit.Assert;
@@ -52,7 +59,19 @@ public class Log4jUtilTest {
     //=====================
     
     Exception ex = new IOException("A test");
-    Logger.getLogger(FS.class).error(ex,  ex);
+    Logger logger = Logger.getLogger(FS.class);
+    logger.error(ex,  ex);
+    
+    LoggerContext context = LoggerContext.getContext(false);
+    Configuration config = context.getConfiguration();
+    Collection<Appender> values = config.getAppenders().values();
+    for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+      Appender appender = (Appender) iterator.next();
+      System.out.println("appender: " + appender.getName());
+    }
+    Filter filter = config.getFilter();
+    System.out.println("filter: " + filter);
+    
     Assert.assertTrue("The log must pass: " + writer.toString(), writer.toString().startsWith("ERROR - java.io.IOException: A test"));
 
     //=====================
