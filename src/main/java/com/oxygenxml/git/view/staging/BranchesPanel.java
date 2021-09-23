@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -35,6 +36,7 @@ import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
@@ -42,11 +44,15 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.stash.StashUtil;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Panel in Git Staging view from where to change the current branch.
+ * 
+ * @author sorin_carbunaru
+ * @author Alex_Smarandache
  */
 public class BranchesPanel extends JPanel {
   
@@ -86,12 +92,17 @@ public class BranchesPanel extends JPanel {
    */
   private String detachedHeadId;
   
+  /**
+   * <code>true</code> if the panel has a label attached.
+   */
   private final boolean isLabeled;
+  
   
   /**
    * Creates the panel.
    * 
    * @param gitController Git Controller.
+   * @param isLabeled     <code>true</code> if the panel has a label attached.
    */
   public BranchesPanel(GitController gitController, boolean isLabeled) {
     this.isLabeled = isLabeled;
@@ -139,6 +150,7 @@ public class BranchesPanel extends JPanel {
     
   }
 
+  
   /**
    * Treat a branch name selection event.
    * 
@@ -177,6 +189,7 @@ public class BranchesPanel extends JPanel {
     }
   }
 
+  
   /**
    * Create the graphical user interface.
    */
@@ -205,6 +218,7 @@ public class BranchesPanel extends JPanel {
     add(branchNamesCombo, gbc);
   }
   
+  
   /**
    * Refresh.
    */
@@ -231,73 +245,87 @@ public class BranchesPanel extends JPanel {
     if (branchInfo.isDetached()) {
       detachedHeadId = currentBranchName;
       
-      String tooltipText = "<html>"
-          + TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
-          + " "
-          + currentBranchName;
+      String tooltipText = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
+          + " " + currentBranchName;
       if (repo != null && repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
         tooltipText += "<br>" + TRANSLATOR.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
       }
-      tooltipText += "</html>";
+      tooltipText = TextFormatUtil.toHTML(tooltipText);
       String finalText = tooltipText;
       SwingUtilities.invokeLater(() -> branchNamesCombo.setToolTipText(finalText));
     } else {
       detachedHeadId = null;
-      
       String branchTooltip = null;
       if (currentBranchName != null && !currentBranchName.isEmpty()) {
-
-        String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
-        boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
-
-        String upstreamShortestName = 
-            isAnUpstreamBranchDefinedInConfig 
-            ? upstreamBranchFromConfig.substring(upstreamBranchFromConfig.lastIndexOf('/') + 1)
-                : null;
-        Ref remoteBranchRefForUpstreamFromConfig = 
-            isAnUpstreamBranchDefinedInConfig 
-            ? RepoUtil.getRemoteBranch(upstreamShortestName) 
-                : null;
-        boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
-
-        branchTooltip = "<html>"
-            + TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
-            + " <b>" + currentBranchName + "</b>.<br>"
-            + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
-            + " <b>" 
-            + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig 
-                ? upstreamBranchFromConfig 
-                    : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
-            + "</b>.<br>";
-
-        String commitsBehindMessage = "";
-        String commitsAheadMessage = "";
-        if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
-          if (pullsBehind == 0) {
-            commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
-          } else if (pullsBehind == 1) {
-            commitsBehindMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_BEHIND);
-          } else {
-            commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
-          }
-          branchTooltip += commitsBehindMessage + "<br>";
-
-          if (pushesAhead == 0) {
-            commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
-          } else if (pushesAhead == 1) {
-            commitsAheadMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_AHEAD);
-          } else {
-            commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
-          }
-          branchTooltip += commitsAheadMessage;
-        }
-
-        branchTooltip += "</html>";
+        branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
       }
       String branchTooltipFinal = branchTooltip;
       SwingUtilities.invokeLater(() -> branchNamesCombo.setToolTipText(branchTooltipFinal));
     }
   }
+
+  
+  /**
+   * Compute the branch tooltip text.
+   * 
+   * @param pullsBehind          Number of pulls behind.
+   * @param pushesAhead          Number of pulls ahead.
+   * @param currentBranchName    The current branch name.
+   * 
+   * @return the branch tool tip text.
+   */
+  private String getBranchTooltip(int pullsBehind, int pushesAhead, String currentBranchName) {
+    String branchTooltip = null;
+
+    String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
+    boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
+
+    String upstreamShortestName =
+        isAnUpstreamBranchDefinedInConfig
+        ? upstreamBranchFromConfig.substring(upstreamBranchFromConfig.lastIndexOf('/') + 1)
+            : null;
+    Ref remoteBranchRefForUpstreamFromConfig =
+        isAnUpstreamBranchDefinedInConfig
+        ? RepoUtil.getRemoteBranch(upstreamShortestName)
+            : null;
+    boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
+
+    branchTooltip = TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
+        + " <b>" + currentBranchName + "</b>.<br>"
+        + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
+        + " <b>"
+        + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig
+            ? upstreamBranchFromConfig
+                : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
+        + "</b>.<br>";
+
+    String commitsBehindMessage = "";
+    String commitsAheadMessage = "";
+    if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
+      if (pullsBehind == 0) {
+        commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+      } else if (pullsBehind == 1) {
+        commitsBehindMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_BEHIND);
+      } else {
+        commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
+      }
+      branchTooltip += commitsBehindMessage + "<br>";
+
+      if (pushesAhead == 0) {
+        commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
+      } else if (pushesAhead == 1) {
+        commitsAheadMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_AHEAD);
+      } else {
+        commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
+      }
+      branchTooltip += commitsAheadMessage;
+    }
+
+    branchTooltip = TextFormatUtil.toHTML(branchTooltip);
+    
+    return branchTooltip;
+  }
+
   
   /**
    * Adds the branches given as a parameter to the branchSplitMenuButton.
@@ -317,6 +345,7 @@ public class BranchesPanel extends JPanel {
     branchNamesCombo.setSelectedItem(currentBranchName);
   }
   
+  
   /**
    * Updates the local branches in the combo popup.
    */
@@ -333,6 +362,7 @@ public class BranchesPanel extends JPanel {
     }
   }
   
+  
   /**
    * Gets all the local branches from the current repository.
    * 
@@ -347,6 +377,7 @@ public class BranchesPanel extends JPanel {
     }
     return localBranches;
   }
+  
   
   /**
    * The action performed for this Abstract Action
@@ -375,6 +406,7 @@ public class BranchesPanel extends JPanel {
     });
   }
   
+  
   /**
    * Restore current branch selection in branches menu.
    */
@@ -390,10 +422,24 @@ public class BranchesPanel extends JPanel {
     }
   }
   
+  
   /**
    * @return the branches combo.
    */
   public JComboBox<String> getBranchNamesCombo() {
     return branchNamesCombo;
+  }
+  
+  
+  /**
+   * Returns the instance of JToolTip that should be usedto display the tooltip.Components typically would not override this method,but it can be used tocause different tooltips to be displayed differently.
+   * <br>
+   * Overrides: createToolTip() in JComponent
+   * 
+   * @return the JToolTip used to display this toolTip
+   */
+  @Override
+  public JToolTip createToolTip() {
+    return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
   }
 }
