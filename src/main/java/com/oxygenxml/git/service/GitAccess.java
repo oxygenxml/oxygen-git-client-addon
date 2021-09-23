@@ -841,10 +841,12 @@ public class GitAccess {
    */
   public List<Ref> getRemoteBrachListForCurrentRepo() {
     List<Ref> branches = Collections.emptyList();
-    try {
-      branches = git.branchList().setListMode(ListMode.REMOTE).call();
-    } catch (GitAPIException e) {
-      LOGGER.error(e, e);
+    if(git != null) {
+    	try {
+    		branches = git.branchList().setListMode(ListMode.REMOTE).call();
+    	} catch (GitAPIException e) {
+    		LOGGER.error(e, e);
+    	}
     }
     return branches;
   }
