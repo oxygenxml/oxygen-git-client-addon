@@ -148,22 +148,24 @@ public class BranchesPanel extends JPanel {
     
     RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-      BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(branchName);
+      SwingUtilities.invokeLater(() -> {
+        BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(branchName);
 
-      dialog.setVisible(true);
+        dialog.setVisible(true);
 
-      int answer = dialog.getResult();
+        int answer = dialog.getResult();
 
-      if(answer == OKOtherAndCancelDialog.RESULT_OTHER) {
-        tryCheckingOutBranch(currentBranchInfo, branchName);
-      } else if(answer == OKOtherAndCancelDialog.RESULT_OK) {
-        boolean wasStashCreated = StashUtil.stashChanges();
-        if(wasStashCreated) {
+        if(answer == OKOtherAndCancelDialog.RESULT_OTHER) {
           tryCheckingOutBranch(currentBranchInfo, branchName);
+        } else if(answer == OKOtherAndCancelDialog.RESULT_OK) {
+          boolean wasStashCreated = StashUtil.stashChanges();
+          if(wasStashCreated) {
+            tryCheckingOutBranch(currentBranchInfo, branchName);
+          }
+        } else {
+          restoreCurrentBranchSelectionInMenu();
         }
-      } else {
-        restoreCurrentBranchSelectionInMenu();
-      }
+      });
     } else {
       tryCheckingOutBranch(currentBranchInfo, branchName);
     }
