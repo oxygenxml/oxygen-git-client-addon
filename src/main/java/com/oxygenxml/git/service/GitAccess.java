@@ -816,20 +816,22 @@ public class GitAccess {
 	 */
 	public List<Ref> getLocalBranchList() {
 		List<Ref> branches = Collections.emptyList();
-		try {
-			branches = git.branchList().call();
-			// EXM-47153: if we are on a detached HEAD, 
-			// remove it from the list of local branches
-			Iterator<Ref> iterator = branches.iterator();
-			while (iterator.hasNext()) {
-			  Ref ref = iterator.next();
-			  if (Constants.HEAD.equals(ref.getName())) {
-			    iterator.remove();
-			    break;
-			  }
+		if(git != null) {
+			try {
+				branches = git.branchList().call();
+				// EXM-47153: if we are on a detached HEAD, 
+				// remove it from the list of local branches
+				Iterator<Ref> iterator = branches.iterator();
+				while (iterator.hasNext()) {
+					Ref ref = iterator.next();
+					if (Constants.HEAD.equals(ref.getName())) {
+						iterator.remove();
+						break;
+					}
+				}
+			} catch (GitAPIException e) {
+				LOGGER.error(e, e);
 			}
-		} catch (GitAPIException e) {
-		  LOGGER.error(e, e);
 		}
 		return branches;
 	}
