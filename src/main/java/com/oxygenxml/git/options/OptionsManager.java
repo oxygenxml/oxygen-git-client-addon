@@ -16,6 +16,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
@@ -68,16 +69,6 @@ public class OptionsManager {
   }
 
   /**
-   * Uses JAXB to load all the selected repositories from the users in the
-   * repositoryOptions variable
-   */
-  private void loadOptions() {
-    if (options == null) {
-      options = OptionsLoader.loadOptions();
-    }
-  }
-
-  /**
    * Save options.
    */
   public void saveOptions() {
@@ -98,8 +89,18 @@ public class OptionsManager {
    * @return The initialized options.
    */
   private OptionsInterface getOptions() {
-	  loadOptions();
 	  return options;
+  }
+  
+  /**
+   * Loads options from from the Oxygen options storage.
+   * 
+   * @param ws Oxygen API.
+   */
+  public void loadOptions(WSOptionsStorage wsOptionsStorage) {
+    if (options == null) {
+      options = OptionsLoader.loadOptions(wsOptionsStorage);
+    }
   }
   
   /**

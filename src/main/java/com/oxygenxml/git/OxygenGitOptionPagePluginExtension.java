@@ -236,18 +236,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   public String[] getProjectLevelOptionKeys() {
     return new String[] {
-        OptionTags.AUTO_PUSH_WHEN_COMMITTING,
         OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS,
-        OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH,
-        OptionTags.DESTINATION_PATHS,
-        OptionTags.DEFAULT_PULL_TYPE,
-        OptionTags.UNSTAGED_RES_VIEW_MODE,
-        OptionTags.STAGED_RES_VIEW_MODE,
-        OptionTags.USER_CREDENTIALS_LIST,
-        OptionTags.COMMIT_MESSAGES,
         OptionTags.WHEN_REPO_DETECTED_IN_PROJECT,
         OptionTags.UPDATE_SUBMODULES_ON_PULL,
-        OptionTags.WARN_ON_CHANGE_COMMIT_ID,
     };
   }
 }

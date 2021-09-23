@@ -4,8 +4,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
+import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
+
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class CredentialsBase {
+public abstract class CredentialsBase implements ExternalPersistentObject {
   
   /**
    * Credentials type.
@@ -62,5 +64,15 @@ public abstract class CredentialsBase {
    * @return The credentials type.
    */
   public abstract CredentialsType getType();
+  
+  @Override
+  public Object clone() {
+    try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      // Should not happen.
+    }
+    return null;
+  }
   
 }
