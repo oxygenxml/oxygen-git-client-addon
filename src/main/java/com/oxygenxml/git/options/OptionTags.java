@@ -64,7 +64,7 @@ public interface OptionTags {
    * A list of user credentials containing the username, password and the host.
    * Only one credential per host can be stored
    */
-  public static final String USER_CREDENTIALS_LIST = "com.oxygenxml.git.projects.tested.for.git";
+  public static final String USER_CREDENTIALS_LIST = "com.oxygenxml.user.credentials.list";
 
   /**
    * Wrapper for a list of commit messages

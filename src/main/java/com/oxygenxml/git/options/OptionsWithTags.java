@@ -140,7 +140,7 @@ public class OptionsWithTags implements OptionsInterface {
    */
   @Override
   public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) {
-    wsOptionsStorage.setOption(OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS, String.valueOf(isCheckoutNewlyCreatedLocalBranch));
+    wsOptionsStorage.setOption(OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH, String.valueOf(isCheckoutNewlyCreatedLocalBranch));
     
   }
 
@@ -244,7 +244,7 @@ public class OptionsWithTags implements OptionsInterface {
   @Override
   public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
     String[] newOpt = mapToArray(sshPromptAnswers);
-    wsOptionsStorage.setStringArrayOption(OptionTags.WARN_ON_CHANGE_COMMIT_ID, newOpt);
+    wsOptionsStorage.setStringArrayOption(OptionTags.SSH_PROMPT_ANSWERS, newOpt);
 
   }
 

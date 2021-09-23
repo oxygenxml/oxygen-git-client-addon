@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.OxygenGitPlugin;
 
-import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
