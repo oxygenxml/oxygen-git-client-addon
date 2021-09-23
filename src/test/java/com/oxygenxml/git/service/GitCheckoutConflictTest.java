@@ -334,7 +334,7 @@ public class GitCheckoutConflictTest extends TestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    BranchesPanel branchesPanel = new BranchesPanel(gitController);
+    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
     branchesPanel.refresh();
     sleep(300);
     branchesPanel.getBranchNamesCombo().setSelectedIndex(1);
@@ -395,7 +395,7 @@ public class GitCheckoutConflictTest extends TestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    BranchesPanel branchesPanel = new BranchesPanel(gitController);
+    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
     branchesPanel.refresh();
     sleep(300);
     branchesPanel.getBranchNamesCombo().setSelectedIndex(1);
@@ -510,7 +510,7 @@ public class GitCheckoutConflictTest extends TestCase {
    
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    BranchesPanel branchesPanel = new BranchesPanel(gitController);
+    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
     branchesPanel.refresh();
     sleep(300);
     SwingUtilities.invokeLater(() -> branchesPanel.getBranchNamesCombo().setSelectedIndex(1));
