@@ -96,7 +96,7 @@ public class GitControllerTest {
     
     Assert.assertEquals("Not the expected events", 
         "S: Status: null, message: Push_In_Progress GitEventInfo [Operation: PUSH].\n" + 
-        "F: Status: null, message: Push_failed: null GitEventInfo [Operation: PUSH].\n" + 
+        "F: Status: null, message: Push_failed: Cannot invoke \"com.oxygenxml.git.service.PushResponse.getStatus()\" because \"response\" is null GitEventInfo [Operation: PUSH].\n" + 
         "   class java.lang.NullPointerException\n" + 
         "", b.toString());
   }
