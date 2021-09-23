@@ -154,11 +154,11 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
 			  if(searchedFilePath instanceof String && 
 					  !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
 				  tableCellRendererComponent.setForeground(
-						  pluginWorkspace.getColorTheme().isDarkTheme() ?
+						  colorTheme.isDarkTheme() ?
 								  UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
 			  } else {
 				  tableCellRendererComponent.setForeground(
-						  pluginWorkspace.getColorTheme().isDarkTheme() ?
+						  colorTheme.isDarkTheme() ?
 								  UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);;
 			  }
 		  }
