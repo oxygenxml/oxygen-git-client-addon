@@ -85,12 +85,16 @@ public class BranchesPanel extends JPanel {
    */
   private String detachedHeadId;
   
+  private final boolean isLabeled;
+  
   /**
    * Creates the panel.
    * 
    * @param gitController Git Controller.
    */
-  public BranchesPanel(GitController gitController) {
+  public BranchesPanel(GitController gitController, boolean isLabeled) {
+    this.isLabeled = isLabeled;
+    
     createGUI();
     
     branchNamesCombo.addItemListener(event -> {
@@ -172,7 +176,6 @@ public class BranchesPanel extends JPanel {
     setLayout(new GridBagLayout());
     
     // Branch label
-    JLabel currentBranchLabel = new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH) + ":");
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -181,11 +184,14 @@ public class BranchesPanel extends JPanel {
         UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING,
         UIConstants.COMPONENT_RIGHT_PADDING);
-    add(currentBranchLabel, gbc);
+    if(isLabeled) {
+      JLabel currentBranchLabel = new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH) + ":");
+      add(currentBranchLabel, gbc);
+    }
     
     // Branches combo
     branchNamesCombo = new JComboBox<>();
-    gbc.gridx++;
+    gbc.gridx = isLabeled ? 1 : 0;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.weightx = 1;
     add(branchNamesCombo, gbc);

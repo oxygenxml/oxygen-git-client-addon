@@ -18,6 +18,7 @@ import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -25,12 +26,15 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import com.jidesoft.swing.JideSplitPane;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
@@ -192,8 +196,8 @@ public class StagingPanel extends JPanel {
 		// Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(gitController, historyController, false);
 		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
-		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController);
-		branchesPanel = new BranchesPanel(gitController);
+		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
+		branchesPanel = new BranchesPanel(gitController, false);
 		commitPanel = new CommitAndStatusPanel(gitController);
 		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
@@ -244,14 +248,28 @@ public class StagingPanel extends JPanel {
 	 * @param gbc Grid bag constraints.
 	 */
 	private void addBranchesCombo(GridBagConstraints gbc) {
-	  gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
+	  gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_PADDING + HORIZONTAL_INSET,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.fill = GridBagConstraints.NONE;
     gbc.gridx = 0;
     gbc.gridy++;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.gridwidth = 1;
+    this.add(new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH) + ":"), gbc);
+
+    gbc.insets = new Insets(0, 0, 0, HORIZONTAL_INSET);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridx++;
     gbc.weightx = 1;
     gbc.weighty = 0;
     this.add(branchesPanel, gbc);
+    
   }
 
   /**
@@ -364,6 +382,7 @@ public class StagingPanel extends JPanel {
     gbc.fill = GridBagConstraints.NONE;
     gbc.weightx = 1;
     gbc.weighty = 0;
+    gbc.gridwidth = 2;
 		add(conflictButtonsPanel, gbc);
   }
 
@@ -419,6 +438,7 @@ public class StagingPanel extends JPanel {
 		gbc.gridy++;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
+		gbc.gridwidth = 2;
 		this.add(splitPane, gbc);
 	}
 
@@ -435,6 +455,7 @@ public class StagingPanel extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
+		gbc.gridwidth = 2;
 		gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
 		this.add(toolbarPanel, gbc);
 	}
@@ -445,11 +466,24 @@ public class StagingPanel extends JPanel {
 	 * @param gbc The constraints used for this component
 	 */
 	private void addWorkingCopySelectionPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
+	  gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_PADDING + HORIZONTAL_INSET,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.gridx = 0;
+    gbc.gridy++;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.gridwidth = 1;
+    this.add(new JLabel(Translator.getInstance().getTranslation(Tags.WORKING_COPY_LABEL)), gbc);
+
+		gbc.insets = new Insets(0, 0, 0, HORIZONTAL_INSET);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy++;
+		gbc.gridx++;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(workingCopySelectionPanel, gbc);

@@ -96,17 +96,23 @@ public class WorkingCopySelectionPanel extends JPanel {
    * <code>false</code> to update the repository when the selection changes in the combo.
    */
   private boolean inhibitRepoUpdate = false;
+  /**
+   * <code>true</code> if the panel has a label.
+   */
+  private final boolean isLabeled;
 	
   /**
    * Constructor.
    * @param gitController Git operations controller.
    */
-	public WorkingCopySelectionPanel(GitControllerBase gitController) {
+	public WorkingCopySelectionPanel(GitControllerBase gitController, boolean isLabeled) {
+	  this.isLabeled = isLabeled;
 	  createGUI();
 	  gitController.addGitListener(new GitEventUpdater());
 	  addHierarchyListener(new HierarchyListener() {
       @Override
-      public void hierarchyChanged(HierarchyEvent e) {
+      public void hierarchyChanged(HierarchyEvent e
+          ) {
         if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0
             && WorkingCopySelectionPanel.this.isShowing()) {
           initializeWorkingCopyCombo();
@@ -125,7 +131,9 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		addLabel(gbc);
+		if(isLabeled) {
+		  addLabel(gbc);
+		}
 		addWorkingCopySelector(gbc);
 		addBrowseButton(gbc);
 
@@ -274,7 +282,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	      UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 	  gbc.anchor = GridBagConstraints.WEST;
 	  gbc.fill = GridBagConstraints.HORIZONTAL;
-	  gbc.gridx = 1;
+    gbc.gridx = isLabeled ? 1 : 0;
 	  gbc.gridy = 0;
 	  gbc.weightx = 1;
 	  gbc.weighty = 0;
@@ -324,7 +332,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 2;
+		gbc.gridx = isLabeled ? 2 : 1;
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;

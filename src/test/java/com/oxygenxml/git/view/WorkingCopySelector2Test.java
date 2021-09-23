@@ -99,7 +99,8 @@ public class WorkingCopySelector2Test extends JFCTestCase {
   public void testRemoveStaleEntries() throws Exception {
     JFrame frame = new JFrame();
     try {
-      WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(new GitController(GitAccess.getInstance()));
+      WorkingCopySelectionPanel wcPanel = 
+          new WorkingCopySelectionPanel(new GitController(GitAccess.getInstance()), true);
       frame.getContentPane().add(wcPanel);
       frame.pack();
       // Showing the WC panel also initializes the combo
