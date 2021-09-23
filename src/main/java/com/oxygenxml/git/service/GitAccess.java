@@ -1916,13 +1916,16 @@ public class GitAccess {
 			try {
 				branchName = git.getRepository().getBranch();
 				branchInfo.setBranchName(branchName);
-				Iterable<RevCommit> results = git.log().call();
-				for (RevCommit revCommit : results) {
-					if (revCommit.getId().name().equals(branchName)) {
-						branchInfo.setDetached(true);
-						branchInfo.setShortBranchName(
-						    revCommit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name());
-						break;
+				LogCommand log = git.log();
+				if(log != null) {
+					Iterable<RevCommit> results = log.call();
+					for (RevCommit revCommit : results) {
+						if (revCommit.getId().name().equals(branchName)) {
+							branchInfo.setDetached(true);
+							branchInfo.setShortBranchName(
+									revCommit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name());
+							break;
+						}
 					}
 				}
 			} catch (NoHeadException e) {
@@ -2274,29 +2277,31 @@ public class GitAccess {
 	public Map<String, List<String>> getTagMap(Repository repository)
 			throws GitAPIException, IOException {
 		Map<String, List<String>> commitTagMap = new LinkedHashMap<>();
-		List<Ref> call = git.tagList().call();
-		
-		// search through all commits for tags
-		for (Ref ref : call) {
-			List<String> tagList = new ArrayList<>();
-			String tagName = ref.getName();
-			StringTokenizer st = new StringTokenizer(tagName, "/");
-			while (st.hasMoreTokens()) {
-				tagName = st.nextToken();
-			}
-			LogCommand log = git.log();
+		if(git != null) {
+			List<Ref> call = git.tagList().call();
 
-			Ref peeledRef = repository.getRefDatabase().peel(ref);
-			if (peeledRef.getPeeledObjectId() != null) {
-				log.add(peeledRef.getPeeledObjectId());
-			} else {
-				log.add(ref.getObjectId());
+			// search through all commits for tags
+			for (Ref ref : call) {
+				List<String> tagList = new ArrayList<>();
+				String tagName = ref.getName();
+				StringTokenizer st = new StringTokenizer(tagName, "/");
+				while (st.hasMoreTokens()) {
+					tagName = st.nextToken();
+				}
+				LogCommand log = git.log();
+
+				Ref peeledRef = repository.getRefDatabase().peel(ref);
+				if (peeledRef.getPeeledObjectId() != null) {
+					log.add(peeledRef.getPeeledObjectId());
+				} else {
+					log.add(ref.getObjectId());
+				}
+				Iterable<RevCommit> logs = log.call();
+				tagList.add(tagName);
+				commitTagMap.put(
+						logs.iterator().next().getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name(),
+						tagList);
 			}
-			Iterable<RevCommit> logs = log.call();
-			tagList.add(tagName);
-			commitTagMap.put(
-			    logs.iterator().next().getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name(),
-			    tagList);
 		}
 		return commitTagMap;
 	}
