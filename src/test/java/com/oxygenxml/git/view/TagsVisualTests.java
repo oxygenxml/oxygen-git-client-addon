@@ -193,9 +193,17 @@ public class TagsVisualTests extends GitTestBase {
       assertFalse(showTagsJDialog.getDeleteButton().isEnabled());
       assertTrue(tag3.isPushed());
       
+      final TagsDialog tagsFinalJDialog = showTagsJDialog;
       //Select last row and delete the tag and verify if the tag doesn't exist
       tagsTable.setRowSelectionInterval(2, 2);
-      showTagsJDialog.getDeleteButton().doClick();
+      SwingUtilities.invokeLater(() -> tagsFinalJDialog.getDeleteButton().doClick());
+
+      flushAWT();
+      
+      JDialog deleteDialog = findDialog(Tags.DELETE_TAG_DIALOG_TITLE);
+      assertNotNull(deleteDialog);
+      findFirstButton(deleteDialog, Tags.YES).doClick();
+      flushAWT();
       assertFalse(gitAccess.existsTag("Tag1"));
       
       //Verify how many rows has the table left

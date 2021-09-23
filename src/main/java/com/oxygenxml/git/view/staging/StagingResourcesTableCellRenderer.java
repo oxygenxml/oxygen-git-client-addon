@@ -18,6 +18,11 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
+import com.oxygenxml.git.view.util.UIUtil;
+
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.util.ColorTheme;
 
 /**
  * Renderer for the staged/unstaged tables.
@@ -29,6 +34,11 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * Tells if a contextual menu is presented over the table.
    */
   private BooleanSupplier contextMenuShowing;
+  
+  /**
+   * The file/folder to show history.
+   */
+  private String searchedFilePath;
   
   /**
    * The border for padding.
@@ -49,6 +59,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
   public StagingResourcesTableCellRenderer(BooleanSupplier contextMenuShowing) {
     this.contextMenuShowing = contextMenuShowing;
   }
+  
   
   /**
    * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
@@ -71,12 +82,11 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         tooltipText = renderingInfo.getTooltip();
       }
     } else if (value instanceof FileStatus) {
-      String location = ((FileStatus) value).getFileLocation();
+      String location = ((FileStatus)value).getFileLocation();
       setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       
       FontMetrics metrics = getFontMetrics(getFont());
-      location = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
-      labelText = location;
+      labelText = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
       
       String description = ((FileStatus) value).getDescription();
       if (description != null) {
@@ -87,14 +97,21 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         if (!fileName.equals(tooltipText)) {
           tooltipText = tooltipText.replace("/" + fileName, "");
           tooltipText = fileName + " - " + tooltipText;
-        }
-      }
-      
+        } 
+      } 
+    }
+    
+    if(isSelected) {
+      tableCellRendererComponent.setForeground(table.getSelectionForeground());
+    } else {
+      updateForegroundText(labelText, tableCellRendererComponent); 
     }
     
     tableCellRendererComponent.setIcon(icon);
     tableCellRendererComponent.setToolTipText(tooltipText);
     tableCellRendererComponent.setText(labelText);
+    
+    
     
     // Active/inactive table selection
     if (table.isRowSelected(row)) {
@@ -107,7 +124,46 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     } else {
       tableCellRendererComponent.setBackground(table.getBackground());
     }
+    
 
     return tableCellRendererComponent;
   }
+
+
+  /**
+   * Set the value for the searched file.
+   * 
+   * @param selectedFilePath The new searched file.
+   */
+  public void setSearchedFilePath(String selectedFilePath) {
+    this.searchedFilePath = selectedFilePath;
+  }
+  
+  
+  /**
+   * Updates the text foreground.
+   *  
+   * @param currentFilePath                The current file path.
+   * @param tableCellRendererComponent     The displayed Jlabel. 
+   */
+  private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
+	  PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+	  if(pluginWorkspace != null) {
+		  ColorTheme colorTheme = pluginWorkspace.getColorTheme();
+		  if(colorTheme != null) {
+			  if(searchedFilePath instanceof String && 
+					  !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
+				  tableCellRendererComponent.setForeground(
+						  colorTheme.isDarkTheme() ?
+								  UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
+			  } else {
+				  tableCellRendererComponent.setForeground(
+						  colorTheme.isDarkTheme() ?
+								  UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);;
+			  }
+		  }
+	  }
+  }
+  
+  
 }

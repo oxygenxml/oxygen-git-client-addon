@@ -164,7 +164,7 @@ public class CreateTagDialog extends OKCancelDialog {
     // Tag message field.
     tagMessageField = new JTextArea();
     JScrollPane tagMessageScrollPane = new JScrollPane(tagMessageField);
-    tagMessageScrollPane.setPreferredSize(new Dimension(MESSAGE_PREFFERED_WIDTH, 2* tagMessageField.getPreferredSize().height));
+    tagMessageScrollPane.setPreferredSize(new Dimension(MESSAGE_PREFFERED_WIDTH, 3* tagMessageField.getPreferredSize().height));
     tagMessageField.selectAll();
     gbc.gridx ++;
     gbc.weightx = 1;

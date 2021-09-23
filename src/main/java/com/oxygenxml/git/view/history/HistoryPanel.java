@@ -71,6 +71,7 @@ import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
@@ -621,6 +622,7 @@ public class HistoryPanel extends JPanel {
         // upstream branch.
         tryFetch();
 
+        ((StagingResourcesTableModel)affectedFilesTable.getModel()).setSearchedPath(filePath);
         File directory = gitAccess.getWorkingCopy();
         historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
             + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
@@ -628,6 +630,9 @@ public class HistoryPanel extends JPanel {
           directory = new File(directory, filePath);
           historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
+        
+        ((StagingResourcesTableCellRenderer)affectedFilesTable.getDefaultRenderer(FileStatus.class)).setSearchedFilePath(filePath);
+        
         historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
             historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
             this.getWidth() / topPanel.getComponentCount()));

@@ -66,6 +66,7 @@ import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
+import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -295,12 +296,15 @@ public class ToolbarPanel extends JPanel {
           // selected this is triggered.
           // TODO Maybe the change of repository should triggered a fetch and a notification should
           // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
-          new Thread(() -> {
+          GitOperationScheduler.getInstance().schedule(() -> {
             fetch(true);
             // After the fetch is done, update the toolbar icons.
             refresh();
-          }).start();
-        } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.COMMIT) {
+            });
+        } else if (operation == GitOperation.ABORT_REBASE 
+            || operation == GitOperation.CONTINUE_REBASE 
+            || operation == GitOperation.COMMIT
+            || operation == GitOperation.DISCARD) {
           // Update status because we are coming from a detached HEAD
           refresh();
         }
@@ -411,8 +415,8 @@ public class ToolbarPanel extends JPanel {
 		addCloneRepositoryButton();
 		addPushAndPullButtons();
 		addBranchSelectButton(branchManagementViewPresenter);
-		addSubmoduleSelectButton();
 		addStashButton();
+		addSubmoduleSelectButton();
 		addHistoryButton(historyController);
 		addTagsShowButton();
 		addSettingsButton();
@@ -520,7 +524,6 @@ public class ToolbarPanel extends JPanel {
     setDefaultToolbarButtonWidth(showTagsButton);
 
     gitToolbar.add(showTagsButton);
-
   }
 
 
@@ -570,6 +573,7 @@ public class ToolbarPanel extends JPanel {
     }
 
     refreshStashButton();
+    refreshTagsButton();
 
     SwingUtilities.invokeLater(() -> {
       pullMenuButton.repaint();
@@ -1157,6 +1161,24 @@ public class ToolbarPanel extends JPanel {
     listStashesAction.setEnabled(existsStashes);
 
     stashButton.setEnabled(existsLocalFiles || existsStashes);
+  }
+  
+  /**
+   * Refresh the button for showing tags
+   */
+  public void refreshTagsButton() {
+     int noOfTags = 0;
+    try {
+      noOfTags = GitTagsManager.getNoOfTags();
+    } catch (GitAPIException e) {
+      LOGGER.debug(e,e);
+    }
+     if (noOfTags > 0) {
+      getShowTagsButton().setEnabled(true);
+    }
+     else {
+      getShowTagsButton().setEnabled(false);
+    }
   }
 
 

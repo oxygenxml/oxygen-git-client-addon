@@ -9,8 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -34,8 +32,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 
-import org.apache.log4j.Logger;
-
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -50,6 +46,7 @@ import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 import ro.sync.exml.workspace.api.util.ColorTheme;
 
@@ -57,10 +54,6 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  * Utility class for UI-related issues. 
  */
 public class UIUtil {
-  /**
-   * Logger for logging.
-   */
-  private static Logger logger = Logger.getLogger(UIUtil.class);
   /**
    * Meta symbol.
    */
@@ -113,6 +106,23 @@ public class UIUtil {
    * Color hex for parents link in Git History in graphite theme.
    */
   public static final String PARENTS_LINK_HEX_COLOR_GRAPHITE = "#60d1f0";
+  /**
+   * Not searched files in git history color on graphite theme, when searching for the history of a file or folder.
+   */
+  public static final Color NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME = new Color(160, 160, 160);
+  /**
+   * Not searched files in git history color on light/classic theme, when searching for the history of a file or folder.
+   */
+  public static final Color NOT_SEARCHED_FILES_COLOR_LIGHT_THEME = Color.LIGHT_GRAY;
+  /**
+   * Searched files in git history color on graphite theme, when searching for the history of a file or folder.
+   */
+  public static final Color SEARCHED_FILES_COLOR_GRAPHITE_THEME = Color.LIGHT_GRAY;
+  /**
+   * Searched files in git history color on light/classic theme, when searching for the history of a file or folder.
+   */
+  public static final Color SEARCHED_FILES_COLOR_LIGHT_THEME = Color.BLACK;
+  
   
   /**
    * Hidden constructor.
@@ -396,21 +406,6 @@ public class UIUtil {
   }
   
   /**
-   * @return The installMultilineTooltip method or <code>null</code> if it's unavailable in the current Oxygen.
-   */
-  public static Method getInstallMultilineTooltipMethod() {
-    Method installMultilineTooltip = null;
-    try {
-      Class<?> uiCompsFactory = Class.forName(
-          "ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory");
-      installMultilineTooltip = uiCompsFactory.getMethod("installMultilineTooltip", JComponent.class);
-    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-      logger.debug(e, e);
-    }
-    return installMultilineTooltip;
-  }
-  
-  /**
    * Install a multiline tooltip on the component.
    * 
    * @param component Component on which to install the tooltip.
@@ -418,17 +413,6 @@ public class UIUtil {
    * @return The installed tooltip, if one was installed.
    */
   public static Optional<JToolTip> createMultilineTooltip(JComponent component) {
-    try {
-      Method installMultilineTooltip = UIUtil.getInstallMultilineTooltipMethod();
-      if (installMultilineTooltip != null) {
-        return Optional.of((JToolTip) installMultilineTooltip.invoke(null, component));
-      }
-    } catch (SecurityException | IllegalAccessException | IllegalArgumentException 
-        | InvocationTargetException e) {
-      logger.debug(e, e);
-    }
-    
-    return Optional.empty();
+	 return Optional.of(OxygenUIComponentsFactory.installMultilineTooltip(component));
   }
-
 }

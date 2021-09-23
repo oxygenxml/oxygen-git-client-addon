@@ -46,17 +46,34 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * The internal representation of the model
 	 */
 	private List<FileStatus> filesStatuses = Collections.synchronizedList(new ArrayList<>());
-
+	
 	/**
+	 * The path for which history is shown.
+	 */
+	private String searchedPath = null;
+
+  /**
 	 * Compares file statuses.
 	 */
 	private Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
-    int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
-    if(changeTypeCompareResult == 0) {
-      return f1.getFileLocation().compareTo(f2.getFileLocation());
-    } else {
-      return changeTypeCompareResult;
-    }
+	  int comparationResult = 0;
+	  
+	  if(searchedPath != null) {
+	    boolean file1IsSearched = !(searchedPath.equals(f1.getFileLocation()) ||
+	        f1.getFileLocation().startsWith(searchedPath + "/", 0));
+	    boolean file2IsSearched = !(searchedPath.equals(f2.getFileLocation()) ||
+	        f2.getFileLocation().startsWith(searchedPath + "/", 0));
+	    comparationResult = Boolean.compare(file1IsSearched, file2IsSearched);
+	  }
+	  
+	  if(comparationResult == 0) {
+	    comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
+	    if(comparationResult == 0) {
+	      comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
+	    }
+	  }
+	  
+	  return comparationResult;
   };
 
 	/**
@@ -327,4 +344,13 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	  return -1;
 	}
 
+	/**
+	 * Sets the priority path. The files with this paths will be displayed first.
+	 * If no value is set, this sort criterion will not be considered.
+	 * 
+	 * @param searchedPath  The searched path.
+	 */
+	public void setSearchedPath(String searchedPath) {
+    this.searchedPath = searchedPath;
+  }
 }
