@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.staging;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -125,11 +126,16 @@ public class BranchesPanel extends JPanel {
         if (operation == GitOperation.OPEN_WORKING_COPY
             || operation == GitOperation.ABORT_REBASE 
             || operation == GitOperation.CONTINUE_REBASE
-            || operation == GitOperation.COMMIT) {
+            || operation == GitOperation.COMMIT
+            || operation == GitOperation.DELETE_BRANCH
+            || operation == GitOperation.CREATE_BRANCH
+            || operation == GitOperation.CHECKOUT) {
           refresh();
         }
       }
     });
+    
+    this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.WORKINGCOPY_PANEL_HEIGHT));
     
   }
 
