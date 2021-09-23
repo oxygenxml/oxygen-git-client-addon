@@ -30,7 +30,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(StagingResourcesTableModel.class);
+  private static final Logger LOGGER = Logger.getLogger(StagingResourcesTableModel.class);
 
 	/**
 	 * Constant for the index representing the file status
@@ -55,7 +55,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
   /**
 	 * Compares file statuses.
 	 */
-	private Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
+	private final Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
 	  int comparationResult = 0;
 	  
 	  if(searchedPath != null) {
@@ -80,12 +80,12 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * <code>true</code> if this model presents the resources from the index.
 	 * <code>false</code> if it presents the modified resources that can be put in the index.
 	 */
-	private boolean inIndex;
+	private final boolean inIndex;
 
 	/**
 	 * Git controller.
 	 */
-  private GitControllerBase gitController;
+  private final GitControllerBase gitController;
 
   /**
    * Constructor.
@@ -157,7 +157,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	  
 		this.filesStatuses = Collections.synchronizedList(new ArrayList<>(filesStatuses));
 		removeDuplicates();
-		Collections.sort(this.filesStatuses, fileStatusComparator);
+		this.filesStatuses.sort(fileStatusComparator);
 		
 		fireTableRowsInserted(0, getRowCount());
 	}
@@ -206,14 +206,14 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @param changeEvent Change information.
 	 */
 	void stateChanged(GitEventInfo changeEvent) {
-	  if (logger.isDebugEnabled()) {
-	    logger.debug("Change event in the " + (inIndex ? "'unstaged'" : "'staged'") + " area: " + changeEvent);
+	  if (LOGGER.isDebugEnabled()) {
+	    LOGGER.debug("Change event in the " + (inIndex ? "'unstaged'" : "'staged'") + " area: " + changeEvent);
 	    
 	  }
 
 	  updateTableModel(changeEvent);
 	  removeDuplicates();
-	  Collections.sort(filesStatuses, fileStatusComparator);
+	  filesStatuses.sort(fileStatusComparator);
 	  fireTableDataChanged();
 	}
 
@@ -272,8 +272,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * Removes any duplicate entries
 	 */
 	private void removeDuplicates() {
-		Set<FileStatus> set = new HashSet<>();
-		set.addAll(this.filesStatuses);
+		Set<FileStatus> set = new HashSet<>(this.filesStatuses);
 		this.filesStatuses.clear();
 		this.filesStatuses.addAll(set);
 	}

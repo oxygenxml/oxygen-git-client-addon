@@ -131,24 +131,4 @@ public class StashesTableModel extends AbstractTableModel {
   }
 
 
-  /**
-   * Returns the stash from the given row.
-   *
-   * @param rowIndex The row index.
-   * 
-   * @return the file
-   */
-  public RevCommit getStashAt(int rowIndex) {
-    return stashes.get(rowIndex);
-  }
-
-
-  /**
-   * @return The files in the model.
-   */
-  public List<RevCommit> getStashes() {
-    return stashes;
-  }
-
-
 }

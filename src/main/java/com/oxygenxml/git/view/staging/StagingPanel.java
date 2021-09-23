@@ -12,8 +12,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -68,7 +68,7 @@ public class StagingPanel extends JPanel {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(StagingPanel.class);
+  private static final Logger LOGGER = Logger.getLogger(StagingPanel.class);
 
   /**
    * <code>true</code> if focus gained.
@@ -113,17 +113,17 @@ public class StagingPanel extends JPanel {
 	/**
 	 * Main panel refresh
 	 */
-	private GitRefreshSupport refreshSupport;
+	private final GitRefreshSupport refreshSupport;
 
 	/**
 	 * Git controller.
 	 */
-	private GitController gitController;
+	private final GitController gitController;
 	
   /**
    * Plugin workspace access.
    */
-  private StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+  private final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 
   /**
    * Constructor.
@@ -285,7 +285,7 @@ public class StagingPanel extends JPanel {
 			    focusGained = true;
 			    if (!inTheView) {
 			      // EXM-40880: Invoke later so that the focus event gets processed.
-			      SwingUtilities.invokeLater(() -> refreshSupport.call());
+			      SwingUtilities.invokeLater(refreshSupport::call);
 			    }
 			    inTheView = true;
 			  }
@@ -301,11 +301,7 @@ public class StagingPanel extends JPanel {
 			      Window windowAncestor = SwingUtilities.getWindowAncestor(opposite);
 			      if (windowAncestor != null) {
 			        boolean contains = windowAncestor.toString().contains("MainFrame");
-			        if (contains && !SwingUtilities.isDescendingFrom(opposite, StagingPanel.this)) {
-			          inTheView = false;
-			        } else {
-			          inTheView = true;
-			        }
+							inTheView = !contains || SwingUtilities.isDescendingFrom(opposite, StagingPanel.this);
 			      }
 			    } else {
 			      inTheView = true;
@@ -350,12 +346,12 @@ public class StagingPanel extends JPanel {
           selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
 
           if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-            if (logger.isDebugEnabled()) {
-              logger.debug("Notify " + fileInWorkPath);
-              logger.debug("WC " + selectedRepositoryPath);
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("Notify " + fileInWorkPath);
+              LOGGER.debug("WC " + selectedRepositoryPath);
             }
 
-            Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
+            Collection<String> affectedFiles = Collections.singletonList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
             FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
             SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
 						if(toolbarPanel != null) {
@@ -364,7 +360,7 @@ public class StagingPanel extends JPanel {
 						}
           }
         } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
+          LOGGER.debug(e, e);
         }
       }
     }

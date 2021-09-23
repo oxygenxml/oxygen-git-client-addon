@@ -19,17 +19,17 @@ public class StageUnstageResourceAction extends AbstractAction {
   /**
    * <code>true</code> if the action is "Stage".
    */
-  private boolean isStage;
+  private final boolean isStage;
   
   /**
    * The files to be staged/unstaged.
    */
-  private List<FileStatus> fileStatuses;
+  private final List<FileStatus> fileStatuses;
 
   /**
    * Git controller.
    */
-  private GitControllerBase gitCtrl;
+  private final GitControllerBase gitCtrl;
 
   /**
    * Constructor.

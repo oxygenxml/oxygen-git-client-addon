@@ -6,12 +6,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +44,6 @@ import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -63,7 +59,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(WorkingCopySelectionPanel.class);
+	private static final Logger LOGGER = Logger.getLogger(WorkingCopySelectionPanel.class);
 	
 	/**
    * Clear history.
@@ -73,12 +69,12 @@ public class WorkingCopySelectionPanel extends JPanel {
   /**
    * The git API, containing the commands
    */
-  private static GitAccess gitAccess = GitAccess.getInstance();
+  private static final GitAccess GIT_ACCESS = GitAccess.getInstance();
 
   /**
    * The translator for the messages that are displayed in this panel
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
 	 * A combo box for the user to change his working copy
@@ -96,14 +92,18 @@ public class WorkingCopySelectionPanel extends JPanel {
    * <code>false</code> to update the repository when the selection changes in the combo.
    */
   private boolean inhibitRepoUpdate = false;
+  
   /**
-   * <code>true</code> if the panel has a label.
+   * <code>true</code> if the panel has a label attached.
    */
   private final boolean isLabeled;
 	
+  
   /**
    * Constructor.
+   * 
    * @param gitController Git operations controller.
+   * @param isLabeled     <code>true</code> if the panel has a label attached.
    */
 	public WorkingCopySelectionPanel(GitControllerBase gitController, boolean isLabeled) {
 	  this.isLabeled = isLabeled;
@@ -122,6 +122,7 @@ public class WorkingCopySelectionPanel extends JPanel {
     });
 	}
 
+	
 	/**
 	 * Creates the components and adds listeners to some of them. Basically this
 	 * creates the panel
@@ -142,50 +143,50 @@ public class WorkingCopySelectionPanel extends JPanel {
 		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.WORKINGCOPY_PANEL_HEIGHT));
 	}
 	
+	
 	/**
 	 * Adds a state change listener on the working copy selector combo box. When a
 	 * new working copy is selected this listener will execute
 	 */
 	private void addWorkingCopySelectorListener() {
-	  workingCopyCombo.addItemListener(
-	      new ItemListener() { // NOSONAR
-	    @Override
-	    public void itemStateChanged(ItemEvent e) {
-	      // Don't do anything if the event was originated by us.
-	      if (!inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
-	        inhibitRepoUpdate = true;
-	        try {
-	          // get and save the selected Option so that at restart the same
-	          // repository will be selected
-	          String selectedEntry = (String) workingCopyCombo.getSelectedItem();
-	          logger.debug("Selected working copy: " + selectedEntry);
-	          if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
-	            SwingUtilities.invokeLater(() -> {
-	              String[] options = new String[] { 
-	                  "   " + translator.getTranslation(Tags.YES) + "   ",
-	                  "   " + translator.getTranslation(Tags.NO) + "   "};
-	              int[] optionIds = new int[] { 0, 1 };
-	              int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-	                  translator.getTranslation(Tags.CLEAR_HISTORY),
-	                  translator.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
-	                  options,
-	                  optionIds);
-	              if (result == optionIds[0]) {
-	                clearHistory();
-	              } else {
-	                workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
-	              }
-	            });
-	          } else {
-	            gitAccess.setRepositoryAsync(selectedEntry);
-	          }
-	        } finally {
-	          inhibitRepoUpdate = false;
-	        }
-	      }
-	    }
-	  });
+		// NOSONAR
+		workingCopyCombo.addItemListener(
+						e -> {
+							// Don't do anything if the event was originated by us.
+							if (!inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
+								inhibitRepoUpdate = true;
+								try {
+									// get and save the selected Option so that at restart the same
+									// repository will be selected
+									String selectedEntry = (String) workingCopyCombo.getSelectedItem();
+									LOGGER.debug("Selected working copy: " + selectedEntry);
+									if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
+										SwingUtilities.invokeLater(() -> {
+											String[] options = new String[] {
+													"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+													"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
+											int[] optionIds = new int[] { 0, 1 };
+											int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+													TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
+													TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+													options,
+													optionIds);
+											if (result == optionIds[0]) {
+												clearHistory();
+											} else {
+												workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
+											}
+										});
+									} else {
+										GIT_ACCESS.setRepositoryAsync(selectedEntry);
+									}
+								} finally {
+									inhibitRepoUpdate = false;
+								}
+							}
+						});
 	}
+	
 	
   /**
    * Clear history.
@@ -210,45 +211,44 @@ public class WorkingCopySelectionPanel extends JPanel {
     OptionsManager.getInstance().removeRepositoryLocations(entries);
   }
 
+  
 	/**
 	 * Adds a file chooser to the browse button.
 	 */
 	private void addFileChooserListner() {
+		// NOSONAR
 		browseButton.addActionListener(
-		    new ActionListener() { // NOSONAR
+						e -> {
+							File directory = PluginWorkspaceProvider.getPluginWorkspace().chooseDirectory();
+							if (directory != null) {
+								String directoryPath = directory.getAbsolutePath();
+								if (FileUtil.isGitRepository(directoryPath)) {
+									// adds the directory path to the combo box if it doesn't already exist
+									OptionsManager.getInstance().addRepository(directoryPath);
 
-			@Override
-      public void actionPerformed(ActionEvent e) {
-				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
-				if (directory != null) {
-					String directoryPath = directory.getAbsolutePath();
-					if (FileUtil.isGitRepository(directoryPath) && directoryPath != null) {
-						// adds the directory path to the combo box if it doesn't already exist
-					  OptionsManager.getInstance().addRepository(directoryPath);
-					  
-					  // Insert it first.
-						DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
-						defaultComboBoxModel.removeElement(directoryPath);
-            defaultComboBoxModel.insertElementAt(directoryPath, 0);
-            if (defaultComboBoxModel.getSize() == 2
-                && defaultComboBoxModel.getIndexOf(CLEAR_HISTORY_ENTRY) == -1) {
-              // When there is another entry in the model except for the selected one,
-              // also add the "Clear history..." entry
-              defaultComboBoxModel.addElement(CLEAR_HISTORY_ENTRY);
-            }
-              
-						// sets the directory path as the selected repository
-						SwingUtilities.invokeLater(() -> workingCopyCombo.setSelectedItem(directoryPath));
-					} else {
-						PluginWorkspaceProvider.getPluginWorkspace()
-								.showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_NOT_GIT_DIRECTORY));
-					}
-				}
-			}
-		});
+									// Insert it first.
+									DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
+									defaultComboBoxModel.removeElement(directoryPath);
+									defaultComboBoxModel.insertElementAt(directoryPath, 0);
+									if (defaultComboBoxModel.getSize() == 2
+											&& defaultComboBoxModel.getIndexOf(CLEAR_HISTORY_ENTRY) == -1) {
+										// When there is another entry in the model except for the selected one,
+										// also add the "Clear history..." entry
+										defaultComboBoxModel.addElement(CLEAR_HISTORY_ENTRY);
+									}
+
+									// sets the directory path as the selected repository
+									SwingUtilities.invokeLater(() -> workingCopyCombo.setSelectedItem(directoryPath));
+								} else {
+									PluginWorkspaceProvider.getPluginWorkspace()
+											.showInformationMessage(TRANSLATOR.getTranslation(Tags.WORKINGCOPY_NOT_GIT_DIRECTORY));
+								}
+							}
+						});
 
 	}
 
+	
 	/**
 	 * Adds the label to the panel
 	 * 
@@ -267,10 +267,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		this.add(new JLabel(translator.getTranslation(Tags.WORKING_COPY_LABEL)), gbc);
+		this.add(new JLabel(TRANSLATOR.getTranslation(Tags.WORKING_COPY_LABEL)), gbc);
 
 	}
 
+	
 	/**
 	 * Adds the combo box to the panel
 	 * 
@@ -298,6 +299,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  this.add(workingCopyCombo, gbc);
 	}
 
+	
 	/**
 	 * Load the recorded working copy locations into the combo.
 	 */
@@ -320,6 +322,7 @@ public class WorkingCopySelectionPanel extends JPanel {
     }
   }
 
+  
 	/**
 	 * Adds the browse button to the panel
 	 * 
@@ -338,7 +341,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 		browseButton = new ToolbarButton(null, false);
 		browseButton.setIcon(Icons.getIcon(Icons.FILE_CHOOSER_ICON));
-		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
+		browseButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
 		browswtoolbar.setFloatable(false);
@@ -346,6 +349,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		this.add(browswtoolbar, gbc);
 	}
 
+	
 	/**
 	 * 
 	 * Renderer for the combo box. Displaying only the folder project. Not the
@@ -364,8 +368,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			if (value != null) {
-			  if (((String) value).equals(CLEAR_HISTORY_ENTRY)) {
-			    comp.setText(translator.getTranslation(Tags.CLEAR_HISTORY) + "...");
+			  if (value.equals(CLEAR_HISTORY_ENTRY)) {
+			    comp.setText(TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY) + "...");
 			    comp.setFont(comp.getFont().deriveFont(Font.ITALIC));
 			  } else {
 			    comp.setToolTipText((String) value);
@@ -379,17 +383,21 @@ public class WorkingCopySelectionPanel extends JPanel {
 		}
 	}
 	
+	
 	/**
 	 * Listens on Git events and updates the GUI accordingly.
 	 */
 	private class GitEventUpdater extends GitEventAdapter {
-    @Override
+    
+	  
+	  @Override
     public void operationAboutToStart(GitEventInfo info) {
       if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
         setWCSelectorsEnabled(false);
       }
     }
 
+	  
     @Override
     public void operationSuccessfullyEnded(GitEventInfo info) {
       if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
@@ -405,6 +413,12 @@ public class WorkingCopySelectionPanel extends JPanel {
       }
     }
     
+    
+    /**
+     * Update the WC selectors enabled.
+     * 
+     * @param isEnabled the new state.
+     */
     private void setWCSelectorsEnabled(boolean isEnabled) {
       if (workingCopyCombo != null) {
         workingCopyCombo.setEnabled(isEnabled);
@@ -413,6 +427,7 @@ public class WorkingCopySelectionPanel extends JPanel {
         browseButton.setEnabled(isEnabled);
       }
     }
+    
     
     @Override
     public void operationFailed(GitEventInfo info, Throwable t) {
@@ -424,7 +439,7 @@ public class WorkingCopySelectionPanel extends JPanel {
               removeInexistentRepo(wcInfo.getWorkingCopy());
 
               SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
-                  .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
+                  .showInformationMessage(TRANSLATOR.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
             } else if (t instanceof IOException) {
               SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
                   .showErrorMessage("Could not load the repository. " + t.getMessage()));
@@ -437,6 +452,7 @@ public class WorkingCopySelectionPanel extends JPanel {
         }
       }
     }
+    
 
     /**
      * Remove inexistent repo (actually working-copy).
@@ -451,10 +467,11 @@ public class WorkingCopySelectionPanel extends JPanel {
         workingCopyCombo.setSelectedIndex(0);
       } else {
         workingCopyCombo.setSelectedItem(null);
-        gitAccess.closeRepo();
+        GIT_ACCESS.closeRepo();
       }
       workingCopyCombo.removeItem(wcDir);
     }
+    
     
     /**
      * Updates the combo box model with the currently loaded repository.
@@ -499,11 +516,12 @@ public class WorkingCopySelectionPanel extends JPanel {
           }
         }
       } catch (NoRepositorySelected e) {
-        logger.debug(e, e);
+        LOGGER.debug(e, e);
       }
     }
 	}
 
+	
 	/**
 	 * @return the working copy combo.
 	 */
@@ -511,6 +529,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  return workingCopyCombo;
 	}
 
+	
 	/**
 	 * @return the "Browse" button.
 	 */

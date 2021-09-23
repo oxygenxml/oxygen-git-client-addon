@@ -32,7 +32,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
   /**
    * Tells if a contextual menu is presented over the table.
    */
-  private BooleanSupplier contextMenuShowing;
+  private final BooleanSupplier contextMenuShowing;
   
   /**
    * The file/folder to show history.
@@ -149,15 +149,15 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
 
     ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
     if(colorTheme != null) {
-      if(searchedFilePath instanceof String && 
-          !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
+      if(searchedFilePath != null &&
+          !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/"))) {
         tableCellRendererComponent.setForeground(
             colorTheme.isDarkTheme() ?
                 UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
       } else {
         tableCellRendererComponent.setForeground(
             colorTheme.isDarkTheme() ?
-                UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);;
+                UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
       }
     }
 
