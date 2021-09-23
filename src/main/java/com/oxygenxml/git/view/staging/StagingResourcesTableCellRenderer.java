@@ -20,7 +20,6 @@ import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
 import com.oxygenxml.git.view.util.UIUtil;
 
-import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
 
@@ -147,22 +146,21 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * @param tableCellRendererComponent     The displayed Jlabel. 
    */
   private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
-	  PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-	  if(pluginWorkspace != null) {
-		  ColorTheme colorTheme = pluginWorkspace.getColorTheme();
-		  if(colorTheme != null) {
-			  if(searchedFilePath instanceof String && 
-					  !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
-				  tableCellRendererComponent.setForeground(
-						  colorTheme.isDarkTheme() ?
-								  UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
-			  } else {
-				  tableCellRendererComponent.setForeground(
-						  colorTheme.isDarkTheme() ?
-								  UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);;
-			  }
-		  }
-	  }
+
+    ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
+    if(colorTheme != null) {
+      if(searchedFilePath instanceof String && 
+          !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
+        tableCellRendererComponent.setForeground(
+            colorTheme.isDarkTheme() ?
+                UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
+      } else {
+        tableCellRendererComponent.setForeground(
+            colorTheme.isDarkTheme() ?
+                UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);;
+      }
+    }
+
   }
   
   

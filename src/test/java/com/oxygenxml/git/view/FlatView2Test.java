@@ -680,7 +680,6 @@ public class FlatView2Test extends FlatViewTestBase {
           rebaseInProgressDlg.getRootPane(),
           Translator.getInstance().getTranslation(Tags.CONTINUE_REBASE));
       
-      System.out.println("Click the button");
       continueBtn.doClick();
       
       flushAWT();
