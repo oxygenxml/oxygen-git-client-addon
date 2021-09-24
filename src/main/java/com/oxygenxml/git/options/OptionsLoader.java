@@ -3,6 +3,7 @@ package com.oxygenxml.git.options;
 import java.io.File;
 import java.io.StringReader;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.OxygenGitPlugin;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
 /**
  * Creates an options object. handles bakwards compatibility.
@@ -28,7 +30,7 @@ public class OptionsLoader {
   /**
    * The initial key used to saved options.
    */
-  private static final String OLD_GIT_PLUGIN_OPTIONS = "MY_PLUGIN_OPTIONS";
+  public static final String OLD_GIT_PLUGIN_OPTIONS = "MY_PLUGIN_OPTIONS";
   /**
    * A proper name for the options.
    */
@@ -38,21 +40,21 @@ public class OptionsLoader {
    * Uses JAXB to load all the selected repositories from the users in the
    * repositoryOptions variable.
    * 
+   * @param wsOptionsStorage Oxygen options storage.
+   * 
    * @return An options instance.
    */
-  public static OptionsInterface loadOptions() {
-    OptionsInterface options = loadOldJaxbOptions();
-    logger.info("Old options " + options);
-    if (options != null) {
+  public static OptionsInterface loadOptions(WSOptionsStorage wsOptionsStorage) {
+    OptionsInterface options = null;
+    Optional<OptionsInterface> oldOptions = loadOldJaxbOptions();
+    if (oldOptions.isPresent()) {
       // Reset old keys.
-      resetOldJaxbOptions();
+      resetOldJaxbOptions(wsOptionsStorage);
       // Backwards compatibility. Copy old options into the new one.
-      options = copyOldOptionsIntoNewTagsOptions(options);
+      options = copyOldOptionsIntoNewTagsOptions(oldOptions.get(), wsOptionsStorage);
     } else {
-      options = new OptionsWithTags(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
+      options = new OptionsWithTags(wsOptionsStorage);
     }
-    
-    logger.info("Goinf with the new : " + options);
     
     return options;
   }
@@ -61,12 +63,12 @@ public class OptionsLoader {
    * Copy this old options into a new options object based on tags.
    * 
    * @param oldOptions Old options.
+   * @param os Oxygen API options storage. 
    * 
    * @return A new instance of options that uses tags.
    */
-  private static OptionsInterface copyOldOptionsIntoNewTagsOptions(OptionsInterface oldOptions) {
-    logger.info("Use " + PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
-    OptionsInterface newOptions = new OptionsWithTags(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
+  private static OptionsInterface copyOldOptionsIntoNewTagsOptions(OptionsInterface oldOptions, WSOptionsStorage os) {
+    OptionsInterface newOptions = new OptionsWithTags(os);
     
     newOptions.setAutoPushWhenCommitting(oldOptions.isAutoPushWhenCommitting());
     newOptions.setDefaultPullType(oldOptions.getDefaultPullType()) ;
@@ -98,21 +100,20 @@ public class OptionsLoader {
   }
 
   /**
-   * Resets the old Jaxb-related options.
+   * Resets the old JAXB-related options.
+   * 
+   * @param wsOptionsStorage Oxygen API options storage.
    */
-  private static void resetOldJaxbOptions() {
-    if (PluginWorkspaceProvider.getPluginWorkspace() != null && PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage() != null) {
-      PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(OLD_GIT_PLUGIN_OPTIONS, null);
-      PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS, null);
-    }
+  private static void resetOldJaxbOptions(WSOptionsStorage wsOptionsStorage) {
+    wsOptionsStorage.setOption(OLD_GIT_PLUGIN_OPTIONS, null);
+    wsOptionsStorage.setOption(GIT_PLUGIN_OPTIONS, null);
   }
 
   /**
    * @return The old Jaxb-based options stored in Oxygen options under a single key.
    */
-  private static OptionsInterface loadOldJaxbOptions() {
-    OptionsInterface options;
-    options = new Options();
+  private static Optional<OptionsInterface> loadOldJaxbOptions() {
+    OptionsInterface options = null;
     try {
       JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -151,7 +152,7 @@ public class OptionsLoader {
       logger.warn("Options not loaded: " + e, e);
     }
     
-    return options;
+    return Optional.ofNullable(options);
   }
   
   /**

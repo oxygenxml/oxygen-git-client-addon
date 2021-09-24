@@ -101,12 +101,6 @@ public class PersonalAccessTokenInfo extends CredentialsBase implements External
   @SuppressWarnings("java:S2975")
   @Override
   public Object clone()  {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      LOGGER.error(e, e);
-    }
-    return new PersonalAccessTokenInfo();
+    return super.clone();
   }
-  
 }

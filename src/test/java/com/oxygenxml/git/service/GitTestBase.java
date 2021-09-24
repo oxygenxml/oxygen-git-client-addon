@@ -86,7 +86,6 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
-import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
@@ -444,6 +443,13 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         return object != null ? (String) object : "";
       }
     });
+    Mockito.when(xmlUtilAccess.unescapeAttributeValue(Mockito.anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        Object object = invocation.getArguments()[0];
+        return object != null ? (String) object : "";
+      }
+    });
     Mockito.doReturn(xmlUtilAccess).when(pluginWSMock).getXMLUtilAccess();
     
     UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
@@ -499,22 +505,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
       }
     }).when(projectCtrlMock).refreshFolders(Mockito.any());
     
-    WSOptionsStorage wsOptions = Mockito.mock(WSOptionsStorage.class);
-    Mockito.when(wsOptions.getOption(Mockito.anyString(), Mockito.anyString())).thenAnswer(new Answer<String>() {
-      @Override
-      public String answer(InvocationOnMock invocation) throws Throwable {
-        return invocation.getArgument(1);
-      }});
-    Mockito.when(wsOptions.getStringArrayOption(Mockito.anyString(), Mockito.any())).thenAnswer(new Answer<String[]>() {
-      @Override
-      public String[] answer(InvocationOnMock invocation) throws Throwable {
-        return invocation.getArgument(1);
-      }});
-    Mockito.when(wsOptions.getPersistentObjectOption(Mockito.anyString(), Mockito.any())).thenAnswer(new Answer<ExternalPersistentObject>() {
-      @Override
-      public ExternalPersistentObject answer(InvocationOnMock invocation) throws Throwable {
-        return invocation.getArgument(1);
-      }});
+    WSOptionsStorage wsOptions = new TestWsOptionsStorage();
     Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
     
     installGitProtocol();
