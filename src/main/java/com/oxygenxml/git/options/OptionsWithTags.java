@@ -12,12 +12,35 @@ import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
+/**
+ * Class used for the new way of saving options. Each option is saved independently using WSOptionStorage API
+ * 
+ * @author alex_jitianu
+ * @author gabriel_nedianu
+ *
+ */
 public class OptionsWithTags implements OptionsInterface {
   
+  /**
+   * Default boolean value "True"
+   */
   private static final String TRUE = "true";
+  
+  /**
+   * Default boolean value "False"
+   */
   private static final String FALSE = "false";
+  
+  /**
+   * WSOptionsStorage supports for saving and retrieving custom options in the Oxygen common preferences.
+   */
   private WSOptionsStorage wsOptionsStorage;
 
+  /**
+   * Constructor 
+   * 
+   * @param wsOptionsStorage
+   */
   public OptionsWithTags(WSOptionsStorage wsOptionsStorage) {
     this.wsOptionsStorage = wsOptionsStorage;
   }
@@ -124,40 +147,23 @@ public class OptionsWithTags implements OptionsInterface {
         locations != null ? locations.toArray(new String[0]) : new String[0]);
   }
 
-  /**
-   * Set when to verify for remote changes in the repository.
-   * 
-   * @param notifyAboutNewRemoteCommits Option chosen about if to verify or not.
-   */
   @Override
   public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
     wsOptionsStorage.setOption(OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS, String.valueOf(notifyAboutNewRemoteCommits));
     
   }
   
-  /**
-   * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
-   * checkout a newly created local branch.
-   */
   @Override
   public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) {
     wsOptionsStorage.setOption(OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH, String.valueOf(isCheckoutNewlyCreatedLocalBranch));
     
   }
 
-  /**
-   * Get the option about when to verify about remote changes in the repository.
-   * 
-   * @return Option stored about to verify or not.
-   */
   @Override
   public boolean isNotifyAboutNewRemoteCommits() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS, FALSE));
   }
 
-  /**
-   * @return <code>true</code> to automatically checkout a newly created local branch.
-   */
   @Override
   public boolean isCheckoutNewlyCreatedLocalBranch() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH, FALSE));
@@ -314,13 +320,13 @@ public class OptionsWithTags implements OptionsInterface {
   public static UserCredentialsList arrayToCredentialsList(String[] array) {
     UserCredentialsList userCredentialsList = new UserCredentialsList();
     
-    if (array.length %3 != 0 || array.length == 0) {
+    if (array.length % 3 != 0 || array.length == 0) {
       return userCredentialsList;
     }
 
     List<UserAndPasswordCredentials> uapcList = new ArrayList<>();
     
-    for (int i = 0; i <= array.length - 3; i = i+3) {
+    for (int i = 0; i <= array.length - 3; i = i + 3) {
       UserAndPasswordCredentials uapc = new UserAndPasswordCredentials();
       uapc.setUsername(array[i]);
       uapc.setPassword(array[i + 1]);
