@@ -1,5 +1,6 @@
 package com.oxygenxml.git.options;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -202,12 +203,16 @@ public class OptionsWithTags implements OptionsInterface {
 
   @Override
   public UserCredentialsList getUserCredentialsList() {
-    return (UserCredentialsList) wsOptionsStorage.getPersistentObjectOption(OptionTags.USER_CREDENTIALS_LIST, new UserCredentialsList());
+    String[] credentialsList = wsOptionsStorage.getStringArrayOption(OptionTags.USER_CREDENTIALS_LIST, new String[0]);
+    
+    return arrayToCredentialsList(credentialsList);
   }
 
   @Override
   public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
-    wsOptionsStorage.setPersistentObjectOption(OptionTags.USER_CREDENTIALS_LIST, userCredentialsList);
+    String[] credentialsArray = credentialsListToArray(userCredentialsList);
+    
+    wsOptionsStorage.setStringArrayOption(OptionTags.USER_CREDENTIALS_LIST, credentialsArray);
   }
 
   @Override
@@ -288,12 +293,114 @@ public class OptionsWithTags implements OptionsInterface {
 
   @Override
   public PersonalAccessTokenInfoList getPersonalAccessTokensList() {
-    return (PersonalAccessTokenInfoList) wsOptionsStorage.getPersistentObjectOption(OptionTags.PERSONAL_ACCES_TOKENS_LIST, new PersonalAccessTokenInfoList());
+    String[] tokensArray = wsOptionsStorage.getStringArrayOption(OptionTags.PERSONAL_ACCES_TOKENS_LIST, new String[0]);
+
+    return arrayToTokenList(tokensArray);
   }
 
   @Override
   public void setPersonalAccessTokensList(PersonalAccessTokenInfoList paTokensList) {
-    wsOptionsStorage.setPersistentObjectOption(OptionTags.PERSONAL_ACCES_TOKENS_LIST, paTokensList);
+    String[] tokensArray = tokenListToArray(paTokensList);
+    wsOptionsStorage.setStringArrayOption(OptionTags.PERSONAL_ACCES_TOKENS_LIST, tokensArray);
+  }
+  
+  /**
+   * Used to convert an array to a UserCredentialsList
+   * 
+   * @param array, the array that we want to convert to a UserCredentialsList
+   * 
+   * @return a UserCredentialsList
+   */
+  public static UserCredentialsList arrayToCredentialsList(String[] array) {
+    UserCredentialsList userCredentialsList = new UserCredentialsList();
+    
+    if (array.length %3 != 0 || array.length == 0) {
+      return userCredentialsList;
+    }
+
+    List<UserAndPasswordCredentials> uapcList = new ArrayList<>();
+    
+    for (int i = 0; i <= array.length - 3; i = i+3) {
+      UserAndPasswordCredentials uapc = new UserAndPasswordCredentials();
+      uapc.setUsername(array[i]);
+      uapc.setPassword(array[i + 1]);
+      uapc.setHost(array[i + 2]);
+      uapcList.add(uapc);
+    }
+    
+    userCredentialsList.setCredentials(uapcList);
+    
+    return userCredentialsList;
+  }
+  
+  /**
+   * Used to convert a UserCredentialsList to an array
+   * 
+   * @param  a UserCredentialsList that we want to convert to an array
+   * 
+   * @return an array
+   */
+  public static String[] credentialsListToArray(UserCredentialsList userCredentialsList) {
+    String[] array = new String[3 * userCredentialsList.getCredentials().size()];
+    
+    int i = 0;
+    for (UserAndPasswordCredentials uapc: userCredentialsList.getCredentials()) {
+      array[i] = uapc.getUsername();
+      array[i + 1] = uapc.getPassword();
+      array[i + 2] = uapc.getHost();
+      i = i + 3;
+    }
+    
+    return array;
+  }
+  
+  /**
+   * Used to convert an array to a PersonalAccessTokenInfoList
+   * 
+   * @param array the array that we want to convert to a PersonalAccessTokenInfoList
+   * 
+   * @return a PersonalAccessTokenInfoList
+   */
+  public static PersonalAccessTokenInfoList arrayToTokenList(String[] array) {
+    PersonalAccessTokenInfoList personalAccessTokenInfoList = new PersonalAccessTokenInfoList();
+    
+    
+    if (array.length%2 == 1 || array.length == 0) {
+      return personalAccessTokenInfoList;
+    }
+    
+    List<PersonalAccessTokenInfo> tokensList = new ArrayList<>();
+    
+    for (int i = 0; i <= array.length-2; i = i+2) {
+      PersonalAccessTokenInfo tokenInfo = new PersonalAccessTokenInfo();
+      tokenInfo.setHost(array[i]);
+      tokenInfo.setTokenValue(array[i+1]);
+      tokensList.add(tokenInfo);
+    }
+    
+    personalAccessTokenInfoList.setPersonalAccessTokens(tokensList);
+    
+    return personalAccessTokenInfoList;
+  }
+  
+  /**
+   * Used to convert a PersonalAccessTokenInfoList to an array
+   * 
+   * @param  a PersonalAccessTokenInfoList that we want to convert to an array
+   * 
+   * @return an array
+   */
+  public static String[] tokenListToArray(PersonalAccessTokenInfoList personalAccessTokenInfoList) {
+    String[] array = new String[2 * personalAccessTokenInfoList.getPersonalAccessTokens().size()];
+    
+    int i = 0;
+    for (PersonalAccessTokenInfo token : personalAccessTokenInfoList.getPersonalAccessTokens()) {
+      array[i] = token.getHost();
+      array[i+1] = token.getTokenValue();
+      i = i + 2;
+    }
+    
+    return array;
   }
   
   /**
