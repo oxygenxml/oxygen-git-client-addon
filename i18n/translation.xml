@@ -59,6 +59,16 @@
      <key value="Uncommitted_changes_when_switching_branches">
         <comment>The message in the question dialog shown when you switch branches 
         	and you have uncommitted changes.</comment>
+        <val lang="en_US">You have uncommitted changes on the current branch ("{0}").
+        	\nYou can stash them on this branch for later use or move them to branch "{1}".</val>
+        <val lang="de_DE">You have uncommitted changes on the current branch ("{0}").
+        	\nYou can stash them on this branch for later use or move them to branch "{1}".</val>
+        <val lang="fr_FR">You have uncommitted changes on the current branch ("{0}").
+        	\nYou can stash them on this branch for later use or move them to branch "{1}".</val>
+        <val lang="ja_JP">You have uncommitted changes on the current branch ("{0}").
+        	\nYou can stash them on this branch for later use or move them to branch "{1}".</val>
+        <val lang="nl_NL">You have uncommitted changes on the current branch ("{0}").
+        	\nYou can stash them on this branch for later use or move them to branch "{1}".</val>
         <val lang="en_US">You have uncommitted changes on the current branch.
         	\nYou can stash them on this branch for later use or move them to the new branch.</val>
         <val lang="de_DE">You have uncommitted changes on the current branch.

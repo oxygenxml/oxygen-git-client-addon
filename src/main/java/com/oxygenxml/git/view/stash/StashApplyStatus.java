@@ -32,8 +32,5 @@ public enum StashApplyStatus {
    * If the "Apply stash" operation cannot be started because there are conflicts in the WC.
    */
   CANNOT_START_APPLY_BECAUSE_CONFLICTS,
-  /**
-   * If the "Apply stash" operation can be started.
-   */
-  STASH_APPLY_READY_TO_START
+
 }

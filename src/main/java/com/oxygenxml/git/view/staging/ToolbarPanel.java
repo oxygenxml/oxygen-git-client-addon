@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -13,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,12 +28,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.StringUtils;
 
@@ -59,11 +54,8 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.branches.BranchesUtil;
-import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
-import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
@@ -187,11 +179,6 @@ public class ToolbarPanel extends JPanel {
   private JToolBar gitToolbar;
 
   /**
-   * SplitMenuButton for selecting the local branch.
-   */
-  private final SplitMenuButton branchesSplitMenuButton;
-
-  /**
    * Used to execute the push and pull commands
    */
   private final GitController gitController;
@@ -291,7 +278,6 @@ public class ToolbarPanel extends JPanel {
       BranchManagementViewPresenter branchManagementViewPresenter) {
     this.gitController = gitController;
     this.refreshSupport = refreshSupport;
-    this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
 
     createGUI(historyController, branchManagementViewPresenter);
 
@@ -303,7 +289,7 @@ public class ToolbarPanel extends JPanel {
           // Repository changed. Update the toolbar buttons.
           submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
 
-          // Update the toobars.
+          // Update the toolbars.
           // calculate how many pushes ahead and pulls behind the current
           // selected working copy is from the base. It is on thread because
           // the fetch command takes a longer time
@@ -419,13 +405,13 @@ public class ToolbarPanel extends JPanel {
 		this.setLayout(new GridBagLayout());
 		
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = 0;
+		gbc.gridy = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weighty = 0;
+		gbc.weightx = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 0, 0, 0);
 		
 		addCloneRepositoryButton();
 		addPushAndPullButtons();
@@ -437,141 +423,8 @@ public class ToolbarPanel extends JPanel {
 		addSettingsButton();
 		this.add(gitToolbar, gbc);
 
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.anchor = GridBagConstraints.EAST;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		this.add(branchesSplitMenuButton, gbc);
-		 
 		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
-
-  /**
-   * Updates the local branches in the split menu button where you can checkout them.
-   */
-  private void updateBranchesMenu() {
-    boolean isVisible = branchesSplitMenuButton.isPopupMenuVisible();
-    branchesSplitMenuButton.setPopupMenuVisible(false);
-
-    branchesSplitMenuButton.removeAll();
-    addActionsToBranchSplitMenuButton(getBranches());
-
-    branchesSplitMenuButton.revalidate();
-    branchesSplitMenuButton.setPopupMenuVisible(isVisible);
-  }
-
-  /**
-   * Adds the branches given as a parameter to the branchSplitMenuButton.
-   * 
-   * @param branches A list with the branches to be added.
-   */
-  private void addActionsToBranchSplitMenuButton(List<String> branches) {
-    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-    ButtonGroup branchActionsGroup = new ButtonGroup();
-
-    branches.forEach((String branchName) -> {
-      AbstractAction checkoutAction = createCheckoutActionForBranch(branchName);
-      JRadioButtonMenuItem branchRadioButtonMenuItem = new JRadioButtonMenuItem(checkoutAction);
-      branchActionsGroup.add(branchRadioButtonMenuItem);
-      branchesSplitMenuButton.add(branchRadioButtonMenuItem);
-      if (branchName.equals(currentBranchName)) {
-        branchRadioButtonMenuItem.setSelected(true);
-      }
-    });
-    
-  }
-  
-
-  /**
-   * Gets all the local branches from the current repository.
-   * 
-   * @return The list of local branches.
-   */
-  private List<String> getBranches() {
-    List<String> localBranches = new ArrayList<>();
-    try {
-      localBranches = BranchesUtil.getLocalBranches();
-    } catch (NoRepositorySelected e1) {
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
-    }
-    return localBranches;
-  }
-  
-  /**
-   * Creates the checkout action for a local branch.
-   * 
-   * @param branchName The name of the branch to checkout.
-   * 
-   * @return The action created.
-   */
-  private AbstractAction createCheckoutActionForBranch(String branchName) {
-    return new AbstractAction(branchName) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
-        if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-          BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog();
-
-          dialog.setVisible(true);
-
-          int answer = dialog.getResult();
-
-          if(answer == OKOtherAndCancelDialog.RESULT_OTHER) {
-            tryCheckingOutBranch(branchName);
-          } else if(answer == OKOtherAndCancelDialog.RESULT_OK) {
-            boolean wasStashCreated = StashUtil.stashChanges();
-            if(wasStashCreated) {
-              tryCheckingOutBranch(branchName);
-            }
-          } else {
-            restoreCurrentBranchSelectionInMenu();
-          }
-        } else {
-          tryCheckingOutBranch(branchName);
-        }
-      }
-    };
-    
-  }
-
-  /**
-   * The action performed for this Abstract Action
-   * 
-   * @param branchName Branch name.
-   */
-  private void tryCheckingOutBranch(String branchName) {
-    GitOperationScheduler.getInstance().schedule(() -> {
-      try {
-        GitAccess.getInstance().setBranch(branchName);
-        BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
-      } catch (CheckoutConflictException ex) {
-        LOGGER.debug(ex, ex);
-        restoreCurrentBranchSelectionInMenu();
-        BranchesUtil.showBranchSwitchErrorMessage();
-      } catch (GitAPIException | JGitInternalException | IOException | NoRepositorySelected ex) {
-        restoreCurrentBranchSelectionInMenu();
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-      }
-    });
-  }
-
-  /**
-   * Restore current branch selection in branches menu.
-   */
-  private void restoreCurrentBranchSelectionInMenu() {
-    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-    Component[] menuComponents = branchesSplitMenuButton.getMenuComponents();
-    for (Component component : menuComponents) {
-      JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) component;
-      if (menuItem.getText().equals(currentBranchName)) {
-        menuItem.setSelected(true);
-        break;
-      }
-    }
-  }
 
   /**
    * Add the settings button.
@@ -724,7 +577,6 @@ public class ToolbarPanel extends JPanel {
     refreshTagsButton();
 
     SwingUtilities.invokeLater(() -> {
-      updateBranchesMenu();
       pullMenuButton.repaint();
       pushButton.repaint();
       stashButton.repaint();
@@ -739,27 +591,13 @@ public class ToolbarPanel extends JPanel {
 
     BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
-    String branchInfoText = "";
     if (branchInfo.isDetached()) {
-      branchInfoText += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
-      String tooltipText = "<html>"
-          + TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
-          + " "
-          + currentBranchName;
-      if (repo != null && repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
-        tooltipText += "<br>" + TRANSLATOR.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
-      }
-      tooltipText += "</html>";
-      String finalText = tooltipText;
       SwingUtilities.invokeLater(() -> {
-        branchesSplitMenuButton.setToolTipText(finalText);
         pushButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
         pullMenuButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
       });
     } else {
-      String branchTooltip = null;
       if (currentBranchName != null && !currentBranchName.isEmpty()) {
-        branchInfoText = "<html><b>" + currentBranchName + "</b></html>";
 
         String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
         boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
@@ -770,19 +608,9 @@ public class ToolbarPanel extends JPanel {
                 : null;
         Ref remoteBranchRefForUpstreamFromConfig = 
             isAnUpstreamBranchDefinedInConfig 
-            ? getRemoteBranch(upstreamShortestName) 
+            ? RepoUtil.getRemoteBranch(upstreamShortestName) 
                 : null;
         boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
-
-        branchTooltip = "<html>"
-            + TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
-            + " <b>" + currentBranchName + "</b>.<br>"
-            + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
-            + " <b>" 
-            + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig 
-                ? upstreamBranchFromConfig 
-                    : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
-            + "</b>.<br>";
 
         String commitsBehindMessage = "";
         String commitsAheadMessage = "";
@@ -794,7 +622,6 @@ public class ToolbarPanel extends JPanel {
           } else {
             commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
           }
-          branchTooltip += commitsBehindMessage + "<br>";
 
           if (pushesAhead == 0) {
             commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
@@ -803,10 +630,7 @@ public class ToolbarPanel extends JPanel {
           } else {
             commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
           }
-          branchTooltip += commitsAheadMessage;
         }
-
-        branchTooltip += "</html>";
 
         // ===================== Push button tooltip =====================
         String pushButtonTooltipFinal = updatePushToolTip(
@@ -829,12 +653,7 @@ public class ToolbarPanel extends JPanel {
         SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
 
       }
-      String branchTooltipFinal = branchTooltip;
-      SwingUtilities.invokeLater(() -> branchesSplitMenuButton.setToolTipText(branchTooltipFinal));
     }
-    String branchInfoTextFinal = branchInfoText;
-    SwingUtilities.invokeLater(() -> branchesSplitMenuButton.setText(branchInfoTextFinal));
-
   }
 
   /**
@@ -901,7 +720,7 @@ public class ToolbarPanel extends JPanel {
    * @param tooltipBuilder    Tooltip builder.
    */
   private void updatePushTooltipWhenNoUpstream(String currentBranchName, StringBuilder tooltipBuilder) {
-    Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
     if (remoteBranchWithLocalBranchName != null) {
       // No upstream branch defined in "config", but there is a remote branch
       // that has the same name as the local branch.
@@ -992,7 +811,7 @@ public class ToolbarPanel extends JPanel {
   private void updatePullTooltipWhenNoUpstream(
       StringBuilder tooltipBuilder,
       String currentBranchName) {
-    Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
     if (remoteBranchWithLocalBranchName != null) {
       // No upstream defined in config, but there is a remote branch
       // that has the same name as the local branch
@@ -1091,30 +910,6 @@ public class ToolbarPanel extends JPanel {
       }
     }
     return pullFromTag;
-  }
-
-  /**
-   * Get the remote branch that has the given name.
-   * This seems to look in ".git\refs\remotes\origin" for the necessary information.
-   * 
-   * @param branchName Local branch name.
-   * 
-   * @return The remote branch or <code>null</code>;
-   */
-  private Ref getRemoteBranch(String branchName) {
-    Ref remoteBranchWithLocalBranchName = null;
-    if (branchName != null) {
-      List<Ref> remoteBrachListForCurrentRepo = GitAccess.getInstance().getRemoteBrachListForCurrentRepo();
-      for (Ref remoteBranchRef : remoteBrachListForCurrentRepo) {
-        String remoteBranchName = Repository.shortenRefName(remoteBranchRef.getName());
-        remoteBranchName = remoteBranchName.substring(remoteBranchName.lastIndexOf('/') + 1);
-        if (remoteBranchName.equals(branchName)) {
-          remoteBranchWithLocalBranchName = remoteBranchRef;
-          break;
-        }
-      }
-    }
-    return remoteBranchWithLocalBranchName;
   }
 
   /**
@@ -1492,10 +1287,6 @@ public class ToolbarPanel extends JPanel {
 
   public SplitMenuButton getPullMenuButton() {
     return pullMenuButton;
-  }
-
-  public SplitMenuButton getBranchSplitMenuButton() {
-    return branchesSplitMenuButton;
   }
 
   public SplitMenuButton getSettingsMenuButton() {

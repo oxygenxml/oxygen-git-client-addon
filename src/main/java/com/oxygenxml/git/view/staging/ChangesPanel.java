@@ -104,7 +104,7 @@ public class ChangesPanel extends JPanel {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(ChangesPanel.class);
+  private static final Logger LOGGER = Logger.getLogger(ChangesPanel.class);
   
   /**
    * The current view name.
@@ -118,7 +118,7 @@ public class ChangesPanel extends JPanel {
     /**
      * Tree view.
      */
-    TREE_VIEW;
+    TREE_VIEW
   }
 
 	/**
@@ -149,17 +149,17 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * Tree that stores the files
 	 */
-	private JTree tree = null;
+	private final JTree tree;
 
 	/**
 	 * Used to fire an event
 	 */
-	private GitControllerBase gitController;
+	private final GitControllerBase gitController;
 
 	/**
 	 * Shows whether or not this is the panel for staged or unstaged resources. 
 	 */
-	private boolean forStagedResources;
+	private final boolean forStagedResources;
 
 	/**
 	 * The active view in the scroll pane
@@ -169,7 +169,7 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private Translator translator = Translator.getInstance();
+	private final static Translator TRANSLATOR = Translator.getInstance();
 	
 	/**
 	 * Popup menu listener for the tree and table context menu.
@@ -197,7 +197,7 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * History interface.
 	 */
-  private HistoryController historyController;
+  private final HistoryController historyController;
 
 	/**
 	 * Constructor.
@@ -254,7 +254,7 @@ public class ChangesPanel extends JPanel {
                     ex -> refresh(Collections.emptyList()));
               }
             } catch (NoRepositorySelected ex) {
-              logger.debug(ex, ex);
+              LOGGER.debug(ex, ex);
               ChangesPanel.this.repositoryChanged(Collections.emptyList());
             }
           
@@ -425,12 +425,12 @@ public class ChangesPanel extends JPanel {
 	 */
 	private List<FileStatus> getTableSelectedFiles() {
 		List<FileStatus> selectedFiles = new ArrayList<>();
-		int[] selectedRows = null;
+		int[] selectedRows;
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		selectedRows = filesTable.getSelectedRows();
 		if (selectedRows != null) {
-			for (int i = 0; i < selectedRows.length; i++) {
-				int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+			for (int selectedRow : selectedRows) {
+				int convertedRow = filesTable.convertRowIndexToModel(selectedRow);
 				selectedFiles.add(model.getUnstageFile(convertedRow));
 			}
 		}
@@ -477,8 +477,8 @@ public class ChangesPanel extends JPanel {
 	  
 	  
 	  // Label
-	  JLabel label = new JLabel(forStagedResources ? translator.getTranslation(Tags.STAGED_FILES) + ":" 
-	      : translator.getTranslation(Tags.UNSTAGED_FILES) + ":");
+	  JLabel label = new JLabel(forStagedResources ? TRANSLATOR.getTranslation(Tags.STAGED_FILES) + ":"
+	      : TRANSLATOR.getTranslation(Tags.UNSTAGED_FILES) + ":");
 	  GridBagConstraints c = new GridBagConstraints();
 	  c.gridx = 0;
 	  c.gridy = 0;
@@ -527,7 +527,7 @@ public class ChangesPanel extends JPanel {
     String changeSelectedIconTag = forStagedResources ? Icons.UNSTAGE_SELECTED : Icons.STAGE_SELECTED;
     changeSelectedButton = OxygenUIComponentsFactory.createToolbarButton(
         new AbstractAction(
-            translator.getTranslation(changeSelectedTranslationTag),
+            TRANSLATOR.getTranslation(changeSelectedTranslationTag),
             Icons.getIcon(changeSelectedIconTag)) {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -566,7 +566,7 @@ public class ChangesPanel extends JPanel {
     String changeAllIconTag = forStagedResources ? Icons.UNSTAGE_ALL : Icons.STAGE_ALL;
     changeAllButton = OxygenUIComponentsFactory.createToolbarButton(
         new AbstractAction(
-            translator.getTranslation(changeAllTranslationTag),
+            TRANSLATOR.getTranslation(changeAllTranslationTag),
             Icons.getIcon(changeAllIconTag)) {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -594,7 +594,7 @@ public class ChangesPanel extends JPanel {
           }
         }, 
         false);
-    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+    switchViewButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
   }
 	
 	/**
@@ -672,12 +672,12 @@ public class ChangesPanel extends JPanel {
           if (clickedRow != -1) {
             // Might be a right click over a non-selected row. 
             boolean inSelection = false;
-            for (int i = 0; i < selectedRows.length; i++) {
-              if (clickedRow == selectedRows[i]) {
-                inSelection = true;
-                break;
-              }
-            }
+						for (int selectedRow : selectedRows) {
+							if (clickedRow == selectedRow) {
+								inSelection = true;
+								break;
+							}
+						}
 
             if (!inSelection) {
               filesTable.setRowSelectionInterval(clickedRow, clickedRow);
@@ -768,8 +768,7 @@ public class ChangesPanel extends JPanel {
       StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
       String stringPath = TreeUtil.getStringPath(pathForRow);
       GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
-      if (model != null && node != null
-          && model.isLeaf(node) && !model.getRoot().equals(node)) {
+      if (node != null && model.isLeaf(node) && !model.getRoot().equals(node)) {
         FileStatus file = model.getFileByPath(stringPath);
         DiffPresenter.showDiff(file, gitController);
       }
@@ -838,12 +837,12 @@ public class ChangesPanel extends JPanel {
 	          // The node under the mouse might not be the selected one.
 	          // A JTree only updates selection for a left button. Also do it for a right click.
 	          if (paths != null) {
-	            for (int i = 0; i < paths.length; i++) {
-	              if (treePath.equals(paths[i])) {
-	                treeInSelection = true;
-	                break;
-	              }
-	            }
+							for (TreePath path : paths) {
+								if (treePath.equals(path)) {
+									treeInSelection = true;
+									break;
+								}
+							}
 	          }
 	          if (!treeInSelection) {
 	            tree.setSelectionPath(treePath);
@@ -898,7 +897,7 @@ public class ChangesPanel extends JPanel {
 	 */
 	private boolean isMergingResolved() {
 	  RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
-    return repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED;
+    return repositoryState == RepositoryState.MERGING_RESOLVED;
   }
 	
   /**
@@ -935,8 +934,8 @@ public class ChangesPanel extends JPanel {
 	 * @param viewMode The new view mode.
 	 */
 	void setResourcesViewMode(ResourcesViewMode viewMode) {
-	  if (logger.isDebugEnabled()) {
-	    logger.debug("Switch to " + viewMode);
+	  if (LOGGER.isDebugEnabled()) {
+	    LOGGER.debug("Switch to " + viewMode);
 	  }
 	  
 	  this.currentViewMode = viewMode;
@@ -945,8 +944,8 @@ public class ChangesPanel extends JPanel {
 	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 	    List<FileStatus> filesStatuses = modelTable.getFilesStatuses();
 	    
-	    if (logger.isDebugEnabled()) {
-	      logger.debug("Table model " + filesStatuses);
+	    if (LOGGER.isDebugEnabled()) {
+	      LOGGER.debug("Table model " + filesStatuses);
 	    }
 	    
 	     // Create the tree with the new model
@@ -967,8 +966,8 @@ public class ChangesPanel extends JPanel {
 	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 	    List<FileStatus> filesStatuses = treeModel.getFilesStatuses();
 	    
-	    if (logger.isDebugEnabled()) {
-	      logger.debug("Tree model " + filesStatuses);
+	    if (LOGGER.isDebugEnabled()) {
+	      LOGGER.debug("Tree model " + filesStatuses);
 	    }
 	    
 	    StagingResourcesTableModel tableModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -1008,11 +1007,11 @@ public class ChangesPanel extends JPanel {
       if (currentViewMode == ResourcesViewMode.TREE_VIEW) {
         Icon icon = Icons.getIcon(Icons.LIST_VIEW);
           switchViewButton.setIcon(icon);
-        switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TO_LIST_VIEW));
+        switchViewButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CHANGE_TO_LIST_VIEW));
       } else {
         Icon icon = Icons.getIcon(Icons.TREE_VIEW);
           switchViewButton.setIcon(icon);
-        switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+        switchViewButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
       }
     }
   }
@@ -1054,13 +1053,13 @@ public class ChangesPanel extends JPanel {
 	 */
 	private void showContextualMenuForFlatView(int x, int y, int[] selectedRows) {
 	  final List<FileStatus> files = new ArrayList<>();
-	  
-    for (int i = 0; i < selectedRows.length; i++) {
-      int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-      StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-      FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
-      files.add(file);
-    }
+
+		for (int selectedRow : selectedRows) {
+			int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRow);
+			StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+			FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
+			files.add(file);
+		}
     
     GitResourceContextualMenu contextualMenu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {

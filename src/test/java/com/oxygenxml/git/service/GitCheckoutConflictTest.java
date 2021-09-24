@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
@@ -39,7 +38,7 @@ import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
+import com.oxygenxml.git.view.staging.BranchesPanel;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -47,7 +46,6 @@ import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
-import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 /**
@@ -335,15 +333,12 @@ public class GitCheckoutConflictTest extends TestCase {
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     // Simulate branch checkout from Git Staging
-    ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
-    toolbarPanel.refresh();
-    sleep(1000);
-    SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
-    
-    JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
-    newBranchItem.setSelected(true);
-    newBranchItem.getAction().actionPerformed(null);
-    sleep(600);
+    GitController gitController = new GitController(gitAccess);
+    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
+    branchesPanel.refresh();
+    sleep(300);
+    branchesPanel.getBranchNamesCombo().setSelectedIndex(1);
+    sleep(500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -399,15 +394,12 @@ public class GitCheckoutConflictTest extends TestCase {
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     // Simulate branch checkout from Git Staging
-    ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
-    toolbarPanel.refresh();
-    sleep(1000);
-    SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
-    
-    JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
-    newBranchItem.setSelected(true);
-    newBranchItem.getAction().actionPerformed(null);
-    sleep(600);
+    GitController gitController = new GitController(gitAccess);
+    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
+    branchesPanel.refresh();
+    sleep(300);
+    branchesPanel.getBranchNamesCombo().setSelectedIndex(1);
+    sleep(500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -517,17 +509,12 @@ public class GitCheckoutConflictTest extends TestCase {
     sleep(1000);
    
     // Simulate branch checkout from Git Staging
-    ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
-    toolbarPanel.refresh();
-    sleep(1000);
-    SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
-    
-    JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
-    SwingUtilities.invokeLater(() -> {
-      newBranchItem.setSelected(true);
-      newBranchItem.getAction().actionPerformed(null);
-    });
-    sleep(1000);
+    GitController gitController = new GitController(gitAccess);
+    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
+    branchesPanel.refresh();
+    sleep(300);
+    SwingUtilities.invokeLater(() -> branchesPanel.getBranchNamesCombo().setSelectedIndex(1));
+    sleep(500);
     
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
     

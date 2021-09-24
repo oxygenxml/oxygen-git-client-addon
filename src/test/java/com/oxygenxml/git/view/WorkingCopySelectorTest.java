@@ -67,7 +67,7 @@ public class WorkingCopySelectorTest extends JFCTestCase {
   public void testClearHistory() throws Exception {
     JFrame frame = new JFrame();
     try {
-      WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(Mockito.mock(GitControllerBase.class));
+      WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(Mockito.mock(GitControllerBase.class), true);
       frame.getContentPane().add(wcPanel);
       frame.pack();
       // Showing the WC panel also initializes the combo
