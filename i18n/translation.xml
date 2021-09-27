@@ -100,8 +100,8 @@
             stash them on this branch for later use or move them to branch "{1}".</val>
         <val lang="de_DE">You have uncommitted changes on the current branch ("{0}"). \nYou can
             stash them on this branch for later use or move them to branch "{1}".</val>
-        <val lang="fr_FR">You have uncommitted changes on the current branch ("{0}"). \nYou can
-            stash them on this branch for later use or move them to branch "{1}".</val>
+        <val lang="fr_FR">Vous avez des modifications hors commit sur la branche actuelle ("{0}"). \nVous pouvez
+            les remiser sur cette branche pour une utilisation ultérieure ou les déplacer vers la branche "{1}".</val>
         <val lang="ja_JP">You have uncommitted changes on the current branch ("{0}"). \nYou can
             stash them on this branch for later use or move them to branch "{1}".</val>
         <val lang="nl_NL">You have uncommitted changes on the current branch ("{0}"). \nYou can
