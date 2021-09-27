@@ -101,7 +101,7 @@ public class BackwardsCompatibilityTest extends GitTestBase {
    * @throws Exception If it fails.
    */
   public void testBackwardsCompatibility() throws Exception {
-    OptionsInterface loadOptions = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
+    Options loadOptions = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
     
     List<String> messages = loadOptions.getCommitMessages().getMessages();
     assertEquals(

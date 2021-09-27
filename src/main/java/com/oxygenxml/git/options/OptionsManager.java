@@ -49,7 +49,7 @@ public class OptionsManager {
   /**
    * All Repositories that were selected by the user with their options
    */
-  private OptionsInterface options = null;
+  private Options options = null;
 
   /**
    * Singleton instance.
@@ -88,7 +88,7 @@ public class OptionsManager {
    * Init and get the options.
    * @return The initialized options.
    */
-  private OptionsInterface getOptions() {
+  private Options getOptions() {
 	  return options;
   }
   

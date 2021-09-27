@@ -19,7 +19,7 @@ import ro.sync.exml.workspace.api.options.WSOptionsStorage;
  * @author gabriel_nedianu
  *
  */
-public class OptionsWithTags implements OptionsInterface {
+public class TagBasedOptions implements Options {
   
   /**
    * Default boolean value "True"
@@ -41,7 +41,7 @@ public class OptionsWithTags implements OptionsInterface {
    * 
    * @param wsOptionsStorage
    */
-  public OptionsWithTags(WSOptionsStorage wsOptionsStorage) {
+  public TagBasedOptions(WSOptionsStorage wsOptionsStorage) {
     this.wsOptionsStorage = wsOptionsStorage;
   }
 

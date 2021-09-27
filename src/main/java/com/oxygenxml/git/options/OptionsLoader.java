@@ -44,16 +44,16 @@ public class OptionsLoader {
    * 
    * @return An options instance.
    */
-  public static OptionsInterface loadOptions(WSOptionsStorage wsOptionsStorage) {
-    OptionsInterface options = null;
-    Optional<OptionsInterface> oldOptions = loadOldJaxbOptions();
+  public static Options loadOptions(WSOptionsStorage wsOptionsStorage) {
+    Options options = null;
+    Optional<Options> oldOptions = loadOldJaxbOptions();
     if (oldOptions.isPresent()) {
       // Reset old keys.
       resetOldJaxbOptions(wsOptionsStorage);
       // Backwards compatibility. Copy old options into the new one.
       options = copyOldOptionsIntoNewTagsOptions(oldOptions.get(), wsOptionsStorage);
     } else {
-      options = new OptionsWithTags(wsOptionsStorage);
+      options = new TagBasedOptions(wsOptionsStorage);
     }
     
     return options;
@@ -67,8 +67,8 @@ public class OptionsLoader {
    * 
    * @return A new instance of options that uses tags.
    */
-  private static OptionsInterface copyOldOptionsIntoNewTagsOptions(OptionsInterface oldOptions, WSOptionsStorage os) {
-    OptionsInterface newOptions = new OptionsWithTags(os);
+  private static Options copyOldOptionsIntoNewTagsOptions(Options oldOptions, WSOptionsStorage os) {
+    Options newOptions = new TagBasedOptions(os);
     
     newOptions.setAutoPushWhenCommitting(oldOptions.isAutoPushWhenCommitting());
     newOptions.setDefaultPullType(oldOptions.getDefaultPullType()) ;
@@ -112,16 +112,16 @@ public class OptionsLoader {
   /**
    * @return The old Jaxb-based options stored in Oxygen options under a single key.
    */
-  private static Optional<OptionsInterface> loadOldJaxbOptions() {
-    OptionsInterface options = null;
+  private static Optional<Options> loadOldJaxbOptions() {
+    Options options = null;
     try {
-      JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
+      JAXBContext jaxbContext = JAXBContext.newInstance(JaxbOptions.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
       if (OxygenGitPlugin.getInstance() == null) {
         // Running outside Oxygen, for example from tests.
         File optionsFileForTests = getOptionsFileForTests();
         if (optionsFileForTests.exists()) {
-          options = (Options) jaxbUnmarshaller.unmarshal(optionsFileForTests);
+          options = (JaxbOptions) jaxbUnmarshaller.unmarshal(optionsFileForTests);
         } else {
           logger.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
         }
@@ -133,7 +133,7 @@ public class OptionsLoader {
         if (option != null) {
           // Backwards.
           // 1. Load
-          options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
+          options = (JaxbOptions) jaxbUnmarshaller.unmarshal(new StringReader(
               PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
           // 2. Reset
           PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(OLD_GIT_PLUGIN_OPTIONS, null);
@@ -142,7 +142,7 @@ public class OptionsLoader {
               null);
           // Load the new key if exists.
           if (option != null) {
-            options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
+            options = (JaxbOptions) jaxbUnmarshaller.unmarshal(new StringReader(
                 PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
           }
         }

@@ -25,12 +25,12 @@ public class OptionsWithTagsTest {
     map.put("k1", "v1");
     map.put("k2", "v2");
     map.put("k3", "v3");
-    String[] arrayFromMap = OptionsWithTags.mapToArray(map);
+    String[] arrayFromMap = TagBasedOptions.mapToArray(map);
     
     List<String> list = Arrays.asList(arrayFromMap);
     assertEquals("[k1, v1, k2, v2, k3, v3]", list.toString());
     
-    Map<String, String> mapFromArray = OptionsWithTags.arrayToMap(arrayFromMap);
+    Map<String, String> mapFromArray = TagBasedOptions.arrayToMap(arrayFromMap);
     assertEquals("{k1=v1, k2=v2, k3=v3}", mapFromArray.toString());
   }
   
@@ -44,11 +44,11 @@ public class OptionsWithTagsTest {
     }
     personalAccessTokenInfoList.setPersonalAccessTokens(tokensList);
     
-    String[] tokensArray = OptionsWithTags.tokenListToArray(personalAccessTokenInfoList);
+    String[] tokensArray = TagBasedOptions.tokenListToArray(personalAccessTokenInfoList);
     List<String> list = Arrays.asList(tokensArray);
     assertEquals("[host1, token1, host2, token2, host3, token3]", list.toString());
     
-    PersonalAccessTokenInfoList tokenInfoListFromArray = OptionsWithTags.arrayToTokenList(tokensArray);
+    PersonalAccessTokenInfoList tokenInfoListFromArray = TagBasedOptions.arrayToTokenList(tokensArray);
     assertEquals(3, tokenInfoListFromArray.getPersonalAccessTokens().size());
     assertEquals("host1", tokenInfoListFromArray.getPersonalAccessTokens().get(0).getHost());
     assertEquals("token1", tokenInfoListFromArray.getPersonalAccessTokens().get(0).getTokenValue());
@@ -70,11 +70,11 @@ public class OptionsWithTagsTest {
     }
     userAndPasswordCredentials.setCredentials(credentialsList);
     
-    String[] credentialsArray = OptionsWithTags.credentialsListToArray(userAndPasswordCredentials);
+    String[] credentialsArray = TagBasedOptions.credentialsListToArray(userAndPasswordCredentials);
     List<String> list = Arrays.asList(credentialsArray);
     assertEquals("[usrn1, pass1, host1, usrn2, pass2, host2, usrn3, pass3, host3]", list.toString());
     
-    UserCredentialsList credentialsListFromArray = OptionsWithTags.arrayToCredentialsList(credentialsArray);
+    UserCredentialsList credentialsListFromArray = TagBasedOptions.arrayToCredentialsList(credentialsArray);
     assertEquals(3, credentialsListFromArray.getCredentials().size());
     assertEquals("usrn1", credentialsListFromArray.getCredentials().get(0).getUsername());
     assertEquals("pass1", credentialsListFromArray.getCredentials().get(0).getPassword());
