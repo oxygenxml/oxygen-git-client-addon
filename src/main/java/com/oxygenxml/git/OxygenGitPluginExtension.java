@@ -180,6 +180,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 */
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
+	  OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 	  pluginWorkspaceAccess = pluginWS;
 	  gitController = new GitController(GitAccess.getInstance());
 		try {

@@ -21,7 +21,6 @@ import com.oxygenxml.git.view.util.RenderingInfo;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.util.ColorTheme;
 
 /**
  * Renderer for the staged/unstaged tables.
@@ -32,7 +31,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
   /**
    * Tells if a contextual menu is presented over the table.
    */
-  private final BooleanSupplier contextMenuShowing;
+  private BooleanSupplier contextMenuShowing;
   
   /**
    * The file/folder to show history.
@@ -81,11 +80,12 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         tooltipText = renderingInfo.getTooltip();
       }
     } else if (value instanceof FileStatus) {
-      String location = ((FileStatus)value).getFileLocation();
+      String location = ((FileStatus) value).getFileLocation();
       setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       
       FontMetrics metrics = getFontMetrics(getFont());
-      labelText = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
+      location = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
+      labelText = location;
       
       String description = ((FileStatus) value).getDescription();
       if (description != null) {
@@ -96,7 +96,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         if (!fileName.equals(tooltipText)) {
           tooltipText = tooltipText.replace("/" + fileName, "");
           tooltipText = fileName + " - " + tooltipText;
-        } 
+        }
       } 
     }
     
@@ -146,21 +146,18 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * @param tableCellRendererComponent     The displayed Jlabel. 
    */
   private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
-
-    ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
-    if(colorTheme != null) {
-      if(searchedFilePath != null &&
-          !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/"))) {
+    if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme() != null) {
+      if(searchedFilePath instanceof String && 
+          !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
         tableCellRendererComponent.setForeground(
-            colorTheme.isDarkTheme() ?
+            PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
                 UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
       } else {
         tableCellRendererComponent.setForeground(
-            colorTheme.isDarkTheme() ?
+            PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
                 UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
       }
     }
-
   }
   
   

@@ -1,225 +1,129 @@
 package com.oxygenxml.git.options;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
-import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 /**
- * Entity for the JAXB to store the plugin options
+ * Options storage.
  * 
- * @author Beniamin Savu
- *
+ * @author alex_jitianu
  */
-@XmlRootElement(name = "Options")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Options {
-  
-  /**
-   * A cache for the SSH questions and the user answer.
-   */
-  @XmlElement(name = "sshPromptAnswers")
-  private HashMap<String, Boolean> sshPromptAnswers = new HashMap<>();
-
-	/**
-	 * Wrapper for a list with the repository locations
-	 */
-	@XmlElement(name = "repositoryLocations")
-	private RepositoryLocations repositoryLocations = new RepositoryLocations();
-	
-	/**
-	 * Stores the option selected to notify or not if there are new changes in the remote
-	 */
-	private boolean notifyAboutNewRemoteCommits;
-	
-	/**
-	 * <code>true</code> to automatically checkout a newly created local branch.
-	 */
-	private boolean isCheckoutNewlyCreatedLocalBranch = true;
-
-	/**
-	 * The id from the last commit fetched.
-	 */
-	private final HashMap<String, String> warnOnChangeCommitId = new HashMap<>();
-	
-	/**
-	 * Last selected repository from the user
-	 */
-	@XmlElement(name = "selectedRepository")
-	private String selectedRepository = "";
-
-	/**
-	 * A list of user credentials containing the username, password and the host.
-	 * Only one credential per host can be stored
-	 */
-	@XmlElement(name = "userCredentials")
-	private UserCredentialsList userCredentialsList = new UserCredentialsList();
-	
-	/**
-	 * A list of personal access token + host entries. Only one personal access token per host.
-	 */
-	@XmlElement(name = "personalAccessTokens")
-	private PersonalAccessTokenInfoList paTokensList = new PersonalAccessTokenInfoList();
-
-	/**
-	 * Wrapper for a list of commit messages
-	 */
-	@XmlElement(name = "commitMessages")
-	private CommitMessages commitMessages = new CommitMessages();
-	
-	/**
-	 * The default pull type: with merge or rebase.
-	 */
-	@XmlElement(name = "defaultPullType")
-	private PullType defaultPullType = PullType.MERGE_FF;
+public interface Options {
 
   /**
-	 * Wrapper for a list of project.xpr that were tested if they want to be a git
-	 * repository
-	 */
-	@XmlElement(name = "projectsTested")
-	private ProjectsTestedForGit projectsTestsForGit = new ProjectsTestedForGit();
-
-	/**
-	 * Wrapper for a list of previously selected destination paths
-	 */
-	@XmlElement(name = "destinationPaths")
-	private DestinationPaths destinationPaths = new DestinationPaths();
-
-	/**
-	 * The passphrase for the SSH
-	 */
-	@XmlElement(name = "passphrase")
-	private String passphrase = "";
-	
-	/**
-	 * The view mode for the staged resources: tree or table.
-	 */
-	@XmlElement(name = "stagedResViewMode")
-	private ResourcesViewMode stagedResViewMode = ResourcesViewMode.FLAT_VIEW;
-	
-	/**
-   * The view mode for the unstaged resources: tree or table.
+   * @return <code>true</code> if push should be done automatically for each commit.
    */
-	@XmlElement(name = "unstagedResViewMode")
-  private ResourcesViewMode unstagedResViewMode = ResourcesViewMode.FLAT_VIEW;
-	
-	/**
-	 * Option about what to do when opening a prject in Oxygen and detecting a Git repository.
-	 */
-	@XmlElement(name = "whenRepoDetectedInProject")
-	private WhenRepoDetectedInProject whenRepoDetectedInProject = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
-	/**
-	 * <code>true</code> to update submodules on pull.
-	 */
-	private boolean updateSubmodulesOnPull = true;
-	/**
-	 * <code>true</code> to automatically push to remote when committing.
-	 */
-	@XmlElement(name = "isAutoPushWhenCommitting")
-	private boolean isAutoPushWhenCommitting = false;
+  public boolean isAutoPushWhenCommitting();
 
-	public boolean isAutoPushWhenCommitting() {
-    return isAutoPushWhenCommitting;
-  }
-	
-	public void setAutoPushWhenCommitting(boolean isAutoPushWhenCommitting) {
-    this.isAutoPushWhenCommitting = isAutoPushWhenCommitting;
-  }
-	
-  public PullType getDefaultPullType() {
-    return defaultPullType;
-  }
+  /**
+   * Sets if commits should be automatically pushed.
+   * 
+   * @param isAutoPushWhenCommitting <code>true</code> to automatically push each commit.
+   */
+  public void setAutoPushWhenCommitting(boolean isAutoPushWhenCommitting);
 
-  public void setDefaultPullType(PullType defaultPullType) {
-    this.defaultPullType = defaultPullType;
-  }
-  
-  public ResourcesViewMode getUnstagedResViewMode() {
-    return unstagedResViewMode;
-  }
+  /**
+   * @return The type of pull (merge, rebase etc.).
+   */
+  public PullType getDefaultPullType() ;
 
-  public void setUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) {
-    this.unstagedResViewMode = unstagedResViewMode;
-  }
+  /**
+   * Sets the type of conflict resolution done on pull.
+   * 
+   * @param defaultPullType The type of conflict resolution done on pull.
+   */
+  public void setDefaultPullType(PullType defaultPullType) ;
 
-  public ResourcesViewMode getStagedResViewMode() {
-    return stagedResViewMode;
-  }
+  /**
+   * @return Unstaged resources view mode.
+   */
+  public ResourcesViewMode getUnstagedResViewMode() ;
 
-  public void setStagedResViewMode(ResourcesViewMode stagedResViewMode) {
-    this.stagedResViewMode = stagedResViewMode;
-  }
+  /**
+   * Sets the unstaged resources view mode.
+   * 
+   * @param unstagedResViewMode The unstaged resources view mode.
+   */
+  public void setUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) ;
 
-  public DestinationPaths getDestinationPaths() {
-		return destinationPaths;
-	}
+  /**
+   * @return The index/staged resources view mode.
+   */
+  public ResourcesViewMode getStagedResViewMode() ;
 
-	public void setDestinationPaths(DestinationPaths destinationPaths) {
-		this.destinationPaths = destinationPaths;
-	}
+  /**
+   * Sets the staged/index resources view mode.
+   * 
+   * @param unstagedResViewMode The staged/index resources view mode.
+   */
+  public void setStagedResViewMode(ResourcesViewMode stagedResViewMode) ;
 
-	public ProjectsTestedForGit getProjectsTestsForGit() {
-		return projectsTestsForGit;
-	}
+  /**
+   * @return The paths previously chosen as working copy locations.
+   */
+  public DestinationPaths getDestinationPaths() ;
 
-	public void setPrjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) {
-		this.projectsTestsForGit = prjectsTestsForGit;
-	}
+  /**
+   * Sets the paths previously chosen as working copy locations.
+   * 
+   * @param destinationPaths The paths previously chosen as working copy locations.
+   */
+  public void setDestinationPaths(DestinationPaths destinationPaths) ;
 
-	public RepositoryLocations getRepositoryLocations() {
-		return repositoryLocations;
-	}
+  /**
+   * @return Oxygen project locations tested for inner git repositories.
+   */
+  public ProjectsTestedForGit getProjectsTestsForGit() ;
 
-	public void setRepositoryLocations(RepositoryLocations repositoryLocations) {
-		this.repositoryLocations = repositoryLocations;
-	}
-	
+  /**
+   * Sets the Oxygen project locations tested for inner git repositories.
+   * 
+   * @param prjectsTestsForGit Oxygen project locations tested for inner git repositories.
+   */
+  public void setProjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) ;
+
+  /**
+   * @return Locations already loaded in the staging view.
+   */
+  public RepositoryLocations getRepositoryLocations() ;
+
+  /**
+   * Sets the locations already loaded in the staging view.
+   * 
+   * @param repositoryLocations The locations already loaded in the staging view.
+   */
+  public void setRepositoryLocations(RepositoryLocations repositoryLocations) ;
+
   /**
    * Set when to verify for remote changes in the repository.
    * 
    * @param notifyAboutNewRemoteCommits Option chosen about if to verify or not.
    */
-  public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
-    this.notifyAboutNewRemoteCommits = notifyAboutNewRemoteCommits;
-  }
-  
+  public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) ;
+
   /**
    * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
    * checkout a newly created local branch.
    */
-  public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) {
-    this.isCheckoutNewlyCreatedLocalBranch = isCheckoutNewlyCreatedLocalBranch;
-  }
-  
+  public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) ;
+
   /**
    * Get the option about when to verify about remote changes in the repository.
    * 
    * @return Option stored about to verify or not.
    */
-  public boolean isNotifyAboutNewRemoteCommits() {
-    return notifyAboutNewRemoteCommits;
-  }
-  
+  public boolean isNotifyAboutNewRemoteCommits() ;
+
   /**
    * @return <code>true</code> to automatically checkout a newly created local branch.
    */
-  public boolean isCheckoutNewlyCreatedLocalBranch() {
-    return isCheckoutNewlyCreatedLocalBranch;
-  }
-  
-  public Map<String, String> getWarnOnChangeCommitId() {
-    return warnOnChangeCommitId;
-  }
-  
+  public boolean isCheckoutNewlyCreatedLocalBranch() ;
+
+  public Map<String, String> getWarnOnChangeCommitId() ;
+
   /**
    * Get the ID of the latest commit fetched from a given repository.
    * 
@@ -229,10 +133,8 @@ public class Options {
    * @return The commit ID that comes from  {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
    */
   
-  public String getWarnOnChangeCommitId(String repositoryId) {
-    return warnOnChangeCommitId.getOrDefault(repositoryId,"");
-  }
-  
+  public String getWarnOnChangeCommitId(String repositoryId) ;
+
   /**
    * Set the commit ID to the newest commit fetched from a given repository.
    * 
@@ -242,166 +144,101 @@ public class Options {
    * @param commitId     The newest commit ID, obtained from 
    *                     {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
    */
-  public void setWarnOnChangeCommitId(String repositoryId, String commitId) {
-    warnOnChangeCommitId.put(repositoryId, commitId);
-  }
+  public void setWarnOnChangeCommitId(String repositoryId, String commitId) ;
 
-	public String getSelectedRepository() {
-		return selectedRepository;
-	}
+  /**
+   * @return The last repository loaded in the staging view.
+   */
+  public String getSelectedRepository() ;
 
-	public void setSelectedRepository(String selectedRepository) {
-		this.selectedRepository = selectedRepository;
-	}
+  /**
+   * Sets the last repository loaded in the staging view.
+   * 
+   * @param selectedRepository  The last repository loaded in the staging view.
+   */
+  public void setSelectedRepository(String selectedRepository) ;
 
-	 /**
+  /**
    * The list with user credentials. The actual list, not a copy.
    * 
    * @return The user credentials.
    */
-	public UserCredentialsList getUserCredentialsList() {
-		return userCredentialsList;
-	}
+  public UserCredentialsList getUserCredentialsList() ;
 
-	/**
-	 * The list with user credentials.
-	 * @param userCredentialsList
-	 */
-	public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
-		this.userCredentialsList = userCredentialsList;
-	}
+  /**
+   * The list with user credentials.
+   * 
+   * @param userCredentialsList User credentials.
+   */
+  public void setUserCredentialsList(UserCredentialsList userCredentialsList) ;
 
-	public CommitMessages getCommitMessages() {
-		return commitMessages;
-	}
+  /**
+   * @return The commit messages previously used in the commit panel.
+   */
+  public CommitMessages getCommitMessages() ;
 
-	public void setCommitMessages(CommitMessages commitMessages) {
-		this.commitMessages = commitMessages;
-	}
+  /**
+   * Sets the commit messages history.
+   * 
+   * @param commitMessages The commit messages previously used in the commit panel.
+   */
+  public void setCommitMessages(CommitMessages commitMessages) ;
 
-	public String getPassphrase() {
-		return passphrase;
-	}
+  /**
+   * @return The last SSH passhrase.
+   */
+  public String getPassphrase() ;
 
-	public void setPassphrase(String passphrase) {
-		this.passphrase = passphrase;
-	}
-	
-	/**
-	 * @param sshPromptAnswers A cache for asking the user for connection message.
-	 */
-	@SuppressWarnings("java:S1319")
-	public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) {
-    this.sshPromptAnswers = sshPromptAnswers;
-  }
-	
-	/**
-	 * @return A cache for asking the user for connection message.
-	 */
-	public Map<String, Boolean> getSshPromptAnswers() {
-    return sshPromptAnswers;
-  }
+  /**
+   * Sets the SSH passphrase.
+   * 
+   * @param passphrase The SSH passphrase.
+   */
+  public void setPassphrase(String passphrase) ;
 
-	/**
-	 * Set what to do when a repository is detected when opening an Oxygen project.
-	 *  
-	 * @param whatToDo What to do.
-	 */
-	public void setWhenRepoDetectedInProject(WhenRepoDetectedInProject whatToDo) {
-	  this.whenRepoDetectedInProject = whatToDo;
-	}
+  /**
+   * @param sshPromptAnswers A cache for asking the user for connection message.
+   */
+  @SuppressWarnings("java:S1319")
+  public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) ;
 
-	/**
-	 * @return what to do when a repo is detected inside an Oxygen project.
-	 */
-	public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
-	  return whenRepoDetectedInProject;
-	}
-	
-	 /**
+  /**
+   * @return A cache for asking the user for connection message.
+   */
+  public Map<String, Boolean> getSshPromptAnswers() ;
+
+  /**
+   * Set what to do when a repository is detected when opening an Oxygen project.
+   *  
+   * @param whatToDo What to do.
+   */
+  public void setWhenRepoDetectedInProject(WhenRepoDetectedInProject whatToDo) ;
+
+  /**
+   * @return what to do when a repo is detected inside an Oxygen project.
+   */
+  public WhenRepoDetectedInProject getWhenRepoDetectedInProject() ;
+
+  /**
    * @return <code>true</code> to update submodules after a pull.
    */
-  public boolean getUpdateSubmodulesOnPull() {
-    return updateSubmodulesOnPull;
-  }
+  public boolean getUpdateSubmodulesOnPull() ;
 
-	/**
+  /**
    * Sets the submodule update policy on pull.
    * 
    * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
    */
-  public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
-    this.updateSubmodulesOnPull = updateSubmodules;
-  }
+  public void setUpdateSubmodulesOnPull(boolean updateSubmodules) ;
 
-	/**
+  /**
    * @return the list of personal access token info items.
    */
-  public PersonalAccessTokenInfoList getPersonalAccessTokensList() {
-    return paTokensList;
-  }
+  public PersonalAccessTokenInfoList getPersonalAccessTokensList() ;
 
   /**
    * @param paTokensList the list of personal access token info items to set.
    */
-  public void setPersonalAccessTokensList(PersonalAccessTokenInfoList paTokensList) {
-    this.paTokensList = paTokensList;
-  }
-
-  @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((commitMessages == null) ? 0 : commitMessages.hashCode());
-		result = prime * result + ((destinationPaths == null) ? 0 : destinationPaths.hashCode());
-		result = prime * result + ((passphrase == null) ? 0 : passphrase.hashCode());
-		result = prime * result + ((projectsTestsForGit == null) ? 0 : projectsTestsForGit.hashCode());
-		result = prime * result + ((repositoryLocations == null) ? 0 : repositoryLocations.hashCode());
-		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
-		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
-		result = prime * result + ((paTokensList == null) ? 0 : paTokensList.hashCode());
-		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
-		result = prime * result + (notifyAboutNewRemoteCommits ? 1 : 0);
-		result = prime * result + (isCheckoutNewlyCreatedLocalBranch ? 1 : 0);
-    result = prime * result + warnOnChangeCommitId.hashCode();
-		
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-	  boolean toReturn = false;
-	  if (obj instanceof Options) {
-	    Options opt = (Options) obj;
-	    toReturn = Equaler.verifyEquals(commitMessages, opt.getCommitMessages())
-	        && Equaler.verifyEquals(destinationPaths, opt.getDestinationPaths())
-	        && Equaler.verifyEquals(passphrase, opt.getPassphrase())
-	        && Equaler.verifyEquals(projectsTestsForGit, opt.getProjectsTestsForGit())
-	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
-	        && Equaler.verifyEquals(notifyAboutNewRemoteCommits, opt.isNotifyAboutNewRemoteCommits())
-	        && Equaler.verifyEquals(isCheckoutNewlyCreatedLocalBranch, opt.isCheckoutNewlyCreatedLocalBranch)
-	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
-	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
-	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())
-	        && Equaler.verifyEquals(paTokensList, opt.getPersonalAccessTokensList())
-	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode)
-	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType)
-	        && Equaler.verifyEquals(warnOnChangeCommitId, opt.getWarnOnChangeCommitId());
-	  }
-	  return toReturn;
-	}
-
-  @Override
-  public String toString() {
-    return "Options [sshPromptAnswers=" + sshPromptAnswers + ", repositoryLocations=" + repositoryLocations
-        + ", notifyAboutNewRemoteCommits=" + notifyAboutNewRemoteCommits + ", isCheckoutNewlyCreatedLocalBranch="
-        + isCheckoutNewlyCreatedLocalBranch + ", warnOnChangeCommitId=" + warnOnChangeCommitId + ", selectedRepository="
-        + selectedRepository + ", userCredentialsList=" + userCredentialsList + ", paTokensList=" + paTokensList
-        + ", commitMessages=" + commitMessages + ", defaultPullType=" + defaultPullType + ", projectsTestsForGit="
-        + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase=" + passphrase
-        + ", stagedResViewMode=" + stagedResViewMode + ", unstagedResViewMode=" + unstagedResViewMode
-        + ", whenRepoDetectedInProject=" + whenRepoDetectedInProject + ", updateSubmodulesOnPull="
-        + updateSubmodulesOnPull + ", isAutoPushWhenCommitting=" + isAutoPushWhenCommitting + "]";
-  }
+  public void setPersonalAccessTokensList(PersonalAccessTokenInfoList paTokensList) ;
 
 }

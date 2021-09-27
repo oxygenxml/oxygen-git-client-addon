@@ -1,22 +1,13 @@
 package com.oxygenxml.git.options;
 
-import java.io.File;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
-import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
@@ -24,7 +15,6 @@ import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
-import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -45,24 +35,6 @@ public class OptionsManager {
    * Maximum number of destinations stored in history.
    */
   private static final int DESTINATIONS_MAX_COUNT = 20;
-  /**
-   * The initial key used to saved options.
-   */
-  private static final String OLD_GIT_PLUGIN_OPTIONS = "MY_PLUGIN_OPTIONS";
-  /**
-   * A proper name for the options.
-   */
-  private static final String GIT_PLUGIN_OPTIONS = "GIT_PLUGIN_OPTIONS";
-
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = Logger.getLogger(OptionsManager.class);
-
-  /**
-   * The filename in which all the options are saved
-   */
-  private static final String OPTIONS_FILENAME_FOR_TESTS = "Options.xml";
 
   /**
    * Constant for how many commits messages to be saved
@@ -97,113 +69,10 @@ public class OptionsManager {
   }
 
   /**
-   * Uses JAXB to load all the selected repositories from the users in the
-   * repositoryOptions variable
-   */
-  private void loadOptions() {
-    if (options == null) {
-      options = new Options();
-      try {
-        JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        if (OxygenGitPlugin.getInstance() == null) {
-          // Running outside Oxygen, for example from tests.
-          File optionsFileForTests = getOptionsFileForTests();
-          if (optionsFileForTests.exists()) {
-            options = (Options) jaxbUnmarshaller.unmarshal(optionsFileForTests);
-          } else {
-            LOGGER.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
-          }
-        } else {
-          // Running in Oxygen's context. Save inside Oxygen's options. 
-          String option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
-              .getOption(OLD_GIT_PLUGIN_OPTIONS, null);
-
-          if (option != null) {
-            // Backwards.
-            // 1. Load
-            options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
-                PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
-            // 2. Reset
-            PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(OLD_GIT_PLUGIN_OPTIONS, null);
-            // 3. Save with the new option
-            saveOptions();
-          } else {
-            option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().getOption(GIT_PLUGIN_OPTIONS,
-                null);
-            // Load the new key if exists.
-            if (option != null) {
-              options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
-                  PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
-            }
-          }
-
-        }
-      } catch (JAXBException e) {
-        LOGGER.warn("Options not loaded: " + e, e);
-      }
-
-    }
-  }
-
-  /**
-   * !!! FOR TESTS !!!
-   * 
-   * Creates the the options file and returns it
-   * 
-   * @return the options file
-   */
-  private File getOptionsFileForTests() {
-    File baseDir = null;
-    if (OxygenGitPlugin.getInstance() != null) {
-      baseDir = OxygenGitPlugin.getInstance().getDescriptor().getBaseDir();
-    } else {
-      baseDir = new File("src/test/resources");
-    }
-    return new File(baseDir, OPTIONS_FILENAME_FOR_TESTS);
-  }
-
-  /**
    * Save options.
    */
   public void saveOptions() {
-    boolean save = true;
-    StringWriter optionsWriter = new StringWriter();
-    
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-    try {
-      Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
-
-      JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
-      Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-      jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-      if (OxygenGitPlugin.getInstance() == null) {
-        jaxbMarshaller.marshal(getOptions(), getOptionsFileForTests());
-      } else {
-        jaxbMarshaller.marshal(getOptions(), optionsWriter);
-      }
-    } catch (JAXBException e) {
-      save = false;
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e, e);
-      }
-    } finally {
-      Thread.currentThread().setContextClassLoader(contextClassLoader);
-    }
-    
-    if (save) {
-      // pluginWorkspace and optionsStorage can be null from tests.
-      PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-      if (pluginWorkspace != null) {
-        WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
-        if (optionsStorage != null) {
-          optionsStorage.setOption(
-              GIT_PLUGIN_OPTIONS,
-              pluginWorkspace.getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
-        }
-      }
-    }
-
+    // TODO Not needed anymore. See from where it is used and remove it.
   }
   
   /**
@@ -220,8 +89,18 @@ public class OptionsManager {
    * @return The initialized options.
    */
   private Options getOptions() {
-	  loadOptions();
 	  return options;
+  }
+  
+  /**
+   * Loads options from from the Oxygen options storage.
+   * 
+   * @param ws Oxygen API.
+   */
+  public void loadOptions(WSOptionsStorage wsOptionsStorage) {
+    if (options == null) {
+      options = OptionsLoader.loadOptions(wsOptionsStorage);
+    }
   }
   
   /**
@@ -258,14 +137,16 @@ public class OptionsManager {
    *          - options to be saved
    */
   public void addRepository(String repositoryOption) {
-    LinkedList<String> locations = (LinkedList<String>) getOptions().getRepositoryLocations().getLocations();
+    List<String> locations = new ArrayList<>(getOptions().getRepositoryLocations().getLocations());
     locations.remove(repositoryOption);
-    locations.addFirst(repositoryOption);
+    locations.add(0, repositoryOption);
     if(locations.size() > HISTORY_MAX_COUNT) {
-      locations.removeLast();
+      locations.remove(locations.size() - 1);
     }
     
-    saveOptions();
+    RepositoryLocations newRepositoryLocations = new RepositoryLocations();
+    newRepositoryLocations.setLocations(locations);
+    getOptions().setRepositoryLocations(newRepositoryLocations);
   }
 
   /**
@@ -276,8 +157,6 @@ public class OptionsManager {
    */
   public void saveSelectedRepository(String path) {
     getOptions().setSelectedRepository(path);
-
-    saveOptions();
   }
 
   /**
@@ -295,9 +174,12 @@ public class OptionsManager {
    * @param path The location/path of the repository.
    */
   public void removeRepositoryLocation(String path) {
-    getOptions().getRepositoryLocations().getLocations().remove(path);
-
-    saveOptions();
+    List<String> locations = new ArrayList<>( getOptions().getRepositoryLocations().getLocations() );
+    locations.remove(path);
+    
+    RepositoryLocations newRepositoryLocations = new RepositoryLocations();
+    newRepositoryLocations.setLocations(locations);
+    getOptions().setRepositoryLocations(newRepositoryLocations);
   }
   
   /**
@@ -306,9 +188,12 @@ public class OptionsManager {
    * @param paths The locations/paths of the repositories to remove.
    */
   public void removeRepositoryLocations(Collection<String> paths) {
-    getOptions().getRepositoryLocations().getLocations().removeAll(paths);
-
-    saveOptions();
+    List<String> locations = new ArrayList<>( getOptions().getRepositoryLocations().getLocations() ); 
+    locations.removeAll(paths);
+    
+    RepositoryLocations newRepositoryLocations = new RepositoryLocations();
+    newRepositoryLocations.setLocations(locations);
+    getOptions().setRepositoryLocations(newRepositoryLocations);
   }
   
   /**
@@ -322,8 +207,8 @@ public class OptionsManager {
     String decryptedTokenValue = null;
     if (host != null) {
       String tokenVal = null;
-      List<PersonalAccessTokenInfo> tokens = getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
-      if (tokens != null) { 
+      List<PersonalAccessTokenInfo> tokens = new ArrayList<>( getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+      if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) { 
         for (PersonalAccessTokenInfo token : tokens) {
           if (host.equals(token.getHost())) {
             tokenVal = token.getTokenValue();
@@ -370,7 +255,8 @@ public class OptionsManager {
   private void saveUserAndPasswordCredentials(UserAndPasswordCredentials userAndPasswordCredentials) {
     if (userAndPasswordCredentials == null) {
       // Reset
-      getOptions().getUserCredentialsList().setCredentials(null);
+      getOptions().setUserCredentialsList(new UserCredentialsList());
+      
     } else {
       String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
           .getUtilAccess().encrypt(userAndPasswordCredentials.getPassword());
@@ -380,8 +266,8 @@ public class OptionsManager {
       uc.setUsername(userAndPasswordCredentials.getUsername());
       uc.setHost(userAndPasswordCredentials.getHost());
 
-      List<UserAndPasswordCredentials> credentials = getOptions().getUserCredentialsList().getCredentials();
-      if (credentials != null) {
+      List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
+      if (getOptions().getUserCredentialsList().getCredentials() == null) {
         for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
           UserAndPasswordCredentials alreadyHere = iterator.next();
           if (alreadyHere.getHost().equals(uc.getHost())) {
@@ -391,12 +277,17 @@ public class OptionsManager {
           }
         }
         credentials.add(uc);
-        getOptions().getUserCredentialsList().setCredentials(credentials);
+        
+        UserCredentialsList newUserCredentialsList = getOptions().getUserCredentialsList(); 
+        newUserCredentialsList.setCredentials(credentials);
+        getOptions().setUserCredentialsList(newUserCredentialsList);
+        
       } else {
-        getOptions().getUserCredentialsList().setCredentials(Arrays.asList(uc));
+        UserCredentialsList newUsrCredentialsList = getOptions().getUserCredentialsList(); 
+        newUsrCredentialsList.setCredentials(Arrays.asList(uc));
+        getOptions().setUserCredentialsList(newUsrCredentialsList);
       }
     }
-    saveOptions();
   }
   
   /**
@@ -407,15 +298,16 @@ public class OptionsManager {
   private void savePersonalAccessToken(PersonalAccessTokenInfo tokenInfo) {
     if (tokenInfo == null) {
       // Reset
-      getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(null);
+      getOptions().setPersonalAccessTokensList(new PersonalAccessTokenInfoList());
+      
     } else {
       StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       String encryptedToken = pluginWS.getUtilAccess().encrypt(tokenInfo.getTokenValue());
       PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken);
       
       List<PersonalAccessTokenInfo> personalAccessTokens = 
-          getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
-      if (personalAccessTokens != null) {
+          new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+      if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) {
         for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
           PersonalAccessTokenInfo alreadyHere = iterator.next();
           if (alreadyHere.getHost().equals(paTokenInfo.getHost())) {
@@ -425,12 +317,18 @@ public class OptionsManager {
           }
         }
         personalAccessTokens.add(paTokenInfo);
-        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(personalAccessTokens);
+        
+        PersonalAccessTokenInfoList newPersonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
+        newPersonalAccessTokensList.setPersonalAccessTokens(personalAccessTokens);
+        getOptions().setPersonalAccessTokensList(newPersonalAccessTokensList);
+        
       } else {
-        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(Arrays.asList(paTokenInfo));
+        
+        PersonalAccessTokenInfoList newPrsonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
+        newPrsonalAccessTokensList.setPersonalAccessTokens(Arrays.asList(paTokenInfo));
+        getOptions().setPersonalAccessTokensList(newPrsonalAccessTokensList);
       }
     }
-    saveOptions();
   }
 
   /**
@@ -473,7 +371,7 @@ public class OptionsManager {
    */
   private List<CredentialsBase> getAllCredentials() {
     List<CredentialsBase> allCredentials = new ArrayList<>();
-    List<UserAndPasswordCredentials> userAndPassCredentialsList = getOptions().getUserCredentialsList().getCredentials();
+    List<UserAndPasswordCredentials> userAndPassCredentialsList =  getOptions().getUserCredentialsList().getCredentials();
     if (userAndPassCredentialsList != null) { 
       allCredentials.addAll(userAndPassCredentialsList);
     }
@@ -502,7 +400,7 @@ public class OptionsManager {
    *          - the last commitMessage
    */
   public void saveCommitMessage(String commitMessage) {
-    List<String> messages = getOptions().getCommitMessages().getMessages();
+    List<String> messages = new ArrayList<>( getOptions().getCommitMessages().getMessages());
     if (messages.contains(commitMessage)) {
       messages.remove(commitMessage);
     }
@@ -510,9 +408,11 @@ public class OptionsManager {
     if (messages.size() > PREVIOUSLY_COMMITED_MESSAGES) {
       messages.remove(messages.size() - 1);
     }
-    getOptions().getCommitMessages().setMessages(messages);
-
-    saveOptions();
+    
+    CommitMessages newCommitMessages = new CommitMessages();
+    newCommitMessages.setMessages(messages);
+    getOptions().setCommitMessages(newCommitMessages);
+    
   }
 
   /**
@@ -532,14 +432,15 @@ public class OptionsManager {
    *          - the project path to be saved
    */
   public void saveProjectTestedForGit(String projectPath) {
-    List<String> projectsPath = getOptions().getProjectsTestsForGit().getPaths();
+    List<String> projectsPath =  new ArrayList<>( getOptions().getProjectsTestsForGit().getPaths() );
     projectsPath.add(projectPath);
     if (projectsPath.size() > MAXIMUM_PROJECTS_TESTED) {
       projectsPath.remove(0);
     }
-    getOptions().getProjectsTestsForGit().setPaths(projectsPath);
-
-    saveOptions();
+    
+    ProjectsTestedForGit newProjectsTestedForGit = new ProjectsTestedForGit();
+    newProjectsTestedForGit.setPaths(projectsPath);
+    getOptions().setProjectsTestsForGit(newProjectsTestedForGit);
   }
 
   /**
@@ -556,8 +457,10 @@ public class OptionsManager {
     if (destinationPaths.size() > DESTINATIONS_MAX_COUNT) {
       destinationPaths.removeLast();
     }
-
-    saveOptions();
+    
+    DestinationPaths newDestinationPaths = new DestinationPaths();
+    newDestinationPaths.setPaths(destinationPaths);
+    getOptions().setDestinationPaths(newDestinationPaths);
   }
 
   /**
@@ -608,8 +511,9 @@ public class OptionsManager {
    * @param answer The answer.
    */
   public void saveSshPrompt(String prompt, boolean answer) {
-    getOptions().getSshPromptAnswers().put(prompt, answer);
-    saveOptions();
+    Map<String, Boolean> sshPromptAnswers = getOptions().getSshPromptAnswers(); 
+    sshPromptAnswers.put(prompt, answer);
+    getOptions().setSshQuestions(sshPromptAnswers);
   }
 
   /**

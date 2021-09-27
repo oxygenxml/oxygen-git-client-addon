@@ -5,15 +5,21 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.utils.Equaler;
+
+import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 
 /**
  * Personal access token POJO for JAXB.
  */
 @XmlRootElement(name = "personalAccessToken")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PersonalAccessTokenInfo extends CredentialsBase {
+public class PersonalAccessTokenInfo extends CredentialsBase implements ExternalPersistentObject {
 
+  private static final Logger LOGGER = Logger.getLogger(PersonalAccessTokenInfo.class);
+  
   /**
    * The personal access token value.
    */
@@ -81,5 +87,20 @@ public class PersonalAccessTokenInfo extends CredentialsBase {
     }
     return toReturn;
   }
+
+  @Override
+  public void checkValid(){
+    //We consider it to be valid.
+  }
+
+  @Override
+  public String[] getNotPersistentFieldNames() {
+    return new String[0];
+  }
   
+  @SuppressWarnings("java:S2975")
+  @Override
+  public Object clone()  {
+    return super.clone();
+  }
 }

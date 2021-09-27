@@ -1,6 +1,5 @@
 package com.oxygenxml.git.options;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -8,33 +7,40 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.utils.Equaler;
+
+import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
+import ro.sync.options.SerializableList;
 
 /**
  * Entity for JAXB to store the user personal access tokens.
  */
 @XmlRootElement(name = "personalAccessTokens")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PersonalAccessTokenInfoList {
+public class PersonalAccessTokenInfoList implements ExternalPersistentObject {
 
+  private static final Logger LOGGER = Logger.getLogger(PersonalAccessTokenInfoList.class);
+  
 	/**
 	 * List with the token info items.
 	 */
 	@XmlElement(name = "personalAccessToken")
-	private List<PersonalAccessTokenInfo> personalAccessTokens = new ArrayList<>();
+	private SerializableList<PersonalAccessTokenInfo> personalAccessTokens = new SerializableList<>();
 	
 	/**
    * @return a copy of the list containing personal access token info items.
    */
   public List<PersonalAccessTokenInfo> getPersonalAccessTokens() {
-    return personalAccessTokens != null ? new ArrayList<>(personalAccessTokens) : null;
+    return personalAccessTokens != null ? new SerializableList<>(personalAccessTokens) : new SerializableList<>();
   }
 
   /**
    * @param personalAccessTokens the personal access token info items to set
    */
   public void setPersonalAccessTokens(List<PersonalAccessTokenInfo> personalAccessTokens) {
-    this.personalAccessTokens = personalAccessTokens != null ? new ArrayList<>(personalAccessTokens) : null;
+    this.personalAccessTokens = personalAccessTokens != null ? new SerializableList<>(personalAccessTokens) : new SerializableList<>();
   }
 
   @Override
@@ -54,5 +60,36 @@ public class PersonalAccessTokenInfoList {
 	  }
 	  return toReturn;
 	}
+  
+  @SuppressWarnings("java:S2975")
+  @Override
+  public Object clone() {
+    try {
+      PersonalAccessTokenInfoList clone =(PersonalAccessTokenInfoList) super.clone();
+      SerializableList<PersonalAccessTokenInfo> cloneTokensAccessTokenInfos = new SerializableList<>();
+      
+      if (personalAccessTokens != null) {
+        for (PersonalAccessTokenInfo token : personalAccessTokens) {
+          cloneTokensAccessTokenInfos.add((PersonalAccessTokenInfo) token.clone());
+        }
+      }
+      clone.setPersonalAccessTokens(cloneTokensAccessTokenInfos);
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      LOGGER.error(e, e);
+    }
+
+    return new PersonalAccessTokenInfoList();
+  }
+
+  @Override
+  public void checkValid() {
+    // We consider it to be valid.
+  }
+
+  @Override
+  public String[] getNotPersistentFieldNames() {
+    return new String[0];
+  }
 
 }
