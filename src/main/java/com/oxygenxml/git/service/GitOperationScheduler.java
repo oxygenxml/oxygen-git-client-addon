@@ -4,7 +4,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +22,7 @@ public class GitOperationScheduler {
   /**
    * Refresh executor.
    */
-  private ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(1) {
+  private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1) {
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
       if (t != null) {
@@ -157,16 +156,30 @@ public class GitOperationScheduler {
   
   /**
    * Attempts to shutdown any running tasks.
+   * 
+   * @return <code>true</code> if all tasks have been executed. <code>false</code>
+   * if there are still tasks running.
    */
-  public void shutdown() {
+  public boolean shutdown() {
     executor.shutdown();
     try {
-      executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+      return executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       logger.warn("Unable to stop task thread: " + e.getMessage(), e);
       // Restore interrupted state...
       Thread.currentThread().interrupt();
 
-    }    
+    }   
+    return false;
+  }
+  
+  /**
+   * Returns the approximate number of threads that are actively
+   * executing tasks.
+   *
+   * @return the number of threads
+   */
+  public int getActiveCount() {
+    return executor.getActiveCount();
   }
 }

@@ -630,7 +630,13 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   public void tearDown() throws Exception {
     super.tearDown();
     
-    GitOperationScheduler.getInstance().shutdown();
+    // If there is a running task, wait for it.
+    boolean shutdown = false;
+    int count = 0;
+    do {
+      shutdown = GitOperationScheduler.getInstance().shutdown(); 
+      count++;
+    } while (!shutdown && count  < 5);
     
     RepositoryCache.clear();
     
