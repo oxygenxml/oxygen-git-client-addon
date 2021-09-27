@@ -64,6 +64,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -541,6 +542,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         }
       }
     });
+    
+    OptionsManager.getInstance().loadOptions(wsOptions);
   }
   
   /**
