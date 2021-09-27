@@ -1,5 +1,6 @@
 package com.oxygenxml.git.options;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -8,8 +9,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.oxygenxml.git.utils.Equaler;
-
-import ro.sync.options.SerializableList;
 
 
 /**
@@ -27,7 +26,7 @@ public class CommitMessages {
 	 * The last 7 committed messages
 	 */
 	@XmlElement(name = "message")
-	private SerializableList<String> messages = new SerializableList<>();
+	private List<String> messages = new ArrayList<>();
 
 	public List<String> getMessages() {
 		return messages;
@@ -38,7 +37,7 @@ public class CommitMessages {
 	    this.messages.clear();
 	    this.messages.addAll(messages);
 	  } else {
-	    this.messages = new SerializableList<>();
+	    this.messages = new ArrayList<>();
 	  }
 	}
 

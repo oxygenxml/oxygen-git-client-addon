@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.utils.Equaler;
 
 import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
-import ro.sync.options.SerializableList;
 
 /**
  * Entity for the JAXB to store the user credentials
@@ -31,7 +30,7 @@ public class UserCredentialsList implements ExternalPersistentObject {
 	 * List with the credentials
 	 */
 	@XmlElement(name = "credential")
-	private SerializableList<UserAndPasswordCredentials> credentials = new SerializableList<>();
+	private List<UserAndPasswordCredentials> credentials = new ArrayList<>();
 	/**
 	 * The list with user credentials. The actual list, not a copy.
 	 * 
@@ -42,7 +41,7 @@ public class UserCredentialsList implements ExternalPersistentObject {
 	}
 
 	public void setCredentials(List<UserAndPasswordCredentials> credentials) {
-		this.credentials = credentials != null ? new SerializableList<>(credentials) : new SerializableList<>(0);
+		this.credentials = credentials != null ? new ArrayList<>(credentials) : new ArrayList<>(0);
 	}
 
 	@Override

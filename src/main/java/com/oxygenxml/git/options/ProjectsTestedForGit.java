@@ -1,5 +1,6 @@
 package com.oxygenxml.git.options;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -8,8 +9,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.oxygenxml.git.utils.Equaler;
-
-import ro.sync.options.SerializableList;
 
 
 /**
@@ -26,14 +25,14 @@ public class ProjectsTestedForGit {
 	 * The list with the users repositories
 	 */
 	@XmlElement(name = "path")
-	private SerializableList<String> projectPaths = new SerializableList<>();
+	private List<String> projectPaths = new ArrayList<>();
 
 	public List<String> getPaths() {
 		return projectPaths;
 	}
 
 	public void setPaths(List<String> paths) {
-		this.projectPaths = paths != null ? new SerializableList<>(paths) : new SerializableList<>();
+		this.projectPaths = paths != null ? new ArrayList<>(paths) : new ArrayList<>();
 	}
 
 	@Override

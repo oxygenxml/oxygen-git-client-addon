@@ -320,7 +320,7 @@ public class TagBasedOptions implements Options {
   public static UserCredentialsList arrayToCredentialsList(String[] array) {
     UserCredentialsList userCredentialsList = new UserCredentialsList();
     
-    if (array.length % 3 != 0 || array.length == 0) {
+    if (array == null || array.length % 3 != 0 || array.length == 0) {
       return userCredentialsList;
     }
 
@@ -371,7 +371,7 @@ public class TagBasedOptions implements Options {
     PersonalAccessTokenInfoList personalAccessTokenInfoList = new PersonalAccessTokenInfoList();
     
     
-    if (array.length%2 == 1 || array.length == 0) {
+    if (array == null || array.length%2 == 1 || array.length == 0) {
       return personalAccessTokenInfoList;
     }
     
