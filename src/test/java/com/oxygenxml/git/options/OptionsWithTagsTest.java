@@ -2,11 +2,13 @@ package com.oxygenxml.git.options;
 
 import static org.junit.Assert.assertEquals;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -84,4 +86,40 @@ public class OptionsWithTagsTest {
     assertEquals("host3", credentialsListFromArray.getCredentials().get(2).getHost());
   }
 
+  /**
+   * <p><b>Description:</b> If a new option is added, verify if it should be saved 
+   * at project level.</p>
+   * <p><b>Bug ID:</b> EXM-47674</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception if it fails.
+   */
+  @Test
+  public void testProjectLevelOptions() throws Exception {
+    Field[] fields = OptionTags.class.getFields();
+    
+    String dump = Arrays.stream(fields).map((Field f) -> f.getName()).collect(Collectors.joining("\n"));
+    assertEquals(
+        "A new option was added. If the option is displayed in the preferences page OxygenGitOptionPagePluginExtension then "
+        + " it must be placed in OxygenGitOptionPagePluginExtension.getProjectLevelOptionKeys() to save it at project level.",
+        "AUTO_PUSH_WHEN_COMMITTING\n"
+        + "NOTIFY_ABOUT_NEW_REMOTE_COMMITS\n"
+        + "CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH\n"
+        + "SELECTED_REPOSITORY\n"
+        + "REPOSITORY_LOCATIONS\n"
+        + "DESTINATION_PATHS\n"
+        + "DEFAULT_PULL_TYPE\n"
+        + "UNSTAGED_RES_VIEW_MODE\n"
+        + "STAGED_RES_VIEW_MODE\n"
+        + "PROJECTS_TESTED_FOR_GIT\n"
+        + "USER_CREDENTIALS_LIST\n"
+        + "COMMIT_MESSAGES\n"
+        + "PASSPHRASE\n"
+        + "WHEN_REPO_DETECTED_IN_PROJECT\n"
+        + "UPDATE_SUBMODULES_ON_PULL\n"
+        + "WARN_ON_CHANGE_COMMIT_ID\n"
+        + "SSH_PROMPT_ANSWERS\n"
+        + "PERSONAL_ACCES_TOKENS_LIST", dump);
+  }
 }
