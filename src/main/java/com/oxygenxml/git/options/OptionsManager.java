@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
@@ -27,6 +29,11 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  *
  */
 public class OptionsManager {
+
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(OptionsManager.class);
   /**
    * Maximum number of locations stored in history.
    */
@@ -89,6 +96,19 @@ public class OptionsManager {
    * @return The initialized options.
    */
   private Options getOptions() {
+    if (options == null) {
+      String home = System.getProperty("com.oxygenxml.editor.home.url");
+      if (home == null) {
+        // Probably test environment.
+        logger.warn("Options not initialized.");
+        if (PluginWorkspaceProvider.getPluginWorkspace() != null
+            && PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage() != null) {
+          options = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
+        } else {
+          options = new JaxbOptions();
+        }
+      }
+    }
 	  return options;
   }
   
