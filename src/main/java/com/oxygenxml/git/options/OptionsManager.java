@@ -100,6 +100,10 @@ public class OptionsManager {
         } else {
           options = new JaxbOptions();
         }
+      } else {
+        // Oxygen environment. Should not happen.
+        logger.warn("Options not initialized! Custom ro.sync.exml.workspace.api.options.ExternalPersistentObject will not be loaded/saved.");
+        options = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
       }
     }
 	  return options;

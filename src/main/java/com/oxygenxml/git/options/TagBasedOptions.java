@@ -2,7 +2,7 @@ package com.oxygenxml.git.options;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -262,9 +262,9 @@ public class TagBasedOptions implements Options {
   @Override
   public Map<String, Boolean> getSshPromptAnswers() {
     String[] stringArrayOption = wsOptionsStorage.getStringArrayOption(OptionTags.SSH_PROMPT_ANSWERS, new String[0]);
-    Map<String, String> sshPromptAnswers = arrayToMap(stringArrayOption);
+    LinkedHashMap<String, String> sshPromptAnswers = arrayToMap(stringArrayOption);
     
-    Map<String, Boolean> sshPromptAnswersWithBool = new HashMap<>();
+    Map<String, Boolean> sshPromptAnswersWithBool = new LinkedHashMap<>();
     
     for (Map.Entry<String, String> entry: sshPromptAnswers.entrySet()) {
       sshPromptAnswersWithBool.put(entry.getKey(), Boolean.parseBoolean(entry.getValue()));
@@ -414,10 +414,11 @@ public class TagBasedOptions implements Options {
    * 
    * @param array the array that we want to convert to a Map
    * 
-   * @return a Map
+   * @return A map that keep the order of the keys from the array.
    */
-  public static Map<String, String> arrayToMap(String[] array) {
-    Map<String, String> map = new HashMap<>();
+  @SuppressWarnings("java:S1319")
+  public static LinkedHashMap<String, String> arrayToMap(String[] array) {
+    LinkedHashMap<String, String> map = new LinkedHashMap<>();
     
     if (array.length%2 == 1 || array.length == 0) {
       return map;
