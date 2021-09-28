@@ -2,6 +2,8 @@ package com.oxygenxml.git.service;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JTextField;
 
 import org.eclipse.jgit.api.Git;
@@ -22,6 +25,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.PushPullEvent;
 
+import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.finder.ComponentFinder;
 
 /**
@@ -107,6 +111,40 @@ public class TestUtil {
       }
     }
     return null;
+  }
+  
+  /**
+   * Wait for a dialog in a visual test environment.
+   * 
+   * @param title Title of the dialog to wait for,
+   * @param testCase The visual test case being run.
+   * 
+   * @return The dialog.
+   * 
+   * @throws InterruptedException Threading issues while waiting.
+   * @throws IllegalArgumentException If the dialog is not found.
+   */
+  public static JDialog waitForDialog(String title, JFCTestCase testCase) throws InterruptedException {
+    Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+    
+    int counter = 0;
+    while ((!(focusedWindow instanceof JDialog) ||
+        title.equals(((JDialog) focusedWindow).getTitle()))
+        && counter < 5) {
+      
+      Thread.yield();
+      testCase.flushAWT();
+      counter ++;
+      focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+    }
+    
+    if ((focusedWindow instanceof JDialog &&
+        title.equals(((JDialog) focusedWindow).getTitle()))) {
+      
+      return (JDialog) focusedWindow;
+    }
+    
+    throw new IllegalArgumentException("Unnable to find dialog " + title);
   }
   
   /**

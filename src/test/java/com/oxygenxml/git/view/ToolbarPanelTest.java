@@ -6,6 +6,7 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -125,9 +126,8 @@ public class ToolbarPanelTest extends GitTestBase {
       SwingUtilities.invokeLater(() -> {
         branchesCombo.setSelectedItem("LocalBranch");
       });
-      flushAWT();
       
-      Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+      JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
       
       JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
       yesButton.doClick();
@@ -223,8 +223,8 @@ public class ToolbarPanelTest extends GitTestBase {
       });
       flushAWT();
       
-      Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
-      flushAWT();
+      JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
+      
       JButton stashButton = TestUtil.findButton(focusedWindow, Tags.STASH_CHANGES);
       stashButton.doClick();
       flushAWT();
