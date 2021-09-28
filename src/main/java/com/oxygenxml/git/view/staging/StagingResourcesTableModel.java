@@ -61,10 +61,10 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	  int comparationResult = 0;
 	  
 	  if(searchedPath != null && searchedPath.length() > 0) {
-	    boolean file1IsFiltered = !(searchedPath.equals(f1.getFileLocation()) ||
-	        f1.getFileLocation().startsWith(searchedPath + "/", 0));
-	    boolean file2IsFiltered = !(searchedPath.equals(f2.getFileLocation()) ||
-	        f2.getFileLocation().startsWith(searchedPath + "/", 0));
+	    boolean file1IsFiltered = !searchedPath.equals(f1.getFileLocation()) &&
+	        !f1.getFileLocation().startsWith(searchedPath + "/", 0);
+	    boolean file2IsFiltered = !searchedPath.equals(f2.getFileLocation()) &&
+	        !f2.getFileLocation().startsWith(searchedPath + "/", 0);
 	    comparationResult = Boolean.compare(file1IsFiltered, file2IsFiltered);
 	  }
 	  
