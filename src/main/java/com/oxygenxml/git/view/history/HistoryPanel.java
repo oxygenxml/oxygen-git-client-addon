@@ -622,7 +622,6 @@ public class HistoryPanel extends JPanel {
         // upstream branch.
         tryFetch();
 
-        ((StagingResourcesTableModel)affectedFilesTable.getModel()).setSearchedPath(filePath);
         File directory = gitAccess.getWorkingCopy();
         historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
             + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
@@ -646,6 +645,8 @@ public class HistoryPanel extends JPanel {
 
         StagingResourcesTableModel dataModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
         dataModel.setFilesStatus(Collections.emptyList());
+        ((StagingResourcesTableModel)affectedFilesTable.getModel()).setSearchedPath(filePath);
+        
         commitDescriptionPane.setText("");
 
         final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);

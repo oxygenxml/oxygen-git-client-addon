@@ -19,6 +19,8 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitEventInfo;
 
+import ro.sync.basic.util.Equaler;
+
 /**
  * Custom table model
  * 
@@ -58,17 +60,19 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	private final Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
 	  int comparationResult = 0;
 	  
-	  if(searchedPath != null) {
-	    boolean file1IsSearched = !(searchedPath.equals(f1.getFileLocation()) ||
+	  if(searchedPath != null && searchedPath.length() > 0) {
+	    boolean file1IsFiltered = !(searchedPath.equals(f1.getFileLocation()) ||
 	        f1.getFileLocation().startsWith(searchedPath + "/", 0));
-	    boolean file2IsSearched = !(searchedPath.equals(f2.getFileLocation()) ||
+	    boolean file2IsFiltered = !(searchedPath.equals(f2.getFileLocation()) ||
 	        f2.getFileLocation().startsWith(searchedPath + "/", 0));
-	    comparationResult = Boolean.compare(file1IsSearched, file2IsSearched);
+	    comparationResult = Boolean.compare(file1IsFiltered, file2IsFiltered);
 	  }
 	  
 	  if(comparationResult == 0) {
+	    // Both are filtered or both are matched. Second level sort.
 	    comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
 	    if(comparationResult == 0) {
+	      // Same change type. Third level sort.
 	      comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
 	    }
 	  }
@@ -350,6 +354,13 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @param searchedPath  The searched path.
 	 */
 	public void setSearchedPath(String searchedPath) {
+	  boolean sort = !Equaler.verifyEquals(searchedPath, this.searchedPath);
     this.searchedPath = searchedPath;
+    
+    if (sort) {
+      fireTableRowsDeleted(0, getRowCount());
+      this.filesStatuses.sort(fileStatusComparator);
+      fireTableRowsInserted(0, getRowCount());
+    }
   }
 }
