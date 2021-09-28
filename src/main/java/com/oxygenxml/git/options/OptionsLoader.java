@@ -135,8 +135,6 @@ public class OptionsLoader {
           // 1. Load
           options = (JaxbOptions) jaxbUnmarshaller.unmarshal(new StringReader(
               PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
-          // 2. Reset
-          PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(OLD_GIT_PLUGIN_OPTIONS, null);
         } else {
           option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().getOption(GIT_PLUGIN_OPTIONS,
               null);
