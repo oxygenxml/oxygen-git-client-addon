@@ -76,13 +76,6 @@ public class OptionsManager {
   }
 
   /**
-   * Save options.
-   */
-  public void saveOptions() {
-    // TODO Not needed anymore. See from where it is used and remove it.
-  }
-  
-  /**
    * Save the new view mode for the staged resources.
    * 
    * @param stagedResViewMode The view mode.

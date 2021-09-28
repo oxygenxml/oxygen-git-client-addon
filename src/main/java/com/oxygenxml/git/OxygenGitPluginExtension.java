@@ -408,8 +408,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 */
 	@Override
 	public boolean applicationClosing() {
-		OptionsManager.getInstance().saveOptions();
-		
 		// EXM-42867: wait for the refresh to execute
 		gitRefreshSupport.shutdown();
 		

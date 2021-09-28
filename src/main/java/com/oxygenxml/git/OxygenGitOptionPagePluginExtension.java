@@ -197,8 +197,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
       whatToDo = WhenRepoDetectedInProject.DO_NOTHING;
     }
     OPTIONS_MANAGER.setWhenRepoDetectedInProject(whatToDo);
-    
-    OPTIONS_MANAGER.saveOptions();
   }
 
   /**

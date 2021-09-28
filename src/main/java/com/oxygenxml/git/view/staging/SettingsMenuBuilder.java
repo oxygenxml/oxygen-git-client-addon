@@ -68,7 +68,6 @@ final class SettingsMenuBuilder {
           OptionsManager optManager = OptionsManager.getInstance();
           optManager.saveSshPassphare(null);
           optManager.saveGitCredentials(null);
-          optManager.saveOptions();
           
           refreshSupport.call();
         }
