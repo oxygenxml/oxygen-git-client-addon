@@ -297,7 +297,6 @@ public class GitAccess {
    * @param path A string that specifies the Git repository folder.
    */
 	public void setRepositoryAsync(String path) {
-	  new Exception("Set reposiotry async to " + path).printStackTrace(System.out);
 	  GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
 	      openRepository(path);
