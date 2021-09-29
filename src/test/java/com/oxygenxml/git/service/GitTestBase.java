@@ -667,10 +667,6 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     FileSystemUtil.deleteRecursivelly(new File("target/test-resources"));
     
     new File("src/test/resources/Options.xml").delete();
-    
-    // There are various async tasks doing operations on the fit access.
-    // Clear it to make sure other tests run with a cleaner version.
-    GitAccess.clearInstanceForTests();
   }
 
   /**
