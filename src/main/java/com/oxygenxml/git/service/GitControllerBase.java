@@ -19,7 +19,6 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * 
@@ -259,7 +258,7 @@ public abstract class GitControllerBase {
         "   " + translator.getTranslation(Tags.YES) + "   ",
         "   " + translator.getTranslation(Tags.NO) + "   "};
     int[] optionIds = new int[] { 0, 1 };
-    int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+    int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
         actionName,
         MessageFormat.format(
             translator.getTranslation(Tags.CONTINUE_RESOLVING_REBASE_CONFLICT_USING_MINE_OR_THEIRS),

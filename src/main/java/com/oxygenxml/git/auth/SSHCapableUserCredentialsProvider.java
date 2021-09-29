@@ -9,7 +9,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * A checker that is able to handle SSH-based requests.
@@ -142,7 +141,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
       // Ask the user.
       String[] options = new String[] { "   Yes   ", "   No   " };
       int[] optonsId = new int[] { 0, 1 };
-      int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+      int result = PluginWorkspaceProvider.getPluginWorkspace()
           .showConfirmDialog("Connection", promptText, options, optonsId);
 
       if (logger.isDebugEnabled()) {

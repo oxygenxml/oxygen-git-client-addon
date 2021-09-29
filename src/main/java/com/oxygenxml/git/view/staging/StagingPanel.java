@@ -50,7 +50,6 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Main panel containing all the other panels. It also creates them
@@ -120,11 +119,6 @@ public class StagingPanel extends JPanel {
 	 */
 	private final GitController gitController;
 	
-  /**
-   * Plugin workspace access.
-   */
-  private final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-
   /**
    * Constructor.
    * 
@@ -229,7 +223,7 @@ public class StagingPanel extends JPanel {
 		addRefreshF5();
 		
 		// Listens on the save event in the Oxygen editor and updates the unstaged resources area
-		pluginWS.addEditorChangeListener(
+		PluginWorkspaceProvider.getPluginWorkspace().addEditorChangeListener(
 		    new WSEditorChangeListener() {
 		      @Override
 		      public void editorOpened(final URL editorLocation) {
@@ -317,7 +311,7 @@ public class StagingPanel extends JPanel {
    * @param editorLocation Editor to check.
    */
   private void addEditorSaveHook(final URL editorLocation) {
-    WSEditor editorAccess = pluginWS.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+    WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
     if (editorAccess != null) {
       editorAccess.addEditorListener(new WSEditorListener() {
         @Override
@@ -336,7 +330,7 @@ public class StagingPanel extends JPanel {
   private void treatEditorSavedEvent(final URL editorLocation) {
     File locateFile = null;
     if ("file".equals(editorLocation.getProtocol())) {
-      locateFile = pluginWS.getUtilAccess().locateFile(editorLocation);
+      locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
       if (locateFile != null) {
         String fileInWorkPath = locateFile.toString();
         fileInWorkPath = FileUtil.rewriteSeparator(fileInWorkPath);

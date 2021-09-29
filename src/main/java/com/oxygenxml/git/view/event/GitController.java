@@ -38,7 +38,6 @@ import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Used for executing Git operations.
@@ -387,7 +386,7 @@ public class GitController extends GitControllerBase {
       if (Status.OK == response.getStatus()) {
         event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_SUCCESSFUL));
       } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+        PluginWorkspaceProvider.getPluginWorkspace()
         .showErrorMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
       } else if (Status.UP_TO_DATE == response.getStatus()) {
         event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_UP_TO_DATE));
@@ -402,7 +401,7 @@ public class GitController extends GitControllerBase {
         } else {
           errMess += " " + translator.getTranslation(Tags.NO_DETAILS_AVAILABLE);
         }
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(errMess);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(errMess);
       }
 
       return Optional.ofNullable(event);
@@ -451,7 +450,7 @@ public class GitController extends GitControllerBase {
 
       if(repositoryState != null) {
         if (repositoryState == RepositoryState.MERGING_RESOLVED) {
-          ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          PluginWorkspaceProvider.getPluginWorkspace()
               .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
         } else if (repositoryState == RepositoryState.REBASING_MERGE
             || repositoryState == RepositoryState.REBASING_REBASING) {
@@ -489,7 +488,7 @@ public class GitController extends GitControllerBase {
           }
           break;
         case REPOSITORY_HAS_CONFLICTS:
-          ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          PluginWorkspaceProvider.getPluginWorkspace()
               .showErrorMessage(translator.getTranslation(Tags.PULL_WHEN_REPO_IN_CONFLICT));
           break;
         case UP_TO_DATE:

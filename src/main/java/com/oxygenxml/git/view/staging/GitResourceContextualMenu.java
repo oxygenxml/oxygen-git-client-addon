@@ -24,8 +24,8 @@ import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Contextual menu shown for staged/unstaged resources from the Git view
@@ -66,8 +66,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
   /**
    * The Standalone Plugin Workspace;
    */
-  private static final StandalonePluginWorkspace PLUGIN_WS =
-      (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+  private static final PluginWorkspace PLUGIN_WS = PluginWorkspaceProvider.getPluginWorkspace();
   /**
    * Show differences action.
    */

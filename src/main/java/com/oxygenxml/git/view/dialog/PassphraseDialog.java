@@ -15,7 +15,6 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -52,7 +51,7 @@ public class PassphraseDialog extends OKCancelDialog {
 	 * @param message Message.
 	 */
 	public PassphraseDialog(String message) {
-		super((JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 				"SSH Passphrase", true);
 		
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -101,7 +100,7 @@ public class PassphraseDialog extends OKCancelDialog {
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.pack();
 		this.setLocationRelativeTo(
-		    (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame());
+		    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setVisible(true);
 	}
 

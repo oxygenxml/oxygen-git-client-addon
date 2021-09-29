@@ -1113,7 +1113,7 @@ public class GitAccess {
 		  String lockFailureMessage = createLockFailureMessageIfNeeded(trackingRefUpdates);
 		  if (!lockFailureMessage.isEmpty()) {
 		    // Lock failure
-		    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+		   PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
 		    pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
 		  } else {
@@ -2218,12 +2218,12 @@ public class GitAccess {
       } catch (UnmergedPathsException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e, e);
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+        PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage(TRANSLATOR.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e, e);
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+        PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage(e.getMessage());
       }
     });
