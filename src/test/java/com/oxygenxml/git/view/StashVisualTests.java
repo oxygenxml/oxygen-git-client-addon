@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -28,9 +29,10 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
+import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
-import com.oxygenxml.git.view.stash.StashFilesTableModel;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
+import com.oxygenxml.git.view.stash.StashFilesTableModel;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
@@ -657,16 +659,42 @@ public class StashVisualTests extends GitTestBase {
           "local4.txt",
       };
       
+      String[] foldersName = {
+          "folder0",
+          "folder1",
+          "folder2",
+          "folder3",
+          "folder4",
+          "folder5",
+          "very_very_veeeeeeeeeeeeeeeeeery_long_folder_name"
+      };
+      
+      String path = LOCAL_REPO + "/";
+      String fileWithLongPathName = "file_with_long_path.txt";
+      
+      for(int i = 0; i < foldersName.length; i++) {
+        path += foldersName[i];
+        file = new File(path);
+        assertTrue(file.mkdir());
+      }
+      
       makeLocalChange("some_modification");
-      for (int i = 1; i <= 4; i++) {
+      for (int i = 1; i < filesNames.length; i++) {
         file = new File(LOCAL_REPO, filesNames[i]);
-        file.createNewFile();
+        assertTrue(file.createNewFile());
         setFileContent(file, "local content" + i);
         gitAccess.add(new FileStatus(GitChangeType.ADD, filesNames[i]));
       }
+      
+      file = new File(path, fileWithLongPathName);
+      assertTrue(file.createNewFile());
+      setFileContent(file, "local content");
+      flushAWT();
+      gitAccess.add(new FileStatus(GitChangeType.ADD, path + fileWithLongPathName));
+      path = path.substring((LOCAL_REPO + "/").length());
+      
       toolbarPanel.refreshStashButton();
       flushAWT();
-      
       JMenuItem[] stashChangesItem = new JMenuItem[1];
       stashChangesItem[0] = stashButton.getItem(0);
       
@@ -713,10 +741,15 @@ public class StashVisualTests extends GitTestBase {
       ListStashesDialog listStashesDialog = (ListStashesDialog) findDialog(Tags.STASHES);
       flushAWT();
       assertNotNull(listStashesDialog);
+      
+      StagingResourcesTableCellRenderer filesRender = (StagingResourcesTableCellRenderer) listStashesDialog.getAffectedFilesTable()
+          .getDefaultRenderer(FileStatus.class);
+      
+      
       StashFilesTableModel stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
       assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
-
+      
       stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(1, 1));
       flushAWT();
@@ -725,15 +758,21 @@ public class StashVisualTests extends GitTestBase {
       for (int i = 1; i < filesNames.length; i++) {
         assertEquals(GitChangeType.ADD, stashFilesTableModel.getValueAt(i, 0));
         assertEquals(filesNames[i], ((FileStatus) stashFilesTableModel.getValueAt(i, 1)).getFileLocation());
+        String toolTipFileText = ((JLabel)filesRender.getTableCellRendererComponent(listStashesDialog.getAffectedFilesTable(), 
+            stashFilesTableModel.getValueAt(i, 1), true, true, i, 1)).getToolTipText();
+        assertEquals(filesNames[i], toolTipFileText);
       }
+      String toolTipFileText = ((JLabel)filesRender.getTableCellRendererComponent(listStashesDialog.getAffectedFilesTable(), 
+          stashFilesTableModel.getValueAt(filesNames.length, 1), true, true, filesNames.length , 1)).getToolTipText();
+      assertEquals(fileWithLongPathName + " - " + path, toolTipFileText);
       flushAWT();
 
       stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(0, 0));
       flushAWT();
       assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
-      assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
-            
+      assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation()); 
+      
       JButton cancelButton = findFirstButton(listStashesDialog, Tags.CLOSE);
       assertNotNull(cancelButton);
       cancelButton.doClick();
@@ -743,6 +782,10 @@ public class StashVisualTests extends GitTestBase {
       frame.dispose();
     }
   }
+  
+  
+  
+  
   
   
   /**

@@ -19,6 +19,8 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitEventInfo;
 
+import ro.sync.basic.util.Equaler;
+
 /**
  * Custom table model
  * 
@@ -352,10 +354,13 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @param searchedPath  The searched path.
 	 */
 	public void setSearchedPath(String searchedPath) {
-	  this.searchedPath = searchedPath;
-
-	  fireTableRowsDeleted(0, getRowCount());
-	  this.filesStatuses.sort(fileStatusComparator);
-	  fireTableRowsInserted(0, getRowCount());
-	}
+	  boolean sort = !Equaler.verifyEquals(searchedPath, this.searchedPath);
+    this.searchedPath = searchedPath;
+    
+    if (sort) {
+      fireTableRowsDeleted(0, getRowCount());
+      this.filesStatuses.sort(fileStatusComparator);
+      fireTableRowsInserted(0, getRowCount());
+    }
+  }
 }
