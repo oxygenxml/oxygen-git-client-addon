@@ -34,10 +34,6 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
   @SuppressWarnings("unused")
   private static final Logger logger = Logger.getLogger(FlatViewTestBase.class);
   /**
-   * Access to the Git API.
-   */
-  protected final GitAccess gitAccess = GitAccess.getInstance();
-  /**
    * Main frame.
    */
   protected JFrame mainFrame = null;
@@ -54,7 +50,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
 
     stagingPanel = new StagingPanel(
         refreshSupport,
-        new GitController(gitAccess) {
+        new GitController(GitAccess.getInstance()) {
           @Override
           protected void showPullSuccessfulWithConflicts(PullResponse response) {
             // Nothing to do.
@@ -79,8 +75,13 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     mainFrame.getContentPane().add(stagingPanel, BorderLayout.CENTER);
     mainFrame.setSize(new Dimension(400, 600));
     mainFrame.setVisible(true);
+    
+    // When the GUI is created some tasks are scheduled on AWT and Git thread.
+    // Better wait for them so they don't interact with the tests.
+    flushAWT();
+    waitForScheduler();
   }
-
+  
   @Override
   @Before
   public void tearDown() throws Exception {
@@ -218,8 +219,8 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected final File commitNewFile(String parentDir, String fileName, String content) throws Exception {
     File file = createNewFile(parentDir, fileName, content);
-    gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
-    gitAccess.commit("First version.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.ADD, fileName));
+    GitAccess.getInstance().commit("First version.");
     
     return file;
   }
@@ -251,6 +252,6 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @param fs File to add to the index.
    */
   protected void add(FileStatus fs) {
-    gitAccess.add(fs);
+    GitAccess.getInstance().add(fs);
   }
   }

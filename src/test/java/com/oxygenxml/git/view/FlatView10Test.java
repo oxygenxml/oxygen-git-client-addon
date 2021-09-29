@@ -51,17 +51,17 @@ public class FlatView10Test extends FlatViewTestBase {
     new File(localTestRepository_2).mkdirs();
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     File firstRepoFile = new File(localTestRepository_1 + "/test.txt");
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
-    gitAccess.commit("First commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+    GitAccess.getInstance().commit("First commit.");
     push("", "");
     
     //----------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
@@ -74,15 +74,15 @@ public class FlatView10Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Second commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Second commit.");
     push("", "");
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Third commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Third commit.");
     
     // Now pull to generate conflict
     ConflictButtonsPanel abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
@@ -97,12 +97,12 @@ public class FlatView10Test extends FlatViewTestBase {
     assertTrue(abortMergeButtonPanel.isShowing());
 
     // --------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     sleep(300);
     assertFalse(abortMergeButtonPanel.isShowing());
     
     // --------------- REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     sleep(300);
     assertTrue(abortMergeButtonPanel.isShowing());
     JButton abortMergeBtn = findFirstButton(abortMergeButtonPanel, Tags.ABORT_MERGE);

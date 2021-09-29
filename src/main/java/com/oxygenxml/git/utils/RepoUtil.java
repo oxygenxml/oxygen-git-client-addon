@@ -403,7 +403,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
     try {
       return Optional.of(GitAccess.getInstance().getRepository().getRepositoryState());
     } catch (NoRepositorySelected e1) {
-      LOGGER.error(e1, e1);
+      LOGGER.debug(e1, e1);
     }
     return Optional.empty();
   }

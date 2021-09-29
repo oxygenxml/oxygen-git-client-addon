@@ -103,7 +103,7 @@ public class FlatView7Test extends FlatViewTestBase {
         + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
         branchesPanel.getToolTipText());
     
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     flushAWT();
     
     // Commit a new file locally

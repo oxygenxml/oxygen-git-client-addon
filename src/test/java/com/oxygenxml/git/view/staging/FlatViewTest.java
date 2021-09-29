@@ -72,24 +72,24 @@ public class FlatViewTest extends FlatViewTestBase {
     File file = createNewFile(localTestRepository, "test.txt", "content");
     
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("First version.");
+    GitAccess.getInstance().commit("First version.");
     PushResponse push = push("", "");
     assertEquals("status: OK message null", push.toString());
     
-    gitAccess.setRepositorySynchronously(localTestRepository2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("modified from 2nd local repo");
+    GitAccess.getInstance().commit("modified from 2nd local repo");
     push("", "");
     
     // Change back the repo.
-    gitAccess.setRepositorySynchronously(localTestRepository);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("modified from 2nd local repo");
+    GitAccess.getInstance().commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.
     pull();
@@ -142,24 +142,24 @@ public class FlatViewTest extends FlatViewTestBase {
     File file = createNewFile(localTestRepository, "test.txt", "content");
     
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("First version.");
+    GitAccess.getInstance().commit("First version.");
     PushResponse push = push("", "");
     assertEquals("status: OK message null", push.toString());
     
-    gitAccess.setRepositorySynchronously(localTestRepository2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("modified from 2nd local repo");
+    GitAccess.getInstance().commit("modified from 2nd local repo");
     push("", "");
     
     // Change back the repo.
-    gitAccess.setRepositorySynchronously(localTestRepository);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("modified from 2nd local repo");
+    GitAccess.getInstance().commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.
     pull();
@@ -174,7 +174,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTableModels("", "CHANGED, test.txt");
     
     // Restart merge
-    ScheduledFuture<?> restartMerge = gitAccess.restartMerge();
+    ScheduledFuture<?> restartMerge = GitAccess.getInstance().restartMerge();
     restartMerge.get();
     
     flushAWT();
@@ -189,7 +189,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Commit
     // TODO Alex What should it assert here?
-    gitAccess.commit("commit");
+    GitAccess.getInstance().commit("commit");
     assertTableModels("", "");
   }
   
@@ -344,7 +344,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Don't give a message to force an exception.
     try {
-      gitAccess.commit(null);
+      GitAccess.getInstance().commit(null);
       fail("Exception expected.");
     } catch (NoMessageException e) {
       // Expected.

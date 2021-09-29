@@ -69,7 +69,7 @@ public class WorkingCopySelectionPanel extends JPanel {
   /**
    * The git API, containing the commands
    */
-  private static final GitAccess GIT_ACCESS = GitAccess.getInstance();
+  private GitAccess gitAccess;
 
   /**
    * The translator for the messages that are displayed in this panel
@@ -107,6 +107,7 @@ public class WorkingCopySelectionPanel extends JPanel {
    */
 	public WorkingCopySelectionPanel(GitControllerBase gitController, boolean isLabeled) {
 	  this.isLabeled = isLabeled;
+	  this.gitAccess = gitController.getGitAccess();
 	  createGUI();
 	  gitController.addGitListener(new GitEventUpdater());
 	  addHierarchyListener(new HierarchyListener() {
@@ -178,7 +179,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 											}
 										});
 									} else {
-										GIT_ACCESS.setRepositoryAsync(selectedEntry);
+										gitAccess.setRepositoryAsync(selectedEntry);
 									}
 								} finally {
 									inhibitRepoUpdate = false;
@@ -467,7 +468,7 @@ public class WorkingCopySelectionPanel extends JPanel {
         workingCopyCombo.setSelectedIndex(0);
       } else {
         workingCopyCombo.setSelectedItem(null);
-        GIT_ACCESS.closeRepo();
+        gitAccess.closeRepo();
       }
       workingCopyCombo.removeItem(wcDir);
     }

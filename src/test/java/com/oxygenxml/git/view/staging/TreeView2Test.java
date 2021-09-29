@@ -8,6 +8,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
@@ -56,7 +57,7 @@ public class TreeView2Test extends FlatViewTestBase {
     add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     assertTreeModels("", "ADD, test.txt");
     
-    gitAccess.commit("First version.");
+    GitAccess.getInstance().commit("First version.");
     
     assertTreeModels("", "");
     

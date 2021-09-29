@@ -11,6 +11,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
@@ -156,7 +157,7 @@ public class FlatView6Test extends FlatViewTestBase {
     sleep(400);
     assertTableModels("", "ADD, test.txt");
     
-    gitAccess.commit("First version.");
+    GitAccess.getInstance().commit("First version.");
     assertTableModels("", "");
     
     // Change the file.

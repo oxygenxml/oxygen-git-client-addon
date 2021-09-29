@@ -16,6 +16,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.ConflictResolution;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
@@ -75,17 +76,17 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("status: OK message null", push.toString());
 
       // Create lock files
-      String repoDir = gitAccess.getRepository().getDirectory().getAbsolutePath();
-      Ref ref = gitAccess.getRemoteBrachListForCurrentRepo().get(0);
+      String repoDir = GitAccess.getInstance().getRepository().getDirectory().getAbsolutePath();
+      Ref ref = GitAccess.getInstance().getRemoteBrachListForCurrentRepo().get(0);
       File lockFile = new File(repoDir, ref.getName() + ".lock");
       boolean createNewFile = lockFile.createNewFile();
       assertTrue("Unnable to create lock file " + lockFile.getAbsolutePath(), createNewFile);
-      setFileContent(lockFile, gitAccess.getLastLocalCommitInRepo().getName());
+      setFileContent(lockFile, GitAccess.getInstance().getLastLocalCommitInRepo().getName());
 
       // Commit a new version of the file.
       setFileContent(file, "modified");
-      gitAccess.add(new FileStatus(GitChangeType.MODIFIED, fileName));
-      gitAccess.commit("modified");
+      GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, fileName));
+      GitAccess.getInstance().commit("modified");
       push("", "");
       assertEquals("status: OK message null", push.toString());
 
@@ -127,17 +128,17 @@ public class FlatView2Test extends FlatViewTestBase {
     new File(localTestRepository_2).mkdirs();
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     File firstRepoFile = new File(localTestRepository_1 + "/test.txt");
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
-    gitAccess.commit("First commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+    GitAccess.getInstance().commit("First commit.");
     push("", "");
     
     //----------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
@@ -150,15 +151,15 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Second commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Second commit.");
     push("", "");
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Third commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Third commit.");
     
     // Now pull to generate conflict
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
@@ -171,12 +172,12 @@ public class FlatView2Test extends FlatViewTestBase {
     assertTrue(rebasePanel.isShowing());
 
     // --------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     sleep(300);
     assertFalse(rebasePanel.isShowing());
     
     // --------------- REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     sleep(300);
     assertTrue(rebasePanel.isShowing());
   }
@@ -206,17 +207,17 @@ public class FlatView2Test extends FlatViewTestBase {
     new File(localTestRepository_2).mkdirs();
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     File firstRepoFile = new File(localTestRepository_1 + "/test.txt");
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
-    gitAccess.commit("First commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+    GitAccess.getInstance().commit("First commit.");
     push("", "");
     
     //----------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
@@ -229,15 +230,15 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Second commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Second commit.");
     push("", "");
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Third commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Third commit.");
     
     // Now pull to generate conflict
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
@@ -286,17 +287,17 @@ public class FlatView2Test extends FlatViewTestBase {
     new File(localTestRepository_2).mkdirs();
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     File firstRepoFile = new File(localTestRepository_1 + "/test.txt");
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
-    gitAccess.commit("First commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+    GitAccess.getInstance().commit("First commit.");
     push("", "");
     
     //----------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
@@ -309,15 +310,15 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Second commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Second commit.");
     push("", "");
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Third commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Third commit.");
     
     // Now pull to generate conflict
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
@@ -330,7 +331,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    GitControllerBase sc = new GitControllerBase(gitAccess) {
+    GitControllerBase sc = new GitControllerBase(GitAccess.getInstance()) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;
@@ -378,17 +379,17 @@ public class FlatView2Test extends FlatViewTestBase {
     new File(localTestRepository_2).mkdirs();
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     File firstRepoFile = new File(localTestRepository_1 + "/test.txt");
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
-    gitAccess.commit("First commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+    GitAccess.getInstance().commit("First commit.");
     push("", "");
     
     //----------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
@@ -400,15 +401,15 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Second commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Second commit.");
     push("", "");
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Third commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Third commit.");
     
     // Now pull to generate conflict
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
@@ -422,7 +423,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertTrue(rebasePanel.isShowing());
 
     Semaphore s = new Semaphore(0);
-    GitController ppc = new GitController(gitAccess) {
+    GitController ppc = new GitController(GitAccess.getInstance()) {
       @Override
       protected void showRebaseInProgressDialog() {
         s.release();
@@ -481,17 +482,17 @@ public class FlatView2Test extends FlatViewTestBase {
     new File(localTestRepository_2).mkdirs();
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     File firstRepoFile = new File(localTestRepository_1 + "/test.txt");
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
-    gitAccess.commit("First commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+    GitAccess.getInstance().commit("First commit.");
     push("", "");
     
     //----------------- REPO 2
-    gitAccess.setRepositorySynchronously(localTestRepository_2);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
@@ -503,15 +504,15 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Second commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Second commit.");
     push("", "");
     
     //--------------  REPO 1
-    gitAccess.setRepositorySynchronously(localTestRepository_1);
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    gitAccess.commit("Third commit.");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    GitAccess.getInstance().commit("Third commit.");
     
     // Now pull to generate conflict
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
@@ -576,17 +577,17 @@ public class FlatView2Test extends FlatViewTestBase {
       new File(localTestRepository_2).mkdirs();
 
       //--------------  REPO 1
-      gitAccess.setRepositorySynchronously(localTestRepository_1);
+      GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
       File firstRepoFile = new File(localTestRepository_1 + "/test.txt");
       firstRepoFile.createNewFile();
       setFileContent(firstRepoFile, "First version");
 
-      gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
-      gitAccess.commit("First commit.");
+      GitAccess.getInstance().add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+      GitAccess.getInstance().commit("First commit.");
       push("", "");
 
       //----------------- REPO 2
-      gitAccess.setRepositorySynchronously(localTestRepository_2);
+      GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
       File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
 
       refreshSupport.call();
@@ -599,15 +600,15 @@ public class FlatView2Test extends FlatViewTestBase {
 
       // Modify file and commit and push
       setFileContent(secondRepoFile, "Second versions");
-      gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-      gitAccess.commit("Second commit.");
+      GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+      GitAccess.getInstance().commit("Second commit.");
       push("", "");
 
       //--------------  REPO 1
-      gitAccess.setRepositorySynchronously(localTestRepository_1);
+      GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
       setFileContent(firstRepoFile, "Third version");
-      gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-      gitAccess.commit("Third commit.");
+      GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+      GitAccess.getInstance().commit("Third commit.");
 
       // Now pull to generate conflict
       ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
@@ -656,7 +657,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("Cannot_continue_rebase_because_of_conflicts", errMessage[0]);
 
       // Resolve conflict
-      GitControllerBase sc = new GitControllerBase(gitAccess) {
+      GitControllerBase sc = new GitControllerBase(GitAccess.getInstance()) {
         @Override
         protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
           return cmd == ConflictResolution.RESOLVE_USING_MINE;

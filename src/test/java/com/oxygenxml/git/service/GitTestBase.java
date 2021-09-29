@@ -631,12 +631,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     super.tearDown();
     
     // If there is a running task, wait for it.
-    boolean shutdown = false;
-    int count = 0;
-    do {
-      shutdown = GitOperationScheduler.getInstance().shutdown(); 
-      count++;
-    } while (!shutdown && count  < 5);
+    waitForScheduler();
     
     RepositoryCache.clear();
     
@@ -672,6 +667,10 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     FileSystemUtil.deleteRecursivelly(new File("target/test-resources"));
     
     new File("src/test/resources/Options.xml").delete();
+    
+    // There are various async tasks doing operations on the fit access.
+    // Clear it to make sure other tests run with a cleaner version.
+    GitAccess.clearInstanceForTests();
   }
 
   /**
