@@ -18,7 +18,6 @@ import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Utility class for authentication-related issues.
@@ -130,7 +129,7 @@ public class AuthUtil {
       tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
     } else if (lowercaseMsg.contains(NOT_PERMITTED)) {
       // The user doesn't have permissions.
-      ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+      PluginWorkspaceProvider.getPluginWorkspace()
           .showErrorMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
       String loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS); 
       if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {

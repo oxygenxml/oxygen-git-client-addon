@@ -66,7 +66,6 @@ import com.oxygenxml.git.view.UndoRedoSupportInstaller;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.TextField;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -544,7 +543,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		Action browseButtonAction = new AbstractAction() {
 			@Override
       public void actionPerformed(ActionEvent e) {
-				File directory = ((StandalonePluginWorkspace) pluginWorkspace).chooseDirectory();
+				File directory = pluginWorkspace.chooseDirectory();
 				if (directory != null) {
 					destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
 				}

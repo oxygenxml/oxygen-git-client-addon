@@ -44,7 +44,6 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
 import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
@@ -138,7 +137,7 @@ public class UIUtil {
    * @param views     A list of views on which to show a busy or default cursor.
    */
   public static void setBusyCursor(boolean isSetBusy, List<ViewInfo> views) {
-    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
     if (isSetBusy) {
       SwingUtilities.invokeLater(() -> {
         Cursor busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
@@ -247,7 +246,7 @@ public class UIUtil {
    * @param cursor   The cursor to set.
    */
   public static void setEditorPageCursor(Cursor cursor) {
-    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
     WSEditor currentEditorAccess = pluginWS.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
     if (currentEditorAccess != null) {
       WSEditorPage currentPage = currentEditorAccess.getCurrentPage();

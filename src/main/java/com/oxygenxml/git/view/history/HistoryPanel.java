@@ -82,7 +82,6 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -136,10 +135,6 @@ public class HistoryPanel extends JPanel {
    * Presents the contextual menu.
    */
   private HistoryViewContextualMenuPresenter contextualMenuPresenter;
-  /**
-   * Plugin workspace access.
-   */
-  private StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
   /**
    * Filter field for quick search
    */
@@ -284,7 +279,7 @@ public class HistoryPanel extends JPanel {
     });
 
     // Listens on the save event in the Oxygen editor and updates the history table
-    pluginWS.addEditorChangeListener(new WSEditorChangeListener() {
+    PluginWorkspaceProvider.getPluginWorkspace().addEditorChangeListener(new WSEditorChangeListener() {
       @Override
       public void editorOpened(final URL editorLocation) {
         addEditorSaveHook(editorLocation);
@@ -301,7 +296,7 @@ public class HistoryPanel extends JPanel {
    * @param editorLocation Editor to check.
    */
   private void addEditorSaveHook(final URL editorLocation) {
-    WSEditor editorAccess = pluginWS.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+    WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
     if (editorAccess != null) {
       editorAccess.addEditorListener(new WSEditorListener() {
         @Override
@@ -320,7 +315,7 @@ public class HistoryPanel extends JPanel {
   private void treatEditorSavedEvent(final URL editorLocation) {
     File localFile = null;
     if ("file".equals(editorLocation.getProtocol())) {
-      localFile = pluginWS.getUtilAccess().locateFile(editorLocation);
+      localFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
       if (localFile != null) {
         String fileInWorkPath = localFile.toString();
         fileInWorkPath = FileUtil.rewriteSeparator(fileInWorkPath);

@@ -21,7 +21,6 @@ import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -63,7 +62,7 @@ public class RemoteRepositoryChangeWatcher {
    * @param pluginWS Access to the workspace.
    * @param gitCtrl  High level Git commands support.
    */
-  private RemoteRepositoryChangeWatcher(StandalonePluginWorkspace pluginWS, GitController gitCtrl) {
+  private RemoteRepositoryChangeWatcher(PluginWorkspace pluginWS, GitController gitCtrl) {
     addListeners4EditingAreas(pluginWS);
     this.gitController = gitCtrl;
     
@@ -84,7 +83,7 @@ public class RemoteRepositoryChangeWatcher {
    * 
    * @return An watcher that keeps track of the remote changes.
    */
-  public static RemoteRepositoryChangeWatcher createWatcher(StandalonePluginWorkspace saPluginWS, GitController gitCtrl) {
+  public static RemoteRepositoryChangeWatcher createWatcher(PluginWorkspace saPluginWS, GitController gitCtrl) {
     return new RemoteRepositoryChangeWatcher(saPluginWS, gitCtrl);
   }
   
@@ -92,7 +91,7 @@ public class RemoteRepositoryChangeWatcher {
    * Creates a new listener to supervise the remote changes and adds it to the editing areas
    * @param standalonePluginWorkspace The Plugin Workspace
    */
-  private void addListeners4EditingAreas(StandalonePluginWorkspace standalonePluginWorkspace) {
+  private void addListeners4EditingAreas(PluginWorkspace standalonePluginWorkspace) {
     WSEditorChangeListener editorListenerAlways = new WSEditorChangeListener() {
       @Override
       public void editorOpened(URL editorLocation) {

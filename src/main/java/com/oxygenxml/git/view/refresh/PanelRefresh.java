@@ -39,8 +39,8 @@ import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Synchronize the models with the Git repository state. 
@@ -188,7 +188,7 @@ public class PanelRefresh implements GitRefreshSupport {
   private boolean loadRepositoryFromOxygenProject() {
     boolean repoChanged = false;
     if (stagingPanel != null && stagingPanel.hasFocus()) {
-      StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       // Can be null from tests.
       if (pluginWS.getUtilAccess() != null) {
         String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
@@ -293,8 +293,8 @@ public class PanelRefresh implements GitRefreshSupport {
    */
   private boolean switchToProjectRepoIfUserAgrees(String projectDir) {
     boolean repoChanged = false;
-    StandalonePluginWorkspace pluginWS =
-        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    PluginWorkspace pluginWS =
+        PluginWorkspaceProvider.getPluginWorkspace();
     int response = pluginWS.showConfirmDialog(
         translator.getTranslation(Tags.CHANGE_WORKING_COPY),
         MessageFormat.format(
@@ -325,8 +325,7 @@ public class PanelRefresh implements GitRefreshSupport {
     boolean repoChanged = false;
     // Fast check to see if this is actually not a Git repository.
     if (!OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
-      StandalonePluginWorkspace pluginWS =
-          (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       int response = pluginWS.showConfirmDialog(
           translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
           MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),

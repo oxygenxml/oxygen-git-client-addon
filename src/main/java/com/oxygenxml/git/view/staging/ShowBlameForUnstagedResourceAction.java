@@ -24,7 +24,6 @@ import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Show blame.
@@ -60,7 +59,7 @@ public class ShowBlameForUnstagedResourceAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
     final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
     if (!allSelectedResources.isEmpty()) {
       try {
@@ -105,7 +104,7 @@ public class ShowBlameForUnstagedResourceAction extends AbstractAction {
           filePath, 
           historyController);
     } catch (IOException | GitAPIException ex) {
-      ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(ex.getMessage());
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage());
     }
   }
 

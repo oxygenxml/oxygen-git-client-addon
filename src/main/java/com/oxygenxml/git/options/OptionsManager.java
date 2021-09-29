@@ -17,9 +17,9 @@ import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
@@ -234,7 +234,7 @@ public class OptionsManager {
         }
       }
       if (OxygenGitPlugin.getInstance() != null) {
-        decryptedTokenValue = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+        decryptedTokenValue = PluginWorkspaceProvider.getPluginWorkspace()
             .getUtilAccess()
             .decrypt(tokenVal);
       }
@@ -275,7 +275,7 @@ public class OptionsManager {
       getOptions().setUserCredentialsList(new UserCredentialsList());
       
     } else {
-      String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+      String encryptedPassword = PluginWorkspaceProvider.getPluginWorkspace()
           .getUtilAccess().encrypt(userAndPasswordCredentials.getPassword());
       
       UserAndPasswordCredentials uc = new UserAndPasswordCredentials();
@@ -318,7 +318,7 @@ public class OptionsManager {
       getOptions().setPersonalAccessTokensList(new PersonalAccessTokenInfoList());
       
     } else {
-      StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       String encryptedToken = pluginWS.getUtilAccess().encrypt(tokenInfo.getTokenValue());
       PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken);
       
@@ -366,7 +366,7 @@ public class OptionsManager {
           .findFirst();
       if (credential.isPresent()) {
         CredentialsBase credentialsBase = credential.get();
-        StandalonePluginWorkspace saPluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+        PluginWorkspace saPluginWS = PluginWorkspaceProvider.getPluginWorkspace();
         UtilAccess utilAccess = saPluginWS.getUtilAccess();
         detectedCredentialsType = credentialsBase.getType();
         if (detectedCredentialsType == CredentialsType.USER_AND_PASSWORD) {
@@ -541,7 +541,7 @@ public class OptionsManager {
    */
   public void saveSshPassphare(String passphrase) {
     String encryptPassphrase = passphrase == null ? null
-        : ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+        : PluginWorkspaceProvider.getPluginWorkspace()
               .getUtilAccess().encrypt(passphrase);
     getOptions().setPassphrase(encryptPassphrase);
   }
@@ -554,7 +554,7 @@ public class OptionsManager {
   public String getSshPassphrase() {
     String decryptPassphrase = null;
     if (OxygenGitPlugin.getInstance() != null) {
-      decryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+      decryptPassphrase = PluginWorkspaceProvider.getPluginWorkspace()
           .getUtilAccess().decrypt(getOptions().getPassphrase());
     }
     if (decryptPassphrase == null) {
