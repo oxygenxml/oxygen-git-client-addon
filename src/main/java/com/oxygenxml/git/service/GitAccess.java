@@ -181,13 +181,6 @@ public class GitAccess {
 	  }
 	  return instance;
 	}
-	
-	 /**
-	  * Clears the singleton instance in a test environment.
-   */
-  public static void clearInstanceForTests() {
-    instance = null;
-  }
 
 	/**
 	 * Creates a local clone of the given repository and loads it.
@@ -345,7 +338,6 @@ public class GitAccess {
    * @throws IOException
    */
   private void openRepository(String path) throws IOException {
-    System.out.println("Open repository " + path);
     final File repo = new File(path + "/.git");
     if (!isCurrentRepo(repo) ) {
       File workingCopy = repo.getParentFile();
@@ -815,8 +807,6 @@ public class GitAccess {
 		  AuthenticationInterceptor.unbind(getHostName());
 			git.close();
 			git = null;
-			System.out.println(Thread.currentThread().getName() + " Set git to null");
-			new Exception().printStackTrace(System.out);
 		}
 	}
 
