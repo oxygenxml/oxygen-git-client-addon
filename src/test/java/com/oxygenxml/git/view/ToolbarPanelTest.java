@@ -1,13 +1,12 @@
 package com.oxygenxml.git.view;
 
-import java.awt.KeyboardFocusManager;
-import java.awt.Window;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
@@ -20,9 +19,10 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.staging.BranchesPanel;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
+
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
  * Toolbar panel tests.
@@ -97,7 +97,6 @@ public class ToolbarPanelTest extends GitTestBase {
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
-      stagingPanel.getToolbarPanel().refresh();
       refreshSupport.call();
       flushAWT();
       
@@ -114,34 +113,36 @@ public class ToolbarPanelTest extends GitTestBase {
       flushAWT();
       
       // Try to switch to another branch
-      BranchesPanel branchesPanel = stagingPanel.getBranchesPanel();
-      branchesPanel.refresh();
+      stagingPanel.getToolbarPanel().refresh();
+      flushAWT();
+      SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
+      stagingPanel.getToolbarPanel().refresh();
       sleep(300);
       
-      JComboBox<String> branchesCombo = branchesPanel.getBranchNamesCombo();
-      assertEquals("main", branchesCombo.getSelectedItem());
       
-      branchesCombo.showPopup();
+      JPopupMenu branchesPopup = branchesButton.getPopupMenu();
       
-      SwingUtilities.invokeLater(() -> {
-        branchesCombo.setSelectedItem("LocalBranch");
-      });
+      assertEquals("main", branchesButton.getItem(getSelectedBranchIndex(branchesButton)).getText());
       
-      JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
+      branchesPopup.setVisible(true);
+      
+      SwingUtilities.invokeLater(() -> branchesButton.getItem(0).doClick());
+     
+      final JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
       
       JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
       yesButton.doClick();
       
       flushAWT();
       
-      branchesCombo.hidePopup();
+      branchesPopup.setVisible(false);
       flushAWT();
       
       // The switch should have failed, and the selected branch shouldn't have changed
-      branchesCombo.showPopup();
+      branchesPopup.setVisible(true);
       flushAWT();
       
-      assertEquals("main", branchesCombo.getSelectedItem());
+      assertEquals("main", branchesButton.getItem(getSelectedBranchIndex(branchesButton)).getText());
       
     } finally {
       frame.setVisible(false);
@@ -209,21 +210,19 @@ public class ToolbarPanelTest extends GitTestBase {
       flushAWT();
       
       // Try to switch to another branch
-      BranchesPanel branchesPanel = stagingPanel.getBranchesPanel();
-      branchesPanel.refresh();
+      SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
+      stagingPanel.getToolbarPanel().refresh();
       sleep(300);
       
-      JComboBox<String> branchesCombo = branchesPanel.getBranchNamesCombo();
-      assertEquals("main", branchesCombo.getSelectedItem());
+      JPopupMenu branchesPopup = branchesButton.getPopupMenu();
       
-      branchesCombo.showPopup();
+      assertEquals("main", branchesButton.getItem(getSelectedBranchIndex(branchesButton)).getText());
       
-      SwingUtilities.invokeLater(() -> {
-        branchesCombo.setSelectedItem("LocalBranch");
-      });
-      flushAWT();
+      branchesPopup.setVisible(true);
       
-      JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
+      SwingUtilities.invokeLater(() -> branchesButton.getItem(0).doClick());
+     
+      final JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
       
       JButton stashButton = TestUtil.findButton(focusedWindow, Tags.STASH_CHANGES);
       stashButton.doClick();
@@ -240,5 +239,21 @@ public class ToolbarPanelTest extends GitTestBase {
     }
   }
   
+  
+  /**
+   * @param branchesButton the branches button.
+   * 
+   * @return the index of searched branch or -1 if is not found.
+   */ 
+  private int getSelectedBranchIndex(SplitMenuButton branchesButton) {
+    int index = -1;
+    for(int i = 0; i < branchesButton.getItemCount(); i++) {
+      if(branchesButton.getItem(i).isSelected()) {
+        index = i;
+        break;
+      }
+    }
+    return index;
+  }
   
 }
