@@ -424,213 +424,6 @@ public class ToolbarPanel extends JPanel {
 
 
   /**
-   * Enables/Disables the buttons.
-   *
-   * @param enabled <code>true</code> to enable the buttons. <code>false</code> to disable them.
-   */
-  public void updateButtonState(boolean enabled) {
-    pushButton.setEnabled(enabled);
-    pullMenuButton.setEnabled(enabled);
-    cloneRepositoryButton.setEnabled(enabled);
-    submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
-    branchSelectButton.setEnabled(enabled);
-    historyButton.setEnabled(enabled);
-    showTagsButton.setEnabled(enabled);
-    settingsMenuButton.setEnabled(enabled);
-    stashButton.setEnabled(enabled);
-  }
-
-
-  /**
-   * @return <code>true</code> if we have submodules.
-   */
-  boolean gitRepoHasSubmodules() {
-    return !GitAccess.getInstance().getSubmoduleAccess().getSubmodules().isEmpty();
-  }
-
-
-  public ToolbarButton getSubmoduleSelectButton() {
-    return submoduleSelectButton;
-  }
-
-
-
-  /**
-   * Add the settings button.
-   */
-  private void addSettingsButton() {
-    settingsMenuButton = SettingsMenuBuilder.build(refreshSupport);
-
-    gitToolbar.add(settingsMenuButton);
-  }
-
-  /**
-   * Add the "Clone repository" button.
-   */
-  private void addCloneRepositoryButton() {
-    Action cloneRepositoryAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        new CloneRepositoryDialog();
-      }
-    };
-
-    cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
-    cloneRepositoryButton.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
-    cloneRepositoryButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
-    setDefaultToolbarButtonWidth(cloneRepositoryButton);
-
-    gitToolbar.add(cloneRepositoryButton);
-  }
-
-  /**
-   * @param historyController History interface.
-   */
-  private void addHistoryButton(HistoryController historyController) {
-    Action historyAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        historyController.showRepositoryHistory();
-      }
-    };
-
-    historyButton = new ToolbarButton(historyAction, false);
-    historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-    historyButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
-    setDefaultToolbarButtonWidth(historyButton);
-
-    gitToolbar.add(historyButton);
-
-  }
-
-  /**
-   * Adds to the tool bar a button for selecting submodules. When clicked, a new
-   * dialog appears that shows all the submodules for the current repository and
-   * allows the user to select one of them
-   */
-  private void addSubmoduleSelectButton() {
-    Action branchSelectAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          if (GitAccess.getInstance().getRepository() != null) {
-            new SubmoduleSelectDialog();
-          }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1, e1);
-          }
-        }
-      }
-    };
-    submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
-    submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
-    submoduleSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
-    setDefaultToolbarButtonWidth(submoduleSelectButton);
-    gitToolbar.add(submoduleSelectButton);
-
-    submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
-  }
-	
-/**
- * Add the "Show Tags" button
- */
-  private void addTagsShowButton() {
-    Action showTagsAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          TagsDialog dialog = new TagsDialog();
-          dialog.setVisible(true);
-        } catch (GitAPIException | IOException | NoRepositorySelected ex) { 
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-        }
-      }
-    };
-
-    showTagsButton = new ToolbarButton(showTagsAction, false);
-    showTagsButton.setIcon(Icons.getIcon(Icons.TAG));
-    showTagsButton.setToolTipText(TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_TAGS_TOOLTIP));
-    setDefaultToolbarButtonWidth(showTagsButton);
-
-    gitToolbar.add(showTagsButton);
-  }
-
-
-
-  /**
-   * Adds to the tool bar a button for selecting branches. When clicked, a new
-   * dialog appears that shows all the branches for the current repository and
-   * allows the user to select one of them.
-   * 
-   * @param branchManagementViewPresenter Branches presenter.
-   */
-  private void addBranchSelectButton(BranchManagementViewPresenter branchManagementViewPresenter) {
-    Action branchSelectAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          if (GitAccess.getInstance().getRepository() != null) {
-            branchManagementViewPresenter.showGitBranchManager();
-          }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1, e1);
-          }
-        }
-      }
-    };
-    
-    branchSelectButton = new SplitMenuButton( // NOSONAR (java:S110)
-        null,
-        Icons.getIcon(Icons.GIT_BRANCH_ICON),
-        false,
-        false,
-        false,
-        false) {
-
-      @Override
-      protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        paintBranchesComponent(g);
-      }
-
-      @Override
-      public JToolTip createToolTip() {
-        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-      }
-
-      /**
-       * Paint the number of pulls behind.
-       * 
-       * @param g Graphics.
-       */
-      private void paintBranchesComponent(Graphics g) {
-        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
-        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
-        int stringWidth = fontMetrics.stringWidth("");
-        g.setColor(getForeground());
-        g.drawString("",
-            // X
-            getWidth() - stringWidth - DECORATION_DISPLACEMENT,
-            // Y
-            fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
-      }
-   
-    };
-    
-    Dimension d = branchSelectButton.getPreferredSize();
-    branchSelectButton.setPreferredSize(d);
-    branchSelectButton.setMinimumSize(d);
-    branchSelectButton.setMaximumSize(d);
-    
-    branchSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
-    branchSelectButton.setAction(branchSelectAction);
-    
-    gitToolbar.add(branchSelectButton);
-  }
-
-  /**
    * Updates the presented information, like the Pull-behind, Pushes-ahead
    * and branch status.
    */
@@ -689,14 +482,14 @@ public class ToolbarPanel extends JPanel {
         String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
         boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
 
-        String upstreamShortestName = 
-            isAnUpstreamBranchDefinedInConfig 
-            ? upstreamBranchFromConfig.substring(upstreamBranchFromConfig.lastIndexOf('/') + 1)
-                : null;
-        Ref remoteBranchRefForUpstreamFromConfig = 
-            isAnUpstreamBranchDefinedInConfig 
-            ? RepoUtil.getRemoteBranch(upstreamShortestName) 
-                : null;
+        String upstreamShortestName =
+                isAnUpstreamBranchDefinedInConfig
+                        ? upstreamBranchFromConfig.substring(upstreamBranchFromConfig.lastIndexOf('/') + 1)
+                        : null;
+        Ref remoteBranchRefForUpstreamFromConfig =
+                isAnUpstreamBranchDefinedInConfig
+                        ? RepoUtil.getRemoteBranch(upstreamShortestName)
+                        : null;
         boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
         branchSelectButton.setToolTipText(updateBranchSelectionToolTip(currentBranchName, isAnUpstreamBranchDefinedInConfig,
                 existsRemoteBranchForUpstreamDefinedInConfig, upstreamBranchFromConfig));
@@ -723,22 +516,22 @@ public class ToolbarPanel extends JPanel {
 
         // ===================== Push button tooltip =====================
         String pushButtonTooltipFinal = updatePushToolTip(
-            isAnUpstreamBranchDefinedInConfig, 
-            existsRemoteBranchForUpstreamDefinedInConfig,
-            upstreamBranchFromConfig, 
-            commitsAheadMessage, 
-            currentBranchName,
-            repo);
+                isAnUpstreamBranchDefinedInConfig,
+                existsRemoteBranchForUpstreamDefinedInConfig,
+                upstreamBranchFromConfig,
+                commitsAheadMessage,
+                currentBranchName,
+                repo);
         SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
 
         //  ===================== Pull button tooltip =====================
         String pullButtonTooltipFinal = updatePullToolTip(
-            isAnUpstreamBranchDefinedInConfig,
-            existsRemoteBranchForUpstreamDefinedInConfig, 
-            upstreamBranchFromConfig,
-            commitsBehindMessage,
-            remoteBranchRefForUpstreamFromConfig,
-            repo);
+                isAnUpstreamBranchDefinedInConfig,
+                existsRemoteBranchForUpstreamDefinedInConfig,
+                upstreamBranchFromConfig,
+                commitsBehindMessage,
+                remoteBranchRefForUpstreamFromConfig,
+                repo);
         SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
 
         branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
@@ -749,29 +542,627 @@ public class ToolbarPanel extends JPanel {
       }
 
     }
-    
+
     if(selectedBranchIndex >= 0) {
       SwingUtilities.invokeLater(() -> branchSelectButton.getItem(selectedBranchIndex).setSelected(true));
     }
-    
+
   }
 
-  private int getBranchIndex(String branchName) {
 
-    int index = -1;
 
-    if(branchName != null) {
-      for(int i = 0; i < branchSelectButton.getItemCount(); i++) {
-        if(branchName.equals(branchSelectButton.getItem(i).getText())) {
-          index = i;
-          break;
-        }
+  // ==========  CLONE REPOSITORY  ==========
+
+  /**
+   * Add the "Clone repository" button.
+   */
+  private void addCloneRepositoryButton() {
+    Action cloneRepositoryAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        new CloneRepositoryDialog();
       }
+    };
+
+    cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
+    cloneRepositoryButton.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
+    cloneRepositoryButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
+    setDefaultToolbarButtonWidth(cloneRepositoryButton);
+
+    gitToolbar.add(cloneRepositoryButton);
+  }
+
+
+  /**
+   * Sets a custom width on the given button
+   *
+   * @param button the button to set the width to.
+   */
+  private void setDefaultToolbarButtonWidth(AbstractButton button) {
+    Dimension d = button.getPreferredSize();
+    d.width += TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH;
+    button.setPreferredSize(d);
+    button.setMinimumSize(d);
+    button.setMaximumSize(d);
+  }
+
+
+  /**
+   * Enables/Disables the buttons.
+   *
+   * @param enabled <code>true</code> to enable the buttons. <code>false</code> to disable them.
+   */
+  public void updateButtonState(boolean enabled) {
+    pushButton.setEnabled(enabled);
+    pullMenuButton.setEnabled(enabled);
+    cloneRepositoryButton.setEnabled(enabled);
+    submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
+    branchSelectButton.setEnabled(enabled);
+    historyButton.setEnabled(enabled);
+    showTagsButton.setEnabled(enabled);
+    settingsMenuButton.setEnabled(enabled);
+    stashButton.setEnabled(enabled);
+  }
+
+
+
+  // ==========  PUSH AND PULL  ==========
+  
+  /**
+   * Adds to the tool bar the Push and Pull Buttons
+   */
+  private void addPushAndPullButtons() {
+    // PUSH
+    pushButton = createPushButton();
+    pushButton.setIcon(Icons.getIcon(Icons.GIT_PUSH_ICON));
+    setDefaultToolbarButtonWidth(pushButton);
+
+    // PULL
+    pullMenuButton = createPullButton();
+    Dimension d = pullMenuButton.getPreferredSize();
+    d.width += PULL_BUTTON_EXTRA_WIDTH;
+    pullMenuButton.setPreferredSize(d);
+    pullMenuButton.setMinimumSize(d);
+    pullMenuButton.setMaximumSize(d);
+
+    gitToolbar.add(pushButton);
+    gitToolbar.add(pullMenuButton);
+  }
+  
+  
+  /**
+   * Create the "Push" button.
+   * 
+   * @return the "Push" button.
+   */
+  private ToolbarButton createPushButton() {
+    return new ToolbarButton(createPushAction(), false) { // NOSONAR (java:S110)
+
+      @Override
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintPushesAhead(g);
+      }
+
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+
+      /**
+       * Paint the number pushes ahead.
+       * 
+       * @param g Graphics.
+       */
+      private void paintPushesAhead(Graphics g) {
+        String noOfPushesAheadString = "";
+        if (pushesAhead > 0) {
+          noOfPushesAheadString = "" + pushesAhead;
+        }
+        if (pushesAhead > MAX_SINGLE_DIGIT_NUMBER) {
+          pushButton.setHorizontalAlignment(SwingConstants.LEFT);
+        } else {
+          pushButton.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
+        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+        int stringWidth = fontMetrics.stringWidth(noOfPushesAheadString);
+        g.setColor(getForeground());
+        g.drawString(
+            noOfPushesAheadString,
+            // X
+            pushButton.getWidth() - stringWidth,
+            // Y
+            pushButton.getHeight() - fontMetrics.getDescent());
+      }
+    };
+  }
+
+ 
+  /**
+   * Create "Pull" button.
+   * 
+   * @return the "Pull" button.
+   */
+  private SplitMenuButton createPullButton() {
+    SplitMenuButton pullSplitMenuButton = new SplitMenuButton( // NOSONAR (java:S110)
+        null,
+        Icons.getIcon(Icons.GIT_PULL_ICON),
+        false,
+        false,
+        false,
+        true) {
+
+      @Override
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintPullsBehind(g);
+      }
+
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+
+      /**
+       * Paint the number of pulls behind.
+       * 
+       * @param g Graphics.
+       */
+      private void paintPullsBehind(Graphics g) {
+        String noOfPullsBehindString = "";
+        if (pullsBehind > 0) {
+          noOfPullsBehindString += pullsBehind;
+        }
+        if (pullsBehind > MAX_SINGLE_DIGIT_NUMBER) {
+          setHorizontalAlignment(SwingConstants.LEFT);
+        } else {
+          setHorizontalAlignment(SwingConstants.CENTER);
+        }
+        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
+        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+        int stringWidth = fontMetrics.stringWidth(noOfPullsBehindString);
+        g.setColor(getForeground());
+        g.drawString(noOfPullsBehindString,
+            // X
+            getWidth() - stringWidth - DECORATION_DISPLACEMENT,
+            // Y
+            fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
+      }
+    };
+
+    addPullActionsToMenu(pullSplitMenuButton);
+
+    return pullSplitMenuButton;
+  }
+
+
+  /**
+   * Updates the tool tip of "Push" Button.
+   *
+   * @param isAnUpstreamBranchDefinedInConfig              <code>true</code> if is an upstream branch defined in configurations
+   * @param existsRemoteBranchForUpstreamDefinedInConfig   <code>true</code> if exists remote branch for upstream defined in configurations
+   * @param upstreamBranchFromConfig                       The upstream branch from configurations
+   * @param commitsAheadMessage                            The commits ahead message
+   * @param currentBranchName                              The name of the current branch
+   * @param repo                                           The current repository
+   *
+   * @return updated "Push" button tool tip text.
+   */
+  private String updatePushToolTip(boolean isAnUpstreamBranchDefinedInConfig,
+                                   boolean existsRemoteBranchForUpstreamDefinedInConfig,
+                                   String upstreamBranchFromConfig,
+                                   String commitsAheadMessage,
+                                   String currentBranchName,
+                                   Repository repo) {
+    StringBuilder pushButtonTooltip = new StringBuilder();
+    pushButtonTooltip.append("<html>");
+    if (isAnUpstreamBranchDefinedInConfig) {
+      if (existsRemoteBranchForUpstreamDefinedInConfig) {
+        // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
+        String pushToMsg = MessageFormat.format(TRANSLATOR.getTranslation(Tags.PUSH_TO), upstreamBranchFromConfig);
+        pushButtonTooltip.append(pushToMsg)
+                .append(".<br>")
+                .append(commitsAheadMessage);
+        try {
+          CommitsAheadAndBehind commitsAheadAndBehind =
+                  RevCommitUtil.getCommitsAheadAndBehind(repo, currentBranchName);
+          if (commitsAheadAndBehind != null && commitsAheadAndBehind.getCommitsAhead() != null) {
+            List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
+            pushButtonTooltip.append("<br><br>");
+            addCommitsToTooltip(commitsAhead, pushButtonTooltip);
+            if(commitsAhead.size() > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
+              pushButtonTooltip.append("<br>").append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
+            }
+          }
+        } catch (IOException | GitAPIException e) {
+          LOGGER.error(e, e);
+        }
+      } else {
+        // There is an upstream branch defined in "config",
+        // but that branch does not exist in the remote repository.
+        pushButtonTooltip.append(MessageFormat.format(
+                TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
+                currentBranchName));
+      }
+    } else {
+      updatePushTooltipWhenNoUpstream(currentBranchName, pushButtonTooltip);
+    }
+    pushButtonTooltip.append("</html>");
+
+    return pushButtonTooltip.toString();
+
+  }
+
+  /**
+   * Update the push button tooltip when no upstream defined.
+   *
+   * @param currentBranchName Current branch.
+   * @param tooltipBuilder    Tooltip builder.
+   */
+  private void updatePushTooltipWhenNoUpstream(String currentBranchName, StringBuilder tooltipBuilder) {
+    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
+    if (remoteBranchWithLocalBranchName != null) {
+      // No upstream branch defined in "config", but there is a remote branch
+      // that has the same name as the local branch.
+      tooltipBuilder.append(MessageFormat.format(
+              TRANSLATOR.getTranslation(Tags.PUSH_TO_TRACK_REMOTE_BRANCH),
+              currentBranchName));
+    } else {
+      // No upstream branch defined in "config" and no remote branch
+      // that has the same name as the local branch.
+      tooltipBuilder.append(MessageFormat.format(
+              TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
+              currentBranchName));
+    }
+  }
+
+
+  /**
+   * Updates the tool tip of "Push" Button.
+   *
+   * @param isAnUpstreamBranchDefinedInConfig              <code>true</code> if is an upstream branch defined in configurations
+   * @param existsRemoteBranchForUpstreamDefinedInConfig   <code>true</code> if exists remote branch for upstream defined in configurations
+   * @param upstreamBranchFromConfig                       The upstream branch from configurations
+   * @param commitsBehindMessage                           The commits behind message
+   * @param remoteBranchRefForUpstreamFromConfig           The remote branch reference for upstream from configurations.
+   * @param repo                                           Current repo.
+   *
+   * @return updated "Push" button tool tip text.
+   */
+  private String updatePullToolTip(boolean isAnUpstreamBranchDefinedInConfig,
+                                   boolean existsRemoteBranchForUpstreamDefinedInConfig,
+                                   String upstreamBranchFromConfig,
+                                   String commitsBehindMessage,
+                                   Ref remoteBranchRefForUpstreamFromConfig,
+                                   Repository repo) {
+
+    StringBuilder pullButtonTooltip = new StringBuilder();
+    pullButtonTooltip.append("<html>");
+    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+
+    if (isAnUpstreamBranchDefinedInConfig) {
+      if (existsRemoteBranchForUpstreamDefinedInConfig) {
+        // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
+        String pullFromMsg = MessageFormat.format(
+                TRANSLATOR.getTranslation(getPullFromTranslationTag()),
+                Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName()));
+        pullButtonTooltip.append(pullFromMsg)
+                .append(".<br>")
+                .append(commitsBehindMessage);
+        try {
+          CommitsAheadAndBehind commitsAheadAndBehind =
+                  RevCommitUtil.getCommitsAheadAndBehind(repo, currentBranchName);
+          if(commitsAheadAndBehind != null && commitsAheadAndBehind.getCommitsBehind() != null) {
+            List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
+            pullButtonTooltip.append("<br><br>");
+            addCommitsToTooltip(commitsBehind, pullButtonTooltip);
+            if(commitsBehind.size() > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
+              pullButtonTooltip.append("<br>").append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
+            }
+          }
+        } catch (IOException | GitAPIException e) {
+          LOGGER.error(e, e);
+        }
+
+      } else {
+        // The upstream branch defined in "config" does not exists in the remote repository.
+        String upstreamDoesNotExistMsg = MessageFormat.format(
+                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH_DOES_NOT_EXIST)),
+                upstreamBranchFromConfig);
+        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL))
+                .append("<br>")
+                .append(upstreamDoesNotExistMsg);
+      }
+    } else {
+      updatePullTooltipWhenNoUpstream(pullButtonTooltip, currentBranchName);
     }
 
-    return index;
+    pullButtonTooltip.append("</html>");
+    return pullButtonTooltip.toString();
   }
 
+
+  /**
+   * Update pull button tooltip when no upstream branch is defined.
+   *
+   * @param tooltipBuilder    Tooltip builder.
+   * @param currentBranchName Current branch name.
+   */
+  private void updatePullTooltipWhenNoUpstream(
+          StringBuilder tooltipBuilder,
+          String currentBranchName) {
+    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
+    if (remoteBranchWithLocalBranchName != null) {
+      // No upstream defined in config, but there is a remote branch
+      // that has the same name as the local branch
+      tooltipBuilder.append(MessageFormat.format(
+              TRANSLATOR.getTranslation(getPullFromTranslationTag()),
+              Repository.shortenRefName(remoteBranchWithLocalBranchName.getName()))).append(".<br>");
+    } else {
+      // No upstream branch defined in "config" and no remote branch
+      // that has the same name as the local branch.
+      tooltipBuilder.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("<br>").append(MessageFormat.format(
+              StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.NO_REMOTE_BRANCH)),
+              currentBranchName)).append(".");
+    }
+  }
+
+
+  /**
+   * Update the tooltip text with info about the incoming/outgoing commits.
+   *
+   * @param commits The list with new commits.
+   * @param text    The text of the message.
+   *
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  void addCommitsToTooltip(List<RevCommit> commits, StringBuilder text) throws IOException, GitAPIException {
+    List<FileStatus> changedFiles;
+    int noOfCommits = commits.size();
+    int i = 0;
+    while(i < noOfCommits) {
+      RevCommit currentCommit = commits.get(i);
+      String commitMessage = currentCommit.getShortMessage();
+      if(commitMessage.length() > MAXIMUM_COMMIT_MESSAGE_LENGTH) {
+        commitMessage = commitMessage.substring(0, MAXIMUM_COMMIT_MESSAGE_LENGTH).trim() + "...";
+      }
+      changedFiles = RevCommitUtil.getChangedFiles(currentCommit.getId().getName());
+      text.append("&#x25AA; ")
+              .append(commitDateFormat.format(currentCommit.getAuthorIdent().getWhen()))
+              .append(" &ndash; ")
+              .append(currentCommit.getAuthorIdent().getName())
+              .append(" ")
+              .append("(")
+              .append(changedFiles.size())
+              .append((changedFiles.size() > 1) ? " files" : " file")
+              .append(")");
+      if(commitMessage.length() > 0) {
+        text.append("<br>")
+                .append("&nbsp;&nbsp;&nbsp;")
+                .append(commitMessage);
+      }
+      text.append("<br>");
+      if(i + 1 == MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS - 1
+              && noOfCommits > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
+
+        int noOfSkippedCommits = getNoOfSkippedCommits(noOfCommits);
+
+        text.append("&#x25AA; ")
+                .append("[")
+                .append("...")
+                .append("]")
+                .append(" &ndash; ")
+                .append(noOfSkippedCommits == 1 ? TRANSLATOR.getTranslation(Tags.ONE_MORE_COMMIT)
+                        : MessageFormat.format(TRANSLATOR.getTranslation(Tags.N_MORE_COMMITS), noOfSkippedCommits))
+                .append("<br>");
+        // Prepare to get the last commit
+        i = noOfCommits - 2;
+      }
+      i++;
+    }
+  }
+
+
+  /**
+   * Get the number of skipped commits.
+   *
+   * @param noOfCommits The total number of commits.
+   *
+   * @return the number of skipped commits.
+   */
+  int getNoOfSkippedCommits(int noOfCommits) {
+    return noOfCommits - MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS;
+  }
+
+
+  /**
+   * @return The translation tag for the "Pull" button tooltip text.
+   */
+  private String getPullFromTranslationTag() {
+    String pullFromTag = Tags.PULL_FROM;
+    Object value = pullMenuButton.getAction().getValue(PullAction.PULL_TYPE_ACTION_PROP);
+    if (value instanceof PullType) {
+      PullType pt = (PullType) value;
+      if (pt == PullType.REBASE) {
+        pullFromTag = Tags.PULL_REBASE_FROM;
+      } else if (pt != PullType.UKNOWN) {
+        pullFromTag = Tags.PULL_MERGE_FROM;
+      }
+    }
+    return pullFromTag;
+  }
+
+
+  /**
+   * @return The push button.
+   */
+  public ToolbarButton getPushButton() {
+    return pushButton;
+  }
+
+
+  /**
+   * @return The pull button.
+   */
+  public SplitMenuButton getPullMenuButton() {
+    return pullMenuButton;
+  }
+
+
+  /**
+   * Add the pull actions (pull + merge, pull + rebase, etc) to the pull menu.
+   *
+   * @param splitMenuButton The menu button to add to.
+   */
+  private void addPullActionsToMenu(SplitMenuButton splitMenuButton) {
+    ButtonGroup pullActionsGroup = new ButtonGroup();
+
+    ActionListener radioMenuItemActionListener = e -> {
+      if (e.getSource() instanceof JMenuItem) {
+        splitMenuButton.setAction(((JMenuItem) e.getSource()).getAction());
+      }
+    };
+
+    // Pull (merge)
+    PullAction pullMergeAction = new PullAction(
+            TRANSLATOR.getTranslation(Tags.PULL_MERGE),
+            PullType.MERGE_FF);
+    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(pullMergeAction);
+    pullMergeMenuItem.addActionListener(radioMenuItemActionListener);
+    splitMenuButton.add(pullMergeMenuItem);
+    pullActionsGroup.add(pullMergeMenuItem);
+
+    // Pull (rebase)
+    PullAction pullRebaseAction = new PullAction(
+            TRANSLATOR.getTranslation(Tags.PULL_REBASE),
+            PullType.REBASE);
+    JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(pullRebaseAction);
+    pullRebaseMenuItem.addActionListener(radioMenuItemActionListener);
+    splitMenuButton.add(pullRebaseMenuItem);
+    pullActionsGroup.add(pullRebaseMenuItem);
+
+    PullType defaultPullType = OptionsManager.getInstance().getDefaultPullType();
+    if (defaultPullType == PullType.REBASE) {
+      splitMenuButton.setAction(pullRebaseMenuItem.getAction());
+      pullRebaseMenuItem.setSelected(true);
+    } else if (defaultPullType != PullType.UKNOWN) {
+      splitMenuButton.setAction(pullMergeMenuItem.getAction());
+      pullMergeMenuItem.setSelected(true);
+    }
+  }
+
+
+  /**
+   * Create the "Push" action.
+   *
+   * @return the "Push" action
+   */
+  private Action createPushAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          if (GitAccess.getInstance().getRepository() != null) {
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("Push Button Clicked");
+            }
+
+            gitController.push();
+            if (pullsBehind == 0) {
+              pushesAhead = 0;
+            }
+          }
+        } catch (NoRepositorySelected e1) {
+          if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug(e1, e1);
+          }
+        }
+      }
+    };
+  }
+
+
+
+  // ========== BRANCHES ==========
+
+  /**
+   * Adds to the tool bar a button for selecting branches. When clicked, a new
+   * dialog appears that shows all the branches for the current repository and
+   * allows the user to select one of them.
+   *
+   * @param branchManagementViewPresenter Branches presenter.
+   */
+  private void addBranchSelectButton(BranchManagementViewPresenter branchManagementViewPresenter) {
+    Action branchSelectAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          if (GitAccess.getInstance().getRepository() != null) {
+            branchManagementViewPresenter.showGitBranchManager();
+          }
+        } catch (NoRepositorySelected e1) {
+          if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug(e1, e1);
+          }
+        }
+      }
+    };
+
+    branchSelectButton = new SplitMenuButton( // NOSONAR (java:S110)
+            null,
+            Icons.getIcon(Icons.GIT_BRANCH_ICON),
+            false,
+            false,
+            false,
+            false) {
+
+      @Override
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintBranchesComponent(g);
+      }
+
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+
+      /**
+       * Paint the number of pulls behind.
+       *
+       * @param g Graphics.
+       */
+      private void paintBranchesComponent(Graphics g) {
+        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
+        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+        int stringWidth = fontMetrics.stringWidth("");
+        g.setColor(getForeground());
+        g.drawString("",
+                // X
+                getWidth() - stringWidth - DECORATION_DISPLACEMENT,
+                // Y
+                fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
+      }
+
+    };
+
+    Dimension d = branchSelectButton.getPreferredSize();
+    branchSelectButton.setPreferredSize(d);
+    branchSelectButton.setMinimumSize(d);
+    branchSelectButton.setMaximumSize(d);
+
+    branchSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
+    branchSelectButton.setAction(branchSelectAction);
+
+    gitToolbar.add(branchSelectButton);
+  }
+
+
+  /**
+   * Update the branches.
+   */
   private void updateBranches() {
     branches.clear();
     branches.addAll(getBranches());
@@ -820,22 +1211,23 @@ public class ToolbarPanel extends JPanel {
             tryCheckingOutBranch(currentBranchInfo, branchName);
           }
         }
-        
+
       };
-       
+
       JRadioButtonMenuItem branchesMenuItem = new JRadioButtonMenuItem(branchAction);
       branchSelectButton.add(branchesMenuItem);
       branchesActionsGroup.add(branchesMenuItem);
-      
+
     }
-    
+
     branchSelectButton.revalidate();
-    
+
     if(isShowing) {
       branchSelectButton.getPopupMenu().setVisible(true);
     }
-    
+
   }
+
 
   /**
    * Compute the branch tooltip text.
@@ -954,7 +1346,7 @@ public class ToolbarPanel extends JPanel {
         }
       }
     }
-    
+
   }
 
 
@@ -971,6 +1363,28 @@ public class ToolbarPanel extends JPanel {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
     }
     return localBranches;
+  }
+
+
+  /**
+   * @param branchName  The searched branch.
+   *
+   * @return The index of the branch or -1 if the branch is not found.
+   */
+  private int getBranchIndex(String branchName) {
+
+    int index = -1;
+
+    if(branchName != null) {
+      for(int i = 0; i < branchSelectButton.getItemCount(); i++) {
+        if(branchName.equals(branchSelectButton.getItem(i).getText())) {
+          index = i;
+          break;
+        }
+      }
+    }
+
+    return index;
   }
 
 
@@ -1028,283 +1442,8 @@ public class ToolbarPanel extends JPanel {
   }
 
 
-  /**
-   * Updates the tool tip of "Push" Button.
-   * 
-   * @param isAnUpstreamBranchDefinedInConfig              <code>true</code> if is an upstream branch defined in configurations
-   * @param existsRemoteBranchForUpstreamDefinedInConfig   <code>true</code> if exists remote branch for upstream defined in configurations
-   * @param upstreamBranchFromConfig                       The upstream branch from configurations
-   * @param commitsAheadMessage                            The commits ahead message
-   * @param currentBranchName                              The name of the current branch
-   * @param repo                                           The current repository
-   * 
-   * @return updated "Push" button tool tip text.
-   */
-  private String updatePushToolTip(boolean isAnUpstreamBranchDefinedInConfig, 
-      boolean existsRemoteBranchForUpstreamDefinedInConfig, 
-      String upstreamBranchFromConfig, 
-      String commitsAheadMessage, 
-      String currentBranchName, 
-      Repository repo) {
-    StringBuilder pushButtonTooltip = new StringBuilder();
-    pushButtonTooltip.append("<html>");
-    if (isAnUpstreamBranchDefinedInConfig) {
-      if (existsRemoteBranchForUpstreamDefinedInConfig) {
-        // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
-        String pushToMsg = MessageFormat.format(TRANSLATOR.getTranslation(Tags.PUSH_TO), upstreamBranchFromConfig);
-        pushButtonTooltip.append(pushToMsg)
-        .append(".<br>")
-        .append(commitsAheadMessage);
-        try {
-          CommitsAheadAndBehind commitsAheadAndBehind = 
-              RevCommitUtil.getCommitsAheadAndBehind(repo, currentBranchName);
-          if (commitsAheadAndBehind != null && commitsAheadAndBehind.getCommitsAhead() != null) {
-            List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
-            pushButtonTooltip.append("<br><br>");
-            addCommitsToTooltip(commitsAhead, pushButtonTooltip);
-            if(commitsAhead.size() > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
-              pushButtonTooltip.append("<br>").append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
-            }
-          }
-        } catch (IOException | GitAPIException e) {
-          LOGGER.error(e, e);
-        } 
-      } else {
-        // There is an upstream branch defined in "config",
-        // but that branch does not exist in the remote repository.
-        pushButtonTooltip.append(MessageFormat.format(
-            TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
-            currentBranchName));
-      }
-    } else {
-      updatePushTooltipWhenNoUpstream(currentBranchName, pushButtonTooltip);
-    }
-    pushButtonTooltip.append("</html>");
 
-    return pushButtonTooltip.toString();
-
-  }
-
-  /**
-   * Update the push button tooltip when no upstream defined.
-   * 
-   * @param currentBranchName Current branch.
-   * @param tooltipBuilder    Tooltip builder.
-   */
-  private void updatePushTooltipWhenNoUpstream(String currentBranchName, StringBuilder tooltipBuilder) {
-    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
-    if (remoteBranchWithLocalBranchName != null) {
-      // No upstream branch defined in "config", but there is a remote branch
-      // that has the same name as the local branch.
-      tooltipBuilder.append(MessageFormat.format(
-          TRANSLATOR.getTranslation(Tags.PUSH_TO_TRACK_REMOTE_BRANCH),
-          currentBranchName));
-    } else {
-      // No upstream branch defined in "config" and no remote branch
-      // that has the same name as the local branch.
-      tooltipBuilder.append(MessageFormat.format(
-          TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
-          currentBranchName));
-    }
-  }
-
-  /**
-   * Updates the tool tip of "Push" Button.
-   * 
-   * @param isAnUpstreamBranchDefinedInConfig              <code>true</code> if is an upstream branch defined in configurations
-   * @param existsRemoteBranchForUpstreamDefinedInConfig   <code>true</code> if exists remote branch for upstream defined in configurations
-   * @param upstreamBranchFromConfig                       The upstream branch from configurations
-   * @param commitsBehindMessage                           The commits behind message
-   * @param remoteBranchRefForUpstreamFromConfig           The remote branch reference for upstream from configurations.
-   * @param repo                                           Current repo.
-   * 
-   * @return updated "Push" button tool tip text.
-   */
-  private String updatePullToolTip(boolean isAnUpstreamBranchDefinedInConfig, 
-      boolean existsRemoteBranchForUpstreamDefinedInConfig, 
-      String upstreamBranchFromConfig, 
-      String commitsBehindMessage, 
-      Ref remoteBranchRefForUpstreamFromConfig,
-      Repository repo) {
-
-    StringBuilder pullButtonTooltip = new StringBuilder();
-    pullButtonTooltip.append("<html>");
-    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-
-    if (isAnUpstreamBranchDefinedInConfig) {
-      if (existsRemoteBranchForUpstreamDefinedInConfig) {
-        // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
-        String pullFromMsg = MessageFormat.format(
-            TRANSLATOR.getTranslation(getPullFromTranslationTag()),
-            Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName()));
-        pullButtonTooltip.append(pullFromMsg)
-        .append(".<br>")
-        .append(commitsBehindMessage);
-        try {
-          CommitsAheadAndBehind commitsAheadAndBehind = 
-              RevCommitUtil.getCommitsAheadAndBehind(repo, currentBranchName);
-          if(commitsAheadAndBehind != null && commitsAheadAndBehind.getCommitsBehind() != null) {
-            List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
-            pullButtonTooltip.append("<br><br>");
-            addCommitsToTooltip(commitsBehind, pullButtonTooltip);
-            if(commitsBehind.size() > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
-              pullButtonTooltip.append("<br>").append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
-            }
-          }
-        } catch (IOException | GitAPIException e) {
-          LOGGER.error(e, e);
-        }
-
-      } else {
-        // The upstream branch defined in "config" does not exists in the remote repository.
-        String upstreamDoesNotExistMsg = MessageFormat.format(
-            StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH_DOES_NOT_EXIST)),
-            upstreamBranchFromConfig);
-        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL))
-        .append("<br>")
-        .append(upstreamDoesNotExistMsg);
-      }
-    } else {
-      updatePullTooltipWhenNoUpstream(pullButtonTooltip, currentBranchName);
-    }
-
-    pullButtonTooltip.append("</html>");
-    return pullButtonTooltip.toString();
-  }
-
-
-  /**
-   * Update pull button tooltip when no upstream branch is defined.
-   * 
-   * @param tooltipBuilder    Tooltip builder.
-   * @param currentBranchName Current branch name.
-   */
-  private void updatePullTooltipWhenNoUpstream(
-      StringBuilder tooltipBuilder,
-      String currentBranchName) {
-    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
-    if (remoteBranchWithLocalBranchName != null) {
-      // No upstream defined in config, but there is a remote branch
-      // that has the same name as the local branch
-      tooltipBuilder.append(MessageFormat.format(
-          TRANSLATOR.getTranslation(getPullFromTranslationTag()),
-          Repository.shortenRefName(remoteBranchWithLocalBranchName.getName()))).append(".<br>");
-    } else {
-      // No upstream branch defined in "config" and no remote branch
-      // that has the same name as the local branch.
-      tooltipBuilder.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("<br>").append(MessageFormat.format(
-          StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.NO_REMOTE_BRANCH)),
-          currentBranchName)).append(".");
-    }
-  }
-
-
-  /**
-   * Update the tooltip text with info about the incoming/outgoing commits.
-   * 
-   * @param commits The list with new commits.
-   * @param text    The text of the message.
-   * 
-   * @throws IOException
-   * @throws GitAPIException
-   */
-  void addCommitsToTooltip(List<RevCommit> commits, StringBuilder text) throws IOException, GitAPIException {
-    List<FileStatus> changedFiles;
-    int noOfCommits = commits.size();
-    int i = 0;
-    while(i < noOfCommits) {
-      RevCommit currentCommit = commits.get(i);
-      String commitMessage = currentCommit.getShortMessage();
-      if(commitMessage.length() > MAXIMUM_COMMIT_MESSAGE_LENGTH) {
-        commitMessage = commitMessage.substring(0, MAXIMUM_COMMIT_MESSAGE_LENGTH).trim() + "...";
-      }
-      changedFiles = RevCommitUtil.getChangedFiles(currentCommit.getId().getName());
-      text.append("&#x25AA; ")
-      .append(commitDateFormat.format(currentCommit.getAuthorIdent().getWhen()))
-      .append(" &ndash; ")
-      .append(currentCommit.getAuthorIdent().getName())
-      .append(" ")
-      .append("(")
-      .append(changedFiles.size())
-      .append((changedFiles.size() > 1) ? " files" : " file")
-      .append(")");
-      if(commitMessage.length() > 0) {
-        text.append("<br>")
-        .append("&nbsp;&nbsp;&nbsp;")
-        .append(commitMessage);
-      }
-      text.append("<br>");     
-      if(i + 1 == MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS - 1 
-          && noOfCommits > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
-
-        int noOfSkippedCommits = getNoOfSkippedCommits(noOfCommits);
-
-        text.append("&#x25AA; ")
-        .append("[")
-        .append("...")
-        .append("]")
-        .append(" &ndash; ")  
-        .append(noOfSkippedCommits == 1 ? TRANSLATOR.getTranslation(Tags.ONE_MORE_COMMIT) 
-            : MessageFormat.format(TRANSLATOR.getTranslation(Tags.N_MORE_COMMITS), noOfSkippedCommits))    
-        .append("<br>");
-        // Prepare to get the last commit
-        i = noOfCommits - 2;
-      } 
-      i++;
-    } 
-  }
-
-
-  /**
-   * Get the number of skipped commits.
-   * 
-   * @param noOfCommits The total number of commits.
-   * 
-   * @return the number of skipped commits.
-   */
-  int getNoOfSkippedCommits(int noOfCommits) {
-    return noOfCommits - MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS;
-  }
-
-
-  /**
-   * @return The translation tag for the "Pull" button tooltip text.
-   */
-  private String getPullFromTranslationTag() {
-    String pullFromTag = Tags.PULL_FROM;
-    Object value = pullMenuButton.getAction().getValue(PullAction.PULL_TYPE_ACTION_PROP);
-    if (value instanceof PullType) {
-      PullType pt = (PullType) value;
-      if (pt == PullType.REBASE) {
-        pullFromTag = Tags.PULL_REBASE_FROM;
-      } else if (pt != PullType.UKNOWN) {
-        pullFromTag = Tags.PULL_MERGE_FROM;
-      }
-    }
-    return pullFromTag;
-  }
-
-  
-  /**
-   * Adds to the tool bar the Push and Pull Buttons
-   */
-  private void addPushAndPullButtons() {
-    // PUSH
-    pushButton = createPushButton();
-    pushButton.setIcon(Icons.getIcon(Icons.GIT_PUSH_ICON));
-    setDefaultToolbarButtonWidth(pushButton);
-
-    // PULL
-    pullMenuButton = createPullButton();
-    Dimension d = pullMenuButton.getPreferredSize();
-    d.width += PULL_BUTTON_EXTRA_WIDTH;
-    pullMenuButton.setPreferredSize(d);
-    pullMenuButton.setMinimumSize(d);
-    pullMenuButton.setMaximumSize(d);
-
-    gitToolbar.add(pushButton);
-    gitToolbar.add(pullMenuButton);
-  }
+  // ========== STASH ==========
 
   /**
    * Adds to the tool bar the Stash Button.
@@ -1321,120 +1460,20 @@ public class ToolbarPanel extends JPanel {
     gitToolbar.add(stashButton);
   }
 
-  /**
-   * Create "Pull" button.
-   * 
-   * @return the "Pull" button.
-   */
-  private SplitMenuButton createPullButton() {
-    SplitMenuButton pullSplitMenuButton = new SplitMenuButton( // NOSONAR (java:S110)
-        null,
-        Icons.getIcon(Icons.GIT_PULL_ICON),
-        false,
-        false,
-        false,
-        true) {
 
-      @Override
-      protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        paintPullsBehind(g);
-      }
-
-      @Override
-      public JToolTip createToolTip() {
-        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-      }
-
-      /**
-       * Paint the number of pulls behind.
-       * 
-       * @param g Graphics.
-       */
-      private void paintPullsBehind(Graphics g) {
-        String noOfPullsBehindString = "";
-        if (pullsBehind > 0) {
-          noOfPullsBehindString += pullsBehind;
-        }
-        if (pullsBehind > MAX_SINGLE_DIGIT_NUMBER) {
-          setHorizontalAlignment(SwingConstants.LEFT);
-        } else {
-          setHorizontalAlignment(SwingConstants.CENTER);
-        }
-        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
-        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
-        int stringWidth = fontMetrics.stringWidth(noOfPullsBehindString);
-        g.setColor(getForeground());
-        g.drawString(noOfPullsBehindString,
-            // X
-            getWidth() - stringWidth - DECORATION_DISPLACEMENT,
-            // Y
-            fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
-      }
-    };
-
-    addPullActionsToMenu(pullSplitMenuButton);
-
-    return pullSplitMenuButton;
-  }
-
-  
-  /**
-   * Add the pull actions (pull + merge, pull + rebase, etc) to the pull menu.
-   * 
-   * @param splitMenuButton The menu button to add to.
-   */
-  private void addPullActionsToMenu(SplitMenuButton splitMenuButton) {
-    ButtonGroup pullActionsGroup = new ButtonGroup();
-
-    ActionListener radioMenuItemActionListener = e -> {
-      if (e.getSource() instanceof JMenuItem) {
-        splitMenuButton.setAction(((JMenuItem) e.getSource()).getAction());
-      }
-    };
-
-    // Pull (merge)
-    PullAction pullMergeAction = new PullAction(
-        TRANSLATOR.getTranslation(Tags.PULL_MERGE),
-        PullType.MERGE_FF);
-    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(pullMergeAction);
-    pullMergeMenuItem.addActionListener(radioMenuItemActionListener);
-    splitMenuButton.add(pullMergeMenuItem);
-    pullActionsGroup.add(pullMergeMenuItem);
-
-    // Pull (rebase)
-    PullAction pullRebaseAction = new PullAction(
-        TRANSLATOR.getTranslation(Tags.PULL_REBASE),
-        PullType.REBASE);
-    JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(pullRebaseAction);
-    pullRebaseMenuItem.addActionListener(radioMenuItemActionListener);
-    splitMenuButton.add(pullRebaseMenuItem);
-    pullActionsGroup.add(pullRebaseMenuItem);
-
-    PullType defaultPullType = OptionsManager.getInstance().getDefaultPullType();
-    if (defaultPullType == PullType.REBASE) {
-      splitMenuButton.setAction(pullRebaseMenuItem.getAction());
-      pullRebaseMenuItem.setSelected(true);
-    } else if (defaultPullType != PullType.UKNOWN) {
-      splitMenuButton.setAction(pullMergeMenuItem.getAction());
-      pullMergeMenuItem.setSelected(true);
-    }
-  }
-
-  
   /**
    * Create the "Stash" button.
-   * 
+   *
    * @return the "Stash" button.
    */
   private SplitMenuButton createStashButton() {
     SplitMenuButton stashLocalButton = new SplitMenuButton( // NOSONAR (java:S110)
-        null,
-        Icons.getIcon(Icons.STASH_ICON),
-        false,
-        false,
-        true,
-        true) {
+            null,
+            Icons.getIcon(Icons.STASH_ICON),
+            false,
+            false,
+            true,
+            true) {
 
       @Override
       protected void paintComponent(Graphics g) {
@@ -1454,7 +1493,7 @@ public class ToolbarPanel extends JPanel {
 
       /**
        * Paint the number of stashes.
-       * 
+       *
        * @param g Graphics.
        */
       private void paintStashes(Graphics g) {
@@ -1476,13 +1515,13 @@ public class ToolbarPanel extends JPanel {
         int stringWidth = fontMetrics.stringWidth(noOfStashesString);
         g.setColor(getForeground());
         g.drawString(
-            noOfStashesString,
-            // X
-            stashButton.getWidth() - stringWidth - STASH_DECORATION_DISPLACEMENT,
-            // Y
-            stashButton.getHeight() - fontMetrics.getDescent());
+                noOfStashesString,
+                // X
+                stashButton.getWidth() - stringWidth - STASH_DECORATION_DISPLACEMENT,
+                // Y
+                stashButton.getHeight() - fontMetrics.getDescent());
       }
-    }; 
+    };
 
     stashLocalButton.setToolTipText(TRANSLATOR.getTranslation(Tags.STASH));
 
@@ -1494,7 +1533,7 @@ public class ToolbarPanel extends JPanel {
 
   /**
    * Add the stash actions to the Stash menu.
-   * 
+   *
    * @param splitMenuButton The menu button to add to.
    */
   private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
@@ -1515,8 +1554,8 @@ public class ToolbarPanel extends JPanel {
     };
     splitMenuButton.addActionToMenu(listStashesAction, false);
   }
-  
-  
+
+
   /**
    * Refresh the status for stash button.
    */
@@ -1538,94 +1577,31 @@ public class ToolbarPanel extends JPanel {
 
     stashButton.setEnabled(existsLocalFiles || existsStashes);
   }
-  
+
+
   /**
-   * Refresh the button for showing tags
+   * @return the stash button.
    */
-  public void refreshTagsButton() {
-     int noOfTags = 0;
-    try {
-      noOfTags = GitTagsManager.getNoOfTags();
-    } catch (GitAPIException e) {
-      LOGGER.debug(e,e);
-    }
-     if (noOfTags > 0) {
-      getShowTagsButton().setEnabled(true);
-    }
-     else {
-      getShowTagsButton().setEnabled(false);
-    }
+  public SplitMenuButton getStashButton() {
+    return stashButton;
   }
 
 
-  /**
-   * Create the "Push" button.
-   * 
-   * @return the "Push" button.
-   */
-  private ToolbarButton createPushButton() {
-    return new ToolbarButton(createPushAction(), false) { // NOSONAR (java:S110)
 
-      @Override
-      protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        paintPushesAhead(g);
-      }
-
-      @Override
-      public JToolTip createToolTip() {
-        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-      }
-
-      /**
-       * Paint the number pushes ahead.
-       * 
-       * @param g Graphics.
-       */
-      private void paintPushesAhead(Graphics g) {
-        String noOfPushesAheadString = "";
-        if (pushesAhead > 0) {
-          noOfPushesAheadString = "" + pushesAhead;
-        }
-        if (pushesAhead > MAX_SINGLE_DIGIT_NUMBER) {
-          pushButton.setHorizontalAlignment(SwingConstants.LEFT);
-        } else {
-          pushButton.setHorizontalAlignment(SwingConstants.CENTER);
-        }
-        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
-        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
-        int stringWidth = fontMetrics.stringWidth(noOfPushesAheadString);
-        g.setColor(getForeground());
-        g.drawString(
-            noOfPushesAheadString,
-            // X
-            pushButton.getWidth() - stringWidth,
-            // Y
-            pushButton.getHeight() - fontMetrics.getDescent());
-      }
-    };
-  }
-
+  // ========== SUBMODULES ==========
 
   /**
-   * Create the "Push" action.
-   * 
-   * @return the "Push" action
+   * Adds to the tool bar a button for selecting submodules. When clicked, a new
+   * dialog appears that shows all the submodules for the current repository and
+   * allows the user to select one of them
    */
-  private Action createPushAction() {
-    return new AbstractAction() {
+  private void addSubmoduleSelectButton() {
+    Action branchSelectAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
           if (GitAccess.getInstance().getRepository() != null) {
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Push Button Clicked");
-            }
-
-            gitController.push();
-            if (pullsBehind == 0) {
-              pushesAhead = 0;
-            }
+            new SubmoduleSelectDialog();
           }
         } catch (NoRepositorySelected e1) {
           if(LOGGER.isDebugEnabled()) {
@@ -1634,38 +1610,125 @@ public class ToolbarPanel extends JPanel {
         }
       }
     };
+    submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
+    submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
+    submoduleSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
+    setDefaultToolbarButtonWidth(submoduleSelectButton);
+    gitToolbar.add(submoduleSelectButton);
+
+    submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
+  }
+
+
+  /**
+   * @return <code>true</code> if we have submodules.
+   */
+  boolean gitRepoHasSubmodules() {
+    return !GitAccess.getInstance().getSubmoduleAccess().getSubmodules().isEmpty();
+  }
+
+
+  /**
+   * @return the submodule button.
+   */
+  public ToolbarButton getSubmoduleSelectButton() {
+    return submoduleSelectButton;
+  }
+
+
+
+  // ========== HISTORY ==========
+
+  /**
+   * @param historyController History interface.
+   */
+  private void addHistoryButton(HistoryController historyController) {
+    Action historyAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        historyController.showRepositoryHistory();
+      }
+    };
+
+    historyButton = new ToolbarButton(historyAction, false);
+    historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
+    historyButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
+    setDefaultToolbarButtonWidth(historyButton);
+
+    gitToolbar.add(historyButton);
+
+  }
+
+
+
+  // ========== TAGS ==========
+
+  /**
+   * Add the "Show Tags" button
+   */
+  private void addTagsShowButton() {
+    Action showTagsAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          TagsDialog dialog = new TagsDialog();
+          dialog.setVisible(true);
+        } catch (GitAPIException | IOException | NoRepositorySelected ex) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        }
+      }
+    };
+
+    showTagsButton = new ToolbarButton(showTagsAction, false);
+    showTagsButton.setIcon(Icons.getIcon(Icons.TAG));
+    showTagsButton.setToolTipText(TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_TAGS_TOOLTIP));
+    setDefaultToolbarButtonWidth(showTagsButton);
+
+    gitToolbar.add(showTagsButton);
+  }
+
+
+  /**
+   * Refresh the button for showing tags
+   */
+  public void refreshTagsButton() {
+    int noOfTags = 0;
+    try {
+      noOfTags = GitTagsManager.getNoOfTags();
+    } catch (GitAPIException e) {
+      LOGGER.debug(e,e);
+    }
+    getShowTagsButton().setEnabled(noOfTags > 0);
   }
 
   /**
-   * Sets a custom width on the given button
-   * 
-   * @param button the button to set the width to.
+   * @return the tags button.
    */
-  private void setDefaultToolbarButtonWidth(AbstractButton button) {
-    Dimension d = button.getPreferredSize();
-    d.width += TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH;
-    button.setPreferredSize(d);
-    button.setMinimumSize(d);
-    button.setMaximumSize(d);
+  public ToolbarButton getShowTagsButton() {
+    return showTagsButton;
   }
 
-  public SplitMenuButton getStashButton() {
-    return stashButton;
+
+
+  // ========== SETTINGS ==========
+
+  /**
+   * Add the settings button.
+   */
+  private void addSettingsButton() {
+    settingsMenuButton = SettingsMenuBuilder.build(refreshSupport);
+
+    gitToolbar.add(settingsMenuButton);
   }
 
-  public ToolbarButton getPushButton() {
-    return pushButton;
-  }
 
-  public SplitMenuButton getPullMenuButton() {
-    return pullMenuButton;
-  }
-
+  /**
+   * @return the setting button.
+   */
   public SplitMenuButton getSettingsMenuButton() {
     return settingsMenuButton;
   }
 	
-	public ToolbarButton getShowTagsButton() {
-	  return showTagsButton;
-	}
+
+
 }
