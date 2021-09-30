@@ -1440,8 +1440,16 @@ public class ToolbarPanel extends JPanel {
 
     return branchTooltip;
   }
+  
+  
+  /**
+   * @return The branches button.
+   */
+  public SplitMenuButton getBranchSelectButton() {
+    return branchSelectButton;
+  }
 
-
+  
 
   // ========== STASH ==========
 

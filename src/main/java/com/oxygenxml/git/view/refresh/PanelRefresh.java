@@ -119,7 +119,6 @@ public class PanelRefresh implements GitRefreshSupport {
 	          RepositoryStatusInfo rstatus = fetch();
 	          updateCounters(rstatus);
 	          
-	          stagingPanel.getBranchesPanel().refresh();
 
 	          if (OptionsManager.getInstance().isNotifyAboutNewRemoteCommits()) {
 	            // Make the check more frequently.
