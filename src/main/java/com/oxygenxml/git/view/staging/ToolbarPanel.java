@@ -1166,58 +1166,24 @@ public class ToolbarPanel extends JPanel {
   private void updateBranches() {
     branches.clear();
     branches.addAll(getBranches());
+    
     if (detachedHeadId != null) {
       branches.add(detachedHeadId);
     }
+    
     boolean isShowing = branchSelectButton.getPopupMenu().isShowing();
     branchSelectButton.getPopupMenu().setVisible(false);
+    
     while(branchSelectButton.getItemCount() != 0) {
       branchSelectButton.remove(branchSelectButton.getItem(0));
     }
+    
     ButtonGroup branchesActionsGroup = new ButtonGroup();
+   
     for(String branch: branches) {
-
-      AbstractAction branchAction = new AbstractAction(branch) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          String branchName = branch;
-          BranchInfo currentBranchInfo = GIT_ACCESS.getBranchInfo();
-          String currentBranchName = currentBranchInfo.getBranchName();
-          if (branchName.equals(currentBranchName)) {
-            return;
-          }
-
-          RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
-          if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-            SwingUtilities.invokeLater(() -> {
-              BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(branchName);
-
-              dialog.setVisible(true);
-
-              int answer = dialog.getResult();
-
-              if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
-                tryCheckingOutBranch(currentBranchInfo, branchName);
-              } else if (answer == OKOtherAndCancelDialog.RESULT_OK) {
-                boolean wasStashCreated = StashUtil.stashChanges();
-                if (wasStashCreated) {
-                  tryCheckingOutBranch(currentBranchInfo, branchName);
-                }
-              } else {
-                restoreCurrentBranchSelectionInMenu();
-              }
-            });
-          } else {
-            tryCheckingOutBranch(currentBranchInfo, branchName);
-          }
-        }
-
-      };
-
-      JRadioButtonMenuItem branchesMenuItem = new JRadioButtonMenuItem(branchAction);
+      JMenuItem branchesMenuItem = createBranchMenuItem(branch); 
       branchSelectButton.add(branchesMenuItem);
       branchesActionsGroup.add(branchesMenuItem);
-
     }
 
     branchSelectButton.revalidate();
@@ -1229,6 +1195,67 @@ public class ToolbarPanel extends JPanel {
   }
 
 
+  /**
+   * Create a menu item for the given branch.
+   * 
+   * @param branch the branch. 
+   * 
+   * @return the created menu item.
+   */
+  private JMenuItem createBranchMenuItem(String branch) {
+    
+    AbstractAction branchAction = new AbstractAction(branch) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String branchName = branch;
+        BranchInfo currentBranchInfo = GIT_ACCESS.getBranchInfo();
+        String currentBranchName = currentBranchInfo.getBranchName();
+        if (branchName.equals(currentBranchName)) {
+          return;
+        }
+
+        RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+        if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
+          SwingUtilities.invokeLater(() -> {
+            BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(branchName);
+
+            dialog.setVisible(true);
+
+            int answer = dialog.getResult();
+
+            if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
+              tryCheckingOutBranch(currentBranchInfo, branchName);
+            } else if (answer == OKOtherAndCancelDialog.RESULT_OK) {
+              boolean wasStashCreated = StashUtil.stashChanges();
+              if (wasStashCreated) {
+                tryCheckingOutBranch(currentBranchInfo, branchName);
+              }
+            } else {
+              restoreCurrentBranchSelectionInMenu();
+            }
+          });
+        } else {
+          tryCheckingOutBranch(currentBranchInfo, branchName);
+        }
+      }
+
+    };
+
+    JRadioButtonMenuItem branchesMenuItem = new JRadioButtonMenuItem(branchAction) {
+      
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip); 
+      }
+      
+    };
+    
+    branchesMenuItem.setToolTipText(getBranchTooltip(0, 0, branch));
+    
+    return branchesMenuItem;
+  }
+  
+  
   /**
    * Compute the branch tooltip text.
    *
