@@ -136,7 +136,7 @@ public class Icons {
   /**
    * Tag icon.
    */
-  public static final String TAG = "/images/EditProperties16.png";
+  public static final String TAG = "/images/GitTag16.png";
   /**
    * Info icon.
    */
