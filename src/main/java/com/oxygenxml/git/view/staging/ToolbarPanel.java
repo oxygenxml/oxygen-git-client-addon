@@ -274,15 +274,12 @@ public class ToolbarPanel extends JPanel {
   /**
    * List of branches.
    */
-  private List<String> branches = new ArrayList<>();
+  private final List<String> branches = new ArrayList<>();
 
-  private int currentSelectedBranchIndex = -1;
-  
   /**
    * The ID of the commit on which a detached HEAD is set.
    */
   private String detachedHeadId;
-
 
 
   /**
@@ -338,16 +335,10 @@ public class ToolbarPanel extends JPanel {
     });
   }
 
-  /**
-   * @return <code>true</code> if we have submodules.
-   */
-  boolean gitRepoHasSubmodules() {
-    return !GitAccess.getInstance().getSubmoduleAccess().getSubmodules().isEmpty();
-  }
 
   /**
    * Fetch.
-   * 
+   *
    * @param firstRun <code>true</code> if this the first fetch.
    */
   private void fetch(boolean firstRun) {
@@ -359,8 +350,8 @@ public class ToolbarPanel extends JPanel {
         message = TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       } else {
         message = TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
-            + " " 
-            + TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+                + " "
+                + TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       }
 
       String passphrase = new PassphraseDialog(message).getPassphrase();
@@ -393,9 +384,48 @@ public class ToolbarPanel extends JPanel {
     }
   }
 
+
+  /**
+   * Sets the panel layout and creates all the buttons with their functionality
+   * making them visible
+   *
+   * @param historyController History controller.
+   * @param branchManagementViewPresenter Branches presenter.
+   */
+  public void createGUI(
+          HistoryController historyController,
+          BranchManagementViewPresenter branchManagementViewPresenter) {
+    gitToolbar = new JToolBar();
+    gitToolbar.setOpaque(false);
+    gitToolbar.setFloatable(false);
+    this.setLayout(new GridBagLayout());
+
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weighty = 0;
+    gbc.weightx = 1;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(0, 0, 0, 0);
+
+    addCloneRepositoryButton();
+    addPushAndPullButtons();
+    addBranchSelectButton(branchManagementViewPresenter);
+    addStashButton();
+    addSubmoduleSelectButton();
+    addHistoryButton(historyController);
+    addTagsShowButton();
+    addSettingsButton();
+    this.add(gitToolbar, gbc);
+
+    this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
+  }
+
+
   /**
    * Enables/Disables the buttons.
-   * 
+   *
    * @param enabled <code>true</code> to enable the buttons. <code>false</code> to disable them.
    */
   public void updateButtonState(boolean enabled) {
@@ -410,46 +440,20 @@ public class ToolbarPanel extends JPanel {
     stashButton.setEnabled(enabled);
   }
 
+
+  /**
+   * @return <code>true</code> if we have submodules.
+   */
+  boolean gitRepoHasSubmodules() {
+    return !GitAccess.getInstance().getSubmoduleAccess().getSubmodules().isEmpty();
+  }
+
+
   public ToolbarButton getSubmoduleSelectButton() {
     return submoduleSelectButton;
   }
 
-	/**
-	 * Sets the panel layout and creates all the buttons with their functionality
-	 * making them visible
-	 * 
-	 * @param historyController History controller.
-	 * @param branchManagementViewPresenter Branches presenter.
-	 */
-	public void createGUI(
-	    HistoryController historyController,
-	    BranchManagementViewPresenter branchManagementViewPresenter) {
-		gitToolbar = new JToolBar();
-		gitToolbar.setOpaque(false);
-		gitToolbar.setFloatable(false);
-		this.setLayout(new GridBagLayout());
-		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weighty = 0;
-		gbc.weightx = 1;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(0, 0, 0, 0);
-		
-		addCloneRepositoryButton();
-		addPushAndPullButtons();
-		addBranchSelectButton(branchManagementViewPresenter);
-		addStashButton();
-		addSubmoduleSelectButton();
-		addHistoryButton(historyController);
-		addTagsShowButton();
-		addSettingsButton();
-		this.add(gitToolbar, gbc);
 
-		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
-	}
 
   /**
    * Add the settings button.
@@ -771,6 +775,9 @@ public class ToolbarPanel extends JPanel {
   private void updateBranches() {
     branches.clear();
     branches.addAll(getBranches());
+    if (detachedHeadId != null) {
+      branches.add(detachedHeadId);
+    }
     boolean isShowing = branchSelectButton.getPopupMenu().isShowing();
     branchSelectButton.getPopupMenu().setVisible(false);
     while(branchSelectButton.getItemCount() != 0) {
