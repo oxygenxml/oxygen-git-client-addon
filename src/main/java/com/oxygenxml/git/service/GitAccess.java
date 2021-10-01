@@ -2443,10 +2443,10 @@ public class GitAccess {
    * @return the list of all stashes.
    */
   public Collection<RevCommit> listStashes() {
-	  fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
 	  Collection<RevCommit> stashedRefsCollection = null;
 	  if(git != null) {
 		  try {
+		    fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
 			  StashListCommand stashList = git.stashList();
 			  stashedRefsCollection = stashList.call();
 			  fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()));

@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -209,32 +210,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       // Customize the contributed side-views
 			pluginWorkspaceAccess.addViewComponentCustomizer(
 			    viewInfo -> {
-			      gitController.addGitListener(
-			          // Set the proper cursor when operations start and end.
-			          new GitEventAdapter() {
-			            private Timer cursorTimer = new Timer(
-			                1000,
-			                e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(
-			                    Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
-
-			            @Override
-			            public void operationAboutToStart(GitEventInfo info) {
-			              cursorTimer.restart();
-			            }
-			            @Override
-			            public void operationSuccessfullyEnded(GitEventInfo info) {
-			              cursorTimer.stop();
-			              SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-			            }
-			            @Override
-			            public void operationFailed(GitEventInfo info, Throwable t) {
-			              cursorTimer.stop();
-			              SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-			            }
-			          });
 			      
             // The constants' values are defined in plugin.xml
             if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
+              installCursorUpdater(viewInfo.getComponent());
               customizeGitStagingView(viewInfo);
           	} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
           	  customizeHistoryView(viewInfo);
@@ -276,6 +255,39 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
 	}
+
+	/**
+	 * When Git operations are running set a workking cursor.
+	 * 
+	 * @param stagingViewComponent The staging view component on which to update the cursor. 
+	 */
+  private void installCursorUpdater(JComponent stagingViewComponent) {
+    gitController.addGitListener(
+        // Set the proper cursor when operations start and end.
+        new GitEventAdapter() {
+          private Timer cursorTimer = new Timer(
+              1000,
+              e -> SwingUtilities.invokeLater(
+                  () -> stagingViewComponent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
+                  ));
+          {cursorTimer.setRepeats(false);}
+
+          @Override
+          public void operationAboutToStart(GitEventInfo info) {
+            cursorTimer.restart();
+          }
+          @Override
+          public void operationSuccessfullyEnded(GitEventInfo info) {
+            cursorTimer.stop();
+            SwingUtilities.invokeLater(() -> stagingViewComponent.setCursor(Cursor.getDefaultCursor()));
+          }
+          @Override
+          public void operationFailed(GitEventInfo info, Throwable t) {
+            cursorTimer.stop();
+            SwingUtilities.invokeLater(() -> stagingViewComponent.setCursor(Cursor.getDefaultCursor()));
+          }
+        });
+  }
 
 	/**
 	 * Customize the Git Staging view.
