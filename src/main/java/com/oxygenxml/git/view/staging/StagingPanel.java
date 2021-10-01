@@ -79,10 +79,6 @@ public class StagingPanel extends JPanel {
 	 */
 	private ToolbarPanel toolbarPanel;
 	
-	/**
-	 * Branch selection panel.
-	 */
-	private BranchesPanel branchesPanel;
 
 	/**
 	 * The working copy panel used for selecting and adding a working copy
@@ -191,7 +187,6 @@ public class StagingPanel extends JPanel {
 		unstagedChangesPanel = new ChangesPanel(gitController, historyController, false);
 		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
-		branchesPanel = new BranchesPanel(gitController, false);
 		commitPanel = new CommitAndStatusPanel(gitController);
 		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
@@ -212,7 +207,6 @@ public class StagingPanel extends JPanel {
 		  addToolbarPanel(gbc);
 		}
 		addWorkingCopySelectionPanel(gbc);
-		addBranchesCombo(gbc);
 		addConflictButtonsPanel(gbc);
 		addSplitPanel(gbc, splitPane);
 
@@ -236,35 +230,6 @@ public class StagingPanel extends JPanel {
 		installFocusListener(this, createFocusListener());
 	}
 
-	/**
-	 * Add branches combo.
-	 * 
-	 * @param gbc Grid bag constraints.
-	 */
-	private void addBranchesCombo(GridBagConstraints gbc) {
-	  gbc.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING,
-        UIConstants.COMPONENT_LEFT_PADDING + HORIZONTAL_INSET,
-        UIConstants.COMPONENT_BOTTOM_PADDING,
-        UIConstants.COMPONENT_RIGHT_PADDING);
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.gridx = 0;
-    gbc.gridy++;
-    gbc.weightx = 0;
-    gbc.weighty = 0;
-    gbc.gridwidth = 1;
-    this.add(new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH) + ":"), gbc);
-
-    gbc.insets = new Insets(0, 0, 0, HORIZONTAL_INSET);
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.gridx++;
-    gbc.weightx = 1;
-    gbc.weighty = 0;
-    this.add(branchesPanel, gbc);
-    
-  }
 
   /**
 	 * @return The focus listener.
@@ -517,7 +482,6 @@ public class StagingPanel extends JPanel {
 	      unstagedChangesPanel.update(status.getUnstagedFiles());
 	      stagedChangesPanel.update(status.getStagedFiles());
 
-	      branchesPanel.refresh();
 	      
 	      if (toolbarPanel != null) {
 	        toolbarPanel.updateButtonState(true);
@@ -604,9 +568,6 @@ public class StagingPanel extends JPanel {
     return workingCopySelectionPanel;
   }
   
-  public BranchesPanel getBranchesPanel() {
-    return branchesPanel;
-  }
   
   /**
    * !!!!!!! FOR TESTS !!!!!!

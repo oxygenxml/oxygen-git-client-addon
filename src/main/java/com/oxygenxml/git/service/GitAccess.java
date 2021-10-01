@@ -2551,14 +2551,14 @@ public class GitAccess {
     switch (status) {
       case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
         if(isPop) {
-          FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.STASH_APPLY),
+          FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                   conflictingList,
                   TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
                           + " "
                           + TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT)
           );
         } else {
-          FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.STASH_APPLY),
+          FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                   conflictingList,
                   TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
           );
@@ -2567,7 +2567,7 @@ public class GitAccess {
         break;
       case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
         FileStatusDialog.showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.STASH_APPLY),
+                TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                 new ArrayList<>(getConflictingFiles()),
                 TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                         + ". "
@@ -2577,7 +2577,7 @@ public class GitAccess {
         break;
       case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
         FileStatusDialog.showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.STASH_APPLY),
+                TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                 null,
                 TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                         + ". "
@@ -2587,7 +2587,7 @@ public class GitAccess {
         break;
       case CANNOT_START_BECAUSE_STAGED_FILES:
         FileStatusDialog.showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.STASH_APPLY),
+                TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                 null,
                 TRANSLATOR.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
         fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);

@@ -38,7 +38,7 @@ import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
-import com.oxygenxml.git.view.staging.BranchesPanel;
+import com.oxygenxml.git.view.staging.StagingPanel;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -46,6 +46,7 @@ import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 /**
@@ -157,8 +158,7 @@ public class GitCheckoutConflictTest extends TestCase {
 
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
 
-    WSOptionsStorage mockedWsOptionsStorage = Mockito.mock(WSOptionsStorage.class);
-    Mockito.doAnswer(invocation -> null).when(mockedWsOptionsStorage).setOption(Mockito.anyString(), Mockito.any());
+    WSOptionsStorage mockedWsOptionsStorage = new TestWsOptionsStorage();
     Mockito.doAnswer(invocation -> mockedWsOptionsStorage).when(pluginWSMock).getOptionsStorage();
     
     XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);
@@ -334,10 +334,13 @@ public class GitCheckoutConflictTest extends TestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
-    branchesPanel.refresh();
+    // Simulate branch checkout from Git Staging
+    StagingPanel stagingPanel = new StagingPanel(refreshSupport, gitController, null, null);
     sleep(300);
-    branchesPanel.getBranchNamesCombo().setSelectedIndex(1);
+    SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
+    stagingPanel.getToolbarPanel().refresh();
+    sleep(300);
+    SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
     sleep(500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
@@ -395,10 +398,13 @@ public class GitCheckoutConflictTest extends TestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
-    branchesPanel.refresh();
+    // Simulate branch checkout from Git Staging
+    StagingPanel stagingPanel = new StagingPanel(refreshSupport, gitController, null, null);
     sleep(300);
-    branchesPanel.getBranchNamesCombo().setSelectedIndex(1);
+    SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
+    stagingPanel.getToolbarPanel().refresh();
+    sleep(300);
+    SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
     sleep(500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
@@ -509,11 +515,12 @@ public class GitCheckoutConflictTest extends TestCase {
     sleep(1000);
    
     // Simulate branch checkout from Git Staging
-    GitController gitController = new GitController(gitAccess);
-    BranchesPanel branchesPanel = new BranchesPanel(gitController, true);
-    branchesPanel.refresh();
+    StagingPanel stagingPanel = new StagingPanel(refreshSupport, (GitController)gitCtrl, null, null);
     sleep(300);
-    SwingUtilities.invokeLater(() -> branchesPanel.getBranchNamesCombo().setSelectedIndex(1));
+    SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
+    stagingPanel.getToolbarPanel().refresh();
+    sleep(300);
+    SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
     sleep(500);
     
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
@@ -524,7 +531,9 @@ public class GitCheckoutConflictTest extends TestCase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
+    
   }
+  
 
 	/**
    * Sleep well!

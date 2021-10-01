@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -51,12 +52,6 @@ public class StashChangesDialog extends OKCancelDialog {
    * When selected, the stash will include the untracked files.
    */
   private final JCheckBox includeUntrackedCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.INCLUDE_UNTRACKED));
-
-  /**
-   * The tag option for including the untracked files in the stash.
-   */
-  // TODO: This should be moved in a class where all Tags will reside
-  private static final String OPTION_TAG_INCLUDE_UNTRACKED = "Stash.should.include.untracked.files";
 
   /**
    * The dialog width.
@@ -143,10 +138,10 @@ public class StashChangesDialog extends OKCancelDialog {
     WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
     if(optionsStorage != null) {
       includeUntrackedCheckBox.setSelected(
-              Boolean.parseBoolean(optionsStorage.getOption(OPTION_TAG_INCLUDE_UNTRACKED, Boolean.toString(true))));
+              Boolean.parseBoolean(optionsStorage.getOption(OptionTags.STASH_INCLUDE_UNTRACKED, Boolean.toString(true))));
       includeUntrackedCheckBox.addItemListener(
           e -> optionsStorage.setOption(
-              OPTION_TAG_INCLUDE_UNTRACKED,
+              OptionTags.STASH_INCLUDE_UNTRACKED,
               Boolean.toString(includeUntrackedCheckBox.isSelected())));
     } else {
       includeUntrackedCheckBox.setSelected(true);

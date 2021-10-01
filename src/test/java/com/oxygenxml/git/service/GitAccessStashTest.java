@@ -112,11 +112,9 @@ public class GitAccessStashTest {
    * @throws Exception
    */
   @Test
-  public void testCreateMethod() throws Exception {
-    try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+  public void testCreateMethod() throws Exception { 
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -140,13 +138,12 @@ public class GitAccessStashTest {
    */
   @Test
   public void testApplyMethod() throws Exception {
-    try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
+
     gitAccess.addAll(gitAccess.getUnstagedFiles());
 
     assertTrue(isStashEmpty());
@@ -185,23 +182,20 @@ public class GitAccessStashTest {
    */
   @Test
   public void testStashWithUncommittedChangesWithoutConflicts() throws Exception {
-    try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("test");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
+
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(isStashEmpty());
     RevCommit ref = gitAccess.createStash(false, null);
     assertFalse(isStashEmpty());
     
-    try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test2.txt");
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test2.txt")) {
       out.println("modify");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
