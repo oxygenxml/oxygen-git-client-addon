@@ -1572,7 +1572,7 @@ public class ToolbarPanel extends JPanel {
    * @param splitMenuButton The menu button to add to.
    */
   private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
-    stashChangesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_CHANGES)) {
+    stashChangesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_CHANGES) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         StashUtil.stashChanges();

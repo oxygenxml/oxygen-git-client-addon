@@ -456,7 +456,6 @@ public class ListStashesDialog extends JDialog {
     panel.add(deleteAfterApplyingCheckBox, constraints);
 
     JPanel buttonsPanel = createButtonsPanel();
-    constraints.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, 0, 0, 0);
     constraints.gridx++;
     constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.EAST;
@@ -486,7 +485,7 @@ public class ListStashesDialog extends JDialog {
     constraints.insets = new Insets(
         0, 
         UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
-        UIConstants.COMPONENT_BOTTOM_PADDING, 
+        0, 
         0);
 
     applyButton = createApplyButton();

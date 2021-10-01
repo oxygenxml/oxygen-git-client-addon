@@ -198,14 +198,14 @@
         <val lang="zh_CN">Cannot apply stash while having staged changes. Commit, stash, or unstage
             before trying again.</val>
     </key>
-    <key value="Stash_Apply">
-        <comment>Stash apply</comment>
-        <val lang="en_US">Stash apply</val>
-        <val lang="de_DE">Stash apply</val>
+    <key value="Apply_Stash">
+        <comment>Apply stash</comment>
+        <val lang="en_US">Apply stash</val>
+        <val lang="de_DE">Apply stash</val>
         <val lang="fr_FR">Appliquer la remise</val>
-        <val lang="ja_JP">Stash apply</val>
-        <val lang="nl_NL">Stash apply</val>
-        <val lang="zh_CN">Stash apply</val>
+        <val lang="ja_JP">Apply stash</val>
+        <val lang="nl_NL">Apply stash</val>
+        <val lang="zh_CN">Apply stash</val>
     </key>
 
     <key value="Create_Tag_Commit_Title">

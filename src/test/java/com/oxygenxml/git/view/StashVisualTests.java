@@ -402,7 +402,7 @@ public class StashVisualTests extends GitTestBase {
       stashes = new ArrayList<>(gitAccess.listStashes());
       assertEquals(3, stashes.size());
       
-     listStashesItem[0] =  stashButton.getItem(1);
+      listStashesItem[0] =  stashButton.getItem(1);
 
       SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
       

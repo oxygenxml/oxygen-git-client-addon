@@ -101,5 +101,9 @@ public interface OptionTags {
    */
   public static final String PERSONAL_ACCES_TOKENS_LIST = "com.oxygenxml.git.personal.acces.tokens.list";
 
+  /**
+   * The tag option for including the untracked files in the stash.
+   */
+  public static final String STASH_INCLUDE_UNTRACKED = "com.oxygenxml.git.stash.include.untracked";
 
 }

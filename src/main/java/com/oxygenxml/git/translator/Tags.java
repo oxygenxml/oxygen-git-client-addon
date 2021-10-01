@@ -1374,7 +1374,7 @@ public class Tags {
   /**
    * Stash apply.
    */
-  public static final String STASH_APPLY = "Stash_Apply";
+  public static final String APPLY_STASH = "Apply_Stash";
   /**
    * Delete all.
    */
