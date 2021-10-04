@@ -45,7 +45,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     private void setCommitDescription() {
       int selectedRow = historyTable.getSelectedRow();
       if (selectedRow != -1) {
-        CommitCharacteristics commitCharacteristics = allCommits.get(selectedRow);
+        CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
+            .getAllCommits().get(selectedRow);
         StringBuilder commitDescription = new StringBuilder();
         // Case for already committed changes.
         if (commitCharacteristics.getCommitter() != null) {
@@ -153,10 +154,6 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 */
 	private JEditorPane commitDescriptionPane;
 	/**
-	 * The list of commits and their characteristics.
-	 */
-	private List<CommitCharacteristics> allCommits;
-	/**
 	 * Coalescing listener for updating commit related data.
 	 */
 	private ActionListener descriptionUpdateListener = new TableTimerListener();
@@ -189,7 +186,6 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
-		this.allCommits = commits;
 	}
 
 	@Override
