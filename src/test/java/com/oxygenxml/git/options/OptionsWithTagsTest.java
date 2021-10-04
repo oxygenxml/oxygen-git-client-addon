@@ -120,6 +120,7 @@ public class OptionsWithTagsTest {
         + "UPDATE_SUBMODULES_ON_PULL\n"
         + "WARN_ON_CHANGE_COMMIT_ID\n"
         + "SSH_PROMPT_ANSWERS\n"
-        + "PERSONAL_ACCES_TOKENS_LIST", dump);
+        + "PERSONAL_ACCES_TOKENS_LIST\n"
+        + "STASH_INCLUDE_UNTRACKED", dump);
   }
 }
