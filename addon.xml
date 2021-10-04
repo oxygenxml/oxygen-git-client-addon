@@ -55,8 +55,9 @@
                 <li>The highlight boxes that surround branches and tags are now styled differently
                 so that it is easier to identify which represents a branch and which represents is a
                 tag.</li>
-                <li>The Git client preference page can be saved at project level. The project can then be shared with other users
-                and everyone will have the same Git client preferences.</li>
+                <li>The settings in the Git client preferences page can be saved at project level.
+                The project can then be shared with other users and everyone will have the same Git
+                client settings.</li>
                         </ol>
                     </div>
                     <div>
