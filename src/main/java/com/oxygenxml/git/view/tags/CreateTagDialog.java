@@ -157,6 +157,7 @@ public class CreateTagDialog extends OKCancelDialog {
     JLabel messageLabel = new JLabel(TRANSLATOR.getTranslation(Tags.MESSAGE_LABEL) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
+    gbc.weightx = 0;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;
     gbc.insets = new Insets(topInset, 0, 0, UIConstants.COMPONENT_RIGHT_LARGE_PADDING);      
     panel.add(messageLabel, gbc);
@@ -229,6 +230,8 @@ public class CreateTagDialog extends OKCancelDialog {
         }
         errorMessageTextArea.setText(titleAlreadyExists ? TRANSLATOR.getTranslation(Tags.TAG_ALREADY_EXISTS) : "");
       } 
+    }else {
+      errorMessageTextArea.setText("");
     }
 
     boolean isTagTitleValid = !tagTitle.isEmpty() && !titleAlreadyExists && !titleContainsSpace && !titleContainsInvalidChars;
