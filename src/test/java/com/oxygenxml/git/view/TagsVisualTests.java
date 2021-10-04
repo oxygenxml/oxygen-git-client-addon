@@ -137,6 +137,7 @@ public class TagsVisualTests extends GitTestBase {
       
       // Click the showTags Button and verify if the dialog is correct generated
       showTagsButton.doClick();
+      sleep(50);
       flushAWT();
       
       JDialog tagsDialog = findDialog(Tags.TAGS_DIALOG);
