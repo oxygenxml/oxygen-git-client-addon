@@ -190,7 +190,9 @@ public class WorkingCopySelectionPanel extends JPanel {
     			}
     		});
     	} else {
-    		gitAccess.setRepositoryAsync(selectedEntry);
+    	  if (selectedEntry != null) {
+    	    gitAccess.setRepositoryAsync(selectedEntry);
+    	  }
     	}
     } finally {
     	inhibitRepoUpdate = false;
