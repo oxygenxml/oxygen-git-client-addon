@@ -54,6 +54,9 @@
 			    <li>An information message that is shown when starting Oxygen while being on a detached HEAD now presents more information
 				about the checked out commit (ID, author, date, message).</li>
 				<li>The add-on's minimum compatible Oxygen version was increased to version 22.1.</li>
+                <li>The highlight boxes that surround branches and tags are now styled differently
+                so that it is easier to identify which represents a branch and which represents is a
+                tag.</li>
                         </ol>
                     </div>
                     <div>
