@@ -217,15 +217,6 @@
         <val lang="nl_NL">Create tag</val>
         <val lang="zh_CN">Create tag</val>
     </key>
-    <key value="Create_Tag_For_This_Commit">
-        <comment>The message for the create Tag action</comment>
-        <val lang="en_US">Create tag...</val>
-        <val lang="de_DE">Create tag...</val>
-        <val lang="fr_FR">Créer une étiquette...</val>
-        <val lang="ja_JP">Create tag...</val>
-        <val lang="nl_NL">Create tag...</val>
-        <val lang="zh_CN">Create tag...</val>
-    </key>
     <key value="Create_Tag_Title_Label">
         <comment>The message in the label for Tag title</comment>
         <val lang="en_US">Tag name</val>
@@ -235,8 +226,8 @@
         <val lang="nl_NL">Tag name</val>
         <val lang="zh_CN">Tag name</val>
     </key>
-    <key value="Create_Tag_Message_Label">
-        <comment>The message in the label for Tag message</comment>
+    <key value="Message_Label">
+        <comment>The message in the label for a message</comment>
         <val lang="en_US">Message</val>
         <val lang="de_DE">Message</val>
         <val lang="fr_FR" skipTranslation="true">Message</val>
@@ -289,15 +280,6 @@
         <val lang="ja_JP">Name</val>
         <val lang="nl_NL">Name</val>
         <val lang="zh_CN">Name</val>
-    </key>
-    <key value="Tags_Dialog_Message_Column">
-        <comment/>
-        <val lang="en_US">Message</val>
-        <val lang="de_DE">Message</val>
-        <val lang="fr_FR" skipTranslation="true">Message</val>
-        <val lang="ja_JP">Message</val>
-        <val lang="nl_NL">Message</val>
-        <val lang="zh_CN">Message</val>
     </key>
     <key value="Push">
         <comment>Displays the message "Push"</comment>
@@ -381,15 +363,6 @@
         <val lang="ja_JP">Date</val>
         <val lang="nl_NL">Date</val>
         <val lang="zh_CN">Date</val>
-    </key>
-    <key value="Tag_Details_Dialog_Message">
-        <comment>The text of the label for the Tag Details Dialog Message</comment>
-        <val lang="en_US">Message</val>
-        <val lang="de_DE">Message</val>
-        <val lang="fr_FR" skipTranslation="true">Message</val>
-        <val lang="ja_JP">Message</val>
-        <val lang="nl_NL">Message</val>
-        <val lang="zh_CN">Message</val>
     </key>
     <key value="Tag_Details_Dialog_Commit">
         <comment>The text of the label for the Tag Details Dialog Commit</comment>

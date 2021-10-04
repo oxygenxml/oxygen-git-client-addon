@@ -154,7 +154,7 @@ public class CreateTagDialog extends OKCancelDialog {
     panel.add(errorMessageTextArea, gbc);
 
     // Tag message label.
-    JLabel messageLabel = new JLabel(TRANSLATOR.getTranslation(Tags.CREATE_TAG_MESSAGE_LABEL) + ":");
+    JLabel messageLabel = new JLabel(TRANSLATOR.getTranslation(Tags.MESSAGE_LABEL) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;

@@ -181,6 +181,7 @@ public class TagsDialog extends OKCancelDialog {
     gbc.gridwidth = 1;
     gbc.weighty = 0;
     gbc.weightx = 0;
+    gbc.insets = new Insets(0, 0, UIConstants.LAST_LINE_COMPONENT_BOTTOM_PADDING, 0);
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.SOUTHEAST;
     tagsPanel.add(buttonsPanel, gbc);
@@ -202,7 +203,7 @@ public class TagsDialog extends OKCancelDialog {
     List<GitTag> localTagsList = GitTagsManager.getLocalTags();
 
     String[] columnNames = {TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_NAME_COLUMN),
-        TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_MESSAGE_COLUMN)};  
+        TRANSLATOR.getTranslation(Tags.MESSAGE_LABEL)};  
     TagsTableModel model = new TagsTableModel(columnNames);
     model.setGitTags(localTagsList);
 
