@@ -8,12 +8,21 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JTable;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.junit.Test;
 
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
+import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 
 /**
  * Tests the quick search function
@@ -118,5 +127,53 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       assertEquals(expected, dump);
       
   }
+  
+  
+  /**
+   * Tests if the commit details are correct.
+   * <br><br>
+   * EXM-48899
+   * 
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testCommitDetails() throws Exception {
+    generateRepositoryAndLoad(
+        getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
+        new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
+  
+      historyPanel.showRepositoryHistory();
+      waitForScheduler();
+      flushAWT();
+      sleep(300);
+  
+      JTable historyTable = historyPanel.getHistoryTable();
+      HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+      model.filterChanged("alex rename");
+      historyTable.setRowSelectionInterval(0, 0);
+      
+      CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);
+      JTable affectedFiles = historyPanel.getAffectedFilesTable();
+      
+      StagingResourcesTableModel dataModel = (StagingResourcesTableModel)affectedFiles.getModel();
+      if (GitAccess.UNCOMMITED_CHANGES != commitDetails) {
+        try {
+          List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitDetails.getCommitId());
+          dataModel.setFilesStatus(changes);
+        } catch (GitAPIException | RevisionSyntaxException | IOException e) {
+          e.printStackTrace();
+        }
+      } else {
+        dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
+      }
+      assertEquals(dataModel.getRowCount(), affectedFiles.getRowCount());
+      for(int i = 0; i < dataModel.getRowCount(); i++) {
+        assertEquals(dataModel.getValueAt(i, 1), affectedFiles.getValueAt(i, 1));
+      }
+      
+  }
+  
   
 }
