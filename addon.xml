@@ -42,10 +42,8 @@
               			view.</li>
 			    <li>A warning message is now displayed when trying to use the <i>Mark as resolved</i> action 
 				on a file that contains conflict markers.</li>
-			    <li>A message prompt is now displayed if you try to switch the branch while there
-              			are uncommitted changes so that you can confirm that you want to move the changes to
-              			the new branch.</li>
-                            <li>A new editor variables is now supported: <b>${git(working_copy_url)}</b>. It is resolved to the URL of the current working copy directory.</li>
+			    <li>A message prompt is now displayed if you try to switch the branch while there are uncommitted changes so that you can confirm that you want to stash the changes or move the changes to the new branch.</li>
+                <li>A new editor variables is now supported: <b>${git(working_copy_url)}</b>. It is resolved to the URL of the current working copy directory.</li>
 			    <li>When hovering the cursor over the <i>Pull</i> and <i>Push</i> buttons,
             			the displayed tooltip now shows information about some of the incoming/outgoing commits
             			(such as the date, author and message).</li>
@@ -54,6 +52,12 @@
 			    <li>An information message that is shown when starting Oxygen while being on a detached HEAD now presents more information
 				about the checked out commit (ID, author, date, message).</li>
 				<li>The add-on's minimum compatible Oxygen version was increased to version 22.1.</li>
+                <li>The highlight boxes that surround branches and tags are now styled differently
+                so that it is easier to identify which represents a branch and which represents is a
+                tag.</li>
+                <li>The settings in the Git client preferences page can be saved at project level.
+                The project can then be shared with other users and everyone will have the same Git
+                client settings.</li>
                         </ol>
                     </div>
                     <div>
