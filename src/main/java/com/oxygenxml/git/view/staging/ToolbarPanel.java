@@ -1480,7 +1480,7 @@ public class ToolbarPanel extends JPanel {
     stashButton.setPreferredSize(d);
     stashButton.setMinimumSize(d);
     stashButton.setMaximumSize(d);
-
+    refreshStashButton();
     gitToolbar.add(stashButton);
   }
 
@@ -1594,8 +1594,20 @@ public class ToolbarPanel extends JPanel {
 
     boolean existsStashes = noOfStashes > 0;
     listStashesAction.setEnabled(existsStashes);
+    
+    boolean existsRepo = false;
+    try {
+      existsRepo = GIT_ACCESS.getRepository() != null;
+    } catch (NoRepositorySelected e) {
+      // Nothing
+    }
 
-    stashButton.setEnabled(existsLocalFiles || existsStashes);
+    if(existsRepo) {
+      stashButton.setEnabled(existsLocalFiles || existsStashes);
+    } else {
+      stashButton.setEnabled(false);
+    }
+    
   }
 
 
