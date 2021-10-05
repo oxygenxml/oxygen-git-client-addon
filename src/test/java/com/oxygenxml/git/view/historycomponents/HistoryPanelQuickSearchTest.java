@@ -22,7 +22,6 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
-import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 
 /**
  * Tests the quick search function
@@ -153,26 +152,24 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
       historyTable.setRowSelectionInterval(0, 0);
+      sleep(300);
       
-      CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);
       JTable affectedFiles = historyPanel.getAffectedFilesTable();
-      
-      StagingResourcesTableModel dataModel = (StagingResourcesTableModel)affectedFiles.getModel();
+      CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);
+      List<FileStatus> changes = null;
       if (GitAccess.UNCOMMITED_CHANGES != commitDetails) {
         try {
-          List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitDetails.getCommitId());
-          dataModel.setFilesStatus(changes);
+          changes = RevCommitUtil.getChangedFiles(commitDetails.getCommitId());
         } catch (GitAPIException | RevisionSyntaxException | IOException e) {
           e.printStackTrace();
         }
       } else {
-        dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
+        changes = GitAccess.getInstance().getUnstagedFiles();
       }
-      assertEquals(dataModel.getRowCount(), affectedFiles.getRowCount());
-      for(int i = 0; i < dataModel.getRowCount(); i++) {
-        assertEquals(dataModel.getValueAt(i, 1), affectedFiles.getValueAt(i, 1));
+      assertEquals(changes.size(), affectedFiles.getRowCount());
+      for(int i = 0; i < changes.size(); i++) {
+        assertEquals(changes.get(i), affectedFiles.getValueAt(i, 1));
       }
-      
   }
   
   
