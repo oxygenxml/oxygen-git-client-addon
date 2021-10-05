@@ -27,7 +27,7 @@
 			</p>
                     </div>
 		    <div>
-                        <h3>What's new in version 2.6.0</h3>
+                        <h3>What's new in version 3.0.0</h3>
                         <ol>
 			    <li>Added a <b>Merge "SELECTED_BRANCH" into "CURRENT_BRANCH"</b> action
 				in the contextual menu for local branches in <i>Git Branch Manager</i>.</li>
@@ -58,6 +58,7 @@
                 <li>The settings in the Git client preferences page can be saved at project level.
                 The project can then be shared with other users and everyone will have the same Git
                 client settings.</li>
+                <li>You can save the uncommited changes into stashes, reapply or delete the stashed changes.</li>
                         </ol>
                     </div>
                     <div>
