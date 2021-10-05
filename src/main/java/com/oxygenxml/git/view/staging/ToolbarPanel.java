@@ -459,6 +459,8 @@ public class ToolbarPanel extends JPanel {
       String finalText = tooltipText;
 
       if(selectedBranchIndex >= 0) {
+        // Although the pop-up actions have tooltip, on createBranchMenuItem(), at this point 
+        // we can have push-ahead and pull-behind information for the active branch.
         SwingUtilities.invokeLater(() -> branchSelectButton.getItem(selectedBranchIndex).setToolTipText(finalText));
       }
     } else {
@@ -524,6 +526,8 @@ public class ToolbarPanel extends JPanel {
       }
       String branchTooltipFinal = branchTooltip;
       if(selectedBranchIndex >= 0) {
+        // Although the pop-up actions have tooltip, on createBranchMenuItem(), at this point 
+        // we can have push-ahead and pull-behind information for the active branch.
         SwingUtilities.invokeLater(() -> branchSelectButton.getItem(selectedBranchIndex).setToolTipText(branchTooltipFinal));
       }
 
