@@ -274,6 +274,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
           @Override
           public void operationAboutToStart(GitEventInfo info) {
+            if (logger.isDebugEnabled()) {
+              logger.debug("Operation about to start " + info, new Exception());
+            }
             cursorTimer.restart();
           }
           @Override
