@@ -1480,7 +1480,6 @@ public class ToolbarPanel extends JPanel {
     stashButton.setPreferredSize(d);
     stashButton.setMinimumSize(d);
     stashButton.setMaximumSize(d);
-    refreshStashButton();
     gitToolbar.add(stashButton);
   }
 
@@ -1547,6 +1546,8 @@ public class ToolbarPanel extends JPanel {
     stashLocalButton.setToolTipText(TRANSLATOR.getTranslation(Tags.STASH));
 
     addStashActionsToMenu(stashLocalButton);
+    
+    stashLocalButton.setEnabled(false);
 
     return stashLocalButton;
   }
