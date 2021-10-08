@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Branch_manager_button_tool_tip">
+        <comment>"The tool tip for the button that opens the branch manager side view."</comment>
+        <val lang="en_US">Press to show the Git Branch Manager view.</val>
+        <val lang="de_DE">Press to show the Git Branch Manager view.r</val>
+        <val lang="fr_FR">Press to show the Git Branch Manager view.</val>
+        <val lang="ja_JP">Press to show the Git Branch Manager view.</val>
+        <val lang="nl_NL">Press to show the Git Branch Manager view.</val>
+        <val lang="zh_CN">Press to show the Git Branch Manager view.</val>
+    </key>
     <key value="Pull_failed_because_conflicting_paths">
         <comment>The text is displayed when you pull but it fails because the files that are
             modified might become in conflict</comment>
@@ -1353,15 +1362,6 @@
         <val lang="ja_JP">分岐を削除する</val>
         <val lang="nl_NL">Branch verwijderen</val>
         <val lang="zh_CN">Delete branch</val>
-    </key>
-    <key value="Branch_manager_button_tool_tip">
-        <comment>"The tool tip for the button that opens the branch manager side view."</comment>
-        <val lang="en_US">Show Git Branch Manager</val>
-        <val lang="de_DE">Zeige Git Branch Manager</val>
-        <val lang="fr_FR">Afficher le gestionnaire de branche Git</val>
-        <val lang="ja_JP">Git Branch Manager を表示</val>
-        <val lang="nl_NL">Git Branchbeheer tonen</val>
-        <val lang="zh_CN">Show Git Branch Manager</val>
     </key>
     <key value="Search_bar_tool_tip">
         <comment>"The tool tip for the filter of the braches tree."</comment>

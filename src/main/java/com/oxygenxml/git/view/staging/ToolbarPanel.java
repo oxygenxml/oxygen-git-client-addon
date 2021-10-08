@@ -1465,6 +1465,7 @@ public class ToolbarPanel extends JPanel {
       branchTooltip += commitsAheadMessage;
     }
 
+    branchTooltip += "<br>" + TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP);
     branchTooltip = TextFormatUtil.toHTML(branchTooltip);
 
     return branchTooltip;
