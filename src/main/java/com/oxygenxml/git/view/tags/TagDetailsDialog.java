@@ -216,6 +216,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     commitMessageArea.setEditable(false);
     gbc.fill = GridBagConstraints.BOTH;
     gbc.gridy++;
+    gbc.insets = new Insets(topInset, leftInset, UIConstants.LAST_LINE_COMPONENT_BOTTOM_PADDING, rightInset);
     commitMessageArea.setText(commit.getFullMessage());
     commitMessageArea.setBorder(OxygenUIComponentsFactory.createTextField().getBorder());
     commitMessageArea.setWrapStyleWord(true);
