@@ -1145,6 +1145,9 @@ public class ToolbarPanel extends JPanel {
 
     branchSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
     branchSelectButton.setAction(branchSelectAction);
+    
+    branchSelectButton.setEnabled(false);
+    
 
     gitToolbar.add(branchSelectButton);
   }
@@ -1181,6 +1184,15 @@ public class ToolbarPanel extends JPanel {
     if(isShowing) {
       branchSelectButton.getPopupMenu().setVisible(true);
     }
+
+    boolean existsRepo = false;
+    try {
+      existsRepo = GIT_ACCESS.getRepository() != null;
+    } catch (NoRepositorySelected e) {
+      // Nothing
+    }
+    
+    branchSelectButton.setEnabled(existsRepo);
 
   }
 
