@@ -30,14 +30,10 @@
                         <h3>What's new in version 3.0.0</h3>
                         <ol>
           <li>You can save the uncommitted changes into stashes, reapply or delete the stashed changes.</li>
-          <li>You can create new tags from the <i>Git History</i> contextual menu. In the <i>Git Staging</i>
-            toolbar there is an action to list all the tags. Tags from the local repository can be 
-            deleted or pushed to the remote repository.</li>
+          <li>You can create new tags from the <i>Git History</i> contextual menu. In the <i>Git Staging</i> toolbar, there is an action to list all the tags. Tags from the local repository can be deleted or pushed to the remote repository.</li>
 			    <li>Added a <b>Merge "SELECTED_BRANCH" into "CURRENT_BRANCH"</b> action
 				in the contextual menu for local branches in <i>Git Branch Manager</i>.</li>
-          <li>When showing the history for a directory, in the affected files section, the files 
-            that are descendents of the directory are presented on top and the files that are outside it are grayed out.
-            When showing the history for a specific file, in the affected files section, that specific file is promoted on top and the other files are grayed out.</li>
+          <li>When showing the history for a directory in the affected files section, the files that are descendants of the directory are presented on top and the files that are outside it are grayed out.</li>
 			    <li>Added a <b>Revert commit</b> action in the contextual menu for
               			commits from the <i>Git History</i> view. It creates a new commit that
              			reverts all the changes from the selected commit.</li>
