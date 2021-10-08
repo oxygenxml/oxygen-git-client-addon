@@ -1462,7 +1462,7 @@ public class ToolbarPanel extends JPanel {
       } else {
         commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
       }
-      branchTooltip += commitsAheadMessage;
+      branchTooltip += commitsAheadMessage + "<br>";
     }
 
     branchTooltip += "<br>" + TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP);
