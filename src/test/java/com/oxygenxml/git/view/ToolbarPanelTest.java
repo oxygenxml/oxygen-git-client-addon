@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
+import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
@@ -237,6 +238,30 @@ public class ToolbarPanelTest extends GitTestBase {
       frame.setVisible(false);
       frame.dispose();
     }
+  }
+  
+  
+  /**
+   * <p><b>Description:</b> when trying to switch to another branch from the branches menu
+   * and the checkout fails, tests the dialog</p>
+   * <p><b>Bug ID:</b> EXM-48502</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  public void testButtonsWhenNoRepo() throws Exception {
+    gitAccess.setGit(null);
+    GitController gitCtrl = new GitController(GitAccess.getInstance());
+    stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+    ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
+    assertTrue(toolbar.getPullMenuButton().isEnabled());
+    assertTrue(toolbar.getPushButton().isEnabled());
+    assertFalse(toolbar.getBranchSelectButton().isEnabled());
+    assertFalse(toolbar.getStashButton().isEnabled());
+    assertFalse(toolbar.getSubmoduleSelectButton().isEnabled());
+    assertTrue(toolbar.getShowTagsButton().isEnabled());
+    assertTrue(toolbar.getSettingsMenuButton().isEnabled());
   }
   
   
