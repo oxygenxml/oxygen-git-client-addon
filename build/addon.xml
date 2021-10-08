@@ -4,9 +4,9 @@
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
         <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.5.2/oxygen-git-client-2.5.2-plugin.jar"/>
-        <xt:version>2.5.2</xt:version>
-        <xt:oxy_version>21.1+</xt:oxy_version>
+            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/3.0.0/oxygen-git-client-3.0.0-plugin.jar"/>
+        <xt:version>3.0.0</xt:version>
+        <xt:oxy_version>22.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
         <xt:name>Git Client</xt:name>
@@ -25,6 +25,45 @@
 				pushing/pulling changes to/from the remote repository, creating, checking out and deleting branches,
 				showing the history of the repository resources, and more. The add-on also includes a built-in tool for comparing and merging changes.
 			</p>
+                    </div>
+		    <div>
+                        <h3>What's new in version 3.0.0</h3>
+                        <ol>
+          <li>You can save the uncommitted changes into stashes, reapply or delete the stashed changes.</li>
+          <li>You can create new tags from the <i>Git History</i> contextual menu. In the <i>Git Staging</i> toolbar, there is an action to list all the tags. Tags from the local repository can be deleted or pushed to the remote repository.</li>
+			    <li>Added a <b>Merge "SELECTED_BRANCH" into "CURRENT_BRANCH"</b> action
+				in the contextual menu for local branches in <i>Git Branch Manager</i>.</li>
+          <li>When showing the history for a directory in the affected files section, the files that are descendants of the directory are presented on top and the files that are outside it are grayed out.</li>
+			    <li>Added a <b>Revert commit</b> action in the contextual menu for
+              			commits from the <i>Git History</i> view. It creates a new commit that
+             			reverts all the changes from the selected commit.</li>
+			    <li>Added a <b>Reset file to this commit</b> action to the contextual
+             			menu for resources associated to a revision in the <i>Git History</i>
+				view. It checks out the selected version of the file.</li>
+			    <li>Added an <b>Open working copy version</b> action to the contextual
+             			menu for resources associated to a revision in the <i>Git History</i>
+              			view.</li>
+			    <li>A warning message is now displayed when trying to use the <i>Mark as resolved</i> action 
+				on a file that contains conflict markers.</li>
+			    <li>A message prompt is now displayed if you try to switch the branch while there are uncommitted changes so that you can confirm that you want to stash the changes or move the changes to the new branch.</li>
+                <li>A new editor variables is now supported: <b>${git(working_copy_url)}</b>. It is resolved to the URL of the current working copy directory.</li>
+			    <li>When hovering the cursor over the <i>Pull</i> and <i>Push</i> buttons,
+            			the displayed tooltip now shows information about some of the incoming/outgoing commits
+            			(such as the date, author and message).</li>
+			    <li>When hovering the cursor over a branch name, a tooltip is displayed that provides information about the last commit
+				    performed on that branch (such as the author and the date of the commit).</li>
+			    <li>An information message that is shown when starting Oxygen while being on a detached HEAD now presents more information
+				about the checked out commit (ID, author, date, message).</li>
+				  <li>The add-on's minimum compatible Oxygen version was increased to version 22.1.</li>
+          <li>The highlight boxes that surround branches and tags are now styled differently
+          so that it is easier to identify which represents a branch and which represents is a
+          tag.</li>
+          <li>The settings in the Git client preferences page can be saved at project level.
+          The project can then be shared with other users and everyone will have the same Git
+          client settings.</li>
+          <li>Fixed an issue in where the commit details were not correctly displayed when a 
+          filter text was active in the History view.</li>
+                        </ol>
                     </div>
                     <div>
                         <h3>What's new in version 2.5.2</h3>
