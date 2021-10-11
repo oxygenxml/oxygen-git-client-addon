@@ -8,11 +8,19 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JTable;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.junit.Test;
 
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 
 /**
@@ -118,5 +126,51 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       assertEquals(expected, dump);
       
   }
+  
+  
+  /**
+   * Tests if the commit details are correct.
+   * <br><br>
+   * EXM-48899
+   * 
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testCommitDetails() throws Exception {
+    generateRepositoryAndLoad(
+        getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
+        new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
+  
+      historyPanel.showRepositoryHistory();
+      waitForScheduler();
+      flushAWT();
+      sleep(300);
+  
+      JTable historyTable = historyPanel.getHistoryTable();
+      HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+      model.filterChanged("alex rename");
+      historyTable.setRowSelectionInterval(0, 0);
+      sleep(300);
+      
+      JTable affectedFiles = historyPanel.getAffectedFilesTable();
+      CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);
+      List<FileStatus> changes = null;
+      if (GitAccess.UNCOMMITED_CHANGES != commitDetails) {
+        try {
+          changes = RevCommitUtil.getChangedFiles(commitDetails.getCommitId());
+        } catch (GitAPIException | RevisionSyntaxException | IOException e) {
+          e.printStackTrace();
+        }
+      } else {
+        changes = GitAccess.getInstance().getUnstagedFiles();
+      }
+      assertEquals(changes.size(), affectedFiles.getRowCount());
+      for(int i = 0; i < changes.size(); i++) {
+        assertEquals(changes.get(i), affectedFiles.getValueAt(i, 1));
+      }
+  }
+  
   
 }

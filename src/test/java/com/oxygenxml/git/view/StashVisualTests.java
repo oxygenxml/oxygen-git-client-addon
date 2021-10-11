@@ -457,6 +457,19 @@ public class StashVisualTests extends GitTestBase {
    * @throws Exception
    */ 
   public void testListStashApplyAndPopAction() throws Exception {
+    // Init UI
+    JFrame frame = new JFrame();
+    GitController gitCtrl = new GitController(GitAccess.getInstance());
+    stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+    ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+    frame.getContentPane().add(stagingPanel);
+    frame.pack();
+    frame.setVisible(true);
+    flushAWT();
+    toolbarPanel.refresh();
+    refreshSupport.call();
+    flushAWT();
+    
     // Make the first commit for the local repository
     File file = new File(LOCAL_REPO, "local.txt");
     file.createNewFile();
@@ -477,22 +490,7 @@ public class StashVisualTests extends GitTestBase {
     gitAccess.createBranch(LOCAL_BRANCH);
     gitAccess.fetch();
     
-    
-    JFrame frame = new JFrame();
-   
     try {
-      // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
-      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
-      frame.getContentPane().add(stagingPanel);
-      frame.pack();
-      frame.setVisible(true);
-      flushAWT();
-      toolbarPanel.refresh();
-      refreshSupport.call();
-      flushAWT();
-      
       SplitMenuButton stashButton = toolbarPanel.getStashButton();
       
       makeLocalChange("some_modification");

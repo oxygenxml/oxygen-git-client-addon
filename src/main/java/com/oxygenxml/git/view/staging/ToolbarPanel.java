@@ -312,20 +312,6 @@ public class ToolbarPanel extends JPanel {
         if (operation == GitOperation.OPEN_WORKING_COPY) {
           // Repository changed. Update the toolbar buttons.
           submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
-
-          // Update the toolbars.
-          // calculate how many pushes ahead and pulls behind the current
-          // selected working copy is from the base. It is on thread because
-          // the fetch command takes a longer time
-          // TODO This might stay well in the Refresh support... When a new repository is 
-          // selected this is triggered.
-          // TODO Maybe the change of repository should triggered a fetch and a notification should
-          // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
-          GitOperationScheduler.getInstance().schedule(() -> {
-            fetch(true);
-            // After the fetch is done, update the toolbar icons.
-            refresh();
-            });
         } else if (operation == GitOperation.ABORT_REBASE 
             || operation == GitOperation.CONTINUE_REBASE 
             || operation == GitOperation.COMMIT
@@ -487,6 +473,8 @@ public class ToolbarPanel extends JPanel {
       String finalText = tooltipText;
 
       if(selectedBranchIndex >= 0) {
+        // Although the pop-up actions have tooltip, on createBranchMenuItem(), at this point 
+        // we can have push-ahead and pull-behind information for the active branch.
         SwingUtilities.invokeLater(() -> branchSelectButton.getItem(selectedBranchIndex).setToolTipText(finalText));
       }
     } else {
@@ -552,6 +540,8 @@ public class ToolbarPanel extends JPanel {
       }
       String branchTooltipFinal = branchTooltip;
       if(selectedBranchIndex >= 0) {
+        // Although the pop-up actions have tooltip, on createBranchMenuItem(), at this point 
+        // we can have push-ahead and pull-behind information for the active branch.
         SwingUtilities.invokeLater(() -> branchSelectButton.getItem(selectedBranchIndex).setToolTipText(branchTooltipFinal));
       }
 
@@ -1169,6 +1159,9 @@ public class ToolbarPanel extends JPanel {
 
     branchSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
     branchSelectButton.setAction(branchSelectAction);
+    
+    branchSelectButton.setEnabled(false);
+    
 
     gitToolbar.add(branchSelectButton);
   }
@@ -1205,10 +1198,9 @@ public class ToolbarPanel extends JPanel {
     if(isShowing) {
       branchSelectButton.getPopupMenu().setVisible(true);
     }
-
     
     branchSelectButton.setEnabled(isRepoSelected);
-
+    
   }
 
 
@@ -1477,9 +1469,10 @@ public class ToolbarPanel extends JPanel {
       } else {
         commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
       }
-      branchTooltip += commitsAheadMessage;
+      branchTooltip += commitsAheadMessage + "<br>";
     }
 
+    branchTooltip += "<br>" + TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP);
     branchTooltip = TextFormatUtil.toHTML(branchTooltip);
 
     return branchTooltip;
@@ -1502,13 +1495,11 @@ public class ToolbarPanel extends JPanel {
    */
   private void addStashButton() {
     stashButton = createStashButton();
-    refreshStashButton();
     Dimension d = stashButton.getPreferredSize();
     d.width += PULL_BUTTON_EXTRA_WIDTH;
     stashButton.setPreferredSize(d);
     stashButton.setMinimumSize(d);
     stashButton.setMaximumSize(d);
-
     gitToolbar.add(stashButton);
   }
 
@@ -1550,10 +1541,7 @@ public class ToolbarPanel extends JPanel {
        */
       private void paintStashes(Graphics g) {
         String noOfStashesString = "";
-        Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
-
-        noOfStashes = stashes == null ? 0 : stashes.size();
-
+        
         if (noOfStashes > 0) {
           noOfStashesString = Integer.toString(noOfStashes);
         }
@@ -1578,6 +1566,8 @@ public class ToolbarPanel extends JPanel {
     stashLocalButton.setToolTipText(TRANSLATOR.getTranslation(Tags.STASH));
 
     addStashActionsToMenu(stashLocalButton);
+    
+    stashLocalButton.setEnabled(false);
 
     return stashLocalButton;
   }
@@ -1623,10 +1613,9 @@ public class ToolbarPanel extends JPanel {
     }
     stashChangesAction.setEnabled(existsLocalFiles);
 
-    Collection<RevCommit> stashesList = GitAccess.getInstance().listStashes();
-    boolean existsStashes = stashesList != null && !stashesList.isEmpty();
+    boolean existsStashes = noOfStashes > 0;
     listStashesAction.setEnabled(existsStashes);
-
+  
     stashButton.setEnabled(existsLocalFiles || existsStashes);
     if(isRepoSelected) {
       stashButton.setEnabled(existsLocalFiles || existsStashes);

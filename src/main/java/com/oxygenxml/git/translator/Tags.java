@@ -1437,22 +1437,13 @@ public class Tags {
   public static final String MERGE = "Merge";
   
   /**
-   * The message for the create Tag action (Create tag...)
-   */
-  public static final String CREATE_TAG_FOR_THIS_COMMIT = "Create_Tag_For_This_Commit";
-  
-  /**
-   * The title for the create Tag Commit dialog
+   * The title for the create Tag Commit dialog (Create Tag)
    */
   public static final String CREATE_TAG_COMMIT_TITLE = "Create_Tag_Commit_Title"; 
   /**
    * The message in the label for Tag title
    */
   public static final String CREATE_TAG_TITLE_LABEL = "Create_Tag_Title_Label"; 
-  /**
-   * The message in the label for Tag message
-   */
-  public static final String CREATE_TAG_MESSAGE_LABEL = "Create_Tag_Message_Label"; 
   /**
    * The message for the checkbox for Tag pushing
    */
@@ -1480,9 +1471,9 @@ public class Tags {
   public static final String TAGS_DIALOG_NAME_COLUMN= "Tags_Dialog_Name_Column";
   
   /**
-   * The second column name in the table with the tags (column for the tag message)
+   * The message in the label for a message
    */
-  public static final String TAGS_DIALOG_MESSAGE_COLUMN= "Tags_Dialog_Message_Column"; 
+  public static final String MESSAGE_LABEL= "Message_Label"; 
   
   /**
    * Displays the message "Push"
@@ -1518,11 +1509,6 @@ public class Tags {
    * The text of the label for the Tag Details Dialog Date
    */
   public static final String TAG_DETAILS_DIALOG_DATE= "Tag_Details_Dialog_Date"; 
-  
-  /**
-   * The text of the label for the Tag Details Dialog Message
-   */
-  public static final String TAG_DETAILS_DIALOG_MESSAGE= "Tag_Details_Dialog_Message"; 
   
   /**
    * The text of the label for the Tag Details Dialog Commit

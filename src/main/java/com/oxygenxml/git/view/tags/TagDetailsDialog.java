@@ -139,7 +139,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     mainPanel.add(tagDateValueLabel, gbc);
     
     JLabel tagMessageLabel = new JLabel();
-    tagMessageLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_MESSAGE) + ":");
+    tagMessageLabel.setText(translator.getTranslation(Tags.MESSAGE_LABEL) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.weightx = 1;
@@ -205,7 +205,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     mainPanel.add(commitDateValueLabel, gbc);
     
     JLabel commitMessageLabel = new JLabel();
-    commitMessageLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_MESSAGE) + ":");
+    commitMessageLabel.setText(translator.getTranslation(Tags.MESSAGE_LABEL) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.weightx = 1;
@@ -216,6 +216,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     commitMessageArea.setEditable(false);
     gbc.fill = GridBagConstraints.BOTH;
     gbc.gridy++;
+    gbc.insets = new Insets(topInset, leftInset, UIConstants.LAST_LINE_COMPONENT_BOTTOM_PADDING, rightInset);
     commitMessageArea.setText(commit.getFullMessage());
     commitMessageArea.setBorder(OxygenUIComponentsFactory.createTextField().getBorder());
     commitMessageArea.setWrapStyleWord(true);

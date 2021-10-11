@@ -155,38 +155,49 @@ public class WorkingCopySelectionPanel extends JPanel {
 						e -> {
 							// Don't do anything if the event was originated by us.
 							if (!inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
-								inhibitRepoUpdate = true;
-								try {
-									// get and save the selected Option so that at restart the same
-									// repository will be selected
-									String selectedEntry = (String) workingCopyCombo.getSelectedItem();
-									LOGGER.debug("Selected working copy: " + selectedEntry);
-									if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
-										SwingUtilities.invokeLater(() -> {
-											String[] options = new String[] {
-													"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
-													"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
-											int[] optionIds = new int[] { 0, 1 };
-											int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-													TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
-													TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
-													options,
-													optionIds);
-											if (result == optionIds[0]) {
-												clearHistory();
-											} else {
-												workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
-											}
-										});
-									} else {
-										gitAccess.setRepositoryAsync(selectedEntry);
-									}
-								} finally {
-									inhibitRepoUpdate = false;
-								}
+								loadRepository();
 							}
 						});
 	}
+
+	/**
+	 * Loads in the GitAccess the repository selected in the working copy.
+	 */
+  private void loadRepository() {
+    inhibitRepoUpdate = true;
+    try {
+    	// get and save the selected Option so that at restart the same
+    	// repository will be selected
+    	String selectedEntry = (String) workingCopyCombo.getSelectedItem();
+    	if (LOGGER.isDebugEnabled()) {
+    	  LOGGER.debug("Selected working copy: " + selectedEntry);
+    	}
+    	if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
+    		SwingUtilities.invokeLater(() -> {
+    			String[] options = new String[] {
+    					"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+    					"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
+    			int[] optionIds = new int[] { 0, 1 };
+    			int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+    					TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
+    					TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+    					options,
+    					optionIds);
+    			if (result == optionIds[0]) {
+    				clearHistory();
+    			} else {
+    				workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
+    			}
+    		});
+    	} else {
+    	  if (selectedEntry != null) {
+    	    gitAccess.setRepositoryAsync(selectedEntry);
+    	  }
+    	}
+    } finally {
+    	inhibitRepoUpdate = false;
+    }
+  }
 	
 	
   /**
@@ -306,20 +317,27 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 */
   void initializeWorkingCopyCombo() {
     if (workingCopyCombo.getModel().getSize() == 0) {
-      List<String> repositoryEntries = new ArrayList<>(OptionsManager.getInstance().getRepositoryEntries());
-      for (String repositoryEntry : repositoryEntries) {
-        workingCopyCombo.addItem(repositoryEntry);
-      }
-      if (repositoryEntries.size() > 1) {
-        workingCopyCombo.addItem(CLEAR_HISTORY_ENTRY);
-      }
+      try {
+        inhibitRepoUpdate = true;
+        List<String> repositoryEntries = new ArrayList<>(OptionsManager.getInstance().getRepositoryEntries());
+        for (String repositoryEntry : repositoryEntries) {
+          workingCopyCombo.addItem(repositoryEntry);
+        }
+        if (repositoryEntries.size() > 1) {
+          workingCopyCombo.addItem(CLEAR_HISTORY_ENTRY);
+        }
 
-      String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
-      if (!repositoryPath.equals("")) {
-        workingCopyCombo.setSelectedItem(repositoryPath);
-      } else if (workingCopyCombo.getItemCount() > 0) {
-        workingCopyCombo.setSelectedIndex(0);
+        String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
+        if (!repositoryPath.equals("")) {
+          workingCopyCombo.setSelectedItem(repositoryPath);
+        } else if (workingCopyCombo.getItemCount() > 0) {
+          workingCopyCombo.setSelectedIndex(0);
+        }
+      } finally {
+        inhibitRepoUpdate = false;
       }
+      // The listener was inhibited to avoid unnecessary repository load. Do it now.
+      loadRepository();
     }
   }
 

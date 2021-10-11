@@ -251,7 +251,6 @@ public class ToolbarPanelTest extends GitTestBase {
    * @throws Exception
    */
   public void testButtonsWhenNoRepo() throws Exception {
-    gitAccess.setRepositoryAsync(null);
     GitController gitCtrl = new GitController(GitAccess.getInstance());
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
     ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
@@ -278,6 +277,7 @@ public class ToolbarPanelTest extends GitTestBase {
     assertFalse(toolbar.getStashButton().isEnabled());
     assertFalse(toolbar.getSubmoduleSelectButton().isEnabled());
     assertFalse(toolbar.getShowTagsButton().isEnabled());
+
     assertTrue(toolbar.getSettingsMenuButton().isEnabled());
   }
   
