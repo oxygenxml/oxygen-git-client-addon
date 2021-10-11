@@ -251,6 +251,7 @@ public class ToolbarPanelTest extends GitTestBase {
    * @throws Exception
    */
   public void testButtonsWhenNoRepo() throws Exception {
+    gitAccess.setRepositoryAsync(null);
     GitController gitCtrl = new GitController(GitAccess.getInstance());
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
     ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
