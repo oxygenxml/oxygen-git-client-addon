@@ -280,6 +280,11 @@ public class ToolbarPanel extends JPanel {
    * The ID of the commit on which a detached HEAD is set.
    */
   private String detachedHeadId;
+  
+  /**
+   * <code>true</code> if a repository is selected.
+   */
+  private boolean isRepoSelected;
 
 
   /**
@@ -436,6 +441,15 @@ public class ToolbarPanel extends JPanel {
       this.pushesAhead = -1;
       LOGGER.debug(e, e);
     }
+    
+    Repository repo = null;
+    try {
+      repo = GIT_ACCESS.getRepository();
+    } catch (NoRepositorySelected e) {
+      LOGGER.debug(e, e);
+    }
+    
+    isRepoSelected = repo != null;
 
     refreshStashButton();
     refreshTagsButton();
@@ -447,7 +461,7 @@ public class ToolbarPanel extends JPanel {
       stashButton.repaint();
     });
 
-    Repository repo = null;
+    repo = null;
     try {
       repo = GIT_ACCESS.getRepository();
     } catch (NoRepositorySelected e) {
@@ -1192,6 +1206,9 @@ public class ToolbarPanel extends JPanel {
       branchSelectButton.getPopupMenu().setVisible(true);
     }
 
+    
+    branchSelectButton.setEnabled(isRepoSelected);
+
   }
 
 
@@ -1611,6 +1628,12 @@ public class ToolbarPanel extends JPanel {
     listStashesAction.setEnabled(existsStashes);
 
     stashButton.setEnabled(existsLocalFiles || existsStashes);
+    if(isRepoSelected) {
+      stashButton.setEnabled(existsLocalFiles || existsStashes);
+    } else {
+      stashButton.setEnabled(false);
+    }
+    
   }
 
 
@@ -1718,7 +1741,7 @@ public class ToolbarPanel extends JPanel {
     showTagsButton.setIcon(Icons.getIcon(Icons.TAG));
     showTagsButton.setToolTipText(TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_TAGS_TOOLTIP));
     setDefaultToolbarButtonWidth(showTagsButton);
-
+    showTagsButton.setEnabled(false);
     gitToolbar.add(showTagsButton);
   }
 
@@ -1733,7 +1756,7 @@ public class ToolbarPanel extends JPanel {
     } catch (GitAPIException e) {
       LOGGER.debug(e,e);
     }
-    getShowTagsButton().setEnabled(noOfTags > 0);
+    getShowTagsButton().setEnabled(noOfTags > 0 && isRepoSelected);
   }
 
   /**
