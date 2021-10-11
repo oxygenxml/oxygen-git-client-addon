@@ -255,8 +255,8 @@ public class ToolbarPanelTest extends GitTestBase {
     GitController gitCtrl = new GitController(GitAccess.getInstance());
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
     ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
-    assertTrue(toolbar.getPullMenuButton().isEnabled());
-    assertTrue(toolbar.getPushButton().isEnabled());
+    assertFalse(toolbar.getPullMenuButton().isEnabled());
+    assertFalse(toolbar.getPushButton().isEnabled());
     assertFalse(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
     assertFalse(toolbar.getSubmoduleSelectButton().isEnabled());

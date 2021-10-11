@@ -437,6 +437,10 @@ public class ToolbarPanel extends JPanel {
     
     isRepoSelected = repo != null;
 
+    pushButton.setEnabled(isRepoSelected);
+    pullMenuButton.setEnabled(isRepoSelected);
+    historyButton.setEnabled(isRepoSelected);
+    
     refreshStashButton();
     refreshTagsButton();
     updateBranches();
@@ -631,6 +635,8 @@ public class ToolbarPanel extends JPanel {
 
     gitToolbar.add(pushButton);
     gitToolbar.add(pullMenuButton);
+    pushButton.setEnabled(false);
+    pullMenuButton.setEnabled(false);
   }
   
   
@@ -1701,6 +1707,7 @@ public class ToolbarPanel extends JPanel {
     historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
     historyButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
     setDefaultToolbarButtonWidth(historyButton);
+    historyButton.setEnabled(false);
 
     gitToolbar.add(historyButton);
 
