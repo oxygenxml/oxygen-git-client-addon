@@ -2120,6 +2120,8 @@ public class GitAccess {
 
 	 /**
    * Clean up.
+   * <br><br>
+   * Delete all listeners and close the current repository.
    */
   public void cleanUp() {
     listeners.clear();
