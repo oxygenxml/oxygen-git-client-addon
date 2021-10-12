@@ -1747,10 +1747,12 @@ public class ToolbarPanel extends JPanel {
    */
   public void refreshTagsButton() {
     int noOfTags = 0;
-    try {
-      noOfTags = GitTagsManager.getNoOfTags();
-    } catch (GitAPIException e) {
-      LOGGER.debug(e,e);
+    if(isRepoSelected) {
+      try {
+        noOfTags = GitTagsManager.getNoOfTags();
+      } catch (GitAPIException e) {
+        LOGGER.debug(e,e);
+      }
     }
     getShowTagsButton().setEnabled(noOfTags > 0 && isRepoSelected);
   }
