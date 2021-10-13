@@ -3,8 +3,7 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1547,8 +1546,8 @@ public class GitAccess {
 			  }
 			}
 			try {
-				hostName = new URL(url).getHost();
-			} catch (MalformedURLException e) {
+				hostName = new URIish(url).getHost();
+			} catch (URISyntaxException e) {
 				LOGGER.debug(e, e);
 			}
 		}
