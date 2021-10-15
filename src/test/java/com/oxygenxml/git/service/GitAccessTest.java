@@ -89,6 +89,30 @@ public class GitAccessTest extends TestCase {
     assertEquals("status: REJECTED_OTHER_REASON message Resolve_conflicts_first", pushResp.toString());
   }
 
+
+  /**
+   * <p>
+   * <b>Description:</b> test host extraction from url.
+   * </p>
+   * <p>
+   * <b>Bug ID:</b> EXM-49000
+   * </p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  public void testHostNameExtraction() throws Exception {
+    String url = "https://github.com/oxygenxml/oxygen-git-plugin.git";
+    String host = GitAccess.getInstance().extractHostName(url);
+    assertEquals("github.com", host);
+    
+    url = "git@github.com:oxygenxml/oxygen-git-plugin.git";
+    host = GitAccess.getInstance().extractHostName(url);
+    assertEquals("github.com", host);
+  }
+  
+  
   /**
    * <p>
    * <b>Description:</b> better message when trying to pull while having a

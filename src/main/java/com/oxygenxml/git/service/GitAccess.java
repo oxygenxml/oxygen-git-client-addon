@@ -1533,7 +1533,7 @@ public class GitAccess {
 	 *         <code>null</code>.
 	 */
 	public String getHostName() {
-	  String hostName = "";
+		String hostName = "";
 		if (git != null) {
 			Config storedConfig = git.getRepository().getConfig();
 			// TODO How we should react when there are multiple remote repositories?
@@ -1545,16 +1545,31 @@ public class GitAccess {
 			    url = storedConfig.getString(ConfigConstants.CONFIG_KEY_REMOTE, iterator.next(), "url");
 			  }
 			}
-			try {
-				hostName = new URIish(url).getHost();
-			} catch (URISyntaxException e) {
-				LOGGER.debug(e, e);
-			}
-		}
+			hostName =extractHostName(url);
+		}		
 		return hostName;
-
 	}
 
+	
+	/**
+	 * Extract the host for given URL or an empty string
+	 * 
+	 * @param url The URL where the host is extracted from.
+	 * 
+	 * @return The host.
+	 */
+	String extractHostName(String url) {
+		String hostName = "";
+		try {
+			hostName = new URIish(url).getHost();
+		} catch (URISyntaxException e) {
+			LOGGER.debug(e, e);
+		}
+		
+		return hostName;
+	}
+	
+	
 	/**
 	 * Finds the last local commit in the repository
 	 * 
