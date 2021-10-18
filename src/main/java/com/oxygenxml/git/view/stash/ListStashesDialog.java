@@ -21,7 +21,6 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,6 +59,7 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 
 
@@ -69,7 +69,7 @@ import ro.sync.exml.workspace.api.standalone.ui.Table;
  * @author Alex_Smarandache
  *
  */
-public class ListStashesDialog extends JDialog {
+public class ListStashesDialog extends OKCancelDialog {
 
   /**
    * Logger for logging.
@@ -191,7 +191,7 @@ public class ListStashesDialog extends JDialog {
         Translator.getInstance().getTranslation(Tags.STASHES),
         false);
 
-    this.add(createStashesPanel());
+    getContentPane().add(createStashesPanel());
     pack();
 
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
@@ -203,6 +203,10 @@ public class ListStashesDialog extends JDialog {
     
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     setMinimumSize(new Dimension(DIALOG_MINIMUM_WIDTH, DIALOG_MINIMUM_HEIGHT));
+    
+    getOkButton().setVisible(false);
+    getCancelButton().setText(TRANSLATOR.getTranslation(Tags.CLOSE));
+    this.setResizable(true);
   }
   
 
@@ -290,22 +294,6 @@ public class ListStashesDialog extends JDialog {
     constraints.gridx++;
     constraints.insets = new Insets(0, 0, 0, 0);
     stashesPanel.add(emptyPanel, constraints);
-
-    Button closeButton = new Button(TRANSLATOR.getTranslation(Tags.CLOSE));
-    closeButton.addActionListener(e -> this.dispose());
-    constraints.gridx = 0;
-    constraints.gridy++;
-    constraints.gridwidth = 2;
-    constraints.weightx = 0;
-    constraints.weighty = 0;
-    constraints.fill = GridBagConstraints.NONE;
-    constraints.anchor = GridBagConstraints.EAST;
-    constraints.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING, 
-        0, 
-        UIConstants.COMPONENT_BOTTOM_PADDING,
-        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
-    stashesPanel.add(closeButton, constraints);
 
     stashesTable.setRowSelectionInterval(0, 0);
     
