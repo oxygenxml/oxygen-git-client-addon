@@ -16,6 +16,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
+import com.oxygenxml.git.utils.URIUtil;
 import com.oxygenxml.git.view.event.GitController;
 
 import junit.framework.TestCase;
@@ -104,11 +105,15 @@ public class GitAccessTest extends TestCase {
    */
   public void testHostNameExtraction() throws Exception {
     String url = "https://github.com/oxygenxml/oxygen-git-plugin.git";
-    String host = GitAccess.getInstance().extractHostName(url);
+    String host = URIUtil.extractHostName(url);
     assertEquals("github.com", host);
     
     url = "git@github.com:oxygenxml/oxygen-git-plugin.git";
-    host = GitAccess.getInstance().extractHostName(url);
+    host = URIUtil.extractHostName(url);
+    assertEquals("github.com", host);
+    
+    url = "ssh://user@github.com:1234/path";
+    host = URIUtil.extractHostName(url);
     assertEquals("github.com", host);
   }
   

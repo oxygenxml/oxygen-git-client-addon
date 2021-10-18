@@ -3,7 +3,6 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,6 +107,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.utils.URIUtil;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
@@ -1545,30 +1545,11 @@ public class GitAccess {
 			    url = storedConfig.getString(ConfigConstants.CONFIG_KEY_REMOTE, iterator.next(), "url");
 			  }
 			}
-			hostName =extractHostName(url);
+			hostName = URIUtil.extractHostName(url);
 		}		
 		return hostName;
 	}
 
-	
-	/**
-	 * Extract the host for given URL or an empty string
-	 * 
-	 * @param url The URL where the host is extracted from.
-	 * 
-	 * @return The host.
-	 */
-	String extractHostName(String url) {
-		String hostName = "";
-		try {
-			hostName = new URIish(url).getHost();
-		} catch (URISyntaxException e) {
-			LOGGER.debug(e, e);
-		}
-		
-		return hostName;
-	}
-	
 	
 	/**
 	 * Finds the last local commit in the repository
