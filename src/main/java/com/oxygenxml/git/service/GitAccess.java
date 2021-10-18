@@ -3,7 +3,6 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,6 +107,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.utils.URIUtil;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
@@ -1533,7 +1533,7 @@ public class GitAccess {
 	 *         <code>null</code>.
 	 */
 	public String getHostName() {
-	  String hostName = "";
+		String hostName = "";
 		if (git != null) {
 			Config storedConfig = git.getRepository().getConfig();
 			// TODO How we should react when there are multiple remote repositories?
@@ -1545,16 +1545,12 @@ public class GitAccess {
 			    url = storedConfig.getString(ConfigConstants.CONFIG_KEY_REMOTE, iterator.next(), "url");
 			  }
 			}
-			try {
-				hostName = new URIish(url).getHost();
-			} catch (URISyntaxException e) {
-				LOGGER.debug(e, e);
-			}
-		}
+			hostName = URIUtil.extractHostName(url);
+		}		
 		return hostName;
-
 	}
 
+	
 	/**
 	 * Finds the last local commit in the repository
 	 * 

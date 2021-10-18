@@ -16,6 +16,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
+import com.oxygenxml.git.utils.URIUtil;
 import com.oxygenxml.git.view.event.GitController;
 
 import junit.framework.TestCase;
@@ -89,6 +90,34 @@ public class GitAccessTest extends TestCase {
     assertEquals("status: REJECTED_OTHER_REASON message Resolve_conflicts_first", pushResp.toString());
   }
 
+
+  /**
+   * <p>
+   * <b>Description:</b> test host extraction from url.
+   * </p>
+   * <p>
+   * <b>Bug ID:</b> EXM-49000
+   * </p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  public void testHostNameExtraction() throws Exception {
+    String url = "https://github.com/oxygenxml/oxygen-git-plugin.git";
+    String host = URIUtil.extractHostName(url);
+    assertEquals("github.com", host);
+    
+    url = "git@github.com:oxygenxml/oxygen-git-plugin.git";
+    host = URIUtil.extractHostName(url);
+    assertEquals("github.com", host);
+    
+    url = "ssh://user@github.com:1234/path";
+    host = URIUtil.extractHostName(url);
+    assertEquals("github.com", host);
+  }
+  
+  
   /**
    * <p>
    * <b>Description:</b> better message when trying to pull while having a
