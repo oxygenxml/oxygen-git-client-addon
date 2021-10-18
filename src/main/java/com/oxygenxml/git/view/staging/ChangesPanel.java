@@ -649,8 +649,7 @@ public class ChangesPanel extends JPanel {
         
         // Maybe the event is a pop-up trigger
         handleContexMenuEvent(e);
-        // Maybe (not pop-up trigger) double click
-        if (!e.isPopupTrigger() && e.getClickCount() == 2) {
+        if (e.getClickCount() == 2 && !SwingUtilities.isRightMouseButton(e)) {
           Point point = new Point(e.getX(), e.getY());
           int clickedRow = filesTable.rowAtPoint(point);
           if (clickedRow != -1) {
