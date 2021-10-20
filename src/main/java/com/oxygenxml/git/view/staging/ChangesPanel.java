@@ -635,10 +635,22 @@ public class ChangesPanel extends JPanel {
     // file
     // will be opened in the Oxygen.
     filesTable.addMouseListener(new MouseAdapter() {
+     
       @Override
       public void mousePressed(MouseEvent e) {
         // For MacOS the popup trigger comes on mouse pressed.
         handleContexMenuEvent(e);
+      }
+      
+      @Override
+      public void mouseClicked(MouseEvent e) {
+    	  if (e.getClickCount() == 2 && !SwingUtilities.isRightMouseButton(e)) {
+    		  Point point = new Point(e.getX(), e.getY());
+    		  int clickedRow = filesTable.rowAtPoint(point);
+    		  if (clickedRow != -1) {
+    			  openFileInCompareEditor(clickedRow);
+    		  }
+    	  }
       }
       
       @Override
@@ -649,13 +661,7 @@ public class ChangesPanel extends JPanel {
         
         // Maybe the event is a pop-up trigger
         handleContexMenuEvent(e);
-        if (e.getClickCount() == 2 && !SwingUtilities.isRightMouseButton(e)) {
-          Point point = new Point(e.getX(), e.getY());
-          int clickedRow = filesTable.rowAtPoint(point);
-          if (clickedRow != -1) {
-            openFileInCompareEditor(clickedRow);
-          }
-        }
+       
       }
 
       /**
