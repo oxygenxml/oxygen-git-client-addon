@@ -19,6 +19,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RenameDetector;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.Constants;
@@ -104,6 +105,8 @@ public class RevCommitUtil {
       } else {
         changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
+    } catch(MissingObjectException exc) {
+    	LOGGER.debug(exc, exc);
     } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
       LOGGER.error(e, e);
     }

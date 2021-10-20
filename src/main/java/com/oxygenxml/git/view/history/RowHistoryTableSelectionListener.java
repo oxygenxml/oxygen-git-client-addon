@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -16,6 +17,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
@@ -126,13 +128,22 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
       StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
       if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
         try {
-          List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-          dataModel.setFilesStatus(changes);
-        } catch (GitAPIException | RevisionSyntaxException | IOException e) {
+           GitOperationScheduler.getInstance().schedule(() -> {
+        	   List<FileStatus> changes;
+			try {
+				changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
+				SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(changes));
+			} catch (IOException | GitAPIException e) {
+				logger.error(e, e);
+			}     
+           });
+        } catch (RevisionSyntaxException e) {
           logger.error(e, e);
         }
       } else {
-        dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
+    	  GitOperationScheduler.getInstance().schedule(() -> 
+    		  SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles())) 
+    	  );
       }
     }
   }
