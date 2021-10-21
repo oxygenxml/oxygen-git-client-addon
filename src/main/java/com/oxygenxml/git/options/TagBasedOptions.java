@@ -3,6 +3,7 @@ package com.oxygenxml.git.options;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +96,7 @@ public class TagBasedOptions implements Options {
   public DestinationPaths getDestinationPaths() {
     String[] stringDestinationPaths = wsOptionsStorage.getStringArrayOption(OptionTags.DESTINATION_PATHS, new String[0]);
     DestinationPaths destinationPaths = new DestinationPaths();
-    destinationPaths.setPaths(Arrays.asList(stringDestinationPaths));
+    destinationPaths.setPaths(new LinkedList<>(Arrays.asList(stringDestinationPaths)));
     
     return destinationPaths;
   }
