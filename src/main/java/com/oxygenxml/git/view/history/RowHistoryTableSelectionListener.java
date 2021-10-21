@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.history;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JEditorPane;
@@ -14,7 +15,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -125,33 +125,28 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
      * @param commitCharacteristics Details about the current commit.
      */
     private void updateDataModel(CommitCharacteristics commitCharacteristics) {
-      StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
-      if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
-        try {
-           GitOperationScheduler.getInstance().schedule(() -> {
-        	   List<FileStatus> changes;
-			try {
-				changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-				SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(changes));
-			} catch (IOException | GitAPIException e) {
-				logger.error(e, e);
-			}     
-           });
-        } catch (RevisionSyntaxException e) {
-          logger.error(e, e);
-        }
-      } else {
-    	  GitOperationScheduler.getInstance().schedule(() -> 
-    		  SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles())) 
-    	  );
-      }
+    	GitOperationScheduler.getInstance().schedule(() -> {
+    		StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
+            List<FileStatus> files = new ArrayList<>();
+            if(GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
+            	try {
+            		files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
+            	} catch (IOException | GitAPIException e) {
+        			logger.error(e, e);
+        		}
+            } else {
+            	files.addAll(GitAccess.getInstance().getUnstagedFiles());
+            }
+        	SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(files));
+    	});
     }
   }
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(RowHistoryTableSelectionListener.class);
+    
+    
+   /**
+    * Logger for logging.
+    */
+    private static final Logger logger = Logger.getLogger(RowHistoryTableSelectionListener.class);
 	/**
 	 * Fake commit URL to search for parents when using hyperlink.
 	 */
