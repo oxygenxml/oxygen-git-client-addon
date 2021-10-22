@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -468,11 +467,11 @@ public class OptionsManager {
    *          - the destination path entered by the user
    */
   public void saveDestinationPath(String destinationPath) {
-    LinkedList<String> destinationPaths = (LinkedList<String>) getOptions().getDestinationPaths().getPaths();
+    List<String> destinationPaths = getOptions().getDestinationPaths().getPaths();
     destinationPaths.remove(destinationPath);
     destinationPaths.add(0, destinationPath);
     if (destinationPaths.size() > DESTINATIONS_MAX_COUNT) {
-      destinationPaths.removeLast();
+      destinationPaths.remove(destinationPaths.size() - 1);
     }
     
     DestinationPaths newDestinationPaths = new DestinationPaths();
