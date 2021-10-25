@@ -1281,7 +1281,6 @@ public class ToolbarPanel extends JPanel {
    * @return the branch tool tip text.
    */
   private String getBranchTooltip(int pullsBehind, int pushesAhead, String currentBranchName) {
-    String branchTooltip = null;
 
     String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
     boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
@@ -1294,16 +1293,45 @@ public class ToolbarPanel extends JPanel {
             isAnUpstreamBranchDefinedInConfig
                     ? RepoUtil.getRemoteBranch(upstreamShortestName)
                     : null;
-    boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
 
-    branchTooltip = TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
-            + " <b>" + currentBranchName + "</b>.<br>"
-            + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
-            + " <b>"
-            + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig
+    String branchTooltip = getBranchTooltip(
+        pullsBehind,
+        pushesAhead,
+        currentBranchName,
+        upstreamBranchFromConfig,
+        isAnUpstreamBranchDefinedInConfig,
+        remoteBranchRefForUpstreamFromConfig != null);
+
+    return TextFormatUtil.toHTML(branchTooltip);
+  }
+
+  /**
+   * Get branch tooltip.
+   * 
+   * @param pullsBehind                                   Number of pulls/commits behind.
+   * @param pushesAhead                                   Number of pushes/commits ahead.
+   * @param currentBranchName                             The name of the current branch.
+   * @param upstreamBranchFromConfig                      The upstream branch.
+   * @param isAnUpstreamBranchDefinedInConfig             <code>true</code> an upstream branch is defined in config.
+   * @param existsRemoteBranchForUpstreamDefinedInConfig  <code>true</code> if a remote branch for upstream is defined in config.
+   * 
+   * @return The tooltip message.
+   */
+  private String getBranchTooltip(
+      int pullsBehind,
+      int pushesAhead,
+      String currentBranchName,
+      String upstreamBranchFromConfig,
+      boolean isAnUpstreamBranchDefinedInConfig,
+      boolean existsRemoteBranchForUpstreamDefinedInConfig) {
+    String branchTooltip = TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
+        + " <b>" + currentBranchName + "</b>.<br>"
+        + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
+        + " <b>"
+        + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig
             ? upstreamBranchFromConfig
-            : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
-            + "</b>.<br>";
+                : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
+        + "</b>.<br>";
 
     String commitsBehindMessage = "";
     String commitsAheadMessage = "";
@@ -1326,9 +1354,6 @@ public class ToolbarPanel extends JPanel {
       }
       branchTooltip += commitsAheadMessage;
     }
-
-    branchTooltip = TextFormatUtil.toHTML(branchTooltip);
-
     return branchTooltip;
   }
 
@@ -1440,48 +1465,27 @@ public class ToolbarPanel extends JPanel {
    *
    * @return The tooltip text.
    */
-  private String updateBranchSelectionToolTip(String currentBranchName,
-                                              boolean isAnUpstreamBranchDefinedInConfig ,
-                                              boolean existsRemoteBranchForUpstreamDefinedInConfig,
-                                              String upstreamBranchFromConfig
-  ) {
-    String branchTooltip = null;
+  private String updateBranchSelectionToolTip(
+      String currentBranchName,
+      boolean isAnUpstreamBranchDefinedInConfig ,
+      boolean existsRemoteBranchForUpstreamDefinedInConfig,
+      String upstreamBranchFromConfig) {
 
-    branchTooltip = TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
-            + " <b>" + currentBranchName + "</b>.<br>"
-            + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
-            + " <b>"
-            + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig
-            ? upstreamBranchFromConfig
-            : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
-            + "</b>.<br>";
-
-    String commitsBehindMessage = "";
-    String commitsAheadMessage = "";
+    String branchTooltip = getBranchTooltip(
+        pullsBehind,
+        pushesAhead,
+        currentBranchName,
+        upstreamBranchFromConfig,
+        isAnUpstreamBranchDefinedInConfig,
+        existsRemoteBranchForUpstreamDefinedInConfig);
+    
     if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
-      if (pullsBehind == 0) {
-        commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
-      } else if (pullsBehind == 1) {
-        commitsBehindMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_BEHIND);
-      } else {
-        commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
-      }
-      branchTooltip += commitsBehindMessage + "<br>";
-
-      if (pushesAhead == 0) {
-        commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
-      } else if (pushesAhead == 1) {
-        commitsAheadMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_AHEAD);
-      } else {
-        commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
-      }
-      branchTooltip += commitsAheadMessage + "<br>";
+      branchTooltip += "<br>";
     }
 
     branchTooltip += "<br>" + TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP);
-    branchTooltip = TextFormatUtil.toHTML(branchTooltip);
 
-    return branchTooltip;
+    return TextFormatUtil.toHTML(branchTooltip);
   }
   
   
