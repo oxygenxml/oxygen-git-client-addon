@@ -67,7 +67,7 @@ public class UIConstants {
 	/**
 	 * Minimum panels width.
 	 */
-	public static final int MIN_PANEL_WIDTH = 320;
+	public static final int MIN_PANEL_WIDTH = 280;
 	
 	/**
 	 * Toolbar panel height.
