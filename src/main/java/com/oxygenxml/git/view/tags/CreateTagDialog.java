@@ -40,11 +40,14 @@ import ro.sync.exml.workspace.api.standalone.ui.TextField;
  *
  */
 public class CreateTagDialog extends OKCancelDialog {
-  
   /**
    * Logger for logging.
    */
   private static final Logger logger = LogManager.getLogger(CreateTagDialog.class.getName());
+  /**
+   * Number of rows for tag message.
+   */
+  private static final int TAG_MSG_NO_OF_ROWS = 3;
   /**
    * Translator.
    */
@@ -165,7 +168,10 @@ public class CreateTagDialog extends OKCancelDialog {
     // Tag message field.
     tagMessageField = new JTextArea();
     JScrollPane tagMessageScrollPane = new JScrollPane(tagMessageField);
-    tagMessageScrollPane.setPreferredSize(new Dimension(MESSAGE_PREFFERED_WIDTH, 3* tagMessageField.getPreferredSize().height));
+    tagMessageScrollPane.setPreferredSize(
+        new Dimension(
+            MESSAGE_PREFFERED_WIDTH,
+            TAG_MSG_NO_OF_ROWS * tagMessageField.getPreferredSize().height));
     tagMessageField.selectAll();
     gbc.gridx ++;
     gbc.weightx = 1;

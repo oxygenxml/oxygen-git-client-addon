@@ -57,7 +57,7 @@ public interface Options {
   /**
    * Sets the staged/index resources view mode.
    * 
-   * @param unstagedResViewMode The staged/index resources view mode.
+   * @param stagedResViewMode The staged/index resources view mode.
    */
   public void setStagedResViewMode(ResourcesViewMode stagedResViewMode) ;
 

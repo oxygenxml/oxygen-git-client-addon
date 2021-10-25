@@ -257,7 +257,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	}
 
 	/**
-	 * When Git operations are running set a workking cursor.
+	 * When Git operations are running set a working cursor.
 	 * 
 	 * @param stagingViewComponent The staging view component on which to update the cursor. 
 	 */
@@ -270,7 +270,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
               e -> SwingUtilities.invokeLater(
                   () -> stagingViewComponent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
                   ));
-          {cursorTimer.setRepeats(false);}
+          {
+            cursorTimer.setRepeats(false); // NOSONAR java:S1171
+          }
 
           @Override
           public void operationAboutToStart(GitEventInfo info) {

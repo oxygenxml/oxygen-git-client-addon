@@ -169,7 +169,7 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private final static Translator TRANSLATOR = Translator.getInstance();
+	private static final Translator TRANSLATOR = Translator.getInstance();
 	
 	/**
 	 * Popup menu listener for the tree and table context menu.

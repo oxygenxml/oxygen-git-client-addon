@@ -111,7 +111,7 @@ public class OptionsManager {
   /**
    * Loads options from from the Oxygen options storage.
    * 
-   * @param ws Oxygen API.
+   * @param wsOptionsStorage Oxygen options storage API.
    */
   public void loadOptions(WSOptionsStorage wsOptionsStorage) {
     if (options == null) {

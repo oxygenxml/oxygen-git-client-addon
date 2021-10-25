@@ -88,7 +88,7 @@ public class TagDetailsDialog extends OKCancelDialog{
   /**
    * Create the main Panel for the dialog 
    * 
-   * @param tag, a GitTag needed to generate the panel
+   * @param tag A GitTag needed to generate the panel
    * 
    * @return a panel with all components added
    * 

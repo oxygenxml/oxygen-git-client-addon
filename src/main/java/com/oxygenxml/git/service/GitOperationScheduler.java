@@ -15,10 +15,17 @@ import org.apache.log4j.Logger;
  * Schedules git operations on a thread. The same thread is being used. 
  */
 public class GitOperationScheduler {
+  
   /**
    * Logger.
    */
   private static final Logger logger = Logger.getLogger(GitOperationScheduler.class);
+  
+  /**
+   * Operation shutdown timeout in milliseconds.
+   */
+  private static final int OPERATION_SHUTDOWN_TIMEOUT_MS = 2000;
+  
   /**
    * Refresh executor.
    */
@@ -163,7 +170,7 @@ public class GitOperationScheduler {
   public boolean shutdown() {
     executor.shutdown();
     try {
-      return executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+      return executor.awaitTermination(OPERATION_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       logger.warn("Unable to stop task thread: " + e.getMessage(), e);
       // Restore interrupted state...

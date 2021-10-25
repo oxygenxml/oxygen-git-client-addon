@@ -5,8 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.log4j.Logger;
-
 import com.oxygenxml.git.utils.Equaler;
 
 import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
@@ -18,11 +16,6 @@ import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserAndPasswordCredentials extends CredentialsBase implements ExternalPersistentObject {
 
-  /**
-   * Logger 
-   */
-  private static final Logger LOGGER = Logger.getLogger(UserAndPasswordCredentials.class);
-  
 	/**
 	 * Git username
 	 */

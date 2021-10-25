@@ -7,7 +7,17 @@ package com.oxygenxml.git.options;
  * @author gabriel_nedianu
  *
  */
-public interface OptionTags {
+public class OptionTags {
+  
+  /**
+    * Constructor.
+    *
+    * @throws UnsupportedOperationException when invoked.
+    */
+  private OptionTags() {
+    // Private to avoid instantiations
+    throw new UnsupportedOperationException("Instantiation of this utility class is not allowed!");
+  }
   
   /**
    * <code>true</code> to automatically push to remote when committing.

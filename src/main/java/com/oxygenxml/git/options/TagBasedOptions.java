@@ -21,7 +21,18 @@ import ro.sync.exml.workspace.api.options.WSOptionsStorage;
  *
  */
 public class TagBasedOptions implements Options {
+  /**
+   * The number of user and password credential fields for one object.
+   * 3 for: user, password,  host.
+   */
+  private static final int NO_OF_USER_AND_PASS_CREDENTIAL_FIELDS_PER_OBJECT = 3;
   
+  /**
+   * The number of token fields for one object.
+   * 2 for: token value, host.
+   */
+  private static final int NO_OF_TOKEN_FIELDS_PER_OBJECT = 2;
+
   /**
    * Default boolean value "True"
    */
@@ -314,24 +325,28 @@ public class TagBasedOptions implements Options {
   /**
    * Used to convert an array to a UserCredentialsList
    * 
-   * @param array, the array that we want to convert to a UserCredentialsList
+   * @param credentials the array that we want to convert to a UserCredentialsList
    * 
    * @return a UserCredentialsList
    */
-  public static UserCredentialsList arrayToCredentialsList(String[] array) {
+  public static UserCredentialsList arrayToCredentialsList(String[] credentials) {
     UserCredentialsList userCredentialsList = new UserCredentialsList();
     
-    if (array == null || array.length % 3 != 0 || array.length == 0) {
+    if (credentials == null
+        || credentials.length == 0 
+        || credentials.length % NO_OF_USER_AND_PASS_CREDENTIAL_FIELDS_PER_OBJECT != 0 ) {
       return userCredentialsList;
     }
 
     List<UserAndPasswordCredentials> uapcList = new ArrayList<>();
     
-    for (int i = 0; i <= array.length - 3; i = i + 3) {
+    for (int i = 0;
+        i <= credentials.length - NO_OF_USER_AND_PASS_CREDENTIAL_FIELDS_PER_OBJECT;
+        i += NO_OF_USER_AND_PASS_CREDENTIAL_FIELDS_PER_OBJECT) {
       UserAndPasswordCredentials uapc = new UserAndPasswordCredentials();
-      uapc.setUsername(array[i]);
-      uapc.setPassword(array[i + 1]);
-      uapc.setHost(array[i + 2]);
+      uapc.setUsername(credentials[i]);
+      uapc.setPassword(credentials[i + 1]);
+      uapc.setHost(credentials[i + 2]);
       uapcList.add(uapc);
     }
     
@@ -341,21 +356,23 @@ public class TagBasedOptions implements Options {
   }
   
   /**
-   * Used to convert a UserCredentialsList to an array
+   * Used to convert a UserCredentialsList to a credentials array.
    * 
-   * @param  a UserCredentialsList that we want to convert to an array
+   * @param  userCredentialsList The UserCredentialsList object that we want to convert to a array.
    * 
-   * @return an array
+   * @return the array of credentials.
    */
   public static String[] credentialsListToArray(UserCredentialsList userCredentialsList) {
-    String[] array = new String[3 * userCredentialsList.getCredentials().size()];
+    List<UserAndPasswordCredentials> credentialItems = userCredentialsList.getCredentials();
+    int size = NO_OF_USER_AND_PASS_CREDENTIAL_FIELDS_PER_OBJECT * credentialItems.size();
+    String[] array = new String[size];
     
     int i = 0;
-    for (UserAndPasswordCredentials uapc: userCredentialsList.getCredentials()) {
+    for (UserAndPasswordCredentials uapc: credentialItems) {
       array[i] = uapc.getUsername();
       array[i + 1] = uapc.getPassword();
       array[i + 2] = uapc.getHost();
-      i = i + 3;
+      i += NO_OF_USER_AND_PASS_CREDENTIAL_FIELDS_PER_OBJECT;
     }
     
     return array;
@@ -371,17 +388,20 @@ public class TagBasedOptions implements Options {
   public static PersonalAccessTokenInfoList arrayToTokenList(String[] array) {
     PersonalAccessTokenInfoList personalAccessTokenInfoList = new PersonalAccessTokenInfoList();
     
-    
-    if (array == null || array.length%2 == 1 || array.length == 0) {
+    if (array == null
+        || array.length == 0
+        || array.length % NO_OF_TOKEN_FIELDS_PER_OBJECT != 0 ) {
       return personalAccessTokenInfoList;
     }
     
     List<PersonalAccessTokenInfo> tokensList = new ArrayList<>();
     
-    for (int i = 0; i <= array.length-2; i = i+2) {
+    for (int i = 0; 
+        i <= array.length - NO_OF_TOKEN_FIELDS_PER_OBJECT;
+        i = i + NO_OF_TOKEN_FIELDS_PER_OBJECT) {
       PersonalAccessTokenInfo tokenInfo = new PersonalAccessTokenInfo();
       tokenInfo.setHost(array[i]);
-      tokenInfo.setTokenValue(array[i+1]);
+      tokenInfo.setTokenValue(array[i + 1]);
       tokensList.add(tokenInfo);
     }
     
@@ -393,27 +413,29 @@ public class TagBasedOptions implements Options {
   /**
    * Used to convert a PersonalAccessTokenInfoList to an array
    * 
-   * @param  a PersonalAccessTokenInfoList that we want to convert to an array
+   * @param personalAccessTokenInfoList The PersonalAccessTokenInfoList that we want to convert to an array
    * 
    * @return an array
    */
   public static String[] tokenListToArray(PersonalAccessTokenInfoList personalAccessTokenInfoList) {
-    String[] array = new String[2 * personalAccessTokenInfoList.getPersonalAccessTokens().size()];
+    List<PersonalAccessTokenInfo> tokens = personalAccessTokenInfoList.getPersonalAccessTokens();
+    int size = NO_OF_TOKEN_FIELDS_PER_OBJECT * tokens.size();
+    String[] array = new String[size];
     
     int i = 0;
-    for (PersonalAccessTokenInfo token : personalAccessTokenInfoList.getPersonalAccessTokens()) {
+    for (PersonalAccessTokenInfo token : tokens) {
       array[i] = token.getHost();
-      array[i+1] = token.getTokenValue();
-      i = i + 2;
+      array[i + 1] = token.getTokenValue();
+      i += NO_OF_TOKEN_FIELDS_PER_OBJECT;
     }
     
     return array;
   }
   
   /**
-   * Used to convert an array to a Map
+   * Used to convert an array to a Map.
    * 
-   * @param array the array that we want to convert to a Map
+   * @param array the array that we want to convert to a Map.
    * 
    * @return A map that keep the order of the keys from the array.
    */
@@ -421,20 +443,21 @@ public class TagBasedOptions implements Options {
   public static LinkedHashMap<String, String> arrayToMap(String[] array) {
     LinkedHashMap<String, String> map = new LinkedHashMap<>();
     
-    if (array.length%2 == 1 || array.length == 0) {
+    if (array.length == 0 || array.length % 2 == 1) {
       return map;
     }
     
-    for (int i = 0; i <= array.length-2; i = i+2) {
-      map.put(array[i], array[i+1]);
+    for (int i = 0; i <= array.length - 2; i = i + 2) {
+      map.put(array[i], array[i + 1]);
     }
+    
     return map;
   }
   
   /**
    * Used to convert a Map to an array
    * 
-   * @param Map<String, String> the map that we want to convert to an array
+   * @param map The map that we want to convert to an array
    * 
    * @return an array
    */

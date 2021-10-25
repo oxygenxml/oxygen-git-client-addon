@@ -61,15 +61,15 @@ public class UserCredentialsList implements ExternalPersistentObject {
 	  }
 	  return toReturn;
 	}
-
-  @Override
-  public void checkValid()  {
-    //Consider it to be valid.
-  }
 	
   @Override
   public String[] getNotPersistentFieldNames() {
     return new String[0];
+  }
+
+  @Override
+  public void checkValid()  {
+    //Consider it to be valid.
   }
 	
   @SuppressWarnings("java:S2975")

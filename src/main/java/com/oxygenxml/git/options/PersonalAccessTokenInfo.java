@@ -5,8 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.log4j.Logger;
-
 import com.oxygenxml.git.utils.Equaler;
 
 import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
@@ -18,8 +16,6 @@ import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PersonalAccessTokenInfo extends CredentialsBase implements ExternalPersistentObject {
 
-  private static final Logger LOGGER = Logger.getLogger(PersonalAccessTokenInfo.class);
-  
   /**
    * The personal access token value.
    */
@@ -79,18 +75,13 @@ public class PersonalAccessTokenInfo extends CredentialsBase implements External
 
   @Override
   public boolean equals(Object obj) {
-    boolean toReturn = false;
+    boolean isEqual = false;
     if (obj instanceof PersonalAccessTokenInfo) {
       PersonalAccessTokenInfo personalAccessToken = (PersonalAccessTokenInfo) obj;
-      toReturn = Equaler.verifyEquals(host, personalAccessToken.getHost())
+      isEqual = Equaler.verifyEquals(host, personalAccessToken.getHost())
           && Equaler.verifyEquals(tokenValue, personalAccessToken.getTokenValue());
     }
-    return toReturn;
-  }
-
-  @Override
-  public void checkValid(){
-    //We consider it to be valid.
+    return isEqual;
   }
 
   @Override
@@ -102,5 +93,10 @@ public class PersonalAccessTokenInfo extends CredentialsBase implements External
   @Override
   public Object clone()  {
     return super.clone();
+  }
+  
+  @Override
+  public void checkValid() {
+    // We consider it valid.
   }
 }
