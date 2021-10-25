@@ -1439,11 +1439,11 @@ public class Tags {
   /**
    * The title for the create Tag Commit dialog (Create Tag)
    */
-  public static final String CREATE_TAG_COMMIT_TITLE = "Create_Tag_Commit_Title"; 
+  public static final String CREATE_TAG = "Create_Tag"; 
   /**
    * The message in the label for Tag title
    */
-  public static final String CREATE_TAG_TITLE_LABEL = "Create_Tag_Title_Label"; 
+  public static final String TAG_NAME = "Tag_name"; 
   /**
    * The message for the checkbox for Tag pushing
    */

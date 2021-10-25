@@ -82,7 +82,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "<html>Push_to_create_and_track_remote_branch</html>",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
+        "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br><br>Branch_manager_button_tool_tip</html>",
         branchesButton.getToolTipText());
     
     // Push to create the remote branch
@@ -100,7 +100,7 @@ public class FlatView7Test extends FlatViewTestBase {
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
         "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>origin/new_branch</b>.<br>"
-        + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
+        + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push<br><br>Branch_manager_button_tool_tip</html>",
         branchesButton.getToolTipText());
     
     GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME);

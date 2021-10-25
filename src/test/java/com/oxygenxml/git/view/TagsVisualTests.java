@@ -252,7 +252,7 @@ public class TagsVisualTests extends GitTestBase {
     });
     
     flushAWT();
-    createTagDialog = (CreateTagDialog) findDialog(Tags.CREATE_TAG_COMMIT_TITLE);
+    createTagDialog = (CreateTagDialog) findDialog(Tags.CREATE_TAG);
     createTagDialog.getTagTitleField().setText("TagCreated");
     createTagDialog.getTagMessageField().setText("Mesaj Tag De Test");
     createTagDialog.setVisible(false);
@@ -279,7 +279,7 @@ public class TagsVisualTests extends GitTestBase {
     
     String commitIdForTag3 = commitsCharacteristics.get(2).getCommitId();
 
-    CreateTagDialog createTagDialog2 = (CreateTagDialog) findDialog(Tags.CREATE_TAG_COMMIT_TITLE);
+    CreateTagDialog createTagDialog2 = (CreateTagDialog) findDialog(Tags.CREATE_TAG);
     createTagDialog2.getTagTitleField().setText("Tag2Created");
     createTagDialog2.getTagMessageField().setText("Mesaj Tag De Test2");
     createTagDialog2.getPushCheckbox().setSelected(true);

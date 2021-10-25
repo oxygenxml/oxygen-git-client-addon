@@ -185,7 +185,7 @@
         <val lang="zh_CN">Apply stash</val>
     </key>
 
-    <key value="Create_Tag_Commit_Title">
+    <key value="Create_Tag">
         <comment>The title for the create Tag Commit dialog</comment>
         <val lang="en_US">Create tag</val>
         <val lang="de_DE">Tag erstellen</val>
@@ -194,7 +194,7 @@
         <val lang="nl_NL">Tag maken</val>
         <val lang="zh_CN">创建标签</val>
     </key>
-    <key value="Create_Tag_Title_Label">
+    <key value="Tag_name">
         <comment>The message in the label for Tag title</comment>
         <val lang="en_US">Tag name</val>
         <val lang="de_DE">Name des Tags</val>

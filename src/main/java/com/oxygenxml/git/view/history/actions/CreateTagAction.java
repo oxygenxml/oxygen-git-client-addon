@@ -45,7 +45,7 @@ public class CreateTagAction extends AbstractAction {
  * @param commitId The id of the commit
  */
   public CreateTagAction(String commitId) {
-    super(translator.getTranslation(Tags.CREATE_TAG_COMMIT_TITLE) + "...");
+    super(translator.getTranslation(Tags.CREATE_TAG) + "...");
     this.commitId = commitId;
   }
 
