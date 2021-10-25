@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
-import ro.sync.options.j;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class CredentialsBase implements ExternalPersistentObject {
@@ -79,7 +78,7 @@ public abstract class CredentialsBase implements ExternalPersistentObject {
         return new String[0];
       }
       @Override
-      public void checkValid() throws j {
+      public void checkValid() {
         // Nothing
       }
       @Override
