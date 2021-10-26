@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.staging;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -216,7 +215,6 @@ public class StagingPanel extends JPanel {
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
 	    
-	    this.setMinimumSize(new Dimension(getPreferredSize().width, getMinimumSize().height));
 		addRefreshF5();
 		
 		// Listens on the save event in the Oxygen editor and updates the unstaged resources area

@@ -352,7 +352,7 @@ public class ToolbarPanel extends JPanel {
     addSettingsButton();
     this.add(gitToolbar, gbc);
 
-    this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
+    this.setMinimumSize(new Dimension(getMinimumSize().width, UIConstants.TOOLBAR_PANEL_HEIGHT));
   }
 
 

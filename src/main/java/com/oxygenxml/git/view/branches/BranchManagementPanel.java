@@ -307,7 +307,7 @@ public class BranchManagementPanel extends JPanel {
     gbc.fill = GridBagConstraints.BOTH;
     add(branchesTreeScrollPane, gbc);
 
-    setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
+    setMinimumSize(new Dimension(getMinimumSize().width, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
   }
 
   /**

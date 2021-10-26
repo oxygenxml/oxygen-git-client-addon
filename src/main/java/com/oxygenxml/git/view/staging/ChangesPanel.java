@@ -62,7 +62,6 @@ import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.HistoryController;
-import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -466,10 +465,8 @@ public class ChangesPanel extends JPanel {
 		  }
 		});
 
-		int minWidth = HiDPIUtil.isRetinaNoImplicitSupport() 
-		    ? (int) (UIConstants.MIN_PANEL_WIDTH * HiDPIUtil.getScalingFactor())
-		    : UIConstants.MIN_PANEL_WIDTH;
-		this.setMinimumSize(new Dimension(minWidth, UIConstants.STAGING_PANEL_MIN_HEIGHT));
+
+		this.setMinimumSize(new Dimension(getMinimumSize().width, UIConstants.STAGING_PANEL_MIN_HEIGHT));
 	}
 	
 	private void addTopPanel(GridBagConstraints gbc) {
