@@ -312,7 +312,6 @@ public class ToolbarPanel extends JPanel {
             || operation == GitOperation.DELETE_BRANCH
             || operation == GitOperation.CREATE_BRANCH
             || operation == GitOperation.CHECKOUT) {
-          // Update status because we are coming from a detached HEAD
           refresh();
         }
       }
@@ -393,13 +392,6 @@ public class ToolbarPanel extends JPanel {
       pushButton.repaint();
       stashButton.repaint();
     });
-
-    repo = null;
-    try {
-      repo = GIT_ACCESS.getRepository();
-    } catch (NoRepositorySelected e) {
-      LOGGER.debug(e, e);
-    }
 
     BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
