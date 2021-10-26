@@ -40,19 +40,14 @@ import org.eclipse.jgit.util.StringUtils;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.options.CredentialsBase;
-import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepoNotInitializedException;
-import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
-import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -62,9 +57,7 @@ import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
-import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
-import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -325,56 +318,6 @@ public class ToolbarPanel extends JPanel {
       }
     });
   }
-
-
-  /**
-   * Fetch.
-   *
-   * @param firstRun <code>true</code> if this the first fetch.
-   */
-  private void fetch(boolean firstRun) {
-    try {
-      GitAccess.getInstance().fetch();
-    } catch (SSHPassphraseRequiredException e) {
-      String message = null;
-      if (firstRun) {
-        message = TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
-      } else {
-        message = TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
-                + " "
-                + TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
-      }
-
-      String passphrase = new PassphraseDialog(message).getPassphrase();
-      if(passphrase != null){
-        // A new pass phase was given. Try again.
-        fetch(false);
-      }
-    } catch (PrivateRepositoryException e) {
-      String loginMessage = null;
-      String hostName = GitAccess.getInstance().getHostName();
-      if (firstRun) {
-        loginMessage = TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
-      } else {
-        loginMessage = TRANSLATOR.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
-        CredentialsBase gitCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
-        if (gitCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
-          loginMessage += TRANSLATOR.getTranslation(Tags.CHECK_CREDENTIALS);
-        } else {
-          loginMessage += TRANSLATOR.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
-        }
-      }
-
-      LoginDialog loginDlg = new LoginDialog(hostName, loginMessage);
-      if (loginDlg.getCredentials() != null) {
-        // New credentials were specified. Try again.
-        fetch(false);
-      }
-    } catch (RepositoryUnavailableException e) {
-      // Nothing we can do about it...
-    }
-  }
-
 
   /**
    * Sets the panel layout and creates all the buttons with their functionality
