@@ -87,7 +87,7 @@ public class FlatView5Test extends FlatViewTestBase {
     
     // Commit the test file
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
-    SwingUtilities.invokeLater(() -> {
+    SwingUtilities.invokeAndWait(() -> {
       commitPanel.getCommitMessageArea().setText("FIRST COMMIT MESSAGE");
       commitPanel.getCommitButton().doClick();
       });
