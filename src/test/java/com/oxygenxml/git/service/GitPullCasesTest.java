@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -675,38 +676,34 @@ public class GitPullCasesTest extends GitTestBase {
   
   /**
    * <p><b>Description:</b> Intercept {{LockFailedException}} when pulling and present it to the user.</p>
-   * <p><b>Bug ID:</b> EXM-46016 #99</p>
+   * <p><b>Bug ID:</b> EXM-49039</p>
    *
-   * @author bogdan_draghici
+   * @author sorin_carbunaru
    *
    * @throws Exception If it fails.
    */
   @Test
   public void testLockFailedExceptionHandler() throws Exception {
-    
     String localTestRepository = "target/test-resources/local";
-    
     String remoteTestRepository = "target/test-resources/remote";
-    GitAccess gitAccess = GitAccess.getInstance();
+    
     Repository remoteRepo = createRepository(remoteTestRepository);
+    
+    //Commit to remote
+    GitAccess gitAccess = GitAccess.getInstance();
+    gitAccess.setRepositorySynchronously(remoteTestRepository);
+    try (PrintWriter out = new PrintWriter(remoteTestRepository + "/" + "cucu.txt")) {
+      out.println("");
+    }
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "cucu.txt"));
+    gitAccess.commit("New file: " + "cucu.txt");
+    
+    // Create local repo and bind it to remote
     Repository localRepo = createRepository(localTestRepository);
-    
     bindLocalToRemote(localRepo, remoteRepo);
+    
+    // Create index.lock file in the local repository
     gitAccess.setRepositorySynchronously(localTestRepository);
-    
-    // Create a new file for the first repository.
-    File localFile = new File(localTestRepository + "/test.txt");
-    localFile.createNewFile();
-    // Modify the newly created file.
-    setFileContent(localFile, "initial");
-    
-    // Add it to the index.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("Test commit.");
-    // Send it to remote/upstream.
-    push("", "");
-    
-    //Create index.lock file in the local repository
     File indexFile = new File(localTestRepository, ".git/index.lock");
     indexFile.createNewFile();
     
@@ -729,9 +726,11 @@ public class GitPullCasesTest extends GitTestBase {
     pull.get();
     
     //Verify an exception was intercepted
+    assertFalse(exceptions.isEmpty());
     assertNotNull("The exception wan't intercepted.", exceptions.get(0));
     
     //Verify the error message to contain the information of an LockFailedException
+    assertFalse(errorMessages.isEmpty());
     assertTrue(errorMessages.get(0).contains("Cannot lock"));
     assertTrue(errorMessages.get(0).contains("Ensure that no other process has an open file handle on the lock file"));
     assertTrue(errorMessages.get(0).contains("then you may delete the lock file and retry."));
