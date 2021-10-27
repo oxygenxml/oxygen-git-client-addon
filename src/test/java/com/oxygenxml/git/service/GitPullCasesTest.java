@@ -739,4 +739,39 @@ public class GitPullCasesTest extends GitTestBase {
     //See if the exception is an instance of LockFailedException
     assertEquals(LockFailedException.class.getName(), exceptions.get(0).getClass().getName());
   }
+  
+  /**
+   * <p><b>Description:</b> don't reset index when pulling.</p>
+   * <p><b>Bug ID:</b> EXM-49039</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testPull_dontResetIndex() throws Exception {
+    String local1Repository = "target/test-resources/GitPullCasesTest/testPullRebase-local";
+    String remoteRepository = "target/test-resources/GitPullCasesTest/testPullRebase-remote";
+    Repository local1Repo = createRepository(local1Repository);
+    Repository remoteRepo = createRepository(remoteRepository);
+    bindLocalToRemote(local1Repo, remoteRepo);
+    
+    // LOCAL 1
+    GitAccess gitAccess = GitAccess.getInstance();
+    gitAccess.setRepositorySynchronously(local1Repository);
+    File file = new File(local1Repository, "test.txt");
+    setFileContent(file, "1\n2\n3");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("First commit");
+    push("", "");
+    
+    setFileContent(file, "1\n2\n33");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    
+    pull("", "", PullType.MERGE_FF, false);
+    sleep(200);
+    
+    List<FileStatus> stagedFiles = gitAccess.getStagedFiles();
+    assertEquals("[(changeType=CHANGED, fileLocation=test.txt)]", stagedFiles.toString());
+  }
 }

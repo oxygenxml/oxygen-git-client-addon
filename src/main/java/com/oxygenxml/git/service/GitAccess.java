@@ -1097,7 +1097,6 @@ public class GitAccess {
 		if (!getConflictingFiles().isEmpty()) {
 			pullResponseToReturn.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
 		} else {
-		  git.reset().call();
 
 		  // Call "Pull"
 		  Repository repository = git.getRepository();
