@@ -317,7 +317,7 @@ public class BranchManagementPanel extends JPanel {
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
+        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
       }
     };
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
@@ -384,10 +384,7 @@ public class BranchManagementPanel extends JPanel {
         }
       }
     }
-    SwingUtilities.invokeLater(() -> {
-      updateTreeView(remainingBranches);
-      TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
-    });
+    SwingUtilities.invokeLater(() -> updateTreeView(remainingBranches));
   }
 
   /**
@@ -395,6 +392,7 @@ public class BranchManagementPanel extends JPanel {
    */
   public void showBranches() {
     refreshBranches();
+    TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
     branchesTree.setVisible(true);
   }
   
