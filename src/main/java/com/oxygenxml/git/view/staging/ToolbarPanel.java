@@ -39,7 +39,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.StringUtils;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
@@ -352,7 +351,6 @@ public class ToolbarPanel extends JPanel {
     addSettingsButton();
     this.add(gitToolbar, gbc);
 
-    this.setMinimumSize(new Dimension(getMinimumSize().width, UIConstants.TOOLBAR_PANEL_HEIGHT));
   }
 
 

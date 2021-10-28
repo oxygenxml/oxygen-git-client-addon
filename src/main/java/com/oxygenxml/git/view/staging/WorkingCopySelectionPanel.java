@@ -141,7 +141,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		addFileChooserListner();
 		
-		this.setMinimumSize(new Dimension(getMinimumSize().width, UIConstants.WORKINGCOPY_PANEL_HEIGHT));
 	}
 	
 	
