@@ -27,54 +27,25 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  private Graphics2D g; 
  
  /**
-  * The 'X' cell coordinate. 
+  * The commit dot color.
   */
- private int cellX; 
- 
- /**
-  * The 'Y' cell coordinate. 
-  */
- private int cellY; 
- 
- /**
-  * Cell foreground. 
-  */
- private Color cellFG; 
- 
- /**
-  * Cell background.
-  */
- private Color cellBG; 
- 
- /**
-  * The line level.
-  */
- int lineLevel;
+ private final Color commitDotColor; 
  
  
- 
- /**
-  * Constructor.
-  * 
-  * @param cellX   The 'X' cell coordinate. 
-  * @param cellY   The 'Y' cell coordinate. 
-  * @param cellFG  Cell foreground. 
-  * @param cellBG  Cell background. 
-  */
- public GraphRender(int cellX, int cellY, Color cellFG, Color cellBG) {
-	super();
-	this.cellX = cellX;
-	this.cellY = cellY;
-	this.cellFG = cellFG;
-	this.cellBG = cellBG;
-}
-
  
  /**
   * Constructor.
   */
  public GraphRender() {
-	 
+	 this(Color.WHITE);
+ }
+ 
+ 
+ /**
+  * Constructor.
+  */
+ public GraphRender(Color commitDotColor) {
+	 this.commitDotColor = commitDotColor;
  }
  
  
@@ -87,7 +58,6 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
   */
  public void paint(PlotCommit<VisualCommitsList.VisualLane> commit, int height, Graphics2D g) {
 	 this.g = g;
-	 this.lineLevel = commit.getLane().getPosition();
 	 paintCommit(commit, height);
  }
  
@@ -102,7 +72,7 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  
  protected void drawCommitDot(final int x, final int y, final int w, 
    final int h) { 
-	 g.setColor(Color.WHITE);
+	 g.setColor(commitDotColor);
 	 g.fillOval(x, y, w, h); 
 	 g.setStroke(new BasicStroke(2)); 
 	 g.drawOval(x + 1, y + 1, w - 2, h - 2); 
