@@ -261,12 +261,12 @@ public class TreeUtil {
 	 */
 	public static void restoreLastExpandedPaths(Enumeration<TreePath> expandedPaths, JTree tree) {
 		if (expandedPaths != null) {
-			List<TreePath> paths = Collections.list(expandedPaths);
+			List<TreePath> expPaths = Collections.list(expandedPaths);
 			for (int i = 0; i < tree.getRowCount(); i++) {
 				TreePath currentPath = tree.getPathForRow(i);
 				String currentStringPath = TreeUtil.getStringPath(currentPath);
-				for (TreePath treePath : paths) {
-					String stringTreePahr = TreeUtil.getStringPath(treePath);
+				for (TreePath expPath : expPaths) {
+					String stringTreePahr = TreeUtil.getStringPath(expPath);
 					if (currentStringPath.equals(stringTreePahr)) {
 						tree.expandRow(i);
 					}
