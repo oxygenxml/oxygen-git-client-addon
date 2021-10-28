@@ -679,7 +679,6 @@ public class HistoryPanel extends JPanel {
           historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer(UIUtil.DATE_FORMAT_PATTERN));
           TableColumn authorColumn = historyTable.getColumn(translator.getTranslation(Tags.AUTHOR));
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
-
           historyTable.setRowHeight(rh);
         });
 

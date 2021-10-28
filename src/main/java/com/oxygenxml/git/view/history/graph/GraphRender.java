@@ -3,9 +3,6 @@ package com.oxygenxml.git.view.history.graph;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revplot.AbstractPlotRenderer;
@@ -54,18 +51,6 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
   */
  int lineLevel;
  
- /**
-  * A map with colors for points levels.
-  */
- private static final Map<Integer, Color> colors = new HashMap<>();
- static {
-  colors.put(0, Color.CYAN);
-  colors.put(1,  Color.RED);
-  colors.put(2,  Color.LIGHT_GRAY);
-  colors.put(3,  Color.GREEN);
-  colors.put(4,  Color.BLUE);
- }
- 
  
  
  /**
@@ -109,26 +94,26 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  
  protected void drawLine(final Color color, final int x1, final int y1, 
    final int x2, final int y2, final int width) { 
-  g.setColor(Color.BLACK);
-  Stroke stroke = g.getStroke();
+  g.setColor(color);
   g.setStroke(new BasicStroke(width));
   g.drawLine(x1, y1, x2, y2);
-  g.setStroke(stroke);
  } 
  
  
  protected void drawCommitDot(final int x, final int y, final int w, 
    final int h) { 
-	 g.setColor(Color.BLACK);
-	 g.drawOval(x, y, w, h);
-	 g.setColor(colors.containsKey(lineLevel) ? colors.get(lineLevel) : Color.GRAY);
-	 g.fillOval(x, y, w, h);
+	 g.setColor(Color.WHITE);
+	 g.fillOval(x, y, w, h); 
+	 g.setStroke(new BasicStroke(2)); 
+	 g.drawOval(x + 1, y + 1, w - 2, h - 2); 
+	 g.setStroke(new BasicStroke(1));
+	 g.drawOval(x, y, w, h); 
  } 
  
  
  protected void drawBoundaryDot(final int x, final int y, final int w, 
    final int h) { 
-  // not needed
+	// not needed
  } 
  
  
@@ -145,7 +130,7 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  } 
  
  
- protected Color laneColor(final VisualLane myLane) { 
+ protected Color laneColor(final VisualLane myLane) {
   return myLane != null ? myLane.color : Color.RED; 
  }
        

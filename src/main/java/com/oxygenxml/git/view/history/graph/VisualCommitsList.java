@@ -53,8 +53,9 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	@Override 
 	protected VisualLane createLane() { 
 		final VisualLane lane = new VisualLane(); 
-		if (availableColors.isEmpty()) 
+		if (availableColors.isEmpty()) {
 			resetColors(); 
+		}
 		lane.color = availableColors.removeFirst(); 
 		return lane; 
 	} 
