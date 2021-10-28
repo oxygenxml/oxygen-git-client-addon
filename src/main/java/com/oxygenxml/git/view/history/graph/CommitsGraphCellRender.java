@@ -42,10 +42,12 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 	
 	
 	@Override
-	public Component getTableCellRendererComponent(JTable arg0, Object arg1, boolean arg2, boolean arg3, int arg4,
-			int arg5) {
-		this.table = arg0;
-		this.value = arg1;
+	public Component getTableCellRendererComponent(JTable table, Object value, 
+			boolean isSelected, boolean hasFocus, int row, int column) {
+		this.table = table;
+		this.value = value;
+		
+		setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
 
 		return this;
 	}
@@ -55,9 +57,13 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 	@Override
 	protected void paintComponent(Graphics g) {
 		if(shouldBePainted && value != null) {
+			Graphics2D g2d = (Graphics2D)g;
+			g2d.setBackground(getBackground());
+			super.paintComponent(g);
 			cellRender.paint((PlotCommit<VisualCommitsList.VisualLane>)value, 
 					table.getRowHeight(), 
-					(Graphics2D)g);
+					g2d
+					);
 		}
 	}
 	
