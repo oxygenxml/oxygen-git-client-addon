@@ -73,6 +73,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
+import com.oxygenxml.git.view.history.graph.GraphColorUtil;
 import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
@@ -149,8 +150,13 @@ public class HistoryPanel extends JPanel {
   /**
    * The graph cell render.
    */
-  private CommitsGraphCellRender graphCellRender = new CommitsGraphCellRender();
+  private final CommitsGraphCellRender graphCellRender;
 
+  /**
+   * <code>true</code> if is the dark theme.
+   */
+  private final boolean isDarkTheme;
+  
   /**
    * Constructor.
    * 
@@ -159,6 +165,10 @@ public class HistoryPanel extends JPanel {
   public HistoryPanel(GitController gitCtrl) {
     setLayout(new BorderLayout());
 
+    isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+    graphCellRender = new CommitsGraphCellRender(isDarkTheme ? GraphColorUtil.COMMIT_DOT__COLOR_DARK_THEME : 
+    	GraphColorUtil.COMMIT_DOT_COLOR_LIGHT_THEME);
+    
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
     historyTable = new Table();
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

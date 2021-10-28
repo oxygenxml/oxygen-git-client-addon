@@ -37,7 +37,7 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
   * Constructor.
   */
  public GraphRender() {
-	 this(Color.WHITE);
+	 this(GraphColorUtil.COMMIT_DOT_DEFAULT_COLOR);
  }
  
  
@@ -47,6 +47,7 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  public GraphRender(Color commitDotColor) {
 	 this.commitDotColor = commitDotColor;
  }
+ 
  
  
 /**
@@ -63,21 +64,17 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  
  
  protected void drawLine(final Color color, final int x1, final int y1, 
-   final int x2, final int y2, final int width) { 
-  g.setColor(color);
-  g.setStroke(new BasicStroke(width));
-  g.drawLine(x1, y1, x2, y2);
+		 final int x2, final int y2, final int width) { 
+	 g.setColor(color);
+	 g.setStroke(new BasicStroke(width));
+	 g.drawLine(x1, y1, x2, y2);
  } 
- 
+
  
  protected void drawCommitDot(final int x, final int y, final int w, 
    final int h) { 
 	 g.setColor(commitDotColor);
 	 g.fillOval(x, y, w, h); 
-	 g.setStroke(new BasicStroke(2)); 
-	 g.drawOval(x + 1, y + 1, w - 2, h - 2); 
-	 g.setStroke(new BasicStroke(1));
-	 g.drawOval(x, y, w, h); 
  } 
  
  
@@ -101,7 +98,7 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  
  
  protected Color laneColor(final VisualLane myLane) {
-  return myLane != null ? myLane.color : Color.RED; 
+  return myLane != null ? myLane.color : GraphColorUtil.COMMIT_LINE_DEFAULT_COLOR; 
  }
        
 }

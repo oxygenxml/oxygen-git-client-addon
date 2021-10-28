@@ -54,6 +54,8 @@ import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.graph.VisualCommitsList;
 import com.oxygenxml.git.view.history.graph.VisualCommitsList.VisualLane;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+
 /**
  * Utility methods for working with commits.
  */
@@ -412,7 +414,8 @@ public class RevCommitUtil {
           );
     }
     
-    PlotCommitList<VisualLane> plotCommitList = new VisualCommitsList();
+    boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+    PlotCommitList<VisualLane> plotCommitList = new VisualCommitsList(isDarkTheme);
 	plotCommitList.source(plotWalk);
 	plotCommitList.fillTo(Integer.MAX_VALUE);
 

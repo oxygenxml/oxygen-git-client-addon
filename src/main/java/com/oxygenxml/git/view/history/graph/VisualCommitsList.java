@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.history.graph;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,22 +24,28 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	 */
 	private final LinkedList<Color> availableColors; 
 
+
 	
 	/**
 	 * Constructor.
 	 */
 	public VisualCommitsList() { 
-		allColors = new ArrayList<>(); 
-		allColors.add(Color.RED); 
-		allColors.add(Color.BLUE); 
-		allColors.add(Color.YELLOW); 
-		allColors.add(Color.GREEN); 
-		allColors.add(Color.DARK_GRAY); 
-		allColors.add(Color.ORANGE); 
+		this(false);
+	} 
+
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param <code>true</code> if is the dark theme.
+	 */
+	public VisualCommitsList(boolean isDarkTheme) {
+		allColors = isDarkTheme ? GraphColorUtil.getEdgesColorsForDarkTheme() : 
+			GraphColorUtil.getEdgesColorsForLightTheme(); 
 		availableColors = new LinkedList<>(); 
 		resetColors(); 
 	} 
-
+	
 	
 	/**
 	 * Reset all colors.
