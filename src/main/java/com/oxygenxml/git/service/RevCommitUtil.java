@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,9 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revplot.PlotCommit;
+import org.eclipse.jgit.revplot.PlotCommitList;
+import org.eclipse.jgit.revplot.PlotWalk;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -47,6 +51,8 @@ import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
+import com.oxygenxml.git.view.history.graph.VisualCommitsList;
+import com.oxygenxml.git.view.history.graph.VisualCommitsList.VisualLane;
 
 /**
  * Utility methods for working with commits.
@@ -344,21 +350,20 @@ public class RevCommitUtil {
     String fullBranch = repository.getFullBranch();
     Ref branchHead = repository.exactRef(fullBranch);
     if (branchHead != null) {
-      try (RevWalk revWalk = new RevWalk(repository)) {
-
-        RevCommit revCommit = revWalk.parseCommit(branchHead.getObjectId());
-        revWalk.markStart(revCommit);
-
+      try (PlotWalk plotWalk = new PlotWalk(repository)) {
+    	  RevCommit root = plotWalk.parseCommit(branchHead.getObjectId());
+		  plotWalk.markStart(root);
+			
         // If we have a remote, put it as well.
         String fullRemoteBranchName = getUpstreamBranchName(repository, repository.getBranch());
         if (fullRemoteBranchName != null) {
           Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
           if (fullRemoteBranchHead != null) {
-            revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
+            plotWalk.markStart(plotWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
           }
         }
-
-        collectRevisions(filePath, revisions, repository, revWalk);
+		
+        collectRevisions(filePath, revisions, repository, plotWalk);
       }
 
     } else {
@@ -380,14 +385,15 @@ public class RevCommitUtil {
     BranchConfig branchConfig = new BranchConfig(repository.getConfig(), localBranchShortName);
     return branchConfig.getRemoteTrackingBranch();
   }
-
+ 
+  
   /**
    * Collects all the revisions by waking the revision iterator.
    * 
    * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
    * @param commits Revisions/Commits are collected in here.
    * @param repository Loaded repository.
-   * @param revWalk Revision iterator.
+   * @param plotWalk Revision iterator.
    * 
    * @throws IOException
    * @throws GitAPIException
@@ -396,29 +402,35 @@ public class RevCommitUtil {
       String filePath, 
       List<CommitCharacteristics> commits, 
       Repository repository,
-      RevWalk revWalk) throws IOException, GitAPIException {
+      PlotWalk plotWalk) throws IOException, GitAPIException {
 
     if (filePath != null) {
-      revWalk.setTreeFilter(
+      plotWalk.setTreeFilter(
           AndTreeFilter.create(
               PathFilterGroup.createFromStrings(filePath),
               TreeFilter.ANY_DIFF)
           );
     }
+    
+    PlotCommitList<VisualLane> plotCommitList = new VisualCommitsList();
+	plotCommitList.source(plotWalk);
+	plotCommitList.fillTo(Integer.MAX_VALUE);
 
-    RevCommit lastProcessedRevision = null;
-    for (RevCommit commit : revWalk) {
-      appendRevCommit(commits, commit);
+	Iterator<PlotCommit<VisualLane>> commitListIterator = plotCommitList.iterator();
 
-      lastProcessedRevision = commit;
-    }
+	PlotCommit<VisualLane> lastProcessedRevision = null;
+	while (commitListIterator.hasNext()) {
+		PlotCommit<VisualLane> commit = commitListIterator.next();
+		commits.add(new CommitCharacteristics(commit));
+		lastProcessedRevision = commit;
+	}
 
     // If we are following a resource, check for rename events.
     if (filePath != null && lastProcessedRevision != null) {
       handleRename(filePath, commits, repository, lastProcessedRevision);
     }
   }
-
+  
   /**
    * Checks for a rename operation. If the resource was renamed between the current revision and the previous one,
    * it will continue collecting revisions based on the previous resource name/path.  
@@ -426,33 +438,34 @@ public class RevCommitUtil {
    * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
    * @param commits Revisions are collected in here.
    * @param repository Loaded repository.
-   * @param current The last revision encountered for the file path.
+   * @param currentCommit The last revision encountered for the file path.
    * 
    * @throws IOException
    * @throws GitAPIException
    */
   private static void handleRename(
+		  // TODO REFACTOR THIS METHOD TO WORK
       String filePath, 
       List<CommitCharacteristics> commits, 
       Repository repository,
-      RevCommit current)
+      PlotCommit<VisualLane> currentCommit)
           throws IOException, GitAPIException {
-    try (RevWalk revWalk = new RevWalk(repository)) {
-      current = revWalk.parseCommit(current.getId());
+    try (PlotWalk plotWalk = new PlotWalk(repository)) {
+      RevCommit commit = plotWalk.parseCommit(currentCommit.getId());
 
-      if (current.getParentCount() > 0) {
-        RevCommit parent = current.getParent(0);
-        revWalk.parseHeaders(parent);
+      if (commit.getParentCount() > 0) {
+        RevCommit parent = commit.getParent(0);
+        plotWalk.parseHeaders(parent);
 
-        Optional<DiffEntry> renameRev = RevCommitUtil.findRename(repository, parent, current, filePath);
+        Optional<DiffEntry> renameRev = RevCommitUtil.findRename(repository, parent, commit, filePath);
         if (renameRev.isPresent()) {
           String oldPath = renameRev.get().getOldPath();
 
-          revWalk.markStart(current);
+          plotWalk.markStart(commit);
 
           // We will re-append this commit but this time it will be linked to 
           commits.remove(commits.size() - 1);
-          collectRevisions(oldPath, commits, repository, revWalk);
+          collectRevisions(oldPath, commits, repository, plotWalk);
         }
       }
     }
@@ -501,7 +514,7 @@ public class RevCommitUtil {
    * @param commit The current commit.
    * @return The list with parents commit IDs.
    */
-  private static List<String> getParentsId(RevCommit commit) {
+  public static List<String> getParentsId(RevCommit commit) {
     List<String> parentsIds = null;
 
     // add list of parent commits.

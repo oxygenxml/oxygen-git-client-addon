@@ -54,7 +54,7 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void paintComponent(Graphics g) {
-		if(shouldBePainted) {
+		if(shouldBePainted && value != null) {
 			cellRender.paint((PlotCommit<VisualCommitsList.VisualLane>)value, 
 					table.getRowHeight(), 
 					(Graphics2D)g);

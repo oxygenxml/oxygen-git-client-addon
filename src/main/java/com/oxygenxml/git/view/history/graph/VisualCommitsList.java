@@ -29,7 +29,7 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	/**
 	 * Constructor.
 	 */
-	VisualCommitsList() { 
+	public VisualCommitsList() { 
 		allColors = new ArrayList<>(); 
 		allColors.add(Color.RED); 
 		allColors.add(Color.BLUE); 
@@ -74,7 +74,7 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	 *
 	 */
 	@SuppressWarnings("serial")
-	static class VisualLane extends PlotLane { 
+	public static class VisualLane extends PlotLane { 
 		transient Color color;
 
 		@Override
