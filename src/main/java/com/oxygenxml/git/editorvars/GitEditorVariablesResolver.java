@@ -93,6 +93,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * 
    * @throws NoRepositorySelected 
    */
+  @SuppressWarnings("java:S3824") // Supress this because we don't want to compute the WC unnecessarily
   private String resolveWorkingCopyEditorVariables(String contentWithEditorVariables) throws NoRepositorySelected {
     File workingCopy = null;
 

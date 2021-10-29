@@ -193,7 +193,7 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.weighty = 0; 
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.NONE;
-    gbc.insets = new Insets(7, 0, 0, 0);
+    gbc.insets = new Insets(7, 0, 0, 0); // NOSONAR
     panel.add(pushTagCheckBox, gbc);
 
   }

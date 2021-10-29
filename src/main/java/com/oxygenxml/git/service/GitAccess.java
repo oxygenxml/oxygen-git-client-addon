@@ -2332,8 +2332,11 @@ public class GitAccess {
         int refIdx = indexOfPrefix + prefix.length();
         String branchName = ref.getName().substring(refIdx);
         
-        String commit = ref.getObjectId().getName().substring(0, SHORT_COMMIT_ID_LENGTH);
-        branchMap.computeIfAbsent(commit, t -> new ArrayList<>()).add(branchName);
+        ObjectId objectId = ref.getObjectId();
+        if (objectId != null) {
+          String commit = objectId.getName().substring(0, SHORT_COMMIT_ID_LENGTH);
+          branchMap.computeIfAbsent(commit, t -> new ArrayList<>()).add(branchName);
+        }
       }
     }
 
