@@ -1269,7 +1269,7 @@ public class GitAccess {
 				fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CANNOT_LOCK_REF), trackingRefUpdate.getLocalName())).append(" ");
 				try {
 					String repoDir = getRepository().getDirectory().getAbsolutePath();
-					File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock");
+					File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock"); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
 					fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())).append(" ");
 					if (lockFile.exists()) {
 						fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.FILE_EXISTS)).append("\n");
@@ -1305,9 +1305,11 @@ public class GitAccess {
       String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
       for (DiffEntry diffEntry : diffs) {
         if (diffEntry.getChangeType() == ChangeType.ADD) {
-          pulledFilesParentDirs.add(new File(selectedRepository, diffEntry.getNewPath()).getParentFile());
+          pulledFilesParentDirs.add(
+              new File(selectedRepository, diffEntry.getNewPath()).getParentFile()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
         } else if (diffEntry.getChangeType() == ChangeType.DELETE) {
-          pulledFilesParentDirs.add(new File(selectedRepository, diffEntry.getOldPath()).getParentFile());
+          pulledFilesParentDirs.add(
+              new File(selectedRepository, diffEntry.getOldPath()).getParentFile()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
         }
       }
       // Refresh the Project view
