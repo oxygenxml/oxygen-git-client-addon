@@ -42,6 +42,8 @@ public class GraphColorUtil {
 			Color.ORANGE 
 	};
 	
+	public static Color BACKGROUND = Color.BLACK;
+	
 	/**
 	 * Commit dot color on light theme.
 	 */

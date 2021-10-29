@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.history.graph;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revplot.AbstractPlotRenderer;
@@ -32,6 +33,9 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  private final Color commitDotColor; 
  
  
+ private PlotCommit<VisualCommitsList.VisualLane> commit;
+ 
+ 
  
  /**
   * Constructor.
@@ -59,6 +63,10 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
   */
  public void paint(PlotCommit<VisualCommitsList.VisualLane> commit, int height, Graphics2D g) {
 	 this.g = g;
+	 this.g.setRenderingHint(
+		        RenderingHints.KEY_ANTIALIASING,
+		        RenderingHints.VALUE_ANTIALIAS_ON);
+	 this.commit = commit;
 	 paintCommit(commit, height);
  }
  
@@ -73,8 +81,13 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  
  protected void drawCommitDot(final int x, final int y, final int w, 
    final int h) { 
-	 g.setColor(commitDotColor);
+	 Color color = laneColor(commit.getLane());
+	 g.setColor(color);
+	 g.setStroke(new BasicStroke(2));
 	 g.fillOval(x, y, w, h); 
+	 g.setColor(GraphColorUtil.BACKGROUND);
+	 g.setStroke(new BasicStroke(1));
+	 g.drawOval(x, y, w, h); 
  } 
  
  
