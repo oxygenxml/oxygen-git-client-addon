@@ -84,10 +84,10 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
 	 Color color = laneColor(commit.getLane());
 	 g.setColor(color);
 	 g.setStroke(new BasicStroke(2));
-	 g.fillOval(x, y, w, h); 
+	 g.fillOval(x + 1, y, w, h); 
 	 g.setColor(GraphColorUtil.BACKGROUND);
 	 g.setStroke(new BasicStroke(1));
-	 g.drawOval(x, y, w, h); 
+	 g.drawOval(x + 1, y, w, h); 
  } 
  
  
