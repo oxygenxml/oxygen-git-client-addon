@@ -23,23 +23,24 @@ public class GraphColorUtil {
 	 * Lines commits colors for light theme.
 	 */
 	private static final Color[] LIGHT_THEME_EDGES_COLORS = {
-			Color.RED, 
-			Color.MAGENTA, 
-			Color.PINK, 
-			Color.DARK_GRAY, 
-			Color.ORANGE 
+			new Color(231,76,60), 
+			new Color(46,204,113),
+			new Color(52, 152, 219), 
+			new Color(193, 54, 193),
+			new Color(241, 196, 15),
+			new Color(44, 214, 204)
 	};
 	
 	/**
 	 * Lines commits colors for dark theme.
 	 */
 	private static final Color[] DARK_THEME_EDGES_COLORS = {
-			Color.RED,
-			Color.BLUE, 
-			Color.YELLOW, 
-			Color.GREEN, 
-			Color.LIGHT_GRAY, 
-			Color.ORANGE 
+			new Color(188, 79, 68), 
+			new Color(58, 169, 105),
+			new Color(62, 133, 180), 
+			new Color(161, 64, 161),
+			new Color(195,164,36),
+			new Color(57, 176, 169)
 	};
 	
 	public static Color BACKGROUND = Color.BLACK;
