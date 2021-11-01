@@ -25,32 +25,12 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
 /**
  * Graphics for paint.
  */
- private Graphics2D g; 
+ private Graphics2D g;  
  
  /**
-  * The commit dot color.
+  * The commit.
   */
- private final Color commitDotColor; 
- 
- 
  private PlotCommit<VisualCommitsList.VisualLane> commit;
- 
- 
- 
- /**
-  * Constructor.
-  */
- public GraphRender() {
-	 this(GraphColorUtil.COMMIT_DOT_DEFAULT_COLOR);
- }
- 
- 
- /**
-  * Constructor.
-  */
- public GraphRender(Color commitDotColor) {
-	 this.commitDotColor = commitDotColor;
- }
  
  
  
@@ -85,7 +65,7 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
 	 g.setColor(color);
 	 g.setStroke(new BasicStroke(2));
 	 g.fillOval(x + 1, y, w, h); 
-	 g.setColor(GraphColorUtil.BACKGROUND);
+	 g.setColor(GraphColorUtil.getBackground());
 	 g.setStroke(new BasicStroke(1));
 	 g.drawOval(x + 1, y, w, h); 
  } 

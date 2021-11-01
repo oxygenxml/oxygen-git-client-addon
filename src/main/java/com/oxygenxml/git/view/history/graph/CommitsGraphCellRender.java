@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.history.graph;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -42,22 +41,12 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 	private boolean shouldBePainted = true;
 	
 	
-	
+
 	/**
 	 * Constructor.
 	 */
 	public CommitsGraphCellRender() {
 		cellRender = new GraphRender();
-	}
-	
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param Color for dot commit.
-	 */
-	public CommitsGraphCellRender(Color dotCommitColor) {
-		cellRender = new GraphRender(dotCommitColor);
 	}
 	
 	
@@ -78,7 +67,7 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 	protected void paintComponent(Graphics g) {
 		if(shouldBePainted && value != null) {
 			Graphics2D g2d = (Graphics2D)g;
-			GraphColorUtil.BACKGROUND = getBackground();
+			GraphColorUtil.setBackground(getBackground());
 			g2d.setBackground(getBackground());
 			super.paintComponent(g);
 			cellRender.paint((PlotCommit<VisualCommitsList.VisualLane>)value, 
