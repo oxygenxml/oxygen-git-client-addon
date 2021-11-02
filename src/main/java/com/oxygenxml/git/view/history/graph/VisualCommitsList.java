@@ -1,37 +1,23 @@
 package com.oxygenxml.git.view.history.graph;
 
 import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.jgit.revplot.PlotCommitList;
 import org.eclipse.jgit.revplot.PlotLane;
 
 /**
- * A list of commits to be represented visually.
+ * A list of commits that is being rendered visualy using different colors for each commit lane.
  * 
  * @author alex_smarandache
  *
  */
-public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLane> { 
-	/**
-	 * All commits colors.
-	 */
-	private final List<Color> allColors; 
+public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLane> {  
 
 	/**
-	 * All available commits colors.
+	 * Manages colors.
 	 */
-	private final LinkedList<Color> availableColors; 
+	private final ColorDispatcher colorDispatcher; 
 
-
-	
-	/**
-	 * Constructor.
-	 */
-	public VisualCommitsList() { 
-		this(false);
-	} 
 
 	
 	/**
@@ -39,36 +25,22 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	 * 
 	 * @param <code>true</code> if is the dark theme.
 	 */
-	public VisualCommitsList(boolean isDarkTheme) {
-		allColors = isDarkTheme ? GraphColorUtil.getEdgesColorsForDarkTheme() : 
-			GraphColorUtil.getEdgesColorsForLightTheme(); 
-		availableColors = new LinkedList<>(); 
-		resetColors(); 
+	public VisualCommitsList(ColorDispatcher colorDispatcher) {
+		 this.colorDispatcher = colorDispatcher;
 	} 
 	
-	
-	/**
-	 * Reset all colors.
-	 */
-	private void resetColors() { 
-		availableColors.addAll(allColors); 
-	} 
-
 	
 	@Override 
 	protected VisualLane createLane() { 
 		final VisualLane lane = new VisualLane(); 
-		if (availableColors.isEmpty()) {
-			resetColors(); 
-		}
-		lane.color = availableColors.removeFirst(); 
+		lane.color = colorDispatcher.releaseColor(); 
 		return lane; 
 	} 
 
 	
 	@Override 
 	protected void recycleLane(final VisualLane lane) { 
-		availableColors.add(lane.color); 
+		colorDispatcher.aquireColor(lane.color);
 	} 
 
 

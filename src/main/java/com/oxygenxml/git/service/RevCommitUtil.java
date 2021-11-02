@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +25,6 @@ import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revplot.PlotCommit;
@@ -51,6 +49,7 @@ import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
+import com.oxygenxml.git.view.history.graph.GraphColorUtil;
 import com.oxygenxml.git.view.history.graph.VisualCommitsList;
 import com.oxygenxml.git.view.history.graph.VisualCommitsList.VisualLane;
 
@@ -415,7 +414,7 @@ public class RevCommitUtil {
     }
     
     boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
-    PlotCommitList<VisualLane> plotCommitList = new VisualCommitsList(isDarkTheme);
+    PlotCommitList<VisualLane> plotCommitList = new VisualCommitsList(GraphColorUtil.createColorDispatcher(isDarkTheme));
 	plotCommitList.source(plotWalk);
 	plotCommitList.fillTo(Integer.MAX_VALUE);
 
@@ -447,7 +446,6 @@ public class RevCommitUtil {
    * @throws GitAPIException
    */
   private static void handleRename(
-		  // TODO REFACTOR THIS METHOD TO WORK
       String filePath, 
       List<CommitCharacteristics> commits, 
       Repository repository,
@@ -474,43 +472,7 @@ public class RevCommitUtil {
     }
   }
 
-  /**
-   * Creates a list with the characteristics of all revisions.
-   * 
-   * @param revCommits The list of the revisions.
-   * @return A list with all commit characteristics.
-   */
-  public static List<CommitCharacteristics> createRevCommitCharacteristics(List<RevCommit> revCommits){
-    List<CommitCharacteristics> commitCharacteristics = new ArrayList<>();
-    for(RevCommit revCommitIterator : revCommits) {
-      appendRevCommit(commitCharacteristics, revCommitIterator);
-    }
-    return commitCharacteristics;
-  }
-
-  /**
-   * Adds the revision into the collecting list.
-   * 
-   * @param revisions Revisions are collected in here.
-   * @param commit Revision to collect.
-   */
-  private static void appendRevCommit(List<CommitCharacteristics> revisions, RevCommit commit) {
-    String commitMessage = commit.getFullMessage();
-    PersonIdent authorIdent = commit.getAuthorIdent();
-    String author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
-    Date authorDate = authorIdent.getWhen();
-    String abbreviatedId = commit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
-    String id = commit.getId().getName();
-
-    PersonIdent committerIdent = commit.getCommitterIdent();
-    String committer = committerIdent.getName();
-    List<String> parentsIds = getParentsId(commit);
-
-    // add commit element in vector
-    revisions.add(new CommitCharacteristics(commitMessage, authorDate, author, abbreviatedId, id,
-        committer, parentsIds));
-  }
-
+  
   /**
    * Get a list with all the parent IDs of the current commit.
    * 

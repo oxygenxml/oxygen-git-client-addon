@@ -1,7 +1,9 @@
 package com.oxygenxml.git.view.history.graph;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,71 +21,73 @@ public class GraphColorUtil {
 		// nothing
 	}
 	
-	/**
-	 * Lines commits colors for light theme.
-	 */
-	private static final Color[] LIGHT_THEME_EDGES_COLORS = {
-			new Color(231,76,60),      // RED
-			new Color(46,204,113),     // GREEN
-			new Color(52, 152, 219),   // BLUE
-			new Color(193, 54, 193),   // MAUVE
-			new Color(241, 196, 15),   // ORANGE
-			new Color(44, 214, 204)    // TURQUOISE
-	};
-	
-	/**
-	 * Lines commits colors for dark theme.
-	 */
-	private static final Color[] DARK_THEME_EDGES_COLORS = {
-			new Color(197, 92, 81),    // RED
-			new Color(59, 187, 114),   // GREEN
-			new Color(79, 154, 205),   // BLUE
-			new Color(186, 94, 186),   // MAUVE
-			new Color(199, 171, 59),   // ORANGE
-			new Color(57, 176, 169)    // TURQUOISE
-	};
-	
-	/**
-	 * Backgound cell color.
-	 */
-	private static Color background = Color.BLACK;
 	
 	/**
 	 * Commit dot default color.
 	 */
 	public static final Color COMMIT_LINE_DEFAULT_COLOR = Color.LIGHT_GRAY;
 	
-	/**
-	 * @return A list with commits lines colors for light theme.
-	 */
-	public static List<Color> getEdgesColorsForLightTheme() {
-		return Arrays.asList(LIGHT_THEME_EDGES_COLORS);
-	}
 	
 	/**
-	 * @return A list with commits lines colors for dark theme.
-	 */
-	public static List<Color> getEdgesColorsForDarkTheme() {
-		return Arrays.asList(DARK_THEME_EDGES_COLORS);
-	}
-
-	/**
-	 * Get background color.
+	 * Factory for ColorDispatcher.
 	 * 
-	 * @return The background color.
-	 */
-	public static Color getBackground() {
-		return background;
-	}
-
-	/**
-	 * Setter for background color.
+	 * @param isDarkTheme <code>true</code> if is a color dispatcher for dark theme. 
 	 * 
-	 * @param background The new color for background.
+	 * @return The created color dispatcher.
 	 */
-	public static void setBackground(Color background) {
-		GraphColorUtil.background = background;
+	public static ColorDispatcher createColorDispatcher(boolean isDarkTheme) {
+		// A list with all colors of graph.
+		final List<Color> allColors = new ArrayList<>();
+		
+		if(isDarkTheme) {
+			Color[] darkThemeEdgesColors = {
+					new Color(197, 92, 81),    // RED
+					new Color(59, 187, 114),   // GREEN
+					new Color(79, 154, 205),   // BLUE
+					new Color(186, 94, 186),   // MAUVE
+					new Color(199, 171, 59),   // ORANGE
+					new Color(57, 176, 169)    // TURQUOISE
+			};
+			allColors.addAll(Arrays.asList(darkThemeEdgesColors));
+		} else {
+			Color[] lightThemeEdgesColors = {
+					new Color(231,76,60),      // RED
+					new Color(46,204,113),     // GREEN
+					new Color(52, 152, 219),   // BLUE
+					new Color(193, 54, 193),   // MAUVE
+					new Color(241, 196, 15),   // ORANGE
+					new Color(44, 214, 204)    // TURQUOISE
+			};
+			allColors.addAll(Arrays.asList(lightThemeEdgesColors));
+
+		}
+		
+		// A list containing colors that have not yet been used or can be reused.
+		final LinkedList<Color> availableColors = new LinkedList<>(allColors); 
+		
+		
+		return new ColorDispatcher() {	
+			
+			/**
+			 * Reset the list to have all colors available.
+			 */
+			private void resetColors() {
+				availableColors.addAll(allColors); 
+			}
+			
+			@Override
+			public Color releaseColor() {
+				if (availableColors.isEmpty()) {
+					resetColors(); 
+				}
+				return availableColors.removeFirst();
+			}
+			
+			@Override
+			public void aquireColor(Color color) {
+				availableColors.add(color);
+			}
+		};
 	}
 
-	
 }

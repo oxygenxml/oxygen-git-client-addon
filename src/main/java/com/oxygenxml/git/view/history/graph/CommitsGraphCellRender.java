@@ -57,7 +57,8 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 		this.value = value;
 		
 		setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
-
+        cellRender.setBackground(getBackground());
+		
 		return this;
 	}
 	
@@ -67,7 +68,6 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 	protected void paintComponent(Graphics g) {
 		if(shouldBePainted && value != null) {
 			Graphics2D g2d = (Graphics2D)g;
-			GraphColorUtil.setBackground(getBackground());
 			g2d.setBackground(getBackground());
 			super.paintComponent(g);
 			cellRender.paint((PlotCommit<VisualCommitsList.VisualLane>)value, 

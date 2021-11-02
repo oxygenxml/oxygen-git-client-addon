@@ -32,6 +32,11 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
   */
  private PlotCommit<VisualCommitsList.VisualLane> commit;
  
+ /**
+  * The cell background.
+  */
+ private Color background;
+ 
  
  
 /**
@@ -65,7 +70,7 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
 	 g.setColor(color);
 	 g.setStroke(new BasicStroke(2));
 	 g.fillOval(x + 1, y, w, h); 
-	 g.setColor(GraphColorUtil.getBackground());
+	 g.setColor(background);
 	 g.setStroke(new BasicStroke(1));
 	 g.drawOval(x + 1, y, w, h); 
  } 
@@ -93,6 +98,15 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  protected Color laneColor(final VisualLane myLane) {
   return myLane != null ? myLane.color : GraphColorUtil.COMMIT_LINE_DEFAULT_COLOR; 
  }
+
+ /**
+  * 
+  * @param background The new background for render cell.
+  */
+ public void setBackground(Color background) {
+   this.background = background;
+ }
+ 
        
 }
 
