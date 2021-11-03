@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -30,6 +31,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revplot.PlotCommit;
 import org.eclipse.jgit.revplot.PlotCommitList;
 import org.eclipse.jgit.revplot.PlotWalk;
+import org.eclipse.jgit.revwalk.FollowFilter;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -38,10 +40,7 @@ import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
-import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -400,38 +399,29 @@ public class RevCommitUtil {
    * @throws GitAPIException
    */
   private static void collectRevisions(
-      String filePath, 
-      List<CommitCharacteristics> commits, 
-      Repository repository,
-      PlotWalk plotWalk) throws IOException, GitAPIException {
+		  String filePath,
+		  List<CommitCharacteristics> commits,
+		  Repository repository,
+		  PlotWalk plotWalk) throws IOException {
 
-    if (filePath != null) {
-      plotWalk.setTreeFilter(
-          AndTreeFilter.create(
-              PathFilterGroup.createFromStrings(filePath),
-              TreeFilter.ANY_DIFF)
-          );
-    }
-    
-    boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
-    PlotCommitList<VisualLane> plotCommitList = new VisualCommitsList(GraphColorUtil.createColorDispatcher(isDarkTheme));
-	plotCommitList.source(plotWalk);
-	plotCommitList.fillTo(Integer.MAX_VALUE);
+	  if (filePath != null) {
+		  plotWalk.setTreeFilter(FollowFilter.create(filePath, repository.getConfig().get(DiffConfig.KEY)));
+	  }
 
-	Iterator<PlotCommit<VisualLane>> commitListIterator = plotCommitList.iterator();
+	  boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+	  PlotCommitList<VisualLane> plotCommitList = new VisualCommitsList(GraphColorUtil.createColorDispatcher(isDarkTheme));
+	  plotCommitList.source(plotWalk);
+	  plotCommitList.fillTo(Integer.MAX_VALUE);
 
-	PlotCommit<VisualLane> lastProcessedRevision = null;
-	while (commitListIterator.hasNext()) {
-		PlotCommit<VisualLane> commit = commitListIterator.next();
-		commits.add(new CommitCharacteristics(commit));
-		lastProcessedRevision = commit;
-	}
+	  Iterator<PlotCommit<VisualLane>> commitListIterator = plotCommitList.iterator();
 
-    // If we are following a resource, check for rename events.
-    if (filePath != null && lastProcessedRevision != null) {
-      handleRename(filePath, commits, repository, lastProcessedRevision);
-    }
+	  while (commitListIterator.hasNext()) {
+		  PlotCommit<VisualLane> commit = commitListIterator.next();
+		  commits.add(new CommitCharacteristics(commit));
+	  }
+	  
   }
+  
   
   /**
    * Checks for a rename operation. If the resource was renamed between the current revision and the previous one,
@@ -464,9 +454,9 @@ public class RevCommitUtil {
 
           plotWalk.markStart(commit);
 
-          // We will re-append this commit but this time it will be linked to 
-          commits.remove(commits.size() - 1);
           collectRevisions(oldPath, commits, repository, plotWalk);
+        } else {
+          commits.add(new CommitCharacteristics(currentCommit));
         }
       }
     }
