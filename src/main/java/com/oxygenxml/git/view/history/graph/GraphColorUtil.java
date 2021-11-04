@@ -35,7 +35,7 @@ public class GraphColorUtil {
 	 * 
 	 * @return The created color dispatcher.
 	 */
-	public static ColorDispatcher createColorDispatcher(boolean isDarkTheme) {
+	public static ColorPool createColorDispatcher(boolean isDarkTheme) {
 		// A list with all colors of graph.
 		final List<Color> allColors = new ArrayList<>();
 		
@@ -66,7 +66,7 @@ public class GraphColorUtil {
 		final LinkedList<Color> availableColors = new LinkedList<>(allColors); 
 		
 		
-		return new ColorDispatcher() {	
+		return new ColorPool() {	
 			
 			/**
 			 * Reset the list to have all colors available.
@@ -76,7 +76,7 @@ public class GraphColorUtil {
 			}
 			
 			@Override
-			public Color releaseColor() {
+			public Color aquireColor() {
 				if (availableColors.isEmpty()) {
 					resetColors(); 
 				}
@@ -84,7 +84,7 @@ public class GraphColorUtil {
 			}
 			
 			@Override
-			public void aquireColor(Color color) {
+			public void releaseColor(Color color) {
 				availableColors.add(color);
 			}
 		};
