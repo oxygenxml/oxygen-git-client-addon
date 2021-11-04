@@ -343,7 +343,7 @@ public class RevCommitUtil {
   public static void collectCurrentBranchRevisions(
       String filePath, 
       List<CommitCharacteristics> revisions, 
-      Repository repository) throws IOException, GitAPIException {
+      Repository repository) throws IOException {
 
     // a RevWalk allows to walk over commits based on some filtering that is defined
     // EXM-44307 Show current branch commits only.
@@ -422,46 +422,6 @@ public class RevCommitUtil {
 	  
   }
   
-  
-  /**
-   * Checks for a rename operation. If the resource was renamed between the current revision and the previous one,
-   * it will continue collecting revisions based on the previous resource name/path.  
-   * 
-   * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
-   * @param commits Revisions are collected in here.
-   * @param repository Loaded repository.
-   * @param currentCommit The last revision encountered for the file path.
-   * 
-   * @throws IOException
-   * @throws GitAPIException
-   */
-  private static void handleRename(
-      String filePath, 
-      List<CommitCharacteristics> commits, 
-      Repository repository,
-      PlotCommit<VisualLane> currentCommit)
-          throws IOException, GitAPIException {
-    try (PlotWalk plotWalk = new PlotWalk(repository)) {
-      RevCommit commit = plotWalk.parseCommit(currentCommit.getId());
-
-      if (commit.getParentCount() > 0) {
-        RevCommit parent = commit.getParent(0);
-        plotWalk.parseHeaders(parent);
-
-        Optional<DiffEntry> renameRev = RevCommitUtil.findRename(repository, parent, commit, filePath);
-        if (renameRev.isPresent()) {
-          String oldPath = renameRev.get().getOldPath();
-
-          plotWalk.markStart(commit);
-
-          collectRevisions(oldPath, commits, repository, plotWalk);
-        } else {
-          commits.add(new CommitCharacteristics(currentCommit));
-        }
-      }
-    }
-  }
-
   
   /**
    * Get a list with all the parent IDs of the current commit.
