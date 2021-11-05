@@ -1,5 +1,8 @@
 package com.oxygenxml.git.view.history;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Responsible for providing useful information about the files presented.
  * 
@@ -8,12 +11,15 @@ package com.oxygenxml.git.view.history;
  */
 public class FileHistoryPresenter {
 	
-	// TODO maybe use Observer design pattern to notity about presented file path changes.
-	
 	/**
 	 * Current presented file path.
 	 */
 	private String filePath;
+	
+	/**
+	 * List with observers.
+	 */
+	private final List<IObserver> observers;
 	
 	
 	/**
@@ -33,6 +39,7 @@ public class FileHistoryPresenter {
 	 */
 	public FileHistoryPresenter(String filePath) {
 	     this.filePath = filePath;
+	     observers = new ArrayList<>();
 	}
 
 	
@@ -51,6 +58,7 @@ public class FileHistoryPresenter {
 	 */
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+		notifyObservers();
 	}
 	
 	
@@ -72,4 +80,23 @@ public class FileHistoryPresenter {
 		          !(filePath.equals(path) || path.startsWith(filePath + "/", 0)) 
 				 );
 	}
+	
+	/**
+	 * Notify all observers.
+	 */
+	private void notifyObservers() {
+		for(IObserver iterator: observers) {
+			iterator.update();
+		}
+	}
+	
+	/**
+	 * Add a new observer to list.
+	 * 
+	 * @param observer observer to be added.
+	 */
+	public void addObserver(IObserver observer) {
+		observers.add(observer);
+	}
+
 }

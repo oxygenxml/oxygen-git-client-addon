@@ -53,7 +53,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
         String searched = pathFinder.getFilePathOnCommit(commitCharacteristics.getPlotCommit());
-        filesModel.setSearchedPath(searched);
+        filePresenter.setFilePath(searched);
         StringBuilder commitDescription = new StringBuilder();
         // Case for already committed changes.
         if (commitCharacteristics.getCommitter() != null) {
@@ -185,7 +185,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     /**
      * The current file history presented.
      */
-    private final StagingResourcesTableModel filesModel;
+    private final FileHistoryPresenter filePresenter;
     
     
     
@@ -213,7 +213,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
 		this.pathFinder = pathFinder;
-		this.filesModel = (StagingResourcesTableModel)changesTable.getModel();
+		this.filePresenter = ((StagingResourcesTableModel)changesTable.getModel()).getFilePathPresented();
 	}
 
 	@Override

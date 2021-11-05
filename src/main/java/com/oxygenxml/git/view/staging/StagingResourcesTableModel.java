@@ -19,6 +19,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.history.FileHistoryPresenter;
+import com.oxygenxml.git.view.history.IObserver;
 
 /**
  * Custom table model
@@ -26,7 +27,7 @@ import com.oxygenxml.git.view.history.FileHistoryPresenter;
  * @author Beniamin Savu
  *
  */
-public class StagingResourcesTableModel extends AbstractTableModel {
+public class StagingResourcesTableModel extends AbstractTableModel implements IObserver {
   
   /**
    * Logger for logging.
@@ -346,19 +347,6 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Sets the priority path. The files with this paths will be displayed first.
-	 * If no value is set, this sort criterion will not be considered.
-	 * 
-	 * @param searchedPath  The new presented path.
-	 */
-	public void setSearchedPath(String newPathPresented) {
-    this.filePathPresented.setFilePath(newPathPresented);
-    fireTableRowsDeleted(0, getRowCount());
-    this.filesStatuses.sort(fileStatusComparator);
-    fireTableRowsInserted(0, getRowCount());
-  }
-
-	/**
 	 * @return the file history presenter.
 	 */
 	public FileHistoryPresenter getFilePathPresented() {
@@ -370,8 +358,19 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 */
 	public void setFilePathPresented(FileHistoryPresenter filePathPresented) {
 		this.filePathPresented = filePathPresented;
+		this.filePathPresented.addObserver(this);
+		update();
+	}
+	
+	/**
+	 * Update files list.
+	 */
+	@Override
+	public void update() {
 		fireTableRowsDeleted(0, getRowCount());
-	    this.filesStatuses.sort(fileStatusComparator);
+		if(filesStatuses != null) {
+			this.filesStatuses.sort(fileStatusComparator);
+		}
 	    fireTableRowsInserted(0, getRowCount());
 	}
 	
