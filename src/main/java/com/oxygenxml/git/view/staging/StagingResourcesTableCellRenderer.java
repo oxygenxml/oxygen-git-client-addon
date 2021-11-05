@@ -37,8 +37,9 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * The file/folder to show history.
    */
   private String searchedFilePath;
-  
-  /**
+
+
+/**
    * The border for padding.
    */
   private static final Border PADDING = BorderFactory.createEmptyBorder(
@@ -72,6 +73,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     JLabel tableCellRendererComponent = (JLabel) super.getTableCellRendererComponent(
         table, value, isSelected, hasFocus, row, column);
     
+    String location = "";
     if (value instanceof GitChangeType) {
       RenderingInfo renderingInfo = RendererUtil.getChangeRenderingInfo((GitChangeType) value);
       setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
@@ -80,7 +82,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         tooltipText = renderingInfo.getTooltip();
       }
     } else if (value instanceof FileStatus) {
-      String location = ((FileStatus) value).getFileLocation();
+      location = ((FileStatus) value).getFileLocation();
       setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       
       FontMetrics metrics = getFontMetrics(getFont());
@@ -102,7 +104,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     if(isSelected) {
       tableCellRendererComponent.setForeground(table.getSelectionForeground());
     } else {
-      updateForegroundText(labelText, tableCellRendererComponent); 
+      updateForegroundText(location, tableCellRendererComponent); 
     }
     
     tableCellRendererComponent.setIcon(icon);
@@ -145,7 +147,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * @param tableCellRendererComponent     The displayed Jlabel. 
    */
   private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
-    if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme() != null) {
+	 if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme() != null) {
       if(searchedFilePath instanceof String && 
           !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
         tableCellRendererComponent.setForeground(
@@ -158,6 +160,5 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
       }
     }
   }
-  
   
 }

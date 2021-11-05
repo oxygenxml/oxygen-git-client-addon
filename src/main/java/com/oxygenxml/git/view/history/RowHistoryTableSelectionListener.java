@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTable;
@@ -15,6 +16,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -22,6 +25,7 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -36,7 +40,40 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
   private class TableTimerListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
+      
       setCommitDescription();
+    }
+    
+    /**
+     * Get the file path on the given commit.
+     * 
+     * @param commit The commit.
+     * 
+     * @return file path or <code>null</code>.
+     */
+    private String getFilePathOnCommit(RevCommit commit) {
+  	  String searchedPath = null;
+  	  if(fileAllPaths != null) {
+  		  List<Integer> commitsTime = new ArrayList<>(fileAllPaths.keySet());
+  		  if(commitsTime.size() == 1) {
+  			  searchedPath = fileAllPaths.get(commitsTime.get(0));
+  		  } else {
+  			  int current = commit.getCommitTime();
+  			  for(int i = 0; i < commitsTime.size(); i++) {
+  				  int after = commitsTime.get(i);	  
+  				  if(current < after) {
+  					  searchedPath = fileAllPaths.get(commitsTime.get(i));
+  					  break;
+  				  }
+  			  }
+  			  
+  			  if(searchedPath == null) {
+  				  searchedPath = fileAllPaths.get(commitsTime.get(commitsTime.size() - 1));
+  			  }
+  		  }
+  	  }
+  	  
+  	  return searchedPath;
     }
     
     /**
@@ -49,6 +86,11 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
       if (selectedRow != -1) {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
+        String searched = getFilePathOnCommit(commitCharacteristics.getPlotCommit());
+ 
+        ((StagingResourcesTableCellRenderer)changesTable.getDefaultRenderer(FileStatus.class)).setSearchedFilePath(searched);
+        ((StagingResourcesTableModel)changesTable.getModel()).setSearchedPath(searched);
+        
         StringBuilder commitDescription = new StringBuilder();
         // Case for already committed changes.
         if (commitCharacteristics.getCommitter() != null) {
@@ -132,7 +174,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
             	try {
             		files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
             	} catch (IOException | GitAPIException e) {
-        			logger.error(e, e);
+        			LOGGER.error(e, e);
         		}
             } else {
             	files.addAll(GitAccess.getInstance().getUnstagedFiles());
@@ -141,12 +183,12 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     	});
     }
   }
-    
+  
     
    /**
     * Logger for logging.
     */
-    private static final Logger logger = Logger.getLogger(RowHistoryTableSelectionListener.class);
+    private static final Logger LOGGER = Logger.getLogger(RowHistoryTableSelectionListener.class);
 	/**
 	 * Fake commit URL to search for parents when using hyperlink.
 	 */
@@ -170,8 +212,17 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	/**
 	 * Table that presents the resources changed inside a commit.
 	 */
-  private JTable changesTable;
-
+    private JTable changesTable;
+    
+    /**
+     * We have the following map: 
+     * The keys are the time of the next commit in which the file whose history 
+     *   is shown is involved(or even the commit if this is the last one). 
+     * The values ​​have the path of the file that was before it changed.
+     */
+    private Map<Integer, String> fileAllPaths;
+    
+    
 	/**
 	 * Construct the SelectionListener for HistoryTable.
 	 * 
@@ -180,18 +231,27 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * @param commitDescriptionPane       The commitDescriptionPane
 	 * @param commits                     The list of commits and their characteristics.
 	 * @param changesTable                The table that presents the files changed in a commit.
+	 * @param repo                        The current repository.
+	 * @param filePath                    The path of the file to present history.
 	 */
 	public RowHistoryTableSelectionListener(
 	    int updateDelay,
 	    JTable historyTable, 
 	    JEditorPane commitDescriptionPane,
-			List<CommitCharacteristics> commits, 
-			JTable changesTable) {
+		List<CommitCharacteristics> commits, 
+		JTable changesTable,
+		Repository repo,
+		String filePath) {
 		this.changesTable = changesTable;
 		descriptionUpdateTimer = new Timer(updateDelay, descriptionUpdateListener);
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
+		try {
+			fileAllPaths = RevCommitUtil.getCurrentFileOldPaths(filePath, repo);
+   		} catch (GitAPIException | IOException e) {
+   			LOGGER.error(e, e);
+   		}
 	}
 
 	@Override
