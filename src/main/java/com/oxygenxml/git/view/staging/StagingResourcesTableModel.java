@@ -18,6 +18,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.history.FileHistoryPresenter;
 
 /**
  * Custom table model
@@ -50,19 +51,18 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * The path for which history is shown.
 	 */
-	private String searchedPath = null;
+	private transient FileHistoryPresenter filePathPresented;
+	
 
-  /**
+   /**
 	 * Compares file statuses.
 	 */
 	private final Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
 	  int comparationResult = 0;
 	  
-	  if(searchedPath != null && searchedPath.length() > 0) {
-	    boolean file1IsFiltered = !searchedPath.equals(f1.getFileLocation()) &&
-	        !f1.getFileLocation().startsWith(searchedPath + "/", 0);
-	    boolean file2IsFiltered = !searchedPath.equals(f2.getFileLocation()) &&
-	        !f2.getFileLocation().startsWith(searchedPath + "/", 0);
+	  if(filePathPresented != null && filePathPresented.isFilePresented()) {
+	    boolean file1IsFiltered = filePathPresented.isCurrentPathPresented(f1.getFileLocation());
+	    boolean file2IsFiltered = filePathPresented.isCurrentPathPresented(f2.getFileLocation());
 	    comparationResult = Boolean.compare(file1IsFiltered, file2IsFiltered);
 	  }
 	  
@@ -349,13 +349,30 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * Sets the priority path. The files with this paths will be displayed first.
 	 * If no value is set, this sort criterion will not be considered.
 	 * 
-	 * @param searchedPath  The searched path.
+	 * @param searchedPath  The new presented path.
 	 */
-	public void setSearchedPath(String searchedPath) {
-    this.searchedPath = searchedPath;
-
+	public void setSearchedPath(String newPathPresented) {
+    this.filePathPresented.setFilePath(newPathPresented);
     fireTableRowsDeleted(0, getRowCount());
     this.filesStatuses.sort(fileStatusComparator);
     fireTableRowsInserted(0, getRowCount());
   }
+
+	/**
+	 * @return the file history presenter.
+	 */
+	public FileHistoryPresenter getFilePathPresented() {
+		return filePathPresented;
+	}
+
+	/**
+	 * @param filePathPresented the new file history presenter.
+	 */
+	public void setFilePathPresented(FileHistoryPresenter filePathPresented) {
+		this.filePathPresented = filePathPresented;
+		fireTableRowsDeleted(0, getRowCount());
+	    this.filesStatuses.sort(fileStatusComparator);
+	    fireTableRowsInserted(0, getRowCount());
+	}
+	
 }

@@ -16,6 +16,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
+import com.oxygenxml.git.view.history.FileHistoryPresenter;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -36,7 +37,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
   /**
    * The file/folder to show history.
    */
-  private String searchedFilePath;
+  private FileHistoryPresenter presentedFilePath;
 
 
 /**
@@ -131,12 +132,12 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
 
 
   /**
-   * Set the value for the searched file.
+   * Set the value for the presented file.
    * 
-   * @param selectedFilePath The new searched file.
+   * @param presentedFilePath The new presented file.
    */
-  public void setSearchedFilePath(String selectedFilePath) {
-    this.searchedFilePath = selectedFilePath;
+  public void setPresentedFilePath(FileHistoryPresenter presentedFilePath) {
+    this.presentedFilePath = presentedFilePath;
   }
   
   
@@ -148,8 +149,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    */
   private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
 	 if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme() != null) {
-      if(searchedFilePath instanceof String && 
-          !(searchedFilePath.equals(currentFilePath) || currentFilePath.startsWith(searchedFilePath + "/", 0))) {
+      if(presentedFilePath != null && presentedFilePath.isCurrentPathPresented(currentFilePath)) {
         tableCellRendererComponent.setForeground(
             PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
                 UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);

@@ -22,7 +22,6 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -35,7 +34,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
    * Timer Listener when selecting a row in HistoryTable.
    */
   private class TableTimerListener implements ActionListener {
-    @Override
+
+	@Override
     public void actionPerformed(ActionEvent e) {
       
       setCommitDescription();
@@ -53,10 +53,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
         String searched = pathFinder.getFilePathOnCommit(commitCharacteristics.getPlotCommit());
- 
-        ((StagingResourcesTableCellRenderer)changesTable.getDefaultRenderer(FileStatus.class)).setSearchedFilePath(searched);
-        ((StagingResourcesTableModel)changesTable.getModel()).setSearchedPath(searched);
-        
+        filesModel.setSearchedPath(searched);
         StringBuilder commitDescription = new StringBuilder();
         // Case for already committed changes.
         if (commitCharacteristics.getCommitter() != null) {
@@ -185,6 +182,11 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
      */
     private PathFinder pathFinder;
     
+    /**
+     * The current file history presented.
+     */
+    private final StagingResourcesTableModel filesModel;
+    
     
     
 	/**
@@ -211,6 +213,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
 		this.pathFinder = pathFinder;
+		this.filesModel = (StagingResourcesTableModel)changesTable.getModel();
 	}
 
 	@Override
