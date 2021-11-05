@@ -684,7 +684,7 @@ public class HistoryPanel extends JPanel {
 
         revisionDataUpdater = new RowHistoryTableSelectionListener(getUpdateDelay(), 
         	historyTable, commitDescriptionPane, commitCharacteristicsVector, 
-        	affectedFilesTable, repo, filePath
+        	affectedFilesTable, new PathFinder(repo, filePath)
         );
         historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
 

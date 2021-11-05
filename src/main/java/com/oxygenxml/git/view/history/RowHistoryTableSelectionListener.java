@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTable;
@@ -16,8 +15,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -44,37 +41,6 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
       setCommitDescription();
     }
     
-    /**
-     * Get the file path on the given commit.
-     * 
-     * @param commit The commit.
-     * 
-     * @return file path or <code>null</code>.
-     */
-    private String getFilePathOnCommit(RevCommit commit) {
-  	  String searchedPath = null;
-  	  if(fileAllPaths != null) {
-  		  List<Integer> commitsTime = new ArrayList<>(fileAllPaths.keySet());
-  		  if(commitsTime.size() == 1) {
-  			  searchedPath = fileAllPaths.get(commitsTime.get(0));
-  		  } else {
-  			  int current = commit.getCommitTime();
-  			  for(int i = 0; i < commitsTime.size(); i++) {
-  				  int after = commitsTime.get(i);	  
-  				  if(current < after) {
-  					  searchedPath = fileAllPaths.get(commitsTime.get(i));
-  					  break;
-  				  }
-  			  }
-  			  
-  			  if(searchedPath == null) {
-  				  searchedPath = fileAllPaths.get(commitsTime.get(commitsTime.size() - 1));
-  			  }
-  		  }
-  	  }
-  	  
-  	  return searchedPath;
-    }
     
     /**
      * Set the commit description in a non-editable editor pane, including: CommitID,
@@ -86,7 +52,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
       if (selectedRow != -1) {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
-        String searched = getFilePathOnCommit(commitCharacteristics.getPlotCommit());
+        String searched = pathFinder.getFilePathOnCommit(commitCharacteristics.getPlotCommit());
  
         ((StagingResourcesTableCellRenderer)changesTable.getDefaultRenderer(FileStatus.class)).setSearchedFilePath(searched);
         ((StagingResourcesTableModel)changesTable.getModel()).setSearchedPath(searched);
@@ -215,12 +181,10 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     private JTable changesTable;
     
     /**
-     * We have the following map: 
-     * The keys are the time of the next commit in which the file whose history 
-     *   is shown is involved(or even the commit if this is the last one). 
-     * The values ​​have the path of the file that was before it changed.
+     * Responsible for finding the file path at certain times.
      */
-    private Map<Integer, String> fileAllPaths;
+    private PathFinder pathFinder;
+    
     
     
 	/**
@@ -240,18 +204,13 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	    JEditorPane commitDescriptionPane,
 		List<CommitCharacteristics> commits, 
 		JTable changesTable,
-		Repository repo,
-		String filePath) {
+		PathFinder pathFinder) {
 		this.changesTable = changesTable;
 		descriptionUpdateTimer = new Timer(updateDelay, descriptionUpdateListener);
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
-		try {
-			fileAllPaths = RevCommitUtil.getCurrentFileOldPaths(filePath, repo);
-   		} catch (GitAPIException | IOException e) {
-   			LOGGER.error(e, e);
-   		}
+		this.pathFinder = pathFinder;
 	}
 
 	@Override
