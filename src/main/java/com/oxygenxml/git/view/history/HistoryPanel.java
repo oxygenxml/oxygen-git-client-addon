@@ -378,7 +378,7 @@ public class HistoryPanel extends JPanel {
    * @return The table that presents the files.
    */
   private JTable createAffectedFilesTable() {
-    JTable table = UIUtil.createResourcesTable(new StagingResourcesTableModel(null, true), () -> false);
+    JTable table = UIUtil.createResourcesTable(new HistoryTableAffectedFilesModel(), () -> false);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     table.addMouseListener(new MouseAdapter() {
@@ -650,10 +650,10 @@ public class HistoryPanel extends JPanel {
           historyTable.getSelectionModel().removeListSelectionListener(revisionDataUpdater);
         }
 
-        StagingResourcesTableModel dataModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
+        HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
         dataModel.setFilesStatus(Collections.emptyList());
         FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter(filePath);
-        dataModel.setFilePathPresented(fileHistoryPresenter);
+        dataModel.setFilePathPresenter(fileHistoryPresenter);
         StagingResourcesTableCellRenderer cellRender = (StagingResourcesTableCellRenderer) affectedFilesTable.getDefaultRenderer(FileStatus.class);
         cellRender.setPresentedFilePath(fileHistoryPresenter);
         commitDescriptionPane.setText("");

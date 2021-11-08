@@ -212,7 +212,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
 		this.pathFinder = pathFinder;
-		this.filePresenter = ((StagingResourcesTableModel)changesTable.getModel()).getFilePathPresented();
+		this.filePresenter = ((HistoryTableAffectedFilesModel)changesTable.getModel()).getFilePathPresenter();
 	}
 
 	@Override
