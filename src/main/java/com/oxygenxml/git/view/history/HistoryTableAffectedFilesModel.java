@@ -14,16 +14,16 @@ import com.oxygenxml.git.view.stash.FilesTableModel;
 public class HistoryTableAffectedFilesModel extends FilesTableModel {
 
   /**
-   * Path for the presented file in history.
+   * Presenter for file in history.
    */
-  private String presentedFile = null;
+  private transient FileHistoryPresenter fileHistoryPresenter;
   
   /**
    * Compares file statuses.
    */
   private final transient Comparator<FileStatus> defaultComparator = (f1, f2) -> {
     int comparationResult = 0;
-    
+    String presentedFile = fileHistoryPresenter.getFilePath();
     if(presentedFile != null && presentedFile.length() > 0) {
       boolean file1IsFiltered = !presentedFile.equals(f1.getFileLocation()) &&
           !f1.getFileLocation().startsWith(presentedFile + "/", 0);
@@ -58,8 +58,13 @@ public class HistoryTableAffectedFilesModel extends FilesTableModel {
    * 
    * @param presentedFile The new String path of presented file.
    */
-  public void setPresentedFile(String presentedFile) {
-    this.presentedFile = presentedFile;
+  public void setFilePathPresenter(FileHistoryPresenter presentedFile) {
+    this.fileHistoryPresenter = presentedFile;
+  }
+
+
+  public FileHistoryPresenter getFilePathPresenter() {
+    return fileHistoryPresenter;
   }
   
   

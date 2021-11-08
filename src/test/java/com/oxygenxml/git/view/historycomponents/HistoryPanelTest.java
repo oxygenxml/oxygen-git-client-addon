@@ -18,8 +18,9 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.FileHistoryPresenter;
+import com.oxygenxml.git.view.history.HistoryAffectedFileCellRender;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
-import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.util.UIUtil;
 
 /**
@@ -205,7 +206,8 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       
       TableCellRenderer render = affectedFiles.getDefaultRenderer(FileStatus.class);
       
-      ((StagingResourcesTableCellRenderer)render).setSearchedFilePath("f2/file4.txt");
+      FileHistoryPresenter presentedPath = new FileHistoryPresenter("f2/file4.txt");
+      ((HistoryAffectedFileCellRender)render).setFilePresenter(presentedPath);
       
       Color foregroundColor = render.getTableCellRendererComponent(
           affectedFiles, affectedFiles.getValueAt(0, 1), false, true, 0, 1).getForeground();
@@ -220,14 +222,14 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
           affectedFiles, affectedFiles.getValueAt(3, 1), false, true, 3, 1).getForeground();
       assertEquals(UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
       
-      ((StagingResourcesTableCellRenderer)render).setSearchedFilePath("f2");
+      presentedPath.setFilePath("f2"); 
       for(int i = 0; i < affectedFiles.getColumnCount(); i++) {
         foregroundColor = render.getTableCellRendererComponent(
             affectedFiles, affectedFiles.getValueAt(i, 1), false, true, 1, 1).getForeground();
         assertEquals(UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
       }
       
-      ((StagingResourcesTableCellRenderer)render).setSearchedFilePath(null);
+      presentedPath.setFilePath(null); 
       for(int i = 0; i < affectedFiles.getColumnCount(); i++) {
         foregroundColor = render.getTableCellRendererComponent(
             affectedFiles, affectedFiles.getValueAt(i, 1), false, true, 1, 1).getForeground();

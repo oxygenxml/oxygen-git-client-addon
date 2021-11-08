@@ -28,8 +28,8 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 import com.oxygenxml.git.view.history.HistoryPanel;
+import com.oxygenxml.git.view.history.HistoryTableAffectedFilesModel;
 import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
-import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 
 /**
  * UI level tests for history.
@@ -74,7 +74,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
    */
   protected void assertAffectedFiles(HistoryPanel historyPanel, String expected) {
     JTable affectedFilesTable = historyPanel.getAffectedFilesTable();
-    StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
+    HistoryTableAffectedFilesModel affectedFilesModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
     String dumpFS = dumpFS(affectedFilesModel.getFilesStatuses());
 
     assertEquals(expected, dumpFS);
@@ -112,7 +112,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
       affectedTable.getModel().removeTableModelListener(l);
     }
     flushAWT();
-    CommitCharacteristics selectedObject = (CommitCharacteristics) model.getValueAt(historyTable.getSelectedRow(), 0);
+    CommitCharacteristics selectedObject = (CommitCharacteristics) model.getValueAt(historyTable.getSelectedRow(), 1);
     assertEquals(replaceDate(expected), toString(selectedObject));
   }
 

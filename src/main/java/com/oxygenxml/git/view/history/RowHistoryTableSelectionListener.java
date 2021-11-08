@@ -33,10 +33,13 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
    * Timer Listener when selecting a row in HistoryTable.
    */
   private class TableTimerListener implements ActionListener {
-    @Override
+
+	@Override
     public void actionPerformed(ActionEvent e) {
+      
       setCommitDescription();
     }
+    
     
     /**
      * Set the commit description in a non-editable editor pane, including: CommitID,
@@ -48,6 +51,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
       if (selectedRow != -1) {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
+        String searched = pathFinder.getFilePathOnCommit(commitCharacteristics.getPlotCommit());
+        filePresenter.setFilePath(searched);
         StringBuilder commitDescription = new StringBuilder();
         // Case for already committed changes.
         if (commitCharacteristics.getCommitter() != null) {
@@ -131,7 +136,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
             	try {
             		files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
             	} catch (IOException | GitAPIException e) {
-        			logger.error(e, e);
+        			LOGGER.error(e, e);
         		}
             } else {
             	files.addAll(GitAccess.getInstance().getUnstagedFiles());
@@ -140,12 +145,12 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     	});
     }
   }
-    
+  
     
    /**
     * Logger for logging.
     */
-    private static final Logger logger = Logger.getLogger(RowHistoryTableSelectionListener.class);
+    private static final Logger LOGGER = Logger.getLogger(RowHistoryTableSelectionListener.class);
 	/**
 	 * Fake commit URL to search for parents when using hyperlink.
 	 */
@@ -169,8 +174,20 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	/**
 	 * Table that presents the resources changed inside a commit.
 	 */
-  private JTable changesTable;
-
+    private JTable changesTable;
+    
+    /**
+     * Responsible for finding the file path at certain times.
+     */
+    private PathFinder pathFinder;
+    
+    /**
+     * The current file history presented.
+     */
+    private final FileHistoryPresenter filePresenter;
+    
+    
+    
 	/**
 	 * Construct the SelectionListener for HistoryTable.
 	 * 
@@ -179,18 +196,23 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * @param commitDescriptionPane       The commitDescriptionPane
 	 * @param commits                     The list of commits and their characteristics.
 	 * @param changesTable                The table that presents the files changed in a commit.
+	 * @param repo                        The current repository.
+	 * @param filePath                    The path of the file to present history.
 	 */
 	public RowHistoryTableSelectionListener(
 	    int updateDelay,
 	    JTable historyTable, 
 	    JEditorPane commitDescriptionPane,
-			List<CommitCharacteristics> commits, 
-			JTable changesTable) {
+		List<CommitCharacteristics> commits, 
+		JTable changesTable,
+		PathFinder pathFinder) {
 		this.changesTable = changesTable;
 		descriptionUpdateTimer = new Timer(updateDelay, descriptionUpdateListener);
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
+		this.pathFinder = pathFinder;
+		this.filePresenter = ((HistoryTableAffectedFilesModel)changesTable.getModel()).getFilePathPresenter();
 	}
 
 	@Override

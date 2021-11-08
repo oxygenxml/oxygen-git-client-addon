@@ -38,7 +38,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -74,7 +73,6 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
-import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
@@ -152,10 +150,6 @@ public class HistoryPanel extends JPanel {
    */
   private final CommitsGraphCellRender graphCellRender;
 
-  /**
-   * <code>true</code> if is the dark theme.
-   */
-  private final boolean isDarkTheme;
   
   /**
    * Constructor.
@@ -164,8 +158,7 @@ public class HistoryPanel extends JPanel {
    */
   public HistoryPanel(GitController gitCtrl) {
     setLayout(new BorderLayout());
-
-    isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+    
     graphCellRender = new CommitsGraphCellRender();
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
@@ -384,8 +377,7 @@ public class HistoryPanel extends JPanel {
    * @return The table that presents the files.
    */
   private JTable createAffectedFilesTable() {
-    AbstractTableModel model = new HistoryTableAffectedFilesModel();
-    JTable table = UIUtil.createResourcesTable(model , () -> false);
+    JTable table = UIUtil.createResourcesTable(new HistoryTableAffectedFilesModel(), () -> false);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     table.addMouseListener(new MouseAdapter() {
@@ -622,7 +614,7 @@ public class HistoryPanel extends JPanel {
    * @param force    <code>true</code> to recompute the history data, even if the
    *                 view already presents the history for the given resource.
    */
-  private void showHistory(final String filePath, boolean force) {
+  private void showHistory(String filePath, boolean force) {
 	  
     Translator translator = Translator.getInstance();
 
@@ -646,8 +638,6 @@ public class HistoryPanel extends JPanel {
           historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
         
-        ((StagingResourcesTableCellRenderer)affectedFilesTable.getDefaultRenderer(FileStatus.class)).setSearchedFilePath(filePath);
-        
         historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
             historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
             this.getWidth() / topPanel.getComponentCount()));
@@ -658,16 +648,19 @@ public class HistoryPanel extends JPanel {
         if (revisionDataUpdater != null) {
           historyTable.getSelectionModel().removeListSelectionListener(revisionDataUpdater);
         }
-        
+
         HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
         dataModel.setFilesStatus(Collections.emptyList());
-        dataModel.setPresentedFile(filePath);
-        
+        FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter(filePath);
+        dataModel.setFilePathPresenter(fileHistoryPresenter);
+        HistoryAffectedFileCellRender cellRender = (HistoryAffectedFileCellRender) affectedFilesTable.getDefaultRenderer(FileStatus.class);
+        cellRender.setFilePresenter(fileHistoryPresenter);
         commitDescriptionPane.setText("");
-
+        
         final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
 
         Repository repo = gitAccess.getRepository();
+        
         CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
             repo.getFullBranch());
 
@@ -692,8 +685,10 @@ public class HistoryPanel extends JPanel {
           historyTable.setRowHeight(rh);
         });
 
-        revisionDataUpdater = new RowHistoryTableSelectionListener(getUpdateDelay(), historyTable,
-            commitDescriptionPane, commitCharacteristicsVector, affectedFilesTable);
+        revisionDataUpdater = new RowHistoryTableSelectionListener(getUpdateDelay(), 
+        	historyTable, commitDescriptionPane, commitCharacteristicsVector, 
+        	affectedFilesTable, new PathFinder(repo, filePath)
+        );
         historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
 
         // Install hyperlink listener.
@@ -914,6 +909,7 @@ public class HistoryPanel extends JPanel {
     });
   }
 
+ 
   /**
    * @return the table with the affected files.
    */
