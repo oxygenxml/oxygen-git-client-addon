@@ -3,6 +3,13 @@ package com.oxygenxml.git.view.history;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.revplot.PlotCommit;
+
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.RevCommitUtilBase;
+import com.oxygenxml.git.view.history.graph.VisualCommitsList;
+
 /**
  * Class for Commit Characteristics shown in historyTable.
  * 
@@ -45,6 +52,30 @@ public class CommitCharacteristics {
 	 * The abbreviated commitId of the parent.
 	 */
 	private List<String> parentCommitId;
+	
+	/**
+	 * The plot for current commit. 
+	 */
+	private final PlotCommit<VisualCommitsList.VisualLane> plotCommit;
+	
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param plotCommit The plot commit from which the details are extracted.
+	 */
+	public CommitCharacteristics(PlotCommit<VisualCommitsList.VisualLane> plotCommit) {
+		commitMessage = plotCommit.getFullMessage();
+	    PersonIdent authorIdent = plotCommit.getAuthorIdent();
+	    author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
+	    date = authorIdent.getWhen();
+	    commitAbbreviatedId = plotCommit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
+	    commitId = plotCommit.getId().getName();
+	    PersonIdent committerIdent = plotCommit.getCommitterIdent();
+	    committer = committerIdent.getName();
+	    parentCommitId = RevCommitUtil.getParentsId(plotCommit);
+        this.plotCommit = plotCommit;
+	}
 
 	/**
 	 * Construct the CommitCharacteristics.
@@ -67,6 +98,7 @@ public class CommitCharacteristics {
 		this.commitId = commitId;
 		this.committer = committer;
 		this.parentCommitId = parentCommitId;
+		this.plotCommit = null;
 	}
 
 	@Override
@@ -125,5 +157,15 @@ public class CommitCharacteristics {
 		}
 		return -1;
 	}
+
+	/**
+	 *
+	 * @return The plot commit.
+	 */ 
+	public PlotCommit<VisualCommitsList.VisualLane> getPlotCommit() {
+		return plotCommit;
+	}
+	
+	
 	
 }

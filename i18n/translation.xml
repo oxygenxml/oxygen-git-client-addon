@@ -17,6 +17,15 @@
         <val lang="nl_NL">Press to show the Git Branch Manager view.</val>
         <val lang="zh_CN">Press to show the Git Branch Manager view.</val>
     </key>
+    <key value="Graph">
+        <comment>The title for Graph column in Git history.</comment>
+        <val lang="en_US">Graph</val>
+        <val lang="de_DE">Graph</val>
+        <val lang="fr_FR">Graph</val>
+        <val lang="ja_JP">Graph</val>
+        <val lang="nl_NL">Graph</val>
+        <val lang="zh_CN">Graph</val>
+    </key>
     <key value="Pull_failed_because_conflicting_paths">
         <comment>The text is displayed when you pull but it fails because the files that are
             modified might become in conflict</comment>

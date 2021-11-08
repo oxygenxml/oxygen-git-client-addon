@@ -1534,4 +1534,9 @@ public class Tags {
    */
   public static final String DELETE_TAG_DIALOG_MESSAGE= "Delete_Tag_Dialog_Message"; 
   
+  /**
+   * History graph column title.
+   */
+  public static final String GRAPH = "Graph";
+  
 }

@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.eclipse.jgit.revplot.PlotCommit;
+
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
@@ -22,7 +24,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
   /**
    * Number of columns.
    */
-  private static final int COLUMN_COUNT = 4;
+  private static final int COLUMN_COUNT = 5;
   
   /**
    * Length of the short commit id
@@ -30,24 +32,29 @@ public class HistoryCommitTableModel extends AbstractTableModel {
   private static final int SHORT_COMMIT_ID_LENGTH = 7;
   
   /**
+	 * Commit graph table column index.
+	 */
+	public static final int COMMIT_GRAPH = 0;
+  
+  /**
 	 * Commit message table column index.
 	 */
-	public static final int COMMIT_MESSAGE = 0;
+	public static final int COMMIT_MESSAGE = 1;
 	
 	/**
    *Date table column index.
    */
-	public static final int DATE = 1;
+	public static final int DATE = 2;
 	
 	/**
    * Author table column index.
    */
-	public static final int AUTHOR = 2;
+	public static final int AUTHOR = 3;
 	
 	/**
    * Commit ID table column index.
    */
-	public static final int COMMIT_ABBREVIATED_ID = 3;
+	public static final int COMMIT_ABBREVIATED_ID = 4;
 	
 	/**
    * Text from filter field
@@ -83,6 +90,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		Object temp = null;
 
 		switch (columnIndex) {
+		case COMMIT_GRAPH:
+		     temp = commitCharacteristics.getPlotCommit();
+		     break;
 		case COMMIT_MESSAGE:
 			temp = commitCharacteristics;
 			break;
@@ -108,6 +118,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	public Class<?> getColumnClass(int columnIndex) {
 		Class<?> clazz = null;
 		switch (columnIndex) {
+		case COMMIT_GRAPH:
+			clazz = PlotCommit.class;
+			break;
 		case COMMIT_MESSAGE:
 			clazz = CommitCharacteristics.class;
 			break;
@@ -157,6 +170,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	public String getColumnName(int index) {
 		String columnName = null;
 		switch (index) {
+		case COMMIT_GRAPH:
+			columnName = Translator.getInstance().getTranslation(Tags.GRAPH);
+			break;
 		case COMMIT_MESSAGE:
 			columnName = Translator.getInstance().getTranslation(Tags.COMMIT_MESSAGE_LABEL);
 			break;
