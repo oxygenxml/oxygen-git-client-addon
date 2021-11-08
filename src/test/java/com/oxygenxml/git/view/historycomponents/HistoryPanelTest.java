@@ -19,8 +19,8 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.FileHistoryPresenter;
+import com.oxygenxml.git.view.history.HistoryAffectedFileCellRender;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
-import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.util.UIUtil;
 
 /**
@@ -207,7 +207,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       TableCellRenderer render = affectedFiles.getDefaultRenderer(FileStatus.class);
       
       FileHistoryPresenter presentedPath = new FileHistoryPresenter("f2/file4.txt");
-      ((StagingResourcesTableCellRenderer)render).setPresentedFilePath(presentedPath);
+      ((HistoryAffectedFileCellRender)render).setFilePresenter(presentedPath);
       
       Color foregroundColor = render.getTableCellRendererComponent(
           affectedFiles, affectedFiles.getValueAt(0, 1), false, true, 0, 1).getForeground();

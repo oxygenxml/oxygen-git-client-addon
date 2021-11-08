@@ -73,7 +73,6 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
-import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
@@ -654,8 +653,8 @@ public class HistoryPanel extends JPanel {
         dataModel.setFilesStatus(Collections.emptyList());
         FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter(filePath);
         dataModel.setFilePathPresenter(fileHistoryPresenter);
-        StagingResourcesTableCellRenderer cellRender = (StagingResourcesTableCellRenderer) affectedFilesTable.getDefaultRenderer(FileStatus.class);
-        cellRender.setPresentedFilePath(fileHistoryPresenter);
+        HistoryAffectedFileCellRender cellRender = (HistoryAffectedFileCellRender) affectedFilesTable.getDefaultRenderer(FileStatus.class);
+        cellRender.setFilePresenter(fileHistoryPresenter);
         commitDescriptionPane.setText("");
         
         final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);

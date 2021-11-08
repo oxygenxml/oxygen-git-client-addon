@@ -16,7 +16,6 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
-import com.oxygenxml.git.view.history.FileHistoryPresenter;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -27,20 +26,14 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * Renderer for the staged/unstaged tables.
  */
 @SuppressWarnings("java:S110")
-public final class StagingResourcesTableCellRenderer extends DefaultTableCellRenderer {
+public class StagingResourcesTableCellRenderer extends DefaultTableCellRenderer {
   
   /**
    * Tells if a contextual menu is presented over the table.
    */
   private BooleanSupplier contextMenuShowing;
-  
+
   /**
-   * The file/folder to show history.
-   */
-  private FileHistoryPresenter presentedFilePath;
-
-
-/**
    * The border for padding.
    */
   private static final Border PADDING = BorderFactory.createEmptyBorder(
@@ -105,7 +98,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     if(isSelected) {
       tableCellRendererComponent.setForeground(table.getSelectionForeground());
     } else {
-      updateForegroundText(location, tableCellRendererComponent); 
+      updateForegroundText(tableCellRendererComponent); 
     }
     
     tableCellRendererComponent.setIcon(icon);
@@ -129,16 +122,6 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
 
     return tableCellRendererComponent;
   }
-
-
-  /**
-   * Set the value for the presented file.
-   * 
-   * @param presentedFilePath The new presented file.
-   */
-  public void setPresentedFilePath(FileHistoryPresenter presentedFilePath) {
-    this.presentedFilePath = presentedFilePath;
-  }
   
   
   /**
@@ -147,18 +130,15 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
    * @param currentFilePath                The current file path.
    * @param tableCellRendererComponent     The displayed Jlabel. 
    */
-  private void updateForegroundText(String currentFilePath, JLabel tableCellRendererComponent) {
-	 if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme() != null) {
-      if(presentedFilePath != null && presentedFilePath.isCurrentPathPresented(currentFilePath)) {
-        tableCellRendererComponent.setForeground(
-            PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
-                UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
-      } else {
-        tableCellRendererComponent.setForeground(
-            PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
-                UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
-      }
+
+  protected void updateForegroundText(JLabel tableCellRendererComponent) {
+    if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme() != null) {
+    	tableCellRendererComponent.setForeground(
+                PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
+                    UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME
+        );
     }
+       
   }
   
 }
