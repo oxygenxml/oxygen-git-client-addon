@@ -119,12 +119,12 @@ public class BranchManagementPanel extends JPanel {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
-        if (operation == GitOperation.OPEN_WORKING_COPY
-            || operation == GitOperation.CREATE_BRANCH
+        if (operation == GitOperation.CREATE_BRANCH
             || operation == GitOperation.CHECKOUT
-            || operation == GitOperation.DELETE_BRANCH
-          ) {
+            || operation == GitOperation.DELETE_BRANCH) {
           SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
+        } else if (operation == GitOperation.OPEN_WORKING_COPY) {
+          SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
         }
       }
     });
@@ -392,8 +392,10 @@ public class BranchManagementPanel extends JPanel {
    */
   public void showBranches() {
     refreshBranches();
-    TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
-    branchesTree.setVisible(true);
+    SwingUtilities.invokeLater(() -> {
+      TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+      branchesTree.setVisible(true);
+    });
   }
   
   /**

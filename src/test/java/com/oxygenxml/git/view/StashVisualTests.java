@@ -31,8 +31,8 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
+import com.oxygenxml.git.view.stash.FilesTableModel;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
-import com.oxygenxml.git.view.stash.StashFilesTableModel;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
@@ -744,28 +744,34 @@ public class StashVisualTests extends GitTestBase {
           .getDefaultRenderer(FileStatus.class);
       
       
-      StashFilesTableModel stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      FilesTableModel stashFilesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
       assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
-      
-      stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      stashFilesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(1, 1));
       flushAWT();
-      assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
-      assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
-      for (int i = 1; i < filesNames.length; i++) {
+     
+      for (int i = 0; i < filesNames.length - 1; i++) {
         assertEquals(GitChangeType.ADD, stashFilesTableModel.getValueAt(i, 0));
-        assertEquals(filesNames[i], ((FileStatus) stashFilesTableModel.getValueAt(i, 1)).getFileLocation());
+        assertEquals(filesNames[i + 1], ((FileStatus) stashFilesTableModel.getValueAt(i, 1)).getFileLocation());
         String toolTipFileText = ((JLabel)filesRender.getTableCellRendererComponent(listStashesDialog.getAffectedFilesTable(), 
             stashFilesTableModel.getValueAt(i, 1), true, true, i, 1)).getToolTipText();
-        assertEquals(filesNames[i], toolTipFileText);
+        assertEquals(filesNames[i + 1], toolTipFileText);
       }
+      
+      int length = filesNames.length;
+      assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(length - 1, 0));
+      assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(length - 1, 1)).getFileLocation());
       String toolTipFileText = ((JLabel)filesRender.getTableCellRendererComponent(listStashesDialog.getAffectedFilesTable(), 
-          stashFilesTableModel.getValueAt(filesNames.length, 1), true, true, filesNames.length , 1)).getToolTipText();
+          stashFilesTableModel.getValueAt(length - 1, 1), true, true, length - 1, 1)).getToolTipText();
+      assertEquals(filesNames[0], toolTipFileText);
+      
+      toolTipFileText = ((JLabel)filesRender.getTableCellRendererComponent(listStashesDialog.getAffectedFilesTable(), 
+          stashFilesTableModel.getValueAt(length, 1), true, true, length , 1)).getToolTipText();
       assertEquals(fileWithLongPathName + " - " + path, toolTipFileText);
       flushAWT();
 
-      stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      stashFilesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(0, 0));
       flushAWT();
       assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));

@@ -93,6 +93,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * 
    * @throws NoRepositorySelected 
    */
+  @SuppressWarnings("java:S3824") // Supress this because we don't want to compute the WC unnecessarily
   private String resolveWorkingCopyEditorVariables(String contentWithEditorVariables) throws NoRepositorySelected {
     File workingCopy = null;
 
@@ -178,6 +179,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * @throws NoRepositorySelected 
    * @throws IOException 
    */
+  @SuppressWarnings("java:S3824")
   private String resolveFullBranchName(String contentWithEditorVariables) throws IOException, NoRepositorySelected {
     String branch = editorVarsCache.get(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
     if (branch == null) {
@@ -198,11 +200,9 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * @return the updated content.
    */
   private String resolveShortBranchName(String contentWithEditorVariables) {
-    String branch = editorVarsCache.get(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR);
-    if (branch == null) {
-      branch = gitController.getGitAccess().getBranchInfo().getBranchName();
-      editorVarsCache.put(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR, branch);
-    }
+    String branch = editorVarsCache.computeIfAbsent(
+        GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
+        k -> gitController.getGitAccess().getBranchInfo().getBranchName());
     return contentWithEditorVariables.replace(
         GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
         branch);

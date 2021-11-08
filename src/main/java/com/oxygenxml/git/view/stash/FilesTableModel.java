@@ -1,33 +1,22 @@
 package com.oxygenxml.git.view.stash;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.revwalk.RevCommit;
 
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 
 
 /**
- * The model for Affected files bt stash table.
+ * The model for files status.
  *
  * @author Alex_Smarandche
  */
-public class StashFilesTableModel extends AbstractTableModel {
-
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = Logger.getLogger(StashFilesTableModel.class);
+public class FilesTableModel extends AbstractTableModel {
 
   /**
    * Index of the file status column.
@@ -47,14 +36,7 @@ public class StashFilesTableModel extends AbstractTableModel {
   /**
    * Compares file statuses.
    */
-  private static final Comparator<FileStatus> FILE_STATUS_COMPARATOR = (f1, f2) -> {
-    int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
-    if(changeTypeCompareResult == 0) {
-      return f1.getFileLocation().compareTo(f2.getFileLocation());
-    } else {
-      return changeTypeCompareResult;
-    }
-  };
+  private Comparator<FileStatus> comparator = null;
   
   @Override
   public boolean isCellEditable(int row, int column) {
@@ -114,10 +96,12 @@ public class StashFilesTableModel extends AbstractTableModel {
    *          - the files
    */
   public void setFilesStatus(List<FileStatus> filesStatuses) {
-    fireTableRowsDeleted(0, getRowCount());
-    filesStatuses = new ArrayList<>(filesStatuses);
-    filesStatuses.sort(FILE_STATUS_COMPARATOR);
-    fireTableRowsInserted(0, getRowCount());
+    clear();
+    this.filesStatuses.addAll(filesStatuses);
+    if(comparator != null) {
+    	this.filesStatuses.sort(comparator);
+    }
+    fireTableRowsUpdated(0, filesStatuses.size());
   }
 
 
@@ -173,25 +157,21 @@ public class StashFilesTableModel extends AbstractTableModel {
   public FileStatus getFileStatus(int rowIndex) {
     return filesStatuses.get(rowIndex);
   }
-
+   
 
   /**
-   * Updates the table based on the currently selected stash.
-   *
-   * @param stashIndex The index of the stashed changes.
+   * Sets the new file status comparator. The files will be sorted based on this comparator. 
+   * If the comparator is not set, they will not be sorted by any criteria.  
+   * 
+   * @param comparator The new comparator.
    */
-  public void updateTable(int stashIndex) {
-    if(stashIndex >= 0) {
-      List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
-      clear();
-      try {
-        filesStatuses.addAll(RevCommitUtil.getChangedFiles(stashesList.get(stashIndex).getName()));
-        fireTableRowsInserted(0, filesStatuses.size() - 1);
-      } catch (IOException | GitAPIException exc) {
-        LOGGER.error(exc, exc);
-      }
-    }
+  public void setComparator(Comparator<FileStatus> comparator) {
+	  this.comparator = comparator;
+	  if(comparator != null) {
+		  this.filesStatuses.sort(comparator);
+	  }
+	  fireTableRowsUpdated(0, filesStatuses.size());
   }
-
-
+  
+  
 }

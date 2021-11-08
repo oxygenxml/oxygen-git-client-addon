@@ -41,6 +41,9 @@ public class GitOperationScheduler {
           ((Future<?>) r).get();
         } catch (CancellationException e) {
           logger.debug(e, e);
+        } catch (InterruptedException e) { 
+          logger.error(e, e);
+          Thread.currentThread().interrupt();
         } catch (Exception e) {
           logger.error(e, e);
         }

@@ -126,11 +126,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	          }
 	        }
 	        if(branchesPanel != null && branchesPanel.isShowing()) {
-	          if(isAfterRestart) {
-	            branchesPanel.showBranches();
-	          } else {
-	            branchesPanel.refreshBranches();
-	          }
+	          branchesPanel.refreshBranches();
 	        }
 	        if (historyPanel != null && historyPanel.isShowing()) {
 	          historyPanel.refresh();
@@ -193,7 +189,7 @@ public class PanelRefresh implements GitRefreshSupport {
         String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
         if (projectDir != null && !projectDir.equals(lastOpenedProject)) {
           String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
-          File projectFile = new File(projectDir, projectName);
+          File projectFile = new File(projectDir, projectName); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
           File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
           if (detectedRepo == null) {
             repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);

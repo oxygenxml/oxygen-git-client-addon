@@ -28,6 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
@@ -195,7 +196,7 @@ public class UIUtil {
    * @return The table that presents the resources.
    */
   public static JTable createResourcesTable(
-      StagingResourcesTableModel fileTableModel, 
+      AbstractTableModel fileTableModel, 
       BooleanSupplier contextMenuShowing) {
     JTable table = new Table() {
       @Override

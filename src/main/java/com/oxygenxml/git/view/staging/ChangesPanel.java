@@ -80,6 +80,26 @@ import ro.sync.exml.workspace.api.standalone.ui.Tree;
 public class ChangesPanel extends JPanel {
 
   /**
+   * The size of the left empty border for the changes tree.
+   */
+  private static final int TREE_LEFT_EMPTY_BORDER_SIZE = 5;
+
+  /**
+   * Scroll pane height for Windows and Linux.
+   */
+  private static final int CHANGES_SCROLL_PANE_HEIGHT_WIN_LINUX = 220;
+
+  /**
+   * Scroll pane height for Mac OSX.
+   */
+  private static final int CHANGES_SCROLL_PANE_HEIGHT_MAC_OS = 160;
+
+  /**
+   * Scroll pane width.
+   */
+  private static final int CHANGES_SCROLL_PANE_WIDTH = 200;
+
+  /**
    * Provides the selected resources, sometimes filtered.
    */
   public interface SelectedResourcesProvider {
@@ -224,9 +244,7 @@ public class ChangesPanel extends JPanel {
     gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
-        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-          // TODO Disable widgets to avoid unwanted actions.
-        }
+        // TODO Disable widgets to avoid unwanted actions if the operation is GitOperation.OPEN_WORKING_COPY.
       }
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
@@ -242,13 +260,7 @@ public class ChangesPanel extends JPanel {
               if (repository != null) {
                 
                 gitController.asyncTask(
-                    () -> {
-                      if (forStagedResources) {
-                        return gitAccess.getStagedFiles();
-                      } else {
-                        return gitAccess.getUnstagedFiles();
-                      }
-                    }, 
+                    () -> forStagedResources ? gitAccess.getStagedFiles() : gitAccess.getUnstagedFiles(), 
                     this::refresh, 
                     ex -> refresh(Collections.emptyList()));
               }
@@ -272,6 +284,7 @@ public class ChangesPanel extends JPanel {
             break;
         }
       }
+      
       /**
        * Update models with newly detected files.
        * 
@@ -731,7 +744,10 @@ public class ChangesPanel extends JPanel {
     scrollPane = new JScrollPane(filesTable);
     scrollPane.add(tree);
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setPreferredSize(new Dimension(200, PlatformDetectionUtil.isMacOS() ? 160 : 220));
+    scrollPane.setPreferredSize(
+        new Dimension(
+            CHANGES_SCROLL_PANE_WIDTH,
+            PlatformDetectionUtil.isMacOS() ? CHANGES_SCROLL_PANE_HEIGHT_MAC_OS : CHANGES_SCROLL_PANE_HEIGHT_WIN_LINUX));
     UIUtil.setDefaultScrollPaneBorder(scrollPane);
     filesTable.setFillsViewportHeight(true);
     this.add(scrollPane, gbc);
@@ -1155,7 +1171,7 @@ public class ChangesPanel extends JPanel {
 	  
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextualMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(gitController, null, forStagedResources, null));
-	  t.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+	  t.setBorder(BorderFactory.createEmptyBorder(0, TREE_LEFT_EMPTY_BORDER_SIZE, 0, 0));
 	  t.setLargeModel(true);
 	  
     return t;

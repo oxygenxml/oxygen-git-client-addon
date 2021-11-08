@@ -16,7 +16,7 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	/**
 	 * Manages colors.
 	 */
-	private final ColorDispatcher colorDispatcher; 
+	private final ColorPool colorDispatcher; 
 
 
 	
@@ -25,7 +25,7 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	 * 
 	 * @param <code>true</code> if is the dark theme.
 	 */
-	public VisualCommitsList(ColorDispatcher colorDispatcher) {
+	public VisualCommitsList(ColorPool colorDispatcher) {
 		 this.colorDispatcher = colorDispatcher;
 	} 
 	
@@ -33,14 +33,14 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	@Override 
 	protected VisualLane createLane() { 
 		final VisualLane lane = new VisualLane(); 
-		lane.color = colorDispatcher.releaseColor(); 
+		lane.color = colorDispatcher.aquireColor(); 
 		return lane; 
 	} 
 
 	
 	@Override 
 	protected void recycleLane(final VisualLane lane) { 
-		colorDispatcher.aquireColor(lane.color);
+		colorDispatcher.releaseColor(lane.color);
 	} 
 
 
