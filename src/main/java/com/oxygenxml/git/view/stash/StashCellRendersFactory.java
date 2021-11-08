@@ -119,7 +119,7 @@ public class StashCellRendersFactory {
 
 			if(value instanceof Date) {
 				Date date = (Date)value;
-				DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+				DateFormat formatter = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN_WITHOUT_HOUR);
 				setText(formatter.format(date));
 			}
 
