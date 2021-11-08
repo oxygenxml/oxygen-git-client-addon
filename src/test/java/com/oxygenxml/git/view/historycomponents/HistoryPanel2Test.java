@@ -15,7 +15,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
-import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
+import com.oxygenxml.git.view.history.HistoryTableAffectedFilesModel;
 
 /**
  * UI level tests for history.
@@ -70,7 +70,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       // Invoke the Diff action to see if the built URLs are O.K.
       //---------------
       
-      StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.getAffectedFilesTable().getModel();
+      HistoryTableAffectedFilesModel affectedFilesModel = (HistoryTableAffectedFilesModel) historyPanel.getAffectedFilesTable().getModel();
       FileStatus fileStatus = affectedFilesModel.getFilesStatuses().get(0);
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
@@ -134,7 +134,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       // Invoke the Diff action to see if the built URLs are O.K.
       //---------------
       
-      StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.getAffectedFilesTable().getModel();
+      HistoryTableAffectedFilesModel affectedFilesModel = (HistoryTableAffectedFilesModel) historyPanel.getAffectedFilesTable().getModel();
       FileStatus fileStatus = affectedFilesModel.getFilesStatuses().get(0);
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
