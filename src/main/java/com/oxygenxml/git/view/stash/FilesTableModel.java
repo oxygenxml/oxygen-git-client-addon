@@ -36,14 +36,7 @@ public class FilesTableModel extends AbstractTableModel {
   /**
    * Compares file statuses.
    */
-  private static final Comparator<FileStatus> FILE_STATUS_COMPARATOR = (f1, f2) -> {
-    int comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
-    if(comparationResult == 0) {
-      // Same change type. Third level sort.
-      comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
-    }
-    return comparationResult;
-  };
+  private Comparator<FileStatus> comparator = null;
   
   @Override
   public boolean isCellEditable(int row, int column) {
@@ -105,7 +98,9 @@ public class FilesTableModel extends AbstractTableModel {
   public void setFilesStatus(List<FileStatus> filesStatuses) {
     clear();
     this.filesStatuses.addAll(filesStatuses);
-    this.filesStatuses.sort(FILE_STATUS_COMPARATOR);
+    if(comparator != null) {
+    	this.filesStatuses.sort(comparator);
+    }
     fireTableRowsUpdated(0, filesStatuses.size());
   }
 
@@ -162,6 +157,21 @@ public class FilesTableModel extends AbstractTableModel {
   public FileStatus getFileStatus(int rowIndex) {
     return filesStatuses.get(rowIndex);
   }
+   
 
+  /**
+   * Sets the new file status comparator. The files will be sorted based on this comparator. 
+   * If the comparator is not set, they will not be sorted by any criteria.  
+   * 
+   * @param comparator The new comparator.
+   */
+  public void setComparator(Comparator<FileStatus> comparator) {
+	  this.comparator = comparator;
+	  if(comparator != null) {
+		  this.filesStatuses.sort(comparator);
+	  }
+	  fireTableRowsUpdated(0, filesStatuses.size());
+  }
+  
   
 }

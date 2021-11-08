@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -325,7 +326,16 @@ public class ListStashesDialog extends OKCancelDialog {
   private Table createAffectedFilesTable() {
 
     affectedStashFilesTableModel = new FilesTableModel();
-
+    final Comparator<FileStatus> comparator = (f1, f2) -> {
+        int comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
+        if(comparationResult == 0) {
+          // Same change type. Third level sort.
+          comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
+        }
+        return comparationResult;
+    };
+    affectedStashFilesTableModel.setComparator(comparator);
+      
     Table filesTable = new Table(affectedStashFilesTableModel) {
       @Override
       public JToolTip createToolTip() {
@@ -598,7 +608,7 @@ public class ListStashesDialog extends OKCancelDialog {
     columnModel.getColumn(StashesTableModel.STASH_DATE_COLUMN).setPreferredWidth(COLUMN_DATE_SIZE);
     columnModel.getColumn(StashesTableModel.STASH_DATE_COLUMN).setMaxWidth(COLUMN_DATE_SIZE);
 
-    tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+    tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 
     return tableOfStashes;
   }
