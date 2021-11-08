@@ -31,8 +31,8 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
+import com.oxygenxml.git.view.stash.FilesTableModel;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
-import com.oxygenxml.git.view.stash.StashFilesTableModel;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
@@ -744,11 +744,11 @@ public class StashVisualTests extends GitTestBase {
           .getDefaultRenderer(FileStatus.class);
       
       
-      StashFilesTableModel stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      FilesTableModel stashFilesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
       assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
       
-      stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      stashFilesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(1, 1));
       flushAWT();
       assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
@@ -765,7 +765,7 @@ public class StashVisualTests extends GitTestBase {
       assertEquals(fileWithLongPathName + " - " + path, toolTipFileText);
       flushAWT();
 
-      stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      stashFilesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(0, 0));
       flushAWT();
       assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));

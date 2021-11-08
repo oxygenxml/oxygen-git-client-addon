@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.stash;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,7 +17,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -31,10 +29,8 @@ import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.border.Border;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -115,6 +111,11 @@ public class ListStashesDialog extends OKCancelDialog {
    * The size of column id.
    */
   private static final int COLUMN_ID_SIZE = 30;
+  
+  /**
+   * The size of column date.
+   */
+  private static final int COLUMN_DATE_SIZE = 65;
 
   /**
    * The table with the stashes.
@@ -129,7 +130,7 @@ public class ListStashesDialog extends OKCancelDialog {
   /**
    * The model for the files table.
    */
-  private StashFilesTableModel affectedStashFilesTableModel;
+  private FilesTableModel affectedStashFilesTableModel;
 
   /**
    * The model for the stashes table.
@@ -250,6 +251,7 @@ public class ListStashesDialog extends OKCancelDialog {
     JScrollPane tableStashesScrollPane = new JScrollPane(stashesTable);
     tableStashesScrollPane.setPreferredSize(new Dimension(STASHES_TABLE_DEFAULT_WIDTH, STASHES_TABLE_DEFAULT_HEIGHT));
     tableStashesScrollPane.setMinimumSize(tableStashesScrollPane.getPreferredSize());
+    tableStashesScrollPane.setMaximumSize(tableStashesScrollPane.getPreferredSize());
     constraints.gridx = 0;
     constraints.gridy++;
     constraints.weightx = 1;
@@ -266,6 +268,7 @@ public class ListStashesDialog extends OKCancelDialog {
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
     changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, STASHES_TABLE_DEFAULT_HEIGHT));
     changesOfStashScrollPane.setMinimumSize(changesOfStashScrollPane.getPreferredSize());
+    changesOfStashScrollPane.setMaximumSize(changesOfStashScrollPane.getPreferredSize());
     constraints.gridx++;
     constraints.weightx = 1;
     constraints.weighty = 1;
@@ -321,7 +324,7 @@ public class ListStashesDialog extends OKCancelDialog {
    */
   private Table createAffectedFilesTable() {
 
-    affectedStashFilesTableModel = new StashFilesTableModel();
+    affectedStashFilesTableModel = new FilesTableModel();
 
     Table filesTable = new Table(affectedStashFilesTableModel) {
       @Override
@@ -562,8 +565,10 @@ public class ListStashesDialog extends OKCancelDialog {
 
     tableOfStashes.setFillsViewportHeight(true);
     TableColumnModel columnModel = tableOfStashes.getColumnModel();
-    columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setCellRenderer(new StashIndexRender());
-    columnModel.getColumn(StashesTableModel.STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
+    columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setCellRenderer(StashCellRendersFactory.getIndexCellRender());
+    columnModel.getColumn(StashesTableModel.STASH_DESCRIPTION_COLUMN).setCellRenderer(StashCellRendersFactory.getMessageCellRender());
+    columnModel.getColumn(StashesTableModel.STASH_DATE_COLUMN).setCellRenderer(StashCellRendersFactory.getDateCellRender());
+    
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
 
@@ -573,7 +578,14 @@ public class ListStashesDialog extends OKCancelDialog {
     tableOfStashes.getSelectionModel().addListSelectionListener(e -> {
       setStashTableButtonsEnabled(true);
       int selectedRow = tableOfStashes.getSelectedRow();
-      affectedStashFilesTableModel.updateTable(selectedRow);
+      if(selectedRow >= 0) {
+          List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
+          try {
+        	  affectedStashFilesTableModel.setFilesStatus(RevCommitUtil.getChangedFiles(stashesList.get(selectedRow).getName()));
+          } catch (IOException | GitAPIException exc) {
+            LOGGER.error(exc, exc);
+          }
+        }
     });
 
     stashesTableModel.fireTableDataChanged();
@@ -581,6 +593,10 @@ public class ListStashesDialog extends OKCancelDialog {
     columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setMinWidth(COLUMN_ID_SIZE);
     columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setPreferredWidth(COLUMN_ID_SIZE);
     columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setMaxWidth(COLUMN_ID_SIZE);
+    
+    columnModel.getColumn(StashesTableModel.STASH_DATE_COLUMN).setMinWidth(COLUMN_DATE_SIZE);
+    columnModel.getColumn(StashesTableModel.STASH_DATE_COLUMN).setPreferredWidth(COLUMN_DATE_SIZE);
+    columnModel.getColumn(StashesTableModel.STASH_DATE_COLUMN).setMaxWidth(COLUMN_DATE_SIZE);
 
     tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
@@ -628,81 +644,9 @@ public class ListStashesDialog extends OKCancelDialog {
   }
 
 
-  /**
-   * A custom render for Stash message.
-   *
-   * @author Alex_Smarandache
-   */
-  private static class StashMessageRender extends DefaultTableCellRenderer {
-    
-    /**
-     * The border for padding.
-     */
-    private final Border padding = BorderFactory.createEmptyBorder(
-        0, 
-        UIConstants.COMPONENT_LEFT_PADDING, 
-        0, 
-        UIConstants.COMPONENT_RIGHT_PADDING
-    );
-    
-    @Override
-    public Component getTableCellRendererComponent(JTable table,
-        Object value,
-        boolean isSelected,
-        boolean hasFocus,
-        int row,
-        int column) {  
-      
-      super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-      
-      setText((String) value);
-      setToolTipText((String) value);
-      
-      setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
-      
-      return this;
-    }
-    
-    @Override
-    public JToolTip createToolTip() {
-      return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-    }
-  }
-
   
-  /**
-   * A custom render for Stash index.
-   *
-   * @author Alex_Smarandache
-   */
-  private static class StashIndexRender extends DefaultTableCellRenderer {
-    
-    /**
-     * The border for padding.
-     */
-    private static final Border PADDING = BorderFactory.createEmptyBorder(
-        0, 
-        UIConstants.COMPONENT_LEFT_PADDING, 
-        0, 
-        UIConstants.COMPONENT_RIGHT_PADDING
-    );
-    
-    @Override
-    public Component getTableCellRendererComponent(JTable table,
-        Object value,
-        boolean isSelected,
-        boolean hasFocus,
-        int row,
-        int column) {  
-      
-      super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-      
-      setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
-      
-      return this;
-    }
-    
-  }
+  
+  
   
 
   /**

@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.stash;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -26,6 +27,16 @@ public class StashesTableModel extends AbstractTableModel {
    * Constant for the column index representing the stash description.
    */
   public static final int STASH_DESCRIPTION_COLUMN = 1;
+  
+  /**
+   * Constant for the column index representing the stash date.
+   */
+  public static final int STASH_DATE_COLUMN = 2;
+  
+  /**
+   * Constant for the columns number.
+   */
+  public static final int NO_COLUMNS = 3;
 
   /**
    * The internal representation of the model.
@@ -37,7 +48,8 @@ public class StashesTableModel extends AbstractTableModel {
    */
   private static final String[] COLUMNS_NAMES = new String[]{
     Translator.getInstance().getTranslation(Tags.ID),
-    Translator.getInstance().getTranslation(Tags.DESCRIPTION)
+    Translator.getInstance().getTranslation(Tags.DESCRIPTION),
+    Translator.getInstance().getTranslation(Tags.DATE)
   };
 
 
@@ -67,6 +79,9 @@ public class StashesTableModel extends AbstractTableModel {
       case STASH_DESCRIPTION_COLUMN:
         clazz = String.class;
         break;
+      case STASH_DATE_COLUMN:
+          clazz = Date.class;
+          break;
       default:
         break;
     }
@@ -82,7 +97,7 @@ public class StashesTableModel extends AbstractTableModel {
 
   @Override
   public int getColumnCount() {
-    return 2;
+    return NO_COLUMNS;
   }
 
 
@@ -96,6 +111,9 @@ public class StashesTableModel extends AbstractTableModel {
       case STASH_DESCRIPTION_COLUMN:
         temp = stashes.get(rowIndex).getFullMessage();
         break;
+      case STASH_DATE_COLUMN:
+          temp = stashes.get(rowIndex).getAuthorIdent().getWhen();
+          break;
       default:
         break;
     }
