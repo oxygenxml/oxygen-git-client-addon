@@ -37,12 +37,12 @@ public class FilesTableModel extends AbstractTableModel {
    * Compares file statuses.
    */
   private static final Comparator<FileStatus> FILE_STATUS_COMPARATOR = (f1, f2) -> {
-    int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
-    if(changeTypeCompareResult == 0) {
-      return f1.getFileLocation().compareTo(f2.getFileLocation());
-    } else {
-      return changeTypeCompareResult;
+    int comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
+    if(comparationResult == 0) {
+      // Same change type. Third level sort.
+      comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
     }
+    return comparationResult;
   };
   
   @Override
@@ -103,11 +103,10 @@ public class FilesTableModel extends AbstractTableModel {
    *          - the files
    */
   public void setFilesStatus(List<FileStatus> filesStatuses) {
-    fireTableRowsDeleted(0, getRowCount());
     clear();
     this.filesStatuses.addAll(filesStatuses);
     this.filesStatuses.sort(FILE_STATUS_COMPARATOR);
-    fireTableRowsInserted(0, filesStatuses.size());
+    fireTableRowsUpdated(0, filesStatuses.size());
   }
 
 
