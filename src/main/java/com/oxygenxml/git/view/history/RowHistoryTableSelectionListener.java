@@ -22,7 +22,6 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -126,7 +125,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
      */
     private void updateDataModel(CommitCharacteristics commitCharacteristics) {
     	GitOperationScheduler.getInstance().schedule(() -> {
-    		StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
+    		HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) changesTable.getModel();
             List<FileStatus> files = new ArrayList<>();
             if(GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
             	try {

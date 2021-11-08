@@ -38,6 +38,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -383,7 +384,8 @@ public class HistoryPanel extends JPanel {
    * @return The table that presents the files.
    */
   private JTable createAffectedFilesTable() {
-    JTable table = UIUtil.createResourcesTable(new StagingResourcesTableModel(null, true), () -> false);
+    AbstractTableModel model = new HistoryTableAffectedFilesModel();
+    JTable table = UIUtil.createResourcesTable(model , () -> false);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     table.addMouseListener(new MouseAdapter() {
@@ -620,7 +622,7 @@ public class HistoryPanel extends JPanel {
    * @param force    <code>true</code> to recompute the history data, even if the
    *                 view already presents the history for the given resource.
    */
-  private void showHistory(String filePath, boolean force) {
+  private void showHistory(final String filePath, boolean force) {
 	  
     Translator translator = Translator.getInstance();
 
@@ -656,10 +658,10 @@ public class HistoryPanel extends JPanel {
         if (revisionDataUpdater != null) {
           historyTable.getSelectionModel().removeListSelectionListener(revisionDataUpdater);
         }
-
-        StagingResourcesTableModel dataModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
+        
+        HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
         dataModel.setFilesStatus(Collections.emptyList());
-        ((StagingResourcesTableModel)affectedFilesTable.getModel()).setSearchedPath(filePath);
+        dataModel.setPresentedFile(filePath);
         
         commitDescriptionPane.setText("");
 
