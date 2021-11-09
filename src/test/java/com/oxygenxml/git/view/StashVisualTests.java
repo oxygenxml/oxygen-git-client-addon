@@ -45,8 +45,8 @@ import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
  */
 public class StashVisualTests extends GitTestBase {
 
-  private final static String LOCAL_REPO = "target/test-resources/GitAccessCheckoutNewBranch/localRepository";
-  private final static String REMOTE_REPO = "target/test-resources/GitAccessCheckoutNewBranch/remoteRepository";
+  private final static String LOCAL_REPO = "target/test-resources/GitAccessStash/localRepository";
+  private final static String REMOTE_REPO = "target/test-resources/GitAccessStash/remoteRepository";
   private final static String LOCAL_BRANCH = "LocalBranch";
 
   private GitAccess gitAccess;
