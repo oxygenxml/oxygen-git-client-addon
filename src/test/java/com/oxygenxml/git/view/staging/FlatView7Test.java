@@ -116,32 +116,36 @@ public class FlatView7Test extends FlatViewTestBase {
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     flushAWT();
+    GitAccess.getInstance().fetch();
     toolbarPanel.refresh();
     flushAWT();
-    
     // Tooltip texts changed again
     String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (2 files)"
         + "<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
     String regexDate = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
     String regexHour = "(\\d\\d:\\d\\d)";
     String actual = toolbarPanel.getPullMenuButton().getToolTipText();
+    actual = actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour");
     assertEquals(
         expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+        actual
     ); 
     
     expected = "<html>Push_to.<br>One_commit_ahead<br><br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
-   
+    
+   actual = actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour");
     assertEquals(
         expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+        actual
     );  
    
+    actual = branchesButton.getToolTipText();
+    
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
-        + "One_commit_behind<br>One_commit_ahead</html>",
+        + "One_commit_behind<br>One_commit_ahead<br><br>Branch_manager_button_tool_tip</html>",
         branchesButton.getToolTipText());
     
     // Commit a new change locally
@@ -153,6 +157,7 @@ public class FlatView7Test extends FlatViewTestBase {
     waitForScheluerBetter();
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    GitAccess.getInstance().fetch();
     toolbarPanel.refresh();
     flushAWT();
     sleep(200);
@@ -176,7 +181,7 @@ public class FlatView7Test extends FlatViewTestBase {
     
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
-        + "Commits_behind<br>Commits_ahead</html>",
+        + "Commits_behind<br>Commits_ahead<br><br>Branch_manager_button_tool_tip</html>",
         branchesButton.getToolTipText());
     
     // Commit a new change locally
@@ -194,6 +199,7 @@ public class FlatView7Test extends FlatViewTestBase {
     waitForScheluerBetter();
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    GitAccess.getInstance().fetch();
     toolbarPanel.refresh();
     flushAWT();
     sleep(200);
@@ -242,6 +248,7 @@ public class FlatView7Test extends FlatViewTestBase {
     }
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    GitAccess.getInstance().fetch();
     toolbarPanel.refresh();
     flushAWT();
     sleep(500);
