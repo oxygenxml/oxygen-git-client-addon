@@ -73,7 +73,6 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
-import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -401,7 +400,7 @@ public class HistoryPanel extends JPanel {
           if (rowAtPoint != -1) {
             updateTableSelection(table, rowAtPoint);
 
-            StagingResourcesTableModel model = (StagingResourcesTableModel) table.getModel();
+            HistoryTableAffectedFilesModel model = (HistoryTableAffectedFilesModel) table.getModel();
             int convertedSelectedRow = table.convertRowIndexToModel(rowAtPoint);
             FileStatus file = model.getFileStatus(convertedSelectedRow);
 
@@ -434,7 +433,7 @@ public class HistoryPanel extends JPanel {
     if (rowAtPoint != -1) {
       updateTableSelection(affectedFilesTable, rowAtPoint);
 
-      StagingResourcesTableModel model = (StagingResourcesTableModel) affectedFilesTable.getModel();
+      HistoryTableAffectedFilesModel model = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
       int convertedSelectedRow = affectedFilesTable.convertRowIndexToModel(rowAtPoint);
       FileStatus file = model.getFileStatus(convertedSelectedRow);
 
