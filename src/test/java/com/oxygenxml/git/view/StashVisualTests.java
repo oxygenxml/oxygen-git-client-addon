@@ -33,6 +33,7 @@ import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.stash.FilesTableModel;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
+import com.oxygenxml.git.view.stash.StashesTableModel;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
@@ -205,7 +206,7 @@ public class StashVisualTests extends GitTestBase {
   
   
   /**
-   * <p><b>Description:</b> Tests the "List stash" delete all action</p>
+   * <p><b>Description:</b> Tests the "List stashes" delete all action</p>
    * <p><b>Bug ID:</b> EXM-45983</p>
    *
    * @author Alex_Smarandache
@@ -323,7 +324,7 @@ public class StashVisualTests extends GitTestBase {
   
   
   /**
-   * <p><b>Description:</b> Tests the "List stash" delete action</p>
+   * <p><b>Description:</b> Tests the "List stashes" delete action</p>
    * <p><b>Bug ID:</b> EXM-45983</p>
    *
    * @author Alex_Smarandache
@@ -449,7 +450,7 @@ public class StashVisualTests extends GitTestBase {
   
   
   /**
-   * <p><b>Description:</b> Tests the "List stash" apply and pop actions</p>
+   * <p><b>Description:</b> Tests the "List stashes" apply and pop actions</p>
    * <p><b>Bug ID:</b> EXM-45983</p>
    *
    * @author Alex_Smarandache
@@ -603,7 +604,7 @@ public class StashVisualTests extends GitTestBase {
   
   
   /**
-   * <p><b>Description:</b> Tests the "List stash" affected files table</p>
+   * <p><b>Description:</b> Tests the "List stashes" affected files table</p>
    * <p><b>Bug ID:</b> EXM-45983</p>
    *
    * @author Alex_Smarandache
@@ -788,6 +789,84 @@ public class StashVisualTests extends GitTestBase {
   }
   
   
+  /**
+   * <p><b>Description:</b> Tests the "List stashes" table values</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */ 
+  public void testListStashesTableValues() throws Exception {
+    // Make the first commit for the local repository
+    File file = new File(LOCAL_REPO, "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+
+    // Make the first commit for the remote repository
+    gitAccess.setRepositorySynchronously(REMOTE_REPO);
+    file = new File(REMOTE_REPO, "remote1.txt");
+    file.createNewFile();
+    setFileContent(file, "remote content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
+    gitAccess.commit("First remote commit.");
+
+    // Switch back to local repo and create local branch
+    gitAccess.setRepositorySynchronously(LOCAL_REPO);
+    gitAccess.createBranch(LOCAL_BRANCH);
+    gitAccess.fetch();
+      
+    JFrame frame = new JFrame();
+   
+    try {
+      // Init UI
+      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+      frame.getContentPane().add(stagingPanel);
+      frame.pack();
+      frame.setVisible(true);
+      flushAWT();
+      toolbarPanel.refresh();
+      refreshSupport.call();
+      flushAWT();
+      
+      SplitMenuButton stashButton = toolbarPanel.getStashButton();
+    
+      initStashes(toolbarPanel);
+      
+      List<RevCommit> stashes = new ArrayList<>(gitAccess.listStashes());
+      assertEquals(3, stashes.size());
+      
+      JMenuItem[] listStashesItem =  new JMenuItem[1];
+      listStashesItem[0] = stashButton.getItem(1);
+
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
+      
+      ListStashesDialog listStashesDialog = (ListStashesDialog) findDialog(Tags.STASHES);
+      assertNotNull(listStashesDialog);
+      StashesTableModel model = (StashesTableModel) listStashesDialog.getStashesTable().getModel();
+      assertEquals(3, model.getRowCount());
+      
+      assertEquals(stashes.get(0).getFullMessage(), model.getValueAt(0, StashesTableModel.STASH_DESCRIPTION_COLUMN));
+      assertEquals(stashes.get(1).getFullMessage(), model.getValueAt(1, StashesTableModel.STASH_DESCRIPTION_COLUMN));
+      assertEquals(stashes.get(2).getFullMessage(), model.getValueAt(2, StashesTableModel.STASH_DESCRIPTION_COLUMN));
+      
+      assertEquals(stashes.get(0).getAuthorIdent().getWhen(), model.getValueAt(0, StashesTableModel.STASH_DATE_COLUMN));
+      assertEquals(stashes.get(1).getAuthorIdent().getWhen(), model.getValueAt(1, StashesTableModel.STASH_DATE_COLUMN));
+      assertEquals(stashes.get(2).getAuthorIdent().getWhen(), model.getValueAt(2, StashesTableModel.STASH_DATE_COLUMN));
+      
+      JButton cancelButton = findFirstButton(listStashesDialog, Tags.CLOSE);
+      assertNotNull(cancelButton);
+      cancelButton.doClick();
+      
+    } finally {
+      frame.setVisible(false);
+      frame.dispose();
+    }
+  }
   
   
   
