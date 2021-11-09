@@ -49,7 +49,7 @@ public class StashesTableModel extends AbstractTableModel {
   private static final String[] COLUMNS_NAMES = new String[]{
     Translator.getInstance().getTranslation(Tags.ID),
     Translator.getInstance().getTranslation(Tags.DESCRIPTION),
-    Translator.getInstance().getTranslation(Tags.DATE)
+    Translator.getInstance().getTranslation(Tags.CREATION_DATE)
   };
 
 
