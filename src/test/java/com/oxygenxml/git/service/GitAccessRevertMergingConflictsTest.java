@@ -29,6 +29,7 @@ import com.oxygenxml.git.view.history.actions.RevertCommitAction;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.ColorTheme;
 
 public class GitAccessRevertMergingConflictsTest extends GitTestBase {
   private final static String LOCAL_FILE_NAME = "local.txt";
@@ -63,6 +64,11 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     ImageUtilities imageUtilities = Mockito.mock(ImageUtilities.class);
     Mockito.doReturn(null).when(imageUtilities).loadIcon((URL)Mockito.any());
     Mockito.doReturn(imageUtilities).when(pluginWSMock).getImageUtilities();
+    ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
+    Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
+    Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
     
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
