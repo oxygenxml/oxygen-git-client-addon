@@ -1539,4 +1539,9 @@ public class Tags {
    */
   public static final String GRAPH = "Graph";
   
+  /**
+   * Column title in list stash.
+   */
+  public static final String CREATION_DATE = "Creation_Date";
+  
 }

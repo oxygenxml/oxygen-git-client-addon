@@ -26,6 +26,13 @@
 				showing the history of the repository resources, and more. The add-on also includes a built-in tool for comparing and merging changes.
 			</p>
                     </div>
+            <div>
+                <h3>What's new in version 3.0.1</h3>
+                <ol>
+                    <li>Fixed an issue where the index got reset after pulling changes from the remote.</li>
+                </ol>
+            </div>
+                    
 		    <div>
                         <h3>What's new in version 3.0.0</h3>
                         <ol>

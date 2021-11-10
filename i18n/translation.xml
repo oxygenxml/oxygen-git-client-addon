@@ -17,6 +17,15 @@
         <val lang="nl_NL">Press to show the Git Branch Manager view.</val>
         <val lang="zh_CN">Press to show the Git Branch Manager view.</val>
     </key>
+    <key value="Creation_Date">
+        <comment>Column title in list stash.</comment>
+        <val lang="en_US">Creation date</val>
+        <val lang="de_DE">Creation date</val>
+        <val lang="fr_FR">Creation date</val>
+        <val lang="ja_JP">Creation date</val>
+        <val lang="nl_NL">Creation date</val>
+        <val lang="zh_CN">Creation date</val>
+    </key>
     <key value="Graph">
         <comment>The title for Graph column in Git history.</comment>
         <val lang="en_US">Graph</val>

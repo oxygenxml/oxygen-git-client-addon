@@ -17,9 +17,14 @@ import org.eclipse.jgit.transport.URIish;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.ColorTheme;
 
 
 /**
@@ -55,6 +60,11 @@ public class GitAccesTagsTest {
   @Before
   public void init() throws Exception {
     gitAccess = GitAccess.getInstance();
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
+    Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
+    Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
     URL script = getClass().getClassLoader().getResource("scripts/git_tags_script.txt");
     File wcTree = new File(LOCAL_TEST_REPOSITORY);

@@ -22,6 +22,7 @@ import com.oxygenxml.git.view.history.actions.RevertCommitAction;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.ColorTheme;
 
 /**
  * Tests the revert action
@@ -54,6 +55,10 @@ public class RevertCommitTest extends GitTestBase {
       return null;
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString(), Mockito.any());
     errMsg[0] = "";
+    
+    ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
+    Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
+    Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
     
     ImageUtilities imageUtilities = Mockito.mock(ImageUtilities.class);
     Mockito.doReturn(null).when(imageUtilities).loadIcon((URL)Mockito.any());
