@@ -607,7 +607,6 @@ public class ListStashesDialog extends OKCancelDialog {
     TableColumn dateColumn = columnModel.getColumn(StashesTableModel.STASH_DATE_COLUMN);
     dateColumn.setMinWidth(COLUMN_DATE_SIZE);
     dateColumn.setMaxWidth(dateColumn.getPreferredWidth());
-    dateColumn.setPreferredWidth(COLUMN_DATE_SIZE);
     
     tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 
