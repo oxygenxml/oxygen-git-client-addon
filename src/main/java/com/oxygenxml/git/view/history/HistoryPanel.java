@@ -657,7 +657,8 @@ public class HistoryPanel extends JPanel {
         cellRender.setFilePresenter(fileHistoryPresenter);
         commitDescriptionPane.setText("");
         
-        final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
+        RenameTracker renameTracker = new RenameTracker();
+        final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath, renameTracker);
 
         Repository repo = gitAccess.getRepository();
         
@@ -687,7 +688,7 @@ public class HistoryPanel extends JPanel {
 
         revisionDataUpdater = new RowHistoryTableSelectionListener(getUpdateDelay(), 
         	historyTable, commitDescriptionPane, commitCharacteristicsVector, 
-        	affectedFilesTable, new PathFinder(repo, filePath)
+        	affectedFilesTable, renameTracker
         );
         historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
 

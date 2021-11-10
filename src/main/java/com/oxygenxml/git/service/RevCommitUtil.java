@@ -53,6 +53,7 @@ import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
+import com.oxygenxml.git.view.history.RenameTracker;
 import com.oxygenxml.git.view.history.graph.GraphColorUtil;
 import com.oxygenxml.git.view.history.graph.VisualCommitsList;
 import com.oxygenxml.git.view.history.graph.VisualCommitsList.VisualLane;
@@ -348,7 +349,8 @@ public class RevCommitUtil {
   public static void collectCurrentBranchRevisions(
       String filePath, 
       List<CommitCharacteristics> revisions, 
-      Repository repository) throws IOException {
+      Repository repository,
+      RenameTracker renameTracker) throws IOException {
 
     // a RevWalk allows to walk over commits based on some filtering that is defined
     // EXM-44307 Show current branch commits only.
@@ -358,6 +360,10 @@ public class RevCommitUtil {
       try (PlotWalk plotWalk = new PlotWalk(repository)) {
     	  RevCommit root = plotWalk.parseCommit(branchHead.getObjectId());
 		  plotWalk.markStart(root);
+		  if(filePath != null && renameTracker != null) {
+			  renameTracker.reset(filePath);
+			  plotWalk.setRevFilter(renameTracker.getFilter());
+		  }
 			
         // If we have a remote, put it as well.
         String fullRemoteBranchName = getUpstreamBranchName(repository, repository.getBranch());
@@ -368,7 +374,7 @@ public class RevCommitUtil {
           }
         }
 		
-        collectRevisions(filePath, revisions, repository, plotWalk);
+        collectRevisions(filePath, revisions, repository, plotWalk, renameTracker);
       }
 
     } else {
@@ -407,10 +413,14 @@ public class RevCommitUtil {
 		  String filePath,
 		  List<CommitCharacteristics> commits,
 		  Repository repository,
-		  PlotWalk plotWalk) throws IOException {
+		  PlotWalk plotWalk, RenameTracker renameTracker) throws IOException {
 
 	  if (filePath != null) {
-		  plotWalk.setTreeFilter(FollowFilter.create(filePath, repository.getConfig().get(DiffConfig.KEY)));
+		  FollowFilter filter = FollowFilter.create(filePath, repository.getConfig().get(DiffConfig.KEY));
+		  if(renameTracker != null) {
+			  filter.setRenameCallback(renameTracker.getCallback());
+		  }
+		  plotWalk.setTreeFilter(filter);
 	  }
 
 	  boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();

@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.history;
+package com.oxygenxml.git.view.history.graph;
 
 import java.io.IOException;
 import java.util.ArrayList;

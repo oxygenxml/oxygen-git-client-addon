@@ -117,6 +117,7 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.RenameTracker;
 import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
 
@@ -2238,15 +2239,16 @@ public class GitAccess {
     }
   }
   
-  /**
+   /**
 	 * Compute a Vector with the characteristics of each commit.
 	 * 
 	 * @param filePath A resource for which we are interested in its history. If <code>null</code>, 
 	 * the repository history will be computed.
+	 * @param The rename tracker to follow rename path changes.
 	 * 
 	 * @return a Vector with commits characteristics of the current repository.
 	 */
-	public List<CommitCharacteristics> getCommitsCharacteristics(String filePath) {
+	public List<CommitCharacteristics> getCommitsCharacteristics(String filePath, RenameTracker... renameTracker) {
 		List<CommitCharacteristics> revisions = new ArrayList<>();
 
 		try {
@@ -2254,8 +2256,9 @@ public class GitAccess {
 			if (filePath == null && git.status().call().hasUncommittedChanges()) {
 				revisions.add(UNCOMMITED_CHANGES);
 			}
-
-			RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository);
+            
+			RenameTracker renTracker = renameTracker == null ? null : renameTracker[0];
+			RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository, renTracker);
 		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
 			LOGGER.error(e, e);
 		}
