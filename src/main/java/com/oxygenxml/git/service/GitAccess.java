@@ -2257,7 +2257,7 @@ public class GitAccess {
 				revisions.add(UNCOMMITED_CHANGES);
 			}
             
-			RenameTracker renTracker = renameTracker == null ? null : renameTracker[0];
+			RenameTracker renTracker = renameTracker.length == 0 ? null : renameTracker[0];
 			RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository, renTracker);
 		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
 			LOGGER.error(e, e);
