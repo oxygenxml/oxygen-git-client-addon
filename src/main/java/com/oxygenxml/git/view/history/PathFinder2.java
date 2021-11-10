@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.history.graph;
+package com.oxygenxml.git.view.history;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,12 +18,12 @@ import com.oxygenxml.git.service.RevCommitUtil;
  * @author alex_smarandache
  *
  */
-public class PathFinder {
+public class PathFinder2 {
 	
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(PathFinder.class);
+	private static final Logger LOGGER = Logger.getLogger(PathFinder2.class);
 	
 	/**
      * We have the following map: 
@@ -40,7 +40,7 @@ public class PathFinder {
 	 * @param repository      The current repository.
 	 * @param fileActualPath  Actual file path.
 	 */
-	public PathFinder(Repository repository, String fileActualPath) {
+	public PathFinder2(Repository repository, String fileActualPath) {
 		try {
 			fileAllPaths = RevCommitUtil.getCurrentFileOldPaths(fileActualPath, repository);
    		} catch (GitAPIException | IOException e) {
