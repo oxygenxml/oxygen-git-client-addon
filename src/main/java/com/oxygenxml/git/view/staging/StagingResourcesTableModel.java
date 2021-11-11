@@ -18,7 +18,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitEventInfo;
-import com.oxygenxml.git.view.history.IObserver;
 
 /**
  * Custom table model
@@ -26,7 +25,7 @@ import com.oxygenxml.git.view.history.IObserver;
  * @author Beniamin Savu
  *
  */
-public class StagingResourcesTableModel extends AbstractTableModel implements IObserver {
+public class StagingResourcesTableModel extends AbstractTableModel {
   
   /**
    * Logger for logging.
@@ -65,6 +64,7 @@ public class StagingResourcesTableModel extends AbstractTableModel implements IO
 		return comparationResult;
 	};
 
+	
 	/**
 	 * <code>true</code> if this model presents the resources from the index.
 	 * <code>false</code> if it presents the modified resources that can be put in the index.
@@ -332,17 +332,5 @@ public class StagingResourcesTableModel extends AbstractTableModel implements IO
 	  return -1;
 	}
 
-	
-	/**
-	 * Update files list.
-	 */
-	@Override
-	public void update() {
-		fireTableRowsDeleted(0, getRowCount());
-		if(filesStatuses != null) {
-			this.filesStatuses.sort(fileStatusComparator);
-		}
-	    fireTableRowsInserted(0, getRowCount());
-	}
 	
 }
