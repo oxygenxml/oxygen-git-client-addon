@@ -589,13 +589,13 @@ public class ListStashesDialog extends OKCancelDialog {
       setStashTableButtonsEnabled(true);
       int selectedRow = tableOfStashes.getSelectedRow();
       if(selectedRow >= 0) {
-          List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
-          try {
-        	  affectedStashFilesTableModel.setFilesStatus(RevCommitUtil.getChangedFiles(stashesList.get(selectedRow).getName()));
-          } catch (IOException | GitAPIException exc) {
-            LOGGER.error(exc, exc);
-          }
-        }
+    	  try {
+    		  affectedStashFilesTableModel.setFilesStatus(
+    				  RevCommitUtil.getChangedFiles(stashesTableModel.getStashes().get(selectedRow).getName()));
+    	  } catch (IOException | GitAPIException exc) {
+    		  LOGGER.error(exc, exc);
+    	  }
+      }
     });
 
     stashesTableModel.fireTableDataChanged();
@@ -654,10 +654,7 @@ public class ListStashesDialog extends OKCancelDialog {
   }
 
 
-  
-  
-  
-  
+    
 
   /**
    * Creates the actions for buttons.
@@ -685,7 +682,7 @@ public class ListStashesDialog extends OKCancelDialog {
             List<RevCommit> stashes = null;
 
             try {
-              stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
+              stashes = stashesTableModel.getStashes();
               selectedFile = ((FileStatus) affectedFilesTable.getValueAt(selectedFilesIndex, 1));
               String filePath = selectedFile.getFileLocation();
 
