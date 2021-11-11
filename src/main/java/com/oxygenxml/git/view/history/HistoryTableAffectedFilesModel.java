@@ -18,41 +18,8 @@ public class HistoryTableAffectedFilesModel extends FilesTableModel {
    */
   private transient FileHistoryPresenter fileHistoryPresenter;
   
-  /**
-   * Compares file statuses.
-   */
-  private final transient Comparator<FileStatus> defaultComparator = (f1, f2) -> {
-    int comparationResult = 0;
-    String presentedFile = fileHistoryPresenter.getFilePath();
-    if(presentedFile != null && presentedFile.length() > 0) {
-      boolean file1IsFiltered = !presentedFile.equals(f1.getFileLocation()) &&
-          !f1.getFileLocation().startsWith(presentedFile + "/", 0);
-      boolean file2IsFiltered = !presentedFile.equals(f2.getFileLocation()) &&
-          !f2.getFileLocation().startsWith(presentedFile + "/", 0);
-      comparationResult = Boolean.compare(file1IsFiltered, file2IsFiltered);
-    }
-    
-    if(comparationResult == 0) {
-      // Both are filtered or both are matched. Second level sort.
-      comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
-      if(comparationResult == 0) {
-        // Same change type. Third level sort.
-        comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
-      }
-    }
-    
-    return comparationResult;
-  };
-  
-  
-  /**
-   * Constructor.
-   */
-  public HistoryTableAffectedFilesModel() {
-    setComparator(defaultComparator);
-  }
-
  
+  
   /**
    * Sets the new presented file. If no file is presented then set null value. 
    * 
@@ -60,9 +27,36 @@ public class HistoryTableAffectedFilesModel extends FilesTableModel {
    */
   public void setFilePathPresenter(FileHistoryPresenter presentedFile) {
     this.fileHistoryPresenter = presentedFile;
+    Comparator<FileStatus> comparator = (f1, f2) -> {
+        int comparationResult = 0;
+        String searchedFile = fileHistoryPresenter.getFilePath();
+        if(searchedFile != null && searchedFile.length() > 0) {
+          boolean file1IsFiltered = !searchedFile.equals(f1.getFileLocation()) &&
+              !f1.getFileLocation().startsWith(searchedFile + "/", 0);
+          boolean file2IsFiltered = !searchedFile.equals(f2.getFileLocation()) &&
+              !f2.getFileLocation().startsWith(searchedFile + "/", 0);
+          comparationResult = Boolean.compare(file1IsFiltered, file2IsFiltered);
+        }
+        
+        if(comparationResult == 0) {
+          // Both are filtered or both are matched. Second level sort.
+          comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
+          if(comparationResult == 0) {
+            // Same change type. Third level sort.
+            comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
+          }
+        }
+        
+        return comparationResult;
+      };
+      
+    setComparator(comparator);
   }
 
 
+  /**
+   * @return The actual FilePresenter.
+   */
   public FileHistoryPresenter getFilePathPresenter() {
     return fileHistoryPresenter;
   }
