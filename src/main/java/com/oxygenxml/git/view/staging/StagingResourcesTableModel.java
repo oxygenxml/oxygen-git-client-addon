@@ -18,7 +18,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitEventInfo;
-import com.oxygenxml.git.view.history.FileHistoryPresenter;
 import com.oxygenxml.git.view.history.IObserver;
 
 /**
@@ -49,35 +48,22 @@ public class StagingResourcesTableModel extends AbstractTableModel implements IO
 	 */
 	private List<FileStatus> filesStatuses = Collections.synchronizedList(new ArrayList<>());
 	
-	/**
-	 * The path for which history is shown.
-	 */
-	private transient FileHistoryPresenter filePathPresented;
-	
 
-   /**
+	/**
 	 * Compares file statuses.
 	 */
 	private final Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
-	  int comparationResult = 0;
-	  
-	  if(filePathPresented != null && filePathPresented.isFilePresented()) {
-	    boolean file1IsFiltered = filePathPresented.isCurrentPathPresented(f1.getFileLocation());
-	    boolean file2IsFiltered = filePathPresented.isCurrentPathPresented(f2.getFileLocation());
-	    comparationResult = Boolean.compare(file1IsFiltered, file2IsFiltered);
-	  }
-	  
-	  if(comparationResult == 0) {
-	    // Both are filtered or both are matched. Second level sort.
-	    comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
-	    if(comparationResult == 0) {
-	      // Same change type. Third level sort.
-	      comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
-	    }
-	  }
-	  
-	  return comparationResult;
-  };
+		int comparationResult = 0;
+
+		// Both are filtered or both are matched. Second level sort.
+		comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
+		if(comparationResult == 0) {
+			// Same change type. Third level sort.
+			comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
+		}
+
+		return comparationResult;
+	};
 
 	/**
 	 * <code>true</code> if this model presents the resources from the index.
@@ -346,21 +332,6 @@ public class StagingResourcesTableModel extends AbstractTableModel implements IO
 	  return -1;
 	}
 
-	/**
-	 * @return the file history presenter.
-	 */
-	public FileHistoryPresenter getFilePathPresented() {
-		return filePathPresented;
-	}
-
-	/**
-	 * @param filePathPresented the new file history presenter.
-	 */
-	public void setFilePathPresented(FileHistoryPresenter filePathPresented) {
-		this.filePathPresented = filePathPresented;
-		this.filePathPresented.addObserver(this);
-		update();
-	}
 	
 	/**
 	 * Update files list.
