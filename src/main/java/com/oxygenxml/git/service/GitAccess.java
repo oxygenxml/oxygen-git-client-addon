@@ -26,6 +26,7 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CreateBranchCommand;
+import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
@@ -2774,17 +2775,37 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void deleteTag(String name) throws GitAPIException  {
-	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_DELETE));
-	  try {
-      getGit()
-        .tagDelete()
-        .setTags(name)
-        .call();
-      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_DELETE));
-    } catch (GitAPIException e) {
-      LOGGER.error(e, e);
-      fireOperationFailed(new GitEventInfo(GitOperation.TAG_DELETE), e);
-      throw e;
-    }
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_DELETE));
+		try {
+			getGit()
+			.tagDelete()
+			.setTags(name)
+			.call();
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_DELETE));
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new GitEventInfo(GitOperation.TAG_DELETE), e);
+			throw e;
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * @param startPoint                    The start commit.
+	 * @param shouldCreateANewBranch        <code>true</code> if should create a new branch.
+	 * @param branchName                    The new branch name.
+	 *
+	 * @throws GitAPIException
+	 */
+	public void checkoutCommit(RevCommit startPoint, boolean shouldCreateANewBranch, 
+			String...branchName) throws GitAPIException {
+		CheckoutCommand checkoutCommand = this.git.checkout();
+		checkoutCommand.setStartPoint(startPoint);
+		checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
+		if(shouldCreateANewBranch) {
+			checkoutCommand.setCreateBranch(shouldCreateANewBranch).setName(branchName[0]);
+		}
+		checkoutCommand.call();
 	}
 }

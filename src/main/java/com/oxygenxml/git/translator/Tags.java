@@ -1464,7 +1464,6 @@ public class Tags {
    */
   public static final String TAG_CONTAINS_INVALID_CHARS = "Tag_Contains_Invalid_Chars";
   
-  
   /**
    * The first column name in the table with the tags (column for the tag name)
    */
@@ -1543,5 +1542,40 @@ public class Tags {
    * Column title in list stash.
    */
   public static final String CREATION_DATE = "Creation_Date";
+  
+  /**
+   * Git checkout.
+   */
+  public static final String GIT_CHECKOUT = "Git_Checkout";
+  
+  /**
+   * The message for error when we already have a branch with this name.
+   */
+  public static final String BRANCH_ALREADY_EXISTS = "Branch_Already_Exists";
+  
+  /**
+   * The message for error when we have a branch with spaces.
+   */
+  public static final String BRANCH_CONTAINS_SPACES = "Branch_Contains_Spaces";
+  
+  /**
+   * The message for error when we have a branch with invalid chars.
+   */
+  public static final String BRANCH_CONTAINS_INVALID_CHARS = "Branch_Contains_Invalid_Chars";
+  
+  /**
+   * The message for error when we have an empty name for branch.
+   */
+  public static final String EMPTY_BRANCH_NAME = "Empty_Branch_Name";
+  
+  /**
+   * The message for enter the branch name.
+   */
+  public static final String ENTER_BRANCH_NAME = "Enter_Branch_Name";
+  
+  /**
+   * The warning message about detached HEAD.
+   */
+  public static final String DETACHED_HEAD_WARNING_MESSAGE = "Detached_HEAD_Warning_Message";
   
 }

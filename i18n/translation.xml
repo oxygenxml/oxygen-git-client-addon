@@ -8,6 +8,60 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Detached_HEAD_Warning_Message">
+        <comment>The warning message about detached HEAD.</comment>
+        <val lang="en_US">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
+        <val lang="de_DE">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
+        <val lang="fr_FR">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
+        <val lang="ja_JP">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
+        <val lang="nl_NL">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
+        <val lang="zh_CN">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
+    </key>
+    <key value="Enter_Branch_Name">
+        <comment>The message for enter the branch name.</comment>
+        <val lang="en_US">Branch name</val>
+        <val lang="de_DE">Branch name</val>
+        <val lang="fr_FR">Branch name</val>
+        <val lang="ja_JP">Branch name</val>
+        <val lang="nl_NL">Branch name</val>
+        <val lang="zh_CN">Branch name</val>
+    </key>
+    <key value="Empty_Branch_Name">
+        <comment>The message for error when we have an empty name for branch.</comment>
+        <val lang="en_US">The branch name cannot be empty.</val>
+        <val lang="de_DE">The branch name cannot be empty.</val>
+        <val lang="fr_FR">The branch name cannot be empty.</val>
+        <val lang="ja_JP">The branch name cannot be empty.</val>
+        <val lang="nl_NL">The branch name cannot be empty.</val>
+        <val lang="zh_CN">The branch name cannot be empty.</val>
+    </key>
+     <key value="Branch_Already_Exists">
+        <comment>The message for error when we already have a branch with this name.</comment>
+        <val lang="en_US">Branch already exists.</val>
+        <val lang="de_DE">Branch already exists.</val>
+        <val lang="fr_FR">Branch already exists.</val>
+        <val lang="ja_JP">Branch already exists.</val>
+        <val lang="nl_NL">Branch already exists.</val>
+        <val lang="zh_CN">Branch already exists.</val>
+    </key>
+    <key value="Branch_Contains_Spaces">
+        <comment>The message for error when we have a tag with spaces.</comment>
+        <val lang="en_US">Spaces are not allowed in branches.</val>
+        <val lang="de_DE">Spaces are not allowed in branches.</val>
+        <val lang="fr_FR">Spaces are not allowed in branches.</val>
+        <val lang="ja_JP">Spaces are not allowed in branches.</val>
+        <val lang="nl_NL">Spaces are not allowed in branches.</val>
+        <val lang="zh_CN">Spaces are not allowed in branches.</val>
+    </key>
+    <key value="Branch_Contains_Invalid_Chars">
+        <comment>The message for error when we have a branch with invalid chars.</comment>
+        <val lang="en_US">The branch name contains not allowed characters.</val>
+        <val lang="de_DE">The branch name contains not allowed characters.</val>
+        <val lang="fr_FR">The branch name contains not allowed characters.</val>
+        <val lang="ja_JP">The branch name contains not allowed characters.</val>
+        <val lang="nl_NL">The branch name contains not allowed characters.</val>
+        <val lang="zh_CN">The branch name contains not allowed characters.</val>
+    </key>
     <key value="Branch_manager_button_tool_tip">
         <comment>"The tool tip for the button that opens the branch manager side view."</comment>
         <val lang="en_US">Press to show the Git Branch Manager view.</val>
@@ -16,6 +70,15 @@
         <val lang="ja_JP">Press to show the Git Branch Manager view.</val>
         <val lang="nl_NL">Press to show the Git Branch Manager view.</val>
         <val lang="zh_CN">Press to show the Git Branch Manager view.</val>
+    </key>
+    <key value="Git_Checkout">
+        <comment>Git checkout.</comment>
+        <val lang="en_US">Git checkout</val>
+        <val lang="de_DE">Git checkout</val>
+        <val lang="fr_FR">Git checkout</val>
+        <val lang="ja_JP">Git checkout</val>
+        <val lang="nl_NL">Git checkout</val>
+        <val lang="zh_CN">Git checkout</val>
     </key>
     <key value="Creation_Date">
         <comment>Column title in list stash.</comment>
