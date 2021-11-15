@@ -72,7 +72,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Translation support.
 	 */
-	private final Translator translator = Translator.getInstance();
+	private static final Translator TRANSLATOR = Translator.getInstance();
 	/**
 	 * Refresh executor.
 	 */
@@ -291,13 +291,13 @@ public class PanelRefresh implements GitRefreshSupport {
     PluginWorkspace pluginWS =
         PluginWorkspaceProvider.getPluginWorkspace();
     int response = pluginWS.showConfirmDialog(
-        translator.getTranslation(Tags.CHANGE_WORKING_COPY),
+        TRANSLATOR.getTranslation(Tags.CHANGE_WORKING_COPY),
         MessageFormat.format(
-            translator.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
+            TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
             projectDir),
         new String[] {
-            "   " + translator.getTranslation(Tags.YES) + "   ",
-            "   " + translator.getTranslation(Tags.NO) + "   "
+            "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+            "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "
         },
         new int[] { 0, 1 });
     if (response == 0) {
@@ -322,11 +322,11 @@ public class PanelRefresh implements GitRefreshSupport {
     if (!OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       int response = pluginWS.showConfirmDialog(
-          translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-          MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
+          TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+          MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
           new String[] {
-              "   " + translator.getTranslation(Tags.YES) + "   ",
-              "   " + translator.getTranslation(Tags.NO) + "   "
+              "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+              "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "
           },
           new int[] { 0, 1 });
       if (response == 0) {
@@ -379,7 +379,9 @@ public class PanelRefresh implements GitRefreshSupport {
         // If the passphrase is null or empty, it is already treated by
         // com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider.get(URIish, CredentialItem...)
         
-        String message = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+        String message =  TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
+                + " "
+                + TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
         String passphrase = new PassphraseDialog(message).getPassphrase();
         if(passphrase != null) {
           return fetch();
@@ -390,7 +392,7 @@ public class PanelRefresh implements GitRefreshSupport {
       
       LoginDialog loginDlg = new LoginDialog(
           GitAccess.getInstance().getHostName(), 
-          translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
+          TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
       if (loginDlg.getCredentials() != null) {
         return fetch();
       }
@@ -417,7 +419,7 @@ public class PanelRefresh implements GitRefreshSupport {
     }
     String extraInfo = e.getMessage();
     if (remoteURLFromConfig != null && !extraInfo.contains(remoteURLFromConfig)) {
-      extraInfo += "\n" + translator.getTranslation(Tags.REMOTE_REPO_URL) + " " + remoteURLFromConfig;
+      extraInfo += "\n" + TRANSLATOR.getTranslation(Tags.REMOTE_REPO_URL) + " " + remoteURLFromConfig;
     }
     return extraInfo;
   }
