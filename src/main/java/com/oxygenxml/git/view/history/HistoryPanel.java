@@ -162,6 +162,9 @@ public class HistoryPanel extends JPanel {
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
     historyTable = new Table();
+    
+    historyTable.setIntercellSpacing(new Dimension(0, 0)); 
+    historyTable.setShowGrid(false);
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     historyTable.addMouseListener(new MouseAdapter() {
       @Override

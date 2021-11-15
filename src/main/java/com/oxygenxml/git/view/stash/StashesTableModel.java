@@ -149,4 +149,12 @@ public class StashesTableModel extends AbstractTableModel {
   }
 
 
+  /**
+   * @return The stashes list.
+   */
+  public List<RevCommit> getStashes() {
+	return stashes;
+  }
+
+  
 }

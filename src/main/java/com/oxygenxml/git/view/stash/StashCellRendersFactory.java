@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JToolTip;
 import javax.swing.border.Border;
@@ -77,11 +78,11 @@ public class StashCellRendersFactory {
 				int row,
 				int column) {  
 
-			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			JLabel component = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-			setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
+			component.setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
 
-			return this;
+			return component;
 		}
 
 	}
@@ -104,6 +105,11 @@ public class StashCellRendersFactory {
 				0, 
 				UIConstants.COMPONENT_RIGHT_PADDING
 				);
+		
+		/**
+		 * Date formatter.
+		 */
+		private final DateFormat formatter = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN_WITHOUT_HOUR);
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
@@ -113,17 +119,16 @@ public class StashCellRendersFactory {
 				int row,
 				int column) {  
 
-			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			JLabel component = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-			setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
+	        component.setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
 
 			if(value instanceof Date) {
 				Date date = (Date)value;
-				DateFormat formatter = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN_WITHOUT_HOUR);
-				setText(formatter.format(date));
+				component.setText(formatter.format(date));
 			}
 
-			return this;
+			return component;
 		}
 	}
 
@@ -154,14 +159,14 @@ public class StashCellRendersFactory {
 				int row,
 				int column) {  
 
-			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			JLabel component = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-			setText((String) value);
-			setToolTipText((String) value);
+			component.setText((String) value);
+			component.setToolTipText((String) value);
 
-			setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
+			component.setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
 
-			return this;
+			return component;
 		}
 
 		@Override
