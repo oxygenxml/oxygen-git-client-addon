@@ -240,8 +240,9 @@ public class TagsDialog extends OKCancelDialog {
     //Add the listener for selecting a row
     tagsTable.getSelectionModel().addListSelectionListener(e -> {
       int selectedRow = (tagsTable.getSelectedRow());
-      if(selectedRow >= 0) {
-    	checkoutButton.setEnabled(true);
+      boolean isSelectionValid = selectedRow >= 0;
+      checkoutButton.setEnabled(isSelectionValid);
+      if(isSelectionValid) { 	
         GitTag tag = model.getItemAt(selectedRow);
         if (!tag.isPushed()) {
           pushButton.setEnabled(true);
@@ -250,7 +251,7 @@ public class TagsDialog extends OKCancelDialog {
           pushButton.setEnabled(false);
           deleteButton.setEnabled(false);
         }
-      }
+      } 
     });
 
     //Add the listener for double clicked
