@@ -4,11 +4,17 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.CheckoutCommitDialog;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Action used to checkout a commit or a tag.
@@ -17,18 +23,23 @@ import com.oxygenxml.git.view.dialog.CheckoutCommitDialog;
  *
  */
 public class CheckoutCommitAction extends AbstractAction {
-    
+
+	/**
+	 * Logger for logging.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(CheckoutCommitAction.class);
+
 	/**
 	 * The commit to checkout.
 	 */
 	private final RevCommit commit;
-	
+
 	/**
 	 * The ID of the commit to checkout.
 	 */
 	private final String commitID;
-	
-	
+
+
 	/**
 	 * Constructor.
 	 * 
@@ -39,8 +50,8 @@ public class CheckoutCommitAction extends AbstractAction {
 		this.commit = commit;
 		this.commitID = null;
 	}
-	
-	
+
+
 	/**
 	 * Constructor.
 	 * 
@@ -51,16 +62,27 @@ public class CheckoutCommitAction extends AbstractAction {
 		this.commit = null;
 		this.commitID = commitID;
 	}
-	
-	
+
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(commit != null ) {
-			new CheckoutCommitDialog(commit);
+		boolean hasUncommitedChanges = false;
+		try {
+			hasUncommitedChanges = GitAccess.getInstance().getGit().status().call().hasUncommittedChanges();
+		} catch (NoWorkTreeException | GitAPIException e1) {
+			LOGGER.error(e1, e1);
+		}
+		if(!hasUncommitedChanges) {
+			if(commit != null ) {
+				new CheckoutCommitDialog(commit);
+			} else {
+				new CheckoutCommitDialog(commitID);
+			}
 		} else {
-			new CheckoutCommitDialog(commitID);
+			String msg = Translator.getInstance().getTranslation(Tags.UNCOMMITED_CHANGES_WHEN_CHECKOUT_COMMIT);
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
 		}
 	}
 
-	
+
 }

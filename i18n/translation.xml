@@ -8,6 +8,24 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+     <key value="Tag">
+        <comment>Tag.</comment>
+        <val lang="en_US">Tag</val>
+        <val lang="de_DE">Tag</val>
+        <val lang="fr_FR">Tag</val>
+        <val lang="ja_JP">Tag</val>
+        <val lang="nl_NL">Tag</val>
+        <val lang="zh_CN">Tag</val>
+    </key>
+     <key value="Uncommited_changes_when_checkout_commit">
+        <comment>The the message displayed when the checkout commit is attempted and there are uncommited changes.</comment>
+        <val lang="en_US">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="de_DE">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="fr_FR">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="ja_JP">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="nl_NL">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="zh_CN">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+    </key>
     <key value="Detached_HEAD_Warning_Message">
         <comment>The warning message about detached HEAD.</comment>
         <val lang="en_US">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>

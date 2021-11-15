@@ -1578,4 +1578,13 @@ public class Tags {
    */
   public static final String DETACHED_HEAD_WARNING_MESSAGE = "Detached_HEAD_Warning_Message";
   
+  /**
+   * The the message displayed when the checkout commit is attempted and there are uncommited changes.
+   */
+  public static final String UNCOMMITED_CHANGES_WHEN_CHECKOUT_COMMIT = "Uncommited_changes_when_checkout_commit";
+
+  /**
+   * Tag.
+   */
+  public static final String TAG = "Tag";
 }
