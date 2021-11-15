@@ -51,7 +51,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
       if (selectedRow != -1) {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
-        String searched = pathFinder.getFilePathOnCommit(commitCharacteristics.getPlotCommit());
+        String searched = renameTracker.getInitialPath() != null ? renameTracker.getPath(commitCharacteristics.getPlotCommit().toObjectId()) : null;
         filePresenter.setFilePath(searched);
         StringBuilder commitDescription = new StringBuilder();
         // Case for already committed changes.
@@ -177,14 +177,14 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     private JTable changesTable;
     
     /**
-     * Responsible for finding the file path at certain times.
-     */
-    private PathFinder pathFinder;
-    
-    /**
      * The current file history presented.
      */
     private final FileHistoryPresenter filePresenter;
+    
+    /**
+     * The rename tracker for presented file.
+     */
+    private final RenameTracker renameTracker;
     
     
     
@@ -196,8 +196,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * @param commitDescriptionPane       The commitDescriptionPane
 	 * @param commits                     The list of commits and their characteristics.
 	 * @param changesTable                The table that presents the files changed in a commit.
-	 * @param repo                        The current repository.
-	 * @param filePath                    The path of the file to present history.
+	 * @param renameTracker               The rename tracker for presented file.
 	 */
 	public RowHistoryTableSelectionListener(
 	    int updateDelay,
@@ -205,14 +204,15 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	    JEditorPane commitDescriptionPane,
 		List<CommitCharacteristics> commits, 
 		JTable changesTable,
-		PathFinder pathFinder) {
+		RenameTracker renameTracker
+		) {
 		this.changesTable = changesTable;
 		descriptionUpdateTimer = new Timer(updateDelay, descriptionUpdateListener);
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
-		this.pathFinder = pathFinder;
 		this.filePresenter = ((HistoryTableAffectedFilesModel)changesTable.getModel()).getFilePathPresenter();
+	    this.renameTracker = renameTracker;
 	}
 
 	@Override
