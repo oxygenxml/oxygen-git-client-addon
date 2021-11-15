@@ -13,12 +13,12 @@ public class GitTag {
   /**
    * Tag title
    */
-  private String name;
+  private final String name;
   
   /**
    * Tag message
    */
-  private String message;
+  private final String message;
   
   /**
    * True if tag is Pushed on remote
@@ -28,25 +28,43 @@ public class GitTag {
   /**
    * The name of the tagger
    */
-  private String taggerName;
+  private final String taggerName;
   
   /**
    * The email of the tagger
    */
-  private String taggerEmail;
+  private final String taggerEmail;
   
   /**
    * The time when the tag was done
    */
-  private Date taggingDate;
+  private final Date taggingDate;
   
   /**
    * The id of the commit this tag was made for
    */
-  private String commitID;
+  private final String commitID;
+  
+  /**
+   * The tag id.
+   */
+  private final String tagID;
 
 
-  public GitTag(String tagName, String tagMessage, boolean isTagPushed, String taggerName, String taggerEmail, Date taggingDate, String commitID) {
+  /**
+   * Constructor.
+   * 
+   * @param tagName        Name for tag.
+   * @param tagMessage     Message for tag.
+   * @param isTagPushed    <code>true</code> if the tag is pushed.
+   * @param taggerName     Tagger name for tag.
+   * @param taggerEmail    Tagger email for tag.
+   * @param taggingDate    Date for tag.
+   * @param commitID       Commit ID for tag.
+   * @param tagID          ID for tag.
+   */
+  public GitTag(String tagName, String tagMessage, boolean isTagPushed, String taggerName, 
+		  String taggerEmail, Date taggingDate, String commitID, String tagID) {
     this.name = tagName;
     this.message = tagMessage;
     this.isPushed = isTagPushed;
@@ -54,6 +72,7 @@ public class GitTag {
     this.taggerEmail = taggerEmail;
     this.taggingDate = taggingDate;
     this.commitID = commitID;
+    this.tagID = tagID;
   }
 
   /**
@@ -125,6 +144,15 @@ public class GitTag {
    * @return String form of the SHA-1, in lower case hexadecimal
    */
   public String getCommitID() {
+    return commitID;
+  }
+  
+  /**
+   * Get the tag id.    
+   *  
+   * @return String form of the SHA-1, in lower case hexadecimal
+   */
+  public String getTagID() {
     return commitID;
   }
 

@@ -84,7 +84,8 @@ public class GitTagsManager {
                   tag.getTaggerIdent().getName(),
                   tag.getTaggerIdent().getEmailAddress(),
                   tag.getTaggerIdent().getWhen(),
-                  tag.getObject().getName()));
+                  tag.getObject().getName(),
+                  tag.getName()));
         } else if (object instanceof RevCommit) {
           RevCommit lightTag = (RevCommit) object;
           String lightTagTitle = Repository.shortenRefName(lightTag.getName());
@@ -95,6 +96,7 @@ public class GitTagsManager {
                   lightTag.getAuthorIdent().getName(),
                   lightTag.getAuthorIdent().getEmailAddress(),
                   lightTag.getAuthorIdent().getWhen(),
+                  lightTag.getName(),
                   lightTag.getName()));
         } 
       }
@@ -134,7 +136,8 @@ public class GitTagsManager {
                   tag.getTaggerIdent().getName(),
                   tag.getTaggerIdent().getEmailAddress(),
                   tag.getTaggerIdent().getWhen(),
-                  tag.getObject().getName()));
+                  tag.getObject().getName(),
+                  tag.getName()));
           
         } else if (object instanceof RevCommit) {
           RevCommit lightTag = (RevCommit) object;
@@ -147,6 +150,7 @@ public class GitTagsManager {
                   lightTag.getAuthorIdent().getName(),
                   lightTag.getAuthorIdent().getEmailAddress(),
                   lightTag.getAuthorIdent().getWhen(),
+                  lightTag.getName(),
                   lightTag.getName()));
         } 
       }

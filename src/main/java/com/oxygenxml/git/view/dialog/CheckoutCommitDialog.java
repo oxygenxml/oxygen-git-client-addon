@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
@@ -22,11 +23,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -51,17 +55,17 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	 * Left inset for the inner panels.
 	 */
 	private static final int INNER_PANELS_LEFT_INSET = 5;
-	
+
 	/**
 	 * Translator.
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
-	
+
 	/**
 	 *  Logger for logging.
 	 */
 	private static final Logger LOGGER = Logger.getLogger(CheckoutCommitDialog.class); 
-	
+
 	/**
 	 * TextField for entering the branch name.
 	 */
@@ -71,12 +75,12 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	 * Radio button for create a new branch.
 	 */
 	private JRadioButton createNewBranchRadio;
-	
+
 	/**
 	 * Radio button for detached HEAD.
 	 */
 	private JRadioButton detachedHEADRadio;
-	
+
 	/**
 	 * Create branch panel.
 	 */
@@ -91,21 +95,56 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	 * The error message area.
 	 */
 	private final JTextArea errorMessageTextArea = UIUtil.createMessageArea("");
+	
+	/**
+	 * The commit.
+	 */
+	private final RevCommit commit;
+	
+	/**
+	 * The commit path.
+	 */
+	private final String commitPath;
 
-	
-	
+
+
 	/**
 	 * Constructor.
 	 * 
-	 * @param host         The host for which to provide the credentials.
-	 * @param loginMessage The login message.
+	 * @param commit   The RevCommit to checkout.
 	 */
-	public CheckoutCommitDialog() {
+	public CheckoutCommitDialog(RevCommit commit) {
 		super(
 				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 				TRANSLATOR.getTranslation(Tags.GIT_CHECKOUT),
 				true);
+		
+		this.commit = commit;
+		this.commitPath = null;
+		
+		createGUI();
 
+		this.setResizable(true);
+		this.pack();
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		this.setVisible(true);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param commit   The path of commit to checkout.
+	 */
+	public CheckoutCommitDialog(String commit) {
+		super(
+				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+				TRANSLATOR.getTranslation(Tags.GIT_CHECKOUT),
+				true);
+		
+		this.commit = null;
+		this.commitPath = commit;
+		
 		createGUI();
 
 		this.setResizable(true);
@@ -196,10 +235,10 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		createNewBranchRadio.addItemListener(radioItemListener);
 
 		setOkButtonText(TRANSLATOR.getTranslation(Tags.CHECKOUT));
-		
+
 		createNewBranchRadio.doClick();
 	}
-	
+
 
 	/**
 	 * Update GUI.
@@ -223,16 +262,16 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 				branchNameTextField.requestFocus();
 			}
 		});
-	
+
 	}
-	
+
 
 	/**
 	 * @return The panel for create a new branch.
 	 */
 	private JPanel createNewBranchPanel() {
 		JPanel createNewBranchPanel = new JPanel(new GridBagLayout());
-		
+
 		JLabel branchNameLabel = new JLabel(TRANSLATOR.getTranslation(Tags.ENTER_BRANCH_NAME) + ":");
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(
@@ -267,7 +306,23 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 
 	@Override
 	protected void doOK() {
-		// TODO override method
+		try {
+			if(createNewBranchRadio.isSelected()) {
+				if(commit != null) {
+				  GitAccess.getInstance().checkoutCommit(commit, true, branchNameTextField.getText());	
+				} else {
+				  GitAccess.getInstance().checkoutCommit(commitPath, true, branchNameTextField.getText());	
+				}
+			} else {
+				if(commit != null) {
+					GitAccess.getInstance().checkoutCommit(commit, false);	
+				} else {
+					GitAccess.getInstance().checkoutCommit(commitPath, false);	
+				}
+			}
+		} catch (GitAPIException | IOException | NoRepositorySelected e) {
+			LOGGER.error(e,  e);
+		}
 		super.doOK();
 	}
 
@@ -306,11 +361,11 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		if(detachedHEADRadio != null && !detachedHEADRadio.isSelected()) {
 			getOkButton().setEnabled(isBranchNameValid);	
 		}
-		
+
 		if(isBranchNameValid) {
 			errorMessageTextArea.setText("");
 		}
-		
+
 	}
 
 }

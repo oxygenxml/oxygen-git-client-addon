@@ -5,12 +5,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -36,6 +38,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.history.actions.CheckoutCommitAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -81,6 +84,12 @@ public class TagsDialog extends OKCancelDialog {
    * The button used to delete a local tag
    */
   private JButton deleteButton;
+  
+  /**
+   * The button used to checkout a tag.
+   */
+  private JButton checkoutButton;
+  
 
   /**
    * Constructor
@@ -173,9 +182,29 @@ public class TagsDialog extends OKCancelDialog {
     deleteButton.setEnabled(false);
 
     buttonsGridBagConstraints.gridx ++;
-    buttonsGridBagConstraints.insets = new Insets(UIConstants.INDENT_5PX, 0, UIConstants.INDENT_5PX, 0);
     buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
-
+    
+    checkoutButton = new JButton(TRANSLATOR.getTranslation(Tags.CHECKOUT));
+    checkoutButton.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			  int selectedRow = (tagsTable.getSelectedRow());
+			  if(selectedRow >= 0) {
+				  GitTag tag = ((TagsTableModel)tagsTable.getModel()).getItemAt(selectedRow);
+				  String tagID = tag.getTagID();
+				  Action action = new CheckoutCommitAction(tagID);
+				  action.actionPerformed(e);
+			  }
+		      
+		}
+	});
+    
+    checkoutButton.setEnabled(false);
+    buttonsGridBagConstraints.gridx ++;
+    buttonsGridBagConstraints.insets = new Insets(UIConstants.INDENT_5PX, 0, UIConstants.INDENT_5PX, 0);
+    buttonsPanel.add(checkoutButton, buttonsGridBagConstraints);
+    
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.gridwidth = 1;
@@ -212,6 +241,7 @@ public class TagsDialog extends OKCancelDialog {
     tagsTable.getSelectionModel().addListSelectionListener(e -> {
       int selectedRow = (tagsTable.getSelectedRow());
       if(selectedRow >= 0) {
+    	checkoutButton.setEnabled(true);
         GitTag tag = model.getItemAt(selectedRow);
         if (!tag.isPushed()) {
           pushButton.setEnabled(true);

@@ -240,10 +240,10 @@ public class HistoryViewContextualMenuPresenter {
     if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitId)) {
       jPopupMenu.add(new CreateBranchFromCommitAction(commitId));
       jPopupMenu.add(new CreateTagAction(commitId));
+      jPopupMenu.add(new CheckoutCommitAction(commitCharacteristics.getPlotCommit()));
       jPopupMenu.addSeparator();
       jPopupMenu.add(new RevertCommitAction(commitCharacteristics));
       jPopupMenu.add(new ResetBranchToCommitAction(commitCharacteristics));
-      jPopupMenu.add(new CheckoutCommitAction());
     }
   }
 
