@@ -23,6 +23,9 @@ public class RenameTracker {
 
 	/**
 	 * The filter for RevCommit.
+	 * <br><br>
+	 * Should be applied with {@link org.eclipse.jgit.revwalk.RevWalk#setRevFilter(RevFilter newFilter)}
+	 * on a RevWalk or PlotWalk.
 	 */
 	private final RevFilter filter = new RevFilter() {
 
@@ -30,9 +33,9 @@ public class RenameTracker {
 		public boolean include(final RevWalk walker, final RevCommit commit)
 				throws IOException {
 			if (currentPath != null)
-				renames.put(commit, currentPath);
+				filePathOnCommitMap.put(commit, currentPath);
 			else if (currentDiff != null) {
-				renames.put(commit, currentDiff.getNewPath());
+				filePathOnCommitMap.put(commit, currentDiff.getNewPath());
 				currentPath = currentDiff.getOldPath();
 				currentDiff = null;
 			}
@@ -41,13 +44,17 @@ public class RenameTracker {
 
 		@Override
 		public RevFilter clone() {
-			return null;
+			return this;
 		}
+
 	};
 
 	
 	/**
 	 * The RenameCallback.
+	 * <br><br>
+	 * Should be set on a {@link org.eclipse.jgit.revwalk.FollowFilter} which is applied with
+	 * {@link org.eclipse.jgit.revwalk.RevWalk.setTreeFilter(TreeFilter newFilter)}.
 	 */
 	private final RenameCallback callback = new RenameCallback() {
 
@@ -72,7 +79,7 @@ public class RenameTracker {
 	/**
 	 * A map that contains the RevCommit and the value as the key is the path followed at that moment.
 	 */
-	private Map<RevCommit, String> renames = new LinkedHashMap<>();
+	private Map<RevCommit, String> filePathOnCommitMap = new LinkedHashMap<>();
 	
 	/**
 	 * The initial path.
@@ -82,6 +89,10 @@ public class RenameTracker {
 	
 	/**
 	 * @return The filter.
+	 * 
+	 * <br><br>
+	 * Should be applied with {@link org.eclipse.jgit.revwalk.RevWalk#setRevFilter(RevFilter newFilter)}
+	 * on a RevWalk or PlotWalk.
 	 */
 	public RevFilter getFilter() {
 		return filter;
@@ -89,7 +100,10 @@ public class RenameTracker {
 
 	
 	/**
-	 * @return The rename call back.
+	 * @return The rename call back. 
+	 * <br><br>
+	 * Should be set on a {@link org.eclipse.jgit.revwalk.FollowFilter} which is applied with
+	 * {@link org.eclipse.jgit.revwalk.RevWalk.setTreeFilter(TreeFilter newFilter)}.
 	 */
 	public RenameCallback getCallback() {
 		return callback;
@@ -97,19 +111,19 @@ public class RenameTracker {
 	
 
 	/**
-	 * Get renamed path in target commit.
+	 * Get file path value on a target commit version.
 	 *
 	 * @param target        The target commit.
 	 *
 	 * @return path         The path in commit.
 	 */
 	public String getPath(final ObjectId target) {
-		return renames.get(target);
+		return filePathOnCommitMap.get(target);
 	}
 
 	
 	/**
-	 * @return The initial path.
+	 * @return The initial path of searched file.
 	 */
 	public String getInitialPath() {
 		return initialPath;
@@ -123,7 +137,7 @@ public class RenameTracker {
 	 * 
 	 */
 	public void reset(final String path) {
-		renames.clear();
+		filePathOnCommitMap.clear();
 		currentPath = path;
 		initialPath = path;
 	}
