@@ -37,6 +37,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.DiffPresenter;
+import com.oxygenxml.git.view.history.actions.CheckoutCommitAction;
 import com.oxygenxml.git.view.history.actions.CreateBranchFromCommitAction;
 import com.oxygenxml.git.view.history.actions.CreateTagAction;
 import com.oxygenxml.git.view.history.actions.ResetBranchToCommitAction;
@@ -239,6 +240,7 @@ public class HistoryViewContextualMenuPresenter {
     if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitId)) {
       jPopupMenu.add(new CreateBranchFromCommitAction(commitId));
       jPopupMenu.add(new CreateTagAction(commitId));
+      jPopupMenu.add(new CheckoutCommitAction(commitCharacteristics.getPlotCommit()));
       jPopupMenu.addSeparator();
       jPopupMenu.add(new RevertCommitAction(commitCharacteristics));
       jPopupMenu.add(new ResetBranchToCommitAction(commitCharacteristics));

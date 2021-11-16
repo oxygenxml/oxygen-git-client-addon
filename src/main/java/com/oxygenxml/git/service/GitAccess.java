@@ -26,6 +26,7 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CreateBranchCommand;
+import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
@@ -2777,17 +2778,79 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void deleteTag(String name) throws GitAPIException  {
-	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_DELETE));
-	  try {
-      getGit()
-        .tagDelete()
-        .setTags(name)
-        .call();
-      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_DELETE));
-    } catch (GitAPIException e) {
-      LOGGER.error(e, e);
-      fireOperationFailed(new GitEventInfo(GitOperation.TAG_DELETE), e);
-      throw e;
-    }
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_DELETE));
+		try {
+			getGit()
+			.tagDelete()
+			.setTags(name)
+			.call();
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_DELETE));
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new GitEventInfo(GitOperation.TAG_DELETE), e);
+			throw e;
+		}
+	}
+	
+	
+	/**
+	 * Used to do a checkout commit.
+	 * 
+	 * @param startPoint                    The start commit.
+	 * @param branchName                    The new branch name(if shouldCreateANewBranch is <code>true</code>).
+	 *
+	 * @throws GitAPIException Errors while invoking git commands.
+	 */
+	public void checkoutCommit(RevCommit startPoint, 
+			String branchName) throws GitAPIException {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+		CheckoutCommand checkoutCommand = this.git.checkout();
+		checkoutCommand.setStartPoint(startPoint);
+		doCheckoutCommit(checkoutCommand, branchName);
+	}
+	
+	
+	/**
+	 * Used to do a checkout commit.
+	 * 
+	 * @param startPoint                    The start commit.
+	 * @param branchName                    The new branch name. <code>null</code> to do a headless checkout.
+	 *
+	 * @throws GitAPIException Errors while invoking git commands.
+	 */
+	public void checkoutCommit(String startPoint, 
+			String branchName) throws GitAPIException {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+		CheckoutCommand checkoutCommand = this.git.checkout();
+		checkoutCommand.setStartPoint(startPoint);
+		doCheckoutCommit(checkoutCommand, branchName);
+	}
+	
+	
+	/**
+	 * Used to do a checkout commit.
+	 * 
+	 * @param checkoutCommand         Checkout command to do the checkout.
+	 * @param shouldCreateANewBranch  <code>true</code> if should create a new branch.
+	 * @param branchName              The new branch name(if shouldCreateANewBranch is <code>true</code>).
+	 * 
+	 * @throws GitAPIException Errors while invoking git commands.
+	 */
+	private void doCheckoutCommit(CheckoutCommand checkoutCommand,
+			String branchName) throws GitAPIException {
+		checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
+		if(branchName != null) {
+			checkoutCommand.setCreateBranch(true).setName(branchName);
+		} else {
+			checkoutCommand.setCreateBranch(false).setName(Constants.HEAD);
+		}
+		try {
+			checkoutCommand.call();
+		} catch(GitAPIException e) {
+			fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
+			throw e;
+		}
+		
+		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 	}
 }

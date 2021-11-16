@@ -103,5 +103,9 @@ public enum GitOperation {
   /**
    * Delete a tag operation
    */
-  TAG_DELETE;
+  TAG_DELETE,
+  /**
+   * Checkout commit.
+   */
+  CHECKOUT_COMMIT,
 }
