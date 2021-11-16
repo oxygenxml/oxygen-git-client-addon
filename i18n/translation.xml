@@ -53,15 +53,6 @@
         <val lang="nl_NL">The branch name cannot be empty.</val>
         <val lang="zh_CN">The branch name cannot be empty.</val>
     </key>
-     <key value="Branch_Already_Exists">
-        <comment>The message for error when we already have a branch with this name.</comment>
-        <val lang="en_US">Branch already exists.</val>
-        <val lang="de_DE">Branch already exists.</val>
-        <val lang="fr_FR">Branch already exists.</val>
-        <val lang="ja_JP">Branch already exists.</val>
-        <val lang="nl_NL">Branch already exists.</val>
-        <val lang="zh_CN">Branch already exists.</val>
-    </key>
     <key value="Branch_Contains_Spaces">
         <comment>The message for error when we have a tag with spaces.</comment>
         <val lang="en_US">Spaces are not allowed in branches.</val>

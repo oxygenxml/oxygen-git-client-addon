@@ -347,7 +347,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 			} else {
 				try {
 					titleAlreadyExists = BranchesUtil.existsLocalBranch(branchName);
-					errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.BRANCH_ALREADY_EXISTS));
+					errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH_ALREADY_EXISTS));
 				} catch (NoRepositorySelected e) {
 					LOGGER.error(e, e);
 				}

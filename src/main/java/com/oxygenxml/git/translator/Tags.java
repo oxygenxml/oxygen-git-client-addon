@@ -1549,11 +1549,6 @@ public class Tags {
   public static final String GIT_CHECKOUT = "Git_Checkout";
   
   /**
-   * The message for error when we already have a branch with this name.
-   */
-  public static final String BRANCH_ALREADY_EXISTS = "Branch_Already_Exists";
-  
-  /**
    * The message for error when we have a branch with spaces.
    */
   public static final String BRANCH_CONTAINS_SPACES = "Branch_Contains_Spaces";
