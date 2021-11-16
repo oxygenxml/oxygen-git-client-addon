@@ -2301,9 +2301,9 @@ public class GitAccess {
 				}
 				Iterable<RevCommit> logs = log.call();
 				tagList.add(tagName);
-				commitTagMap.put(
-						logs.iterator().next().getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name(),
-						tagList);
+				String commitToPut = logs.iterator().next().getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
+				List<String> tags = commitTagMap.computeIfAbsent(commitToPut, key -> new ArrayList<>());
+				tags.addAll(tagList);
 			}
 		}
 		return commitTagMap;
