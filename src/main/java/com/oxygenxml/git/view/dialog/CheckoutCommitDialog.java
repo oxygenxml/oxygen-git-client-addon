@@ -10,7 +10,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
@@ -309,18 +308,18 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		try {
 			if(createNewBranchRadio.isSelected()) {
 				if(commit != null) {
-				  GitAccess.getInstance().checkoutCommit(commit, true, branchNameTextField.getText());	
+				  GitAccess.getInstance().checkoutCommit(commit, branchNameTextField.getText());	
 				} else {
-				  GitAccess.getInstance().checkoutCommit(commitPath, true, branchNameTextField.getText());	
+				  GitAccess.getInstance().checkoutCommit(commitPath, branchNameTextField.getText());	
 				}
 			} else {
 				if(commit != null) {
-					GitAccess.getInstance().checkoutCommit(commit, false);	
+					GitAccess.getInstance().checkoutCommit(commit, null);	
 				} else {
-					GitAccess.getInstance().checkoutCommit(commitPath, false);	
+					GitAccess.getInstance().checkoutCommit(commitPath, null);	
 				}
 			}
-		} catch (GitAPIException | IOException | NoRepositorySelected e) {
+		} catch (GitAPIException e) {
 			LOGGER.error(e,  e);
 		}
 		super.doOK();

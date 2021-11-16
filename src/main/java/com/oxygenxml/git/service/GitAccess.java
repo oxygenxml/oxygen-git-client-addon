@@ -2302,6 +2302,10 @@ public class GitAccess {
 				}
 				Iterable<RevCommit> logs = log.call();
 				tagList.add(tagName);
+				
+				
+				List<String> values = commitTagMap.computeIfAbsent("key", key -> new ArrayList<>());
+				
 				commitTagMap.put(
 						logs.iterator().next().getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name(),
 						tagList);
@@ -2794,40 +2798,36 @@ public class GitAccess {
 	
 	
 	/**
+	 * Used to do a checkout commit.
 	 * 
 	 * @param startPoint                    The start commit.
-	 * @param shouldCreateANewBranch        <code>true</code> if should create a new branch.
 	 * @param branchName                    The new branch name(if shouldCreateANewBranch is <code>true</code>).
 	 *
-	 * @throws GitAPIException
-	 * @throws NoRepositorySelected 
-	 * @throws IOException 
+	 * @throws GitAPIException Errors while invoking git commands.
 	 */
-	public void checkoutCommit(RevCommit startPoint, boolean shouldCreateANewBranch, 
-			String...branchName) throws GitAPIException, IOException, NoRepositorySelected {
+	public void checkoutCommit(RevCommit startPoint, 
+			String branchName) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 		CheckoutCommand checkoutCommand = this.git.checkout();
 		checkoutCommand.setStartPoint(startPoint);
-		doCheckoutCommit(checkoutCommand, shouldCreateANewBranch, branchName);
+		doCheckoutCommit(checkoutCommand, branchName);
 	}
 	
 	
 	/**
+	 * Used to do a checkout commit.
 	 * 
 	 * @param startPoint                    The start commit.
-	 * @param shouldCreateANewBranch        <code>true</code> if should create a new branch.
-	 * @param branchName                    The new branch name(if shouldCreateANewBranch is <code>true</code>).
+	 * @param branchName                    The new branch name. <code>null</code> to do a headless checkout.
 	 *
-	 * @throws GitAPIException
-	 * @throws NoRepositorySelected 
-	 * @throws IOException 
+	 * @throws GitAPIException Errors while invoking git commands.
 	 */
-	public void checkoutCommit(String startPoint, boolean shouldCreateANewBranch, 
-			String...branchName) throws GitAPIException, IOException, NoRepositorySelected {
+	public void checkoutCommit(String startPoint, 
+			String branchName) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 		CheckoutCommand checkoutCommand = this.git.checkout();
 		checkoutCommand.setStartPoint(startPoint);
-		doCheckoutCommit(checkoutCommand, shouldCreateANewBranch, branchName);
+		doCheckoutCommit(checkoutCommand, branchName);
 	}
 	
 	
@@ -2838,15 +2838,13 @@ public class GitAccess {
 	 * @param shouldCreateANewBranch  <code>true</code> if should create a new branch.
 	 * @param branchName              The new branch name(if shouldCreateANewBranch is <code>true</code>).
 	 * 
-	 * @throws GitAPIException
-	 * @throws IOException
-	 * @throws NoRepositorySelected
+	 * @throws GitAPIException Errors while invoking git commands.
 	 */
-	private void doCheckoutCommit(CheckoutCommand checkoutCommand, boolean shouldCreateANewBranch, 
-			String...branchName) throws GitAPIException, IOException, NoRepositorySelected {
+	private void doCheckoutCommit(CheckoutCommand checkoutCommand,
+			String branchName) throws GitAPIException {
 		checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
-		if(shouldCreateANewBranch) {
-			checkoutCommand.setCreateBranch(true).setName(branchName[0]);
+		if(branchName != null) {
+			checkoutCommand.setCreateBranch(true).setName(branchName);
 		} else {
 			checkoutCommand.setCreateBranch(false).setName(Constants.HEAD);
 		}
