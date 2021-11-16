@@ -310,7 +310,8 @@ public class ToolbarPanel extends JPanel {
             || operation == GitOperation.DISCARD
             || operation == GitOperation.DELETE_BRANCH
             || operation == GitOperation.CREATE_BRANCH
-            || operation == GitOperation.CHECKOUT) {
+            || operation == GitOperation.CHECKOUT
+            || operation == GitOperation.CHECKOUT_COMMIT) {
           refresh();
         }
       }

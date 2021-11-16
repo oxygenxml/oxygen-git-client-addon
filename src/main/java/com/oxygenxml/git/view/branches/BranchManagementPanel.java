@@ -121,7 +121,8 @@ public class BranchManagementPanel extends JPanel {
         GitOperation operation = info.getGitOperation();
         if (operation == GitOperation.CREATE_BRANCH
             || operation == GitOperation.CHECKOUT
-            || operation == GitOperation.DELETE_BRANCH) {
+            || operation == GitOperation.DELETE_BRANCH
+            || operation == GitOperation.CHECKOUT_COMMIT) {
           SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
         } else if (operation == GitOperation.OPEN_WORKING_COPY) {
           SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
