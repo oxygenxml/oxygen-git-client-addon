@@ -189,7 +189,7 @@ public class BranchTreeMenuActionsProvider {
             true);
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(() -> {
-            ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
+            ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath, BranchesUtil.getRemoteForBranch(nodePath));
             BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
 
             return null;

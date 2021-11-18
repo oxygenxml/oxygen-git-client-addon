@@ -108,6 +108,18 @@ public class BranchesUtil {
     }
     return branchPath.toString();
   }
+  
+  /**
+   * Returns the current remote for the remote branch.
+   * 
+   * @param nodePath The branch path.
+   * 
+   * @return The remote of the branch.
+   */
+  public static String getRemoteForBranch(String nodePath) {
+	  String[] split = nodePath.split("/");
+	  return split[BranchManagementConstants.REMOTE_BRANCH_REMOTE_NODE_TREE_LEVEL];
+  }
 
   /**
    * Creates a list with all branches, local and remote, for the current repository.
