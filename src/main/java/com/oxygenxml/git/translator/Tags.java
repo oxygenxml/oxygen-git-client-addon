@@ -1582,4 +1582,14 @@ public class Tags {
    * Tag.
    */
   public static final String TAG = "Tag";
+  
+  /**
+   * Used in remotes table column title for remote name.
+   */
+  public static final String NAME = "Name";
+  
+  /**
+   * Used in remotes table column title for remote URL.
+   */
+  public static final String URL = "URL";
 }

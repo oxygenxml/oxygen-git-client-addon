@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
@@ -2894,5 +2895,18 @@ public class GitAccess {
 		Repository repository = this.getRepository();
 		StoredConfig config = repository.getConfig();
 		config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_REMOTE, newRemoteValue);
+	}
+	
+	public Map<String, String> getRemotesFromConfig() throws NoRepositorySelected {
+		Map<String, String> remotesMap = new TreeMap<>();
+	
+		StoredConfig config = getRepository().getConfig();
+	    Set<String> remotes = config.getSubsections(ConfigConstants.CONFIG_KEY_REMOTE);
+	    
+	    for(String remote : remotes) {
+	    	remotesMap.put(remote, config.getString(ConfigConstants.CONFIG_KEY_REMOTE, remote, "url"));
+	    }
+		
+		return remotesMap;
 	}
 }

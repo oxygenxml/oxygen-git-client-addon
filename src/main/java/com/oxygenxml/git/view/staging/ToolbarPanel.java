@@ -65,6 +65,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.tags.GitTagsManager;
@@ -187,6 +188,11 @@ public class ToolbarPanel extends JPanel {
    * Button for push
    */
   private ToolbarButton pushButton;
+  
+  /**
+   * Button for remote.
+   */
+  private ToolbarButton remotesButton;
 
   /**
    * Button for stash
@@ -349,6 +355,7 @@ public class ToolbarPanel extends JPanel {
     addSubmoduleSelectButton();
     addHistoryButton(historyController);
     addTagsShowButton();
+    addRemotesButton();
     addSettingsButton();
     this.add(gitToolbar, gbc);
 
@@ -381,6 +388,7 @@ public class ToolbarPanel extends JPanel {
     pushButton.setEnabled(isRepoSelected);
     pullMenuButton.setEnabled(isRepoSelected);
     historyButton.setEnabled(isRepoSelected);
+    remotesButton.setEnabled(isRepoSelected);
     
     refreshStashButton();
     refreshTagsButton();
@@ -1701,7 +1709,66 @@ public class ToolbarPanel extends JPanel {
   public ToolbarButton getShowTagsButton() {
     return showTagsButton;
   }
+  
+  
+  
+  // ==========  REMOTES  ==========
+  
+  /**
+   * Adds to the tool bar the remotes button.
+   */
+  private void addRemotesButton() {
+    remotesButton = createRemotesButton();
+    remotesButton.setIcon(Icons.getIcon(Icons.REMOTE));
+    setDefaultToolbarButtonWidth(remotesButton);
 
+    gitToolbar.add(remotesButton);
+    remotesButton.setEnabled(false);
+  }
+
+  
+  /**
+   * Create the "Remotes" button.
+   * 
+   * @return the "Remotes" button.
+   */
+  private ToolbarButton createRemotesButton() {
+    return new ToolbarButton(createRemotesAction(), false) { // NOSONAR (java:S110)
+
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+
+    };
+  }
+  
+  
+  /**
+   * Create the "Remotes" action.
+   *
+   * @return the "Remotes" action
+   */
+  private Action createRemotesAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          if (GitAccess.getInstance().getRepository() != null) {
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("Push Button Clicked");
+            }
+           new RemotesRepositoryDialog();
+          }
+        } catch (NoRepositorySelected e1) {
+          if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug(e1, e1);
+          }
+        }
+      }
+    };
+  }
+  
 
 
   // ========== SETTINGS ==========
