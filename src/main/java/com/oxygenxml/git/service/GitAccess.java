@@ -2898,6 +2898,14 @@ public class GitAccess {
 		config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_REMOTE, newRemoteValue);
 	}
 	
+	
+	/**
+	 * Get all remotes from project config file.
+	 * 
+	 * @return A map when <code>key</code> = remote name, <code>value</code> = URL for this remote.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
 	public Map<String, String> getRemotesFromConfig() throws NoRepositorySelected {
 		Map<String, String> remotesMap = new TreeMap<>();
 	
@@ -2930,15 +2938,15 @@ public class GitAccess {
 		StoredConfig config = getRepository().getConfig();
 		List<String> info = new ArrayList();
 		info.add(newURL);
-		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, "url", info);
+		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, ConfigConstants.CONFIG_KEY_URL, info);
 		info.clear();
 		info.add("+refs/heads/*:refs/remotes/" + newRemote + "/*");
-		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, "fetch", info);
+		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, ConfigConstants.CONFIG_FETCH_SECTION, info);
 	}
 	
 	
 	/**
-	 * Remove the given remote. 
+	 * Remove the given  remote. 
 	 * <br><br>
 	 * The config file will be not updated.
 	 * 
@@ -2949,6 +2957,14 @@ public class GitAccess {
 	public void removeRemote(String remote) throws NoRepositorySelected {
 		StoredConfig config = getRepository().getConfig();
 		config.unsetSection(ConfigConstants.CONFIG_KEY_REMOTE, remote);
+	
+		// remove all branches with this remote
+		Set<String> branchesSection = config.getSubsections(ConfigConstants.CONFIG_BRANCH_SECTION);
+		branchesSection.forEach(branchName -> {
+			if(config.getString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_REMOTE).equals(remote)) {
+				config.unsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, branchName);
+			}
+		});
 	}
 	
 	
