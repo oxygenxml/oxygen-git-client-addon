@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -2908,5 +2909,61 @@ public class GitAccess {
 	    }
 		
 		return remotesMap;
+	}
+	
+	
+	/**
+	 * Update remote values.
+	 * <br><br>
+	 * The config file will be not updated.
+	 * 
+	 * @param oldRemote   Old remote name.
+	 * @param newRemote   New remote name.
+	 * @param newURL      New URL.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public void updateRemote(String oldRemote, String newRemote, String newURL)  throws NoRepositorySelected {
+		if(oldRemote != null) {
+			removeRemote(oldRemote);
+		}
+		StoredConfig config = getRepository().getConfig();
+		List<String> info = new ArrayList();
+		info.add(newURL);
+		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, "url", info);
+		info.clear();
+		info.add("+refs/heads/*:refs/remotes/" + newRemote + "/*");
+		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, "fetch", info);
+	}
+	
+	
+	/**
+	 * Remove the given remote. 
+	 * <br><br>
+	 * The config file will be not updated.
+	 * 
+	 * @param remote  Remote to remove
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public void removeRemote(String remote) throws NoRepositorySelected {
+		StoredConfig config = getRepository().getConfig();
+		config.unsetSection(ConfigConstants.CONFIG_KEY_REMOTE, remote);
+	}
+	
+	
+	/**
+	 * Updates the config file with new configurations.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public void updateConfigFile() throws NoRepositorySelected {
+		File file = new File(getRepository().getDirectory().getPath() + "/" + Constants.CONFIG);
+		String text = GitAccess.getInstance().getRepository().getConfig().toText();
+		  try(FileWriter myWriter = new FileWriter(file)) {
+			  myWriter.write(text);
+		  }  catch (IOException e1) {
+				LOGGER.error(e1, e1);
+		  }
 	}
 }
