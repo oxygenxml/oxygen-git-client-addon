@@ -1592,4 +1592,34 @@ public class Tags {
    * Used in remotes table column title for remote URL.
    */
   public static final String URL = "URL";
+  
+  /**
+   * Add remote.
+   */
+  public static final String ADD_REMOTE = "Add_Remote";
+  
+  /**
+   * Add.
+   */
+  public static final String ADD = "Add";
+  
+  /**
+   * Edit.
+   */
+  public static final String EDIT = "Edit";
+  
+  /**
+   * Edit remote.
+   */
+  public static final String EDIT_REMOTE = "Edit_Remote";
+  
+  /**
+   * Remote name.
+   */
+  public static final String REMOTE_NAME = "Remote_Name";
+  
+  /**
+   * Remote URL.
+   */
+  public static final String REMOTE_URL = "Remote_URL";
 }

@@ -2932,11 +2932,11 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public void updateRemote(String oldRemote, String newRemote, String newURL)  throws NoRepositorySelected {
-		if(oldRemote != null) {
+		if(oldRemote != null && oldRemote.equals(newRemote)) {
 			removeRemote(oldRemote);
 		}
 		StoredConfig config = getRepository().getConfig();
-		List<String> info = new ArrayList();
+		List<String> info = new ArrayList<>();
 		info.add(newURL);
 		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, ConfigConstants.CONFIG_KEY_URL, info);
 		info.clear();
@@ -2974,7 +2974,8 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public void updateConfigFile() throws NoRepositorySelected {
-		File file = new File(getRepository().getDirectory().getPath() + "/" + Constants.CONFIG);
+		final String pathDelimiter = "/";
+		File file = new File(getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG);
 		String text = GitAccess.getInstance().getRepository().getConfig().toText();
 		  try(FileWriter myWriter = new FileWriter(file)) {
 			  myWriter.write(text);

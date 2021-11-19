@@ -296,10 +296,11 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		 */
 		private JButton createAddButton() {
 
-			return new Button(new AbstractAction("Add") {
+			return new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.ADD)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog("Add remote", 
+					AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog(
+							TRANSLATOR.getTranslation(Tags.ADD_REMOTE), 
 							null, null);
 					if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
 						final String remoteName = dialog.getRemoteName();
@@ -328,12 +329,12 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		 * @return The created button.
 		 */
 		private JButton createEditButton() {
-			editButton = new Button(new AbstractAction("Edit") {
+			editButton = new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int selectedRow = remotesTable.getSelectedRow();
 					if(selectedRow >= 0) {
-						AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog("Edit remote", 
+						AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog(TRANSLATOR.getTranslation(Tags.EDIT_REMOTE), 
 								(String)remotesModel.getValueAt(selectedRow, RemotesTableModel.REMOTE_COLUMN), 
 								(String)remotesModel.getValueAt(selectedRow, RemotesTableModel.URL_COLUMN));
 						if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
@@ -370,7 +371,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		 * @return The created button.
 		 */
 		private JButton createDeleteButton() {
-			deleteButton = new Button(new AbstractAction("Delete") {
+			deleteButton = new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.DELETE)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int selectedRow = remotesTable.getSelectedRow();
@@ -521,7 +522,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			constraints.weighty = 0;
 			constraints.fill = GridBagConstraints.NONE;
 
-			JLabel remoteNameLabel = new JLabel("Remote name" + ":");
+			JLabel remoteNameLabel = new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_NAME) + ":");
 			guiPanel.add(remoteNameLabel, constraints);
 
 			constraints.gridx++;
@@ -533,7 +534,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			constraints.gridy++;
 			constraints.fill = GridBagConstraints.NONE;
 			constraints.weightx = 0;
-			JLabel remoteURLLabel = new JLabel("Remote URL" + ":");
+			JLabel remoteURLLabel = new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_URL) + ":");
 			guiPanel.add(remoteURLLabel, constraints);
 
 			constraints.gridx++;

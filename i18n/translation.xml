@@ -8,6 +8,51 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Remote_URL">
+        <comment>Remote URL.</comment>
+        <val lang="en_US">Remote URL</val>
+        <val lang="de_DE">Remote URL</val>
+        <val lang="fr_FR">Remote URL</val>
+        <val lang="ja_JP">Remote URL</val>
+        <val lang="nl_NL">Remote URL</val>
+        <val lang="zh_CN">Remote URL</val>
+    </key>
+    <key value="Remote_Name">
+        <comment>Remote name.</comment>
+        <val lang="en_US">Remote name</val>
+        <val lang="de_DE">Remote name</val>
+        <val lang="fr_FR">Remote name</val>
+        <val lang="ja_JP">Remote name</val>
+        <val lang="nl_NL">Remote name</val>
+        <val lang="zh_CN">Remote name</val>
+    </key>
+    <key value="Edit_Remote">
+        <comment>Edit remote.</comment>
+        <val lang="en_US">Edit remote</val>
+        <val lang="de_DE">Edit remote</val>
+        <val lang="fr_FR">Edit remote</val>
+        <val lang="ja_JP">Edit remote</val>
+        <val lang="nl_NL">Edit remote</val>
+        <val lang="zh_CN">Edit remote</val>
+    </key>
+     <key value="Add_Remote">
+        <comment>Add remote.</comment>
+        <val lang="en_US">Add remote</val>
+        <val lang="de_DE">Add remote</val>
+        <val lang="fr_FR">Add remote</val>
+        <val lang="ja_JP">Add remote</val>
+        <val lang="nl_NL">Add remote</val>
+        <val lang="zh_CN">Add remote</val>
+    </key>
+    <key value="URL">
+        <comment>URL.</comment>
+        <val lang="en_US">URL</val>
+        <val lang="de_DE">URL</val>
+        <val lang="fr_FR">URL</val>
+        <val lang="ja_JP">URL</val>
+        <val lang="nl_NL">URL</val>
+        <val lang="zh_CN">URL</val>
+    </key>
      <key value="Tag">
         <comment>Tag.</comment>
         <val lang="en_US">Tag</val>
