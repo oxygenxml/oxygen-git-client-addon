@@ -2932,7 +2932,7 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public void updateRemote(String oldRemote, String newRemote, String newURL)  throws NoRepositorySelected {
-		if(oldRemote != null && oldRemote.equals(newRemote)) {
+		if(oldRemote != null && !oldRemote.equals(newRemote)) {
 			removeRemote(oldRemote);
 		}
 		StoredConfig config = getRepository().getConfig();
@@ -2974,13 +2974,17 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public void updateConfigFile() throws NoRepositorySelected {
-		final String pathDelimiter = "/";
-		File file = new File(getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG);
+		File file = new File(getConfigFilePath());
 		String text = GitAccess.getInstance().getRepository().getConfig().toText();
 		  try(FileWriter myWriter = new FileWriter(file)) {
 			  myWriter.write(text);
 		  }  catch (IOException e1) {
 				LOGGER.error(e1, e1);
 		  }
+	}
+	
+	public String getConfigFilePath() throws NoRepositorySelected {
+		final String pathDelimiter = "/";
+		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
 	}
 }

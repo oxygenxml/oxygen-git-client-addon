@@ -9,7 +9,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,6 +68,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
 import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
@@ -72,6 +76,7 @@ import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -192,7 +197,7 @@ public class ToolbarPanel extends JPanel {
   /**
    * Button for remote.
    */
-  private ToolbarButton remotesButton;
+  private SplitMenuButton remotesButton;
 
   /**
    * Button for stash
@@ -341,10 +346,10 @@ public class ToolbarPanel extends JPanel {
 
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
-    gbc.gridy = 1;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridy = 0;
+    gbc.fill = GridBagConstraints.NONE;
     gbc.weighty = 0;
-    gbc.weightx = 1;
+    gbc.weightx = 0;
     gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(0, 0, 0, 0);
 
@@ -357,6 +362,7 @@ public class ToolbarPanel extends JPanel {
     addTagsShowButton();
     addRemotesButton();
     addSettingsButton();
+    
     this.add(gitToolbar, gbc);
 
   }
@@ -1732,8 +1738,14 @@ public class ToolbarPanel extends JPanel {
    * 
    * @return the "Remotes" button.
    */
-  private ToolbarButton createRemotesButton() {
-    return new ToolbarButton(createRemotesAction(), false) { // NOSONAR (java:S110)
+  private SplitMenuButton createRemotesButton() {
+    SplitMenuButton remoteButton = new SplitMenuButton( // NOSONAR (java:S110)
+            null,
+            Icons.getIcon(Icons.REMOTE),
+            false,
+            false,
+            true,
+            false) { 
 
       @Override
       public JToolTip createToolTip() {
@@ -1741,6 +1753,12 @@ public class ToolbarPanel extends JPanel {
       }
 
     };
+    
+    remoteButton.addActionToMenu(createRemotesAction(), false);
+    remoteButton.addActionToMenu(createCurrentBranchRemote(), false);
+    remoteButton.addActionToMenu(createEditConfigFileAction(), false);
+    
+    return remoteButton;
   }
   
   
@@ -1750,7 +1768,7 @@ public class ToolbarPanel extends JPanel {
    * @return the "Remotes" action
    */
   private Action createRemotesAction() {
-    return new AbstractAction() {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.REMOTE) +  "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
@@ -1767,6 +1785,46 @@ public class ToolbarPanel extends JPanel {
         }
       }
     };
+  }
+  
+  
+  /**
+   * Create action for edit the config file.
+   * 
+   * @return The created action.
+   */
+  private Action createEditConfigFileAction() {
+	  return new AbstractAction("Edit config file...") {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				 URL configFileURL;
+				try {
+					configFileURL = URLUtil.correct(new File(GitAccess.getInstance().getConfigFilePath()));
+					PluginWorkspaceProvider.getPluginWorkspace().open(configFileURL);
+				} catch (MalformedURLException | NoRepositorySelected e) {
+					LOGGER.error(e, e);
+				} 
+			}
+			
+		};
+  }
+  
+  
+  /**
+   * Create action for edit the config file.
+   * 
+   * @return The created action.
+   */
+  private Action createCurrentBranchRemote() {
+	  return new AbstractAction("Current branch remote...") {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				 new CurrentBranchRemotesDialog();
+			}
+			
+		};
   }
   
 

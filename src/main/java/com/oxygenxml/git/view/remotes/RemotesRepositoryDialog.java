@@ -30,6 +30,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -156,10 +157,10 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 		remotesPanel.add(tableRemotesScrollPane, constraints);
 
-		constraints.fill = GridBagConstraints.NONE;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.insets = new Insets(0, 0, 0, 0);
 		constraints.gridy++;
-		constraints.weightx = 0;
+		constraints.weightx = 1;
 		constraints.weighty = 0;
 		remotesPanel.add(factory.createButtonsPanel(), constraints);
 
@@ -284,6 +285,11 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 			constraints.gridx++;
 			buttonsPanel.add(createDeleteButton(), constraints);
+			
+			constraints.gridx++;
+			constraints.weightx = 1;
+			constraints.fill = GridBagConstraints.HORIZONTAL;
+			buttonsPanel.add(new JPanel(), constraints);
 
 			return buttonsPanel;
 		}
@@ -305,17 +311,33 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 					if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
 						final String remoteName = dialog.getRemoteName();
 						final String remoteURL = dialog.getRemoteURL();
-						actionsToExecute.add(new AbstractAction() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								try {
-									GitAccess.getInstance().updateRemote(null, remoteName, remoteURL);
-								} catch (NoRepositorySelected e1) {
-									LOGGER.error(e1, e1);
-								}	
-							}
-						});
-						remotesModel.addRemote(dialog.getRemoteName(), dialog.getRemoteURL());		      
+						final boolean remoteNameAlreadyExists = remotesModel.remoteAlreadyExists(remoteName);
+						
+						if(remoteNameAlreadyExists) {
+							actionsToExecute.add(new AbstractAction() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									try {
+										GitAccess.getInstance().updateRemote(remoteName, remoteName, remoteURL);
+									} catch (NoRepositorySelected e1) {
+										LOGGER.error(e1, e1);
+									}	
+								}
+							});
+							remotesModel.editRemote(remoteName,remoteName, remoteURL);	
+						} else {
+							actionsToExecute.add(new AbstractAction() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									try {
+										GitAccess.getInstance().updateRemote(null, remoteName, remoteURL);
+									} catch (NoRepositorySelected e1) {
+										LOGGER.error(e1, e1);
+									}	
+								}
+							});
+							remotesModel.addRemote(dialog.getRemoteName(), dialog.getRemoteURL());	
+						}
 					}
 				}
 			});
@@ -376,21 +398,28 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				public void actionPerformed(ActionEvent e) {
 					int selectedRow = remotesTable.getSelectedRow();
 					if(selectedRow >= 0) {
-						final String remoteName = (String)remotesModel.getValueAt(selectedRow, 
-								RemotesTableModel.REMOTE_COLUMN);
+						 int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+						            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
+						            TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+						            TRANSLATOR.getTranslation(Tags.YES),
+						            TRANSLATOR.getTranslation(Tags.NO));
+						    if (OKCancelDialog.RESULT_OK == answer) {
+						    	final String remoteName = (String)remotesModel.getValueAt(selectedRow, 
+										RemotesTableModel.REMOTE_COLUMN);
 
-						actionsToExecute.add(new AbstractAction() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								try {
-									GitAccess.getInstance().removeRemote(remoteName);
-								} catch (NoRepositorySelected e1) {
-									LOGGER.error(e1, e1);
-								}	
-							}
-						});
+								actionsToExecute.add(new AbstractAction() {
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										try {
+											GitAccess.getInstance().removeRemote(remoteName);
+										} catch (NoRepositorySelected e1) {
+											LOGGER.error(e1, e1);
+										}	
+									}
+								});
 
-						remotesModel.deleteRemote(selectedRow);
+								remotesModel.deleteRemote(selectedRow);
+						    }
 					}
 				}
 			});
@@ -399,167 +428,210 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 			return deleteButton;
 		}
-
-	}
-
-
-
-	/**
-	 * Dialog for adding or editing a remote.
-	 * 
-	 * @author alex_smarandache
-	 *
-	 */
-	private class AddOrEditRemoteDialog extends OKCancelDialog {
-
-		/**
-		 * Text field for remote name.
-		 */
-		private final JTextField remoteNameTF = OxygenUIComponentsFactory.createTextField();
-
-		/**
-		 * Text field for remote URL.
-		 */
-		private final JTextField remoteURLTF = OxygenUIComponentsFactory.createTextField();
-
-		/**
-		 * The dialog width.
-		 */
-		private static final int WIDTH = 350;
+		
 		
 		/**
-		 * The dialog height.
-		 */
-		private static final int HEIGHT = 150;
-
-		
-		/**
-		 * Constructor.
+		 * Dialog for adding or editing a remote.
 		 * 
-		 * @param title       The dialog title.
-		 * @param remoteName  The remote name. May be null if the dialog is for adding a new remote.
-		 * @param remoteURL   The remote  URL.  May be null if the dialog is for adding a new remote.
+		 * @author alex_smarandache
+		 *
 		 */
-		public AddOrEditRemoteDialog(String title, String remoteName, String remoteURL) {
-			super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-					title, true
-					);
+		private class AddOrEditRemoteDialog extends OKCancelDialog {
 
-			if(remoteName != null) {
-				remoteNameTF.setText(remoteName);
-				remoteNameTF.setCaretPosition(0);
-				remoteNameTF.selectAll();
+			/**
+			 * Text field for remote name.
+			 */
+			private final JTextField remoteNameTF = OxygenUIComponentsFactory.createTextField();
+
+			/**
+			 * Text field for remote URL.
+			 */
+			private final JTextField remoteURLTF = OxygenUIComponentsFactory.createTextField();
+
+			/**
+			 * The dialog width.
+			 */
+			private static final int WIDTH = 350;
+			
+			/**
+			 * The dialog height.
+			 */
+			private static final int HEIGHT = 150;
+			
+			/**
+			 * The old remote rename.
+			 */
+			private final String oldRemoteName;
+			
+			/**
+			 * The old remote URL.
+			 */
+			private final String oldRemoteURL;
+
+			
+			/**
+			 * Constructor.
+			 * 
+			 * @param title       The dialog title.
+			 * @param remoteName  The remote name. May be null if the dialog is for adding a new remote.
+			 * @param remoteURL   The remote  URL.  May be null if the dialog is for adding a new remote.
+			 */
+			public AddOrEditRemoteDialog(String title, String remoteName, String remoteURL) {
+				super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+						title, true
+						);
+
+				oldRemoteName = remoteName;
+				oldRemoteURL = remoteURL;
+				
+				if(remoteName != null) {
+					remoteNameTF.setText(remoteName);
+					remoteNameTF.setCaretPosition(0);
+					remoteNameTF.selectAll();
+				}
+
+				if(remoteURL != null ) {
+					remoteURLTF.setText(remoteURL);
+					remoteURLTF.setCaretPosition(0);
+				}
+
+				this.getOkButton().setEnabled(remoteName != null && remoteURL != null);
+
+				getContentPane().add(createGUIPanel());
+				pack();
+
+				CoalescingDocumentListener updateOkButtonListener = new CoalescingDocumentListener(() -> 
+					this.getOkButton().setEnabled(remoteURLTF.getText() != null && 
+							!remoteURLTF.getText().isEmpty() && remoteNameTF.getText() != null 
+							&& !remoteNameTF.getText().isEmpty())
+				);
+
+				remoteNameTF.getDocument().addDocumentListener(updateOkButtonListener);
+				remoteURLTF.getDocument().addDocumentListener(updateOkButtonListener);
+
+				JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+						(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+						if (parentFrame != null) {
+							setIconImage(parentFrame.getIconImage());
+							setLocationRelativeTo(parentFrame);
+						}
+
+						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+						this.setVisible(true);
+						this.setResizable(false);
+			}
+			
+			@Override
+			public Dimension getSize() {
+				return new Dimension(WIDTH, HEIGHT);
+			}
+			
+			@Override
+			public Dimension getPreferredSize() {
+				return getSize();
+			}
+			
+			@Override
+			public Dimension getMinimumSize() {
+				return getSize();
+			}
+			
+			@Override
+			public Dimension getMaximumSize() {
+				return getSize();
 			}
 
-			if(remoteURL != null ) {
-				remoteURLTF.setText(remoteURL);
-				remoteURLTF.setCaretPosition(0);
+			/**
+			 * Create the dialog GUI.
+			 * 
+			 * @return The created panel.
+			 */
+			private JPanel createGUIPanel() {
+				JPanel guiPanel = new JPanel(new GridBagLayout());
+				GridBagConstraints constraints = new GridBagConstraints();
+
+				constraints.gridx = 0;
+				constraints.gridy = 0;
+				constraints.gridwidth = 1;
+				constraints.gridheight = 1;
+				constraints.anchor = GridBagConstraints.WEST;
+				constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
+				constraints.weightx = 0;
+				constraints.weighty = 0;
+				constraints.fill = GridBagConstraints.NONE;
+
+				JLabel remoteNameLabel = new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_NAME) + ":");
+				guiPanel.add(remoteNameLabel, constraints);
+
+				constraints.gridx++;
+				constraints.weightx = 1;
+				constraints.fill = GridBagConstraints.HORIZONTAL;
+				guiPanel.add(remoteNameTF, constraints);
+
+				constraints.gridx = 0;
+				constraints.gridy++;
+				constraints.fill = GridBagConstraints.NONE;
+				constraints.weightx = 0;
+				JLabel remoteURLLabel = new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_URL) + ":");
+				guiPanel.add(remoteURLLabel, constraints);
+
+				constraints.gridx++;
+				constraints.weightx = 1;
+				constraints.fill = GridBagConstraints.HORIZONTAL;
+				constraints.insets = new Insets(0, 0, 0, 0);
+				guiPanel.add(remoteURLTF, constraints);
+
+				return guiPanel;
 			}
 
-			this.getOkButton().setEnabled(remoteName != null && remoteURL != null);
 
-			getContentPane().add(createGUIPanel());
-			pack();
-
-			CoalescingDocumentListener updateOkButtonListener = new CoalescingDocumentListener(() -> 
-				this.getOkButton().setEnabled(remoteURLTF.getText() != null && 
-						!remoteURLTF.getText().isEmpty() && remoteNameTF.getText() != null 
-						&& !remoteNameTF.getText().isEmpty())
-			);
-
-			remoteNameTF.getDocument().addDocumentListener(updateOkButtonListener);
-			remoteURLTF.getDocument().addDocumentListener(updateOkButtonListener);
-
-			JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
-					(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-					if (parentFrame != null) {
-						setIconImage(parentFrame.getIconImage());
-						setLocationRelativeTo(parentFrame);
-					}
-
-					setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-					this.setVisible(true);
-					this.setResizable(false);
-		}
-		
-		@Override
-		public Dimension getSize() {
-			return new Dimension(WIDTH, HEIGHT);
-		}
-		
-		@Override
-		public Dimension getPreferredSize() {
-			return getSize();
-		}
-		
-		@Override
-		public Dimension getMinimumSize() {
-			return getSize();
-		}
-		
-		@Override
-		public Dimension getMaximumSize() {
-			return getSize();
-		}
-
-		/**
-		 * Create the dialog GUI.
-		 * 
-		 * @return The created panel.
-		 */
-		private JPanel createGUIPanel() {
-			JPanel guiPanel = new JPanel(new GridBagLayout());
-			GridBagConstraints constraints = new GridBagConstraints();
-
-			constraints.gridx = 0;
-			constraints.gridy = 0;
-			constraints.gridwidth = 1;
-			constraints.gridheight = 1;
-			constraints.anchor = GridBagConstraints.WEST;
-			constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
-			constraints.weightx = 0;
-			constraints.weighty = 0;
-			constraints.fill = GridBagConstraints.NONE;
-
-			JLabel remoteNameLabel = new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_NAME) + ":");
-			guiPanel.add(remoteNameLabel, constraints);
-
-			constraints.gridx++;
-			constraints.weightx = 1;
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			guiPanel.add(remoteNameTF, constraints);
-
-			constraints.gridx = 0;
-			constraints.gridy++;
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.weightx = 0;
-			JLabel remoteURLLabel = new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_URL) + ":");
-			guiPanel.add(remoteURLLabel, constraints);
-
-			constraints.gridx++;
-			constraints.weightx = 1;
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			constraints.insets = new Insets(0, 0, 0, 0);
-			guiPanel.add(remoteURLTF, constraints);
-
-			return guiPanel;
-		}
+			/**
+			 * @return The remote name.
+			 */
+			public String getRemoteName() {
+				return remoteNameTF.getText();
+			}
 
 
-		/**
-		 * @return The remote name.
-		 */
-		public String getRemoteName() {
-			return remoteNameTF.getText();
-		}
+			/**
+			 * @return The remote URL.
+			 */
+			public String getRemoteURL() {
+				return remoteURLTF.getText();
+			}
+			
+			@Override
+			protected void doOK() {
+				if(oldRemoteName == null || oldRemoteURL == null) {
+	                if(remotesModel.remoteAlreadyExists(remoteNameTF.getText())) {
+	                	int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+					            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
+					            TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+					            TRANSLATOR.getTranslation(Tags.YES),
+					            TRANSLATOR.getTranslation(Tags.NO));
+					    if (OKCancelDialog.RESULT_OK == answer) {
+					    	super.doOK();
+					    }
+	                } else {
+	                	super.doOK();
+	                }
+				} else if(!oldRemoteName.equals(remoteNameTF.getText())) {
+					int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+				            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
+				            TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+				            TRANSLATOR.getTranslation(Tags.YES),
+				            TRANSLATOR.getTranslation(Tags.NO));
+				    if (OKCancelDialog.RESULT_OK == answer) {
+				    	super.doOK();
+				    }
+				} else if(!oldRemoteURL.equals(remoteURLTF.getText())) {
+					super.doOK();
+				} else {
+					super.doCancel();
+				}
+			}
 
-
-		/**
-		 * @return The remote URL.
-		 */
-		public String getRemoteURL() {
-			return remoteURLTF.getText();
 		}
 
 	}

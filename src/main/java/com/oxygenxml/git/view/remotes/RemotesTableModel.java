@@ -159,6 +159,7 @@ public class RemotesTableModel extends AbstractTableModel {
 		  fireTableRowsDeleted(0, remotes.size() - 1);
 	  }
 	  
+	  
 	  /**
 	   * Edit the remote values.
 	   * 
@@ -171,6 +172,24 @@ public class RemotesTableModel extends AbstractTableModel {
 		  fireTableRowsUpdated(index, index);
 	  }
 	  
+	  
+	  /**
+	   * Edit the remote values.
+	   * 
+	   * @param oldName  The oldName of remote.
+	   * @param newName  The new name of remote.
+	   * @param newURL   The new URL of remote.
+	   */
+	  public void editRemote(String oldName, String newName, String newURL) {
+		  for(int i = 0; i < remotes.size(); i++) {
+			  if(remotes.get(i).remoteName.equals(oldName)) {
+				  editRemote(i, newName, newURL);
+				  break;
+			  }
+		  }
+	  }
+	  
+	  
 	  /**
 	   * Delete a remote.
 	   * 
@@ -181,6 +200,7 @@ public class RemotesTableModel extends AbstractTableModel {
 		  fireTableRowsDeleted(index, index);
 	  }
 	  
+	  
 	  /**
 	   * Add a remote.
 	   * 
@@ -190,6 +210,16 @@ public class RemotesTableModel extends AbstractTableModel {
 	  public void addRemote(String name, String URL) {
 		  remotes.add(new Remote(name, URL));
 		  fireTableRowsInserted(remotes.size() -1 , remotes.size() -1);
+	  }
+	  
+	  
+	  /**
+	   * @param remoteName  The remote name
+	   * 
+	   * @return <code>true</code> if the remote already exists.
+	   */
+	  public boolean remoteAlreadyExists(String remoteName) {
+		  return remotes.stream().anyMatch(remote -> remote.remoteName.equals(remoteName));
 	  }
 	   
 }
