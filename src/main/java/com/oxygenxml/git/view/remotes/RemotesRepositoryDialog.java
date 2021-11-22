@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -398,14 +399,16 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				public void actionPerformed(ActionEvent e) {
 					int selectedRow = remotesTable.getSelectedRow();
 					if(selectedRow >= 0) {
+						final String remoteName = (String)remotesModel.getValueAt(selectedRow, 
+								RemotesTableModel.REMOTE_COLUMN);
 						 int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-						            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-						            TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+						            TRANSLATOR.getTranslation(Tags.DELETE_REMOTE),
+						            MessageFormat.format(
+						            		TRANSLATOR.getTranslation(Tags.DELETE_REMOTE_CONFIRMATION_MESSAGE),
+						            		remoteName),
 						            TRANSLATOR.getTranslation(Tags.YES),
 						            TRANSLATOR.getTranslation(Tags.NO));
 						    if (OKCancelDialog.RESULT_OK == answer) {
-						    	final String remoteName = (String)remotesModel.getValueAt(selectedRow, 
-										RemotesTableModel.REMOTE_COLUMN);
 
 								actionsToExecute.add(new AbstractAction() {
 									@Override
@@ -487,12 +490,13 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				if(remoteName != null) {
 					remoteNameTF.setText(remoteName);
 					remoteNameTF.setCaretPosition(0);
-					remoteNameTF.selectAll();
+					remoteNameTF.setEditable(false);
 				}
 
 				if(remoteURL != null ) {
 					remoteURLTF.setText(remoteURL);
 					remoteURLTF.setCaretPosition(0);
+					remoteURLTF.selectAll();
 				}
 
 				this.getOkButton().setEnabled(remoteName != null && remoteURL != null);
@@ -570,6 +574,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				guiPanel.add(remoteNameTF, constraints);
 
 				constraints.gridx = 0;
+				constraints.insets = new Insets(0, 0, 0, 0);
 				constraints.gridy++;
 				constraints.fill = GridBagConstraints.NONE;
 				constraints.weightx = 0;
@@ -579,7 +584,6 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				constraints.gridx++;
 				constraints.weightx = 1;
 				constraints.fill = GridBagConstraints.HORIZONTAL;
-				constraints.insets = new Insets(0, 0, 0, 0);
 				guiPanel.add(remoteURLTF, constraints);
 
 				return guiPanel;
@@ -606,8 +610,10 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				if(oldRemoteName == null || oldRemoteURL == null) {
 	                if(remotesModel.remoteAlreadyExists(remoteNameTF.getText())) {
 	                	int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-					            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-					            TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+					            TRANSLATOR.getTranslation(Tags.ADD_REMOTE),
+					            MessageFormat.format(
+					            		TRANSLATOR.getTranslation(Tags.REMOTE_ALREADY_EXISTS_CONFIRMATION_MESSAGE),
+					            		remoteNameTF.getText()),
 					            TRANSLATOR.getTranslation(Tags.YES),
 					            TRANSLATOR.getTranslation(Tags.NO));
 					    if (OKCancelDialog.RESULT_OK == answer) {
@@ -616,22 +622,12 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 	                } else {
 	                	super.doOK();
 	                }
-				} else if(!oldRemoteName.equals(remoteNameTF.getText())) {
-					int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-				            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-				            TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
-				            TRANSLATOR.getTranslation(Tags.YES),
-				            TRANSLATOR.getTranslation(Tags.NO));
-				    if (OKCancelDialog.RESULT_OK == answer) {
-				    	super.doOK();
-				    }
 				} else if(!oldRemoteURL.equals(remoteURLTF.getText())) {
 					super.doOK();
 				} else {
 					super.doCancel();
 				}
 			}
-
 		}
 
 	}

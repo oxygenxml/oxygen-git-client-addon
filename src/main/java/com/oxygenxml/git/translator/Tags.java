@@ -1622,4 +1622,19 @@ public class Tags {
    * Remote URL.
    */
   public static final String REMOTE_URL = "Remote_URL";
+  
+  /**
+   * Message to confirm remote deleting.
+   */
+  public static final String DELETE_REMOTE_CONFIRMATION_MESSAGE = "Delete_Remote_Confirmation_Message";
+  
+  /**
+   * Message to confirm the remote replace.
+   */
+  public static final String REMOTE_ALREADY_EXISTS_CONFIRMATION_MESSAGE = "Remote_Already_Exists_Confirmation_Message";
+ 
+  /**
+   * Delete remote.
+   */
+  public static final String DELETE_REMOTE = "Delete_Remote";
 }
