@@ -1726,7 +1726,6 @@ public class ToolbarPanel extends JPanel {
   private void addRemotesButton() {
     remotesButton = createRemotesButton();
     remotesButton.setIcon(Icons.getIcon(Icons.REMOTE));
-    setDefaultToolbarButtonWidth(remotesButton);
 
     gitToolbar.add(remotesButton);
     remotesButton.setEnabled(false);
