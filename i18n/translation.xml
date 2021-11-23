@@ -17,6 +17,16 @@
         <val lang="nl_NL">Tag</val>
         <val lang="zh_CN">Tag</val>
     </key>
+     <key value="Local_branch_already_exists">
+        <comment>"The warning message when trying to create a branch with the same name as another
+            local branch."</comment>
+        <val lang="en_US">A local branch with the same name already exists.</val>
+        <val lang="de_DE">A local branch with the same name already exists.</val>
+        <val lang="fr_FR">A local branch with the same name already exists.</val>
+        <val lang="ja_JP">A local branch with the same name already exists.</val>
+        <val lang="nl_NL">A local branch with the same name already exists.</val>
+        <val lang="zh_CN">A local branch with the same name already exists..</val>
+    </key>
      <key value="Uncommited_changes_when_checkout_commit">
         <comment>The the message displayed when the checkout commit is attempted and there are uncommited changes.</comment>
         <val lang="en_US">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
@@ -28,12 +38,12 @@
     </key>
     <key value="Detached_HEAD_Warning_Message">
         <comment>The warning message about detached HEAD.</comment>
-        <val lang="en_US">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
-        <val lang="de_DE">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
-        <val lang="fr_FR">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
-        <val lang="ja_JP">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
-        <val lang="nl_NL">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
-        <val lang="zh_CN">No local branch will be created. If you want to make changes, we recommend to create a new local branch instead.</val>
+        <val lang="en_US">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="de_DE">No local branch will be created. If you want to make changes, it is recomended to create to create a new local branch instead.</val>
+        <val lang="fr_FR">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="ja_JP">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="nl_NL">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="zh_CN">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
     </key>
     <key value="Enter_Branch_Name">
         <comment>The message for enter the branch name.</comment>
@@ -55,12 +65,12 @@
     </key>
     <key value="Branch_Contains_Spaces">
         <comment>The message for error when we have a tag with spaces.</comment>
-        <val lang="en_US">Spaces are not allowed in branches.</val>
-        <val lang="de_DE">Spaces are not allowed in branches.</val>
-        <val lang="fr_FR">Spaces are not allowed in branches.</val>
-        <val lang="ja_JP">Spaces are not allowed in branches.</val>
-        <val lang="nl_NL">Spaces are not allowed in branches.</val>
-        <val lang="zh_CN">Spaces are not allowed in branches.</val>
+        <val lang="en_US">Spaces are not allowed in a branch name..</val>
+        <val lang="de_DE">Spaces are not allowed in a branch name.</val>
+        <val lang="fr_FR">Spaces are not allowed in a branch name..</val>
+        <val lang="ja_JP">Spaces are not allowed in a branch name.</val>
+        <val lang="nl_NL">Spaces are not allowed in a branch name.</val>
+        <val lang="zh_CN">Spaces are not allowed in a branch name.</val>
     </key>
     <key value="Branch_Contains_Invalid_Chars">
         <comment>The message for error when we have a branch with invalid chars.</comment>
@@ -79,15 +89,6 @@
         <val lang="ja_JP">Press to show the Git Branch Manager view.</val>
         <val lang="nl_NL">Press to show the Git Branch Manager view.</val>
         <val lang="zh_CN">Press to show the Git Branch Manager view.</val>
-    </key>
-    <key value="Git_Checkout">
-        <comment>Git checkout.</comment>
-        <val lang="en_US">Git checkout</val>
-        <val lang="de_DE">Git checkout</val>
-        <val lang="fr_FR">Git checkout</val>
-        <val lang="ja_JP">Git checkout</val>
-        <val lang="nl_NL">Git checkout</val>
-        <val lang="zh_CN">Git checkout</val>
     </key>
     <key value="Creation_Date">
         <comment>Column title in list stash.</comment>
@@ -1415,16 +1416,6 @@
         <val lang="ja_JP">このコミットに "{0}" をリセットする</val>
         <val lang="nl_NL">Herstel "{0}" op deze commit</val>
         <val lang="zh_CN">将此提交重置为“{0}”</val>
-    </key>
-    <key value="Local_branch_already_exists">
-        <comment>"The warning message when trying to create a branch with the same name as another
-            local branch."</comment>
-        <val lang="en_US">The local branch already exists.</val>
-        <val lang="de_DE">Der lokale Zweig (branch) existiert bereits.</val>
-        <val lang="fr_FR">La branche locale existe déjà.</val>
-        <val lang="ja_JP">ローカル分岐はすでに存在します。</val>
-        <val lang="nl_NL">De lokale branch bestaat al.</val>
-        <val lang="zh_CN">本地分支已经存在.</val>
     </key>
     <key value="Delete_branch">
         <comment>"The message for branch deletion."</comment>
