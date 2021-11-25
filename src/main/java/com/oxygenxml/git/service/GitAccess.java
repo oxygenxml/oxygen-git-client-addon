@@ -880,7 +880,7 @@ public class GitAccess {
    * 
    * @return the remote branches or an empty list.
    */
-  private Collection<Ref> doListRemoteBranchesInternal(
+  public Collection<Ref> doListRemoteBranchesInternal(
       URIish repoURL,
       AuthExceptionMessagePresenter excMessPresenter) {
     Collection<Ref> remoteRefs = Collections.emptySet();

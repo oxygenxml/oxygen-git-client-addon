@@ -3,7 +3,9 @@ package com.oxygenxml.git.view.remotes;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -14,6 +16,10 @@ import javax.swing.WindowConstants;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.URIish;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -61,12 +67,17 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	/**
 	 * The current branch.
 	 */
-	private final String currentBranch;
+	private String currentBranch;
 	
 	/**
 	 * The first remote selected.
 	 */
-	private final String firstSelection;
+	private String firstRemoteSelection;
+	
+	/**
+	 * The first remote branch selected.
+	 */
+	private String firstBranchSelection;
 	
 	
 	
@@ -77,29 +88,50 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 				 TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
-		
-		currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
-		firstSelection = GitAccess.getInstance().getRemoteFromCurrentBranch();
-		
 		try {
+		currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
+		firstRemoteSelection = GitAccess.getInstance().getRemoteFromCurrentBranch();
+		final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
+		
+		
 					
 			List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
-					.getRemotesFromConfig().keySet());
+					.getRemotesFromConfig().keySet());	
+		
+			remotes.addActionListener(e -> {
+				branches.removeAllItems();
+				GitAccess.getInstance();
+				 try {
+					URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
+							(String)remotes.getSelectedItem(), ConfigConstants.CONFIG_KEY_URL));
+					Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
+							sourceURL, null);
+					for(Ref branch: branchesConfig) {
+						branches.addItem(remotes.getSelectedItem() + "/" + branch.getName());
+					}
+				 } catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
+			
 			for(String remote: remotesNames) {
 				remotes.addItem(remote);
-				if(remote.equals(firstSelection)) {
+				if(remote.equals(firstRemoteSelection)) {
 				   remotes.setSelectedItem(remote);
 				}
 			}
 			
-			remotes.addActionListener(e -> {
-				branches.removeAllItems();
-			});
-			
+		
+
+		firstBranchSelection = (String)branches.getSelectedItem();
+		BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
+		branches.setSelectedItem(remotes.getSelectedItem() + "/" + branchConfig.getMerge());
+		
 		} catch (NoRepositorySelected e) {
 			LOGGER.error(e, e);
 		}
-
+		
 		getContentPane().add(createGUIPanel());
 		
 		setSize(MIN_WIDTH, MIN_WIDTH);
@@ -157,7 +189,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		constraints.gridx = 0;
 		constraints.gridy++;
 		constraints.fill = GridBagConstraints.NONE;
-		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH) + ":"), constraints);
+		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH)), constraints);
 
 		constraints.weightx = 1;
 		constraints.gridx++;
@@ -170,11 +202,16 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	
 	@Override
 	protected void doOK() {
-		if(firstSelection != null && !firstSelection.equals(remotes.getSelectedItem())) {
+		if(firstRemoteSelection != null  
+			  && (!firstRemoteSelection.equals(remotes.getSelectedItem()) 
+					  || (firstBranchSelection != null 
+					  && !firstBranchSelection.equals(branches.getSelectedItem())))) {
 			try {
 				BranchConfigurations branchConfig = new BranchConfigurations(
 						GitAccess.getInstance().getRepository().getConfig(), currentBranch);
-				branchConfig.setRemote((String)remotes.getSelectedItem());
+				String selectedRemote = (String)remotes.getSelectedItem();
+				branchConfig.setRemote(selectedRemote);
+				branchConfig.setMerge(((String)branches.getSelectedItem()).substring(selectedRemote.length()));
 				GitAccess.getInstance().updateConfigFile();
 			} catch (NoRepositorySelected e) {
 				LOGGER.error(e, e);
