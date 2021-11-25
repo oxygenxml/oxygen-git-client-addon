@@ -1544,11 +1544,6 @@ public class Tags {
   public static final String CREATION_DATE = "Creation_Date";
   
   /**
-   * Git checkout.
-   */
-  public static final String GIT_CHECKOUT = "Git_Checkout";
-  
-  /**
    * The message for error when we have a branch with spaces.
    */
   public static final String BRANCH_CONTAINS_SPACES = "Branch_Contains_Spaces";

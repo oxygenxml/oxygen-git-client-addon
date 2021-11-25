@@ -115,7 +115,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	public CheckoutCommitDialog(RevCommit commit) {
 		super(
 				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-				TRANSLATOR.getTranslation(Tags.GIT_CHECKOUT),
+				TRANSLATOR.getTranslation(Tags.CHECKOUT),
 				true);
 		
 		this.commit = commit;
@@ -138,7 +138,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	public CheckoutCommitDialog(String commit) {
 		super(
 				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-				TRANSLATOR.getTranslation(Tags.GIT_CHECKOUT),
+				TRANSLATOR.getTranslation(Tags.CHECKOUT),
 				true);
 		
 		this.commit = null;
