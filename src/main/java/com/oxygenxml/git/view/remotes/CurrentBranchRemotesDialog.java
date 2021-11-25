@@ -19,6 +19,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.branches.BranchConfigurations;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -32,6 +33,10 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class CurrentBranchRemotesDialog extends OKCancelDialog {
+	/**
+	 * The translator.
+	 */
+	private static final Translator TRANSLATOR = Translator.getInstance();
 	
 	/**
 	 * Logger for logging.
@@ -59,7 +64,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	 */
 	public CurrentBranchRemotesDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-				Tags.REMOTE, true
+				 TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
 		
 		currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();

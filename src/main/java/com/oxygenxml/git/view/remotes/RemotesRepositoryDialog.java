@@ -43,7 +43,7 @@ import ro.sync.exml.workspace.api.standalone.ui.Table;
 
 
 /**
- * Dialog to present the repository remotes.
+ * Dialog to present the repositories remote.
  * 
  * @author alex_smarandache
  *
@@ -82,7 +82,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 	 */
 	public RemotesRepositoryDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-				TRANSLATOR.getTranslation(Tags.REMOTE), true
+				TRANSLATOR.getTranslation(Tags.REMOTES_DIALOG_TITLE), true
 				);
 		
 		this.setResizable(false);
