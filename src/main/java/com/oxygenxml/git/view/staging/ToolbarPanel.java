@@ -1767,7 +1767,7 @@ public class ToolbarPanel extends JPanel {
    * @return the "Remotes" action
    */
   private Action createRemotesAction() {
-    return new AbstractAction(TRANSLATOR.getTranslation(Tags.REMOTE) +  "...") {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.REMOTES_DIALOG_TITLE) +  "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
@@ -1793,14 +1793,14 @@ public class ToolbarPanel extends JPanel {
    * @return The created action.
    */
   private Action createEditConfigFileAction() {
-	  return new AbstractAction("Edit config file...") {
+	  return new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT_CONFIG_FILE + "...")) {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				 URL configFileURL;
 				try {
 					configFileURL = URLUtil.correct(new File(GitAccess.getInstance().getConfigFilePath()));
-					PluginWorkspaceProvider.getPluginWorkspace().open(configFileURL);
+					PluginWorkspaceProvider.getPluginWorkspace().open(configFileURL, null, "text/plain");
 				} catch (MalformedURLException | NoRepositorySelected e) {
 					LOGGER.error(e, e);
 				} 
@@ -1816,7 +1816,7 @@ public class ToolbarPanel extends JPanel {
    * @return The created action.
    */
   private Action createCurrentBranchRemote() {
-	  return new AbstractAction("Current branch remote...") {
+	  return new AbstractAction(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH) +  "...") {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

@@ -1634,7 +1634,23 @@ public class Tags {
   public static final String REMOTE_ALREADY_EXISTS_CONFIRMATION_MESSAGE = "Remote_Already_Exists_Confirmation_Message";
  
   /**
+   * Title for remotes dialog.
+   */
+  public static final String REMOTES_DIALOG_TITLE = "Remotes_Dialog_Title";
+  
+  /**
+   * Title for dialog to configure remote for current branch.
+   */
+  public static final String CONFIGURE_REMOTE_FOR_BRANCH = "Current_Remote_For_Branch";
+  
+  /**
    * Delete remote.
    */
   public static final String DELETE_REMOTE = "Delete_Remote";
+
+  /**
+   * Action name to edit the config file of the current repository.
+   */
+  public static final String EDIT_CONFIG_FILE = "Edit_Config_File";
+  
 }

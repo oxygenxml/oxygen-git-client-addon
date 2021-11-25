@@ -26,6 +26,33 @@
         <val lang="nl_NL">Are you sure you want to delete the '{0}' remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
         <val lang="zh_CN">Are you sure you want to delete the '{0}' remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
     </key>
+    <key value="Edit_Config_File">
+        <comment>Action name to edit the config file of the current repository.</comment>
+        <val lang="en_US">Edit config file</val>
+        <val lang="de_DE">Edit config file</val>
+        <val lang="fr_FR">Edit config file</val>
+        <val lang="ja_JP">Edit config file</val>
+        <val lang="nl_NL">Edit config file</val>
+        <val lang="zh_CN">Edit config file</val>
+    </key>
+    <key value="Remotes_Dialog_Title">
+        <comment>Title for remotes dialog.</comment>
+        <val lang="en_US">Manage remote repositories</val>
+        <val lang="de_DE">Manage remote repositories</val>
+        <val lang="fr_FR">Manage remote repositories</val>
+        <val lang="ja_JP">Manage remote repositories</val>
+        <val lang="nl_NL">Manage remote repositories</val>
+        <val lang="zh_CN">Manage remote repositories</val>
+    </key>
+    <key value="Current_Remote_For_Branch">
+        <comment>Title for dialog to configure remote for current branch.</comment>
+        <val lang="en_US">Track remote branch</val>
+        <val lang="de_DE">Track remote branch</val>
+        <val lang="fr_FR">Track remote branch</val>
+        <val lang="ja_JP">Track remote branch</val>
+        <val lang="nl_NL">Track remote branch</val>
+        <val lang="zh_CN">Track remote branch</val>
+    </key>
     <key value="Remote_URL">
         <comment>Remote URL.</comment>
         <val lang="en_US">Remote URL</val>
