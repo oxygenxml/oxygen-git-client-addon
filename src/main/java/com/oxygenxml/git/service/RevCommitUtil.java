@@ -76,6 +76,7 @@ public class RevCommitUtil {
    * Index of the parent commit which contains untracked changes.
    */
   public static final int PARENT_COMMIT_UNTRACKED = 2;
+  
 
 
   /**
@@ -334,14 +335,76 @@ public class RevCommitUtil {
         || ent.getChangeType() == ChangeType.COPY;
   }
 
-
-
+  
+  /**
+   * Collects the revisions from the current branch.
+   * 
+   * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
+   * @param revisions Revisions are collected in here.
+   * @param repository Loaded repository.
+   * @param renameTracker    Track the renames for current file path.
+   * 
+   * @throws IOException 
+   * @throws GitAPIException
+   */
+  public static void collectCurrentLocalBranchRevisions(
+      String filePath, 
+      List<CommitCharacteristics> revisions, 
+      Repository repository,
+      RenameTracker renameTracker) throws IOException {
+	  
+	  collectCurrentBranchRevisions(filePath, revisions, repository, renameTracker, false);
+  }
+  
+  /**
+   * Collects the revisions for all local branches for current repository.
+   * 
+   * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
+   * @param revisions Revisions are collected in here.
+   * @param repository Loaded repository.
+   * @param renameTracker    Track the renames for current file path.
+   * 
+   * @throws IOException 
+   * @throws GitAPIException
+   */
+  public static void collectLocalBranchesRevisions(
+      String filePath, 
+      List<CommitCharacteristics> revisions, 
+      Repository repository,
+      RenameTracker renameTracker) throws IOException {
+	  
+	  collectAllBranchRevisions(filePath, revisions, repository, renameTracker, false);
+  }
+  
+  
+  /**
+   * Collects the revisions for all branches, both local and remote.
+   * 
+   * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
+   * @param revisions Revisions are collected in here.
+   * @param repository Loaded repository.
+   * @param renameTracker    Track the renames for current file path.
+   * 
+   * @throws IOException 
+   * @throws GitAPIException
+   */
+  public static void collectAllBranchesRevisions(
+      String filePath, 
+      List<CommitCharacteristics> revisions, 
+      Repository repository,
+      RenameTracker renameTracker) throws IOException {
+	  
+	  collectAllBranchRevisions(filePath, revisions, repository, renameTracker, true);
+  }
+  
+  
   /**
    * Collects the revisions from the current branch and the remote branch linked to it.
    * 
    * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
    * @param revisions Revisions are collected in here.
    * @param repository Loaded repository.
+   * @param renameTracker    Track the renames for current file path.
    * 
    * @throws IOException 
    * @throws GitAPIException
@@ -351,6 +414,29 @@ public class RevCommitUtil {
       List<CommitCharacteristics> revisions, 
       Repository repository,
       RenameTracker renameTracker) throws IOException {
+	  
+	  collectCurrentBranchRevisions(filePath, revisions, repository, renameTracker, true);
+  }
+  
+
+  /**
+   * Collects the revisions from the current branch and the remote branch linked to it, if this option is selected .
+   * 
+   * @param filePath         An optional resource path. If not null, only the revisions that changed this resource are collected.
+   * @param revisions        Revisions are collected in here.
+   * @param repository       Loaded repository.
+   * @param renameTracker    Track the renames for current file path.
+   * @param includeRemote    <code>true</code> if the remote branch should be also presented.
+   * 
+   * @throws IOException 
+   * @throws GitAPIException
+   */
+  private static void collectCurrentBranchRevisions(
+      String filePath, 
+      List<CommitCharacteristics> revisions, 
+      Repository repository,
+      RenameTracker renameTracker,
+      boolean includeRemote) throws IOException {
 
     // a RevWalk allows to walk over commits based on some filtering that is defined
     // EXM-44307 Show current branch commits only.
@@ -364,15 +450,17 @@ public class RevCommitUtil {
 			  renameTracker.reset(filePath);
 			  plotWalk.setRevFilter(renameTracker.getFilter());
 		  }
-			
-        // If we have a remote, put it as well.
-        String fullRemoteBranchName = getUpstreamBranchName(repository, repository.getBranch());
-        if (fullRemoteBranchName != null) {
-          Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
-          if (fullRemoteBranchHead != null) {
-            plotWalk.markStart(plotWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
-          }
-        }
+		
+		if(includeRemote) {
+			 // If we have a remote, put it as well.
+	        String fullRemoteBranchName = getUpstreamBranchName(repository, repository.getBranch());
+	        if (fullRemoteBranchName != null) {
+	          Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
+	          if (fullRemoteBranchHead != null) {
+	            plotWalk.markStart(plotWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
+	          }
+	        }
+		}  
 		
         collectRevisions(filePath, revisions, repository, plotWalk, renameTracker);
       }
@@ -381,7 +469,47 @@ public class RevCommitUtil {
       // Probably a new repository without any history. 
     }
   }
+  
+  
+  
+  
+  /**
+   * Collects the revisions from all repository branches.
+   * 
+   * @param filePath         An optional resource path. If not null, only the revisions that changed this resource are collected.
+   * @param revisions        Revisions are collected in here.
+   * @param repository       Loaded repository.
+   * @param renameTracker    Track the renames for current file path.
+   * @param includeRemote    <code>true</code> if the remote branches should be also presented.
+   * 
+   * @throws IOException 
+   * @throws GitAPIException
+   */
+  private static void collectAllBranchRevisions(
+      String filePath, 
+      List<CommitCharacteristics> revisions, 
+      Repository repository,
+      RenameTracker renameTracker,
+      boolean includeRemote) throws IOException {
 
+	  List<Ref> allRefs = GitAccess.getInstance().getLocalBranchList();
+	  if(includeRemote) {
+		  allRefs.addAll(GitAccess.getInstance().getRemoteBrachListForCurrentRepo());
+	  }
+	  
+	  try (PlotWalk plotWalk = new PlotWalk(repository)) {
+		  for (Ref ref : allRefs) {
+			  plotWalk.markStart(plotWalk.parseCommit(ref.getObjectId()));
+			}
+		  if(filePath != null && renameTracker != null) {
+			  renameTracker.reset(filePath);
+			  plotWalk.setRevFilter(renameTracker.getFilter());
+		  }
+		  collectRevisions(filePath, revisions, repository, plotWalk, renameTracker);
+	  }
+  }
+  
+  
   /**
    * Gets the full remote-tracking branch name or null is the local branch is not tracking a remote branch.
    * 
