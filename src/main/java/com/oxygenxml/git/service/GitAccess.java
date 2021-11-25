@@ -1827,7 +1827,6 @@ public class GitAccess {
         git.fetch()
             .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/" + getRemoteFromCurrentBranch() + "/*"))
             .setCheckFetchedObjects(true)
-            .setRemote(getRemoteFromCurrentBranch())
             .setRemoveDeletedRefs(true)
 						.setCredentialsProvider(credentialsProvider)
 						.call();
@@ -2974,13 +2973,16 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public void updateConfigFile() throws NoRepositorySelected {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 		File file = new File(getConfigFilePath());
 		String text = GitAccess.getInstance().getRepository().getConfig().toText();
 		  try(FileWriter myWriter = new FileWriter(file)) {
 			  myWriter.write(text);
 		  }  catch (IOException e1) {
 				LOGGER.error(e1, e1);
+				fireOperationFailed(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE), e1);
 		  }
+		  fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 	}
 	
 	public String getConfigFilePath() throws NoRepositorySelected {

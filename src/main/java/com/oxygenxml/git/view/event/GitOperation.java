@@ -108,4 +108,8 @@ public enum GitOperation {
    * Checkout commit.
    */
   CHECKOUT_COMMIT,
+  /**
+   * Update the config file for current repository
+   */
+  UPDATE_CONFIG_FILE
 }
