@@ -39,6 +39,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	private static final Translator TRANSLATOR = Translator.getInstance();
 	
 	/**
+	 * The minimum default dialog width.
+	 */
+	private static final int MIN_WIDTH = 200;
+	
+	/**
 	 * Logger for logging.
 	 */
 	private static final Logger LOGGER = LogManager.getLogger(CurrentBranchRemotesDialog.class);
@@ -49,6 +54,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	private final JComboBox<String> remotes = new JComboBox<>();
 	
 	/**
+	 * Combo box with all branches from current repository.
+	 */
+	private final JComboBox<String> branches = new JComboBox<>();
+	
+	/**
 	 * The current branch.
 	 */
 	private final String currentBranch;
@@ -57,6 +67,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	 * The first remote selected.
 	 */
 	private final String firstSelection;
+	
 	
 	
 	/**
@@ -71,6 +82,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		firstSelection = GitAccess.getInstance().getRemoteFromCurrentBranch();
 		
 		try {
+					
 			List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
 					.getRemotesFromConfig().keySet());
 			for(String remote: remotesNames) {
@@ -79,11 +91,19 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				   remotes.setSelectedItem(remote);
 				}
 			}
+			
+			remotes.addActionListener(e -> {
+				branches.removeAllItems();
+			});
+			
 		} catch (NoRepositorySelected e) {
 			LOGGER.error(e, e);
 		}
 
 		getContentPane().add(createGUIPanel());
+		
+		setSize(MIN_WIDTH, MIN_WIDTH);
+		
 		pack();
 		
 		JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
@@ -96,7 +116,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 				this.setVisible(true);
-				this.setResizable(false);
+				// this.setResizable(false);
 	}
 	
 	
@@ -119,7 +139,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		constraints.weighty = 0;
 		constraints.fill = GridBagConstraints.NONE;
 
-		JLabel remoteNameLabel = new JLabel("Current branch: ");
+		JLabel remoteNameLabel = new JLabel(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH));
 		guiPanel.add(remoteNameLabel, constraints);
 
 		constraints.gridx++;
@@ -127,13 +147,23 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		
 		constraints.gridx = 0;
 		constraints.gridy++;
-		guiPanel.add(new JLabel("Branch remote: "), constraints);
+		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH) + ":"), constraints);
 		
 		constraints.weightx = 1;
 		constraints.gridx++;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		guiPanel.add(remotes, constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy++;
+		constraints.fill = GridBagConstraints.NONE;
+		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH) + ":"), constraints);
 
+		constraints.weightx = 1;
+		constraints.gridx++;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		guiPanel.add(branches, constraints);
+		
 		return guiPanel;
 	}
 	

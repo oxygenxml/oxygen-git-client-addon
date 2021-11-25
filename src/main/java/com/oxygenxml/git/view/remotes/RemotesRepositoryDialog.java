@@ -32,6 +32,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.stash.StashCellRendersFactory;
 import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -237,6 +238,8 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				}
 
 			};
+			
+			remotesTable.setDefaultRenderer(String.class, StashCellRendersFactory.getMessageCellRender());
 
 			remotesTable.setFillsViewportHeight(true);
 			remotesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
