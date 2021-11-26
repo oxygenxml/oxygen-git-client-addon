@@ -2985,6 +2985,11 @@ public class GitAccess {
 		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 	}
 	
+	/**
+	 * @return Return path for config file of current repository.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
 	public String getConfigFilePath() throws NoRepositorySelected {
 		final String pathDelimiter = "/";
 		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
