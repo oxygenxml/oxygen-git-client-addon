@@ -1,7 +1,6 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -881,7 +880,7 @@ public class GitAccess {
    * 
    * @return the remote branches or an empty list.
    */
-  private Collection<Ref> doListRemoteBranchesInternal(
+  public Collection<Ref> doListRemoteBranchesInternal(
       URIish repoURL,
       AuthExceptionMessagePresenter excMessPresenter) {
     Collection<Ref> remoteRefs = Collections.emptySet();
@@ -1828,7 +1827,6 @@ public class GitAccess {
         git.fetch()
             .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/" + getRemoteFromCurrentBranch() + "/*"))
             .setCheckFetchedObjects(true)
-            .setRemote(getRemoteFromCurrentBranch())
             .setRemoveDeletedRefs(true)
 						.setCredentialsProvider(credentialsProvider)
 						.call();
@@ -2890,14 +2888,15 @@ public class GitAccess {
 			LOGGER.error(e,e);
 		}
 	    
-		return remoteConfig == null ? Constants.DEFAULT_REMOTE_NAME : remoteConfig;
+		return remoteConfig;
 	}
 	
 	/**
 	 * @return The remote value for current branch.
 	 */
 	public String getRemoteFromCurrentBranch()  {
-		return getBranchRemoteFromConfig(getBranchInfo().getBranchName());
+		String remoteConfig = getBranchRemoteFromConfig(getBranchInfo().getBranchName());
+		return remoteConfig != null ? remoteConfig : Constants.DEFAULT_REMOTE_NAME;
 	}
 	
 	/**
@@ -2988,15 +2987,23 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public void updateConfigFile() throws NoRepositorySelected {
-		File file = new File(getConfigFilePath());
-		String text = GitAccess.getInstance().getRepository().getConfig().toText();
-		  try(FileWriter myWriter = new FileWriter(file)) {
-			  myWriter.write(text);
-		  }  catch (IOException e1) {
-				LOGGER.error(e1, e1);
-		  }
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
+		
+		try {
+			GitAccess.getInstance().getRepository().getConfig().save();
+		} catch (IOException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE), e);
+		}
+		
+		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 	}
 	
+	/**
+	 * @return Return path for config file of current repository.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
 	public String getConfigFilePath() throws NoRepositorySelected {
 		final String pathDelimiter = "/";
 		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;

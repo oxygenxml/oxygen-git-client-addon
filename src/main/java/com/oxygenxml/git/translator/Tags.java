@@ -1648,4 +1648,9 @@ public class Tags {
    */
   public static final String EDIT_CONFIG_FILE = "Edit_Config_File";
   
+  /**
+   * Message displayed when no branches are founded.
+   */
+  public static final String NO_BRANCHES_FOUNDED = "No_Branches_Founded";
+  
 }

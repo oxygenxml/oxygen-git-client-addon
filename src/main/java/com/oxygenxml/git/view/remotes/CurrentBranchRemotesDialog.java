@@ -1,19 +1,28 @@
 package com.oxygenxml.git.view.remotes;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.URIish;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -33,16 +42,17 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class CurrentBranchRemotesDialog extends OKCancelDialog {
+ 	
 	/**
 	 * The translator.
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
-	
+
 	/**
-	 * The minimum default dialog width.
+	 * The default dialog width.
 	 */
-	private static final int MIN_WIDTH = 200;
-	
+	private static final int DIALOG_WIDTH = 400;
+
 	/**
 	 * Logger for logging.
 	 */
@@ -51,74 +61,136 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	/**
 	 * Combo box with all remotes from current repository.
 	 */
-	private final JComboBox<String> remotes = new JComboBox<>();
-	
-	/**
-	 * Combo box with all branches from current repository.
-	 */
-	private final JComboBox<String> branches = new JComboBox<>();
-	
+	private final JComboBox<RemoteBranchItem> remoteBranchItems = new JComboBox<>();
+
 	/**
 	 * The current branch.
 	 */
-	private final String currentBranch;
+	private String currentBranch;
 	
 	/**
-	 * The first remote selected.
+	 * The current dialog status.
 	 */
-	private final String firstSelection;
+	private int currentStatus = STATUS_OK;
+	
+	/**
+	 * Constant for status ok.
+	 */
+	private static final int STATUS_OK = 0;
+	
+	/**
+	 * Constant for status when the remote doesn't exists.
+	 */
+	public static final int STATUS_REMOTE_NOT_EXISTS = 1;
+	
+	/**
+	 * Constant for status when branches are not founded.
+	 */
+	public static final int STATUS_BRANCHES_NOT_EXIST = 2;
 	
 	
-	
+
 	/**
 	 * Constructor.
 	 */
 	public CurrentBranchRemotesDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-				 TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
+				TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
-		
-		currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
-		firstSelection = GitAccess.getInstance().getRemoteFromCurrentBranch();
+		boolean existsRemotes = false;
+		boolean foundedBranchRemote = false;
 		
 		try {
-					
-			List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
-					.getRemotesFromConfig().keySet());
-			for(String remote: remotesNames) {
-				remotes.addItem(remote);
-				if(remote.equals(firstSelection)) {
-				   remotes.setSelectedItem(remote);
+			currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
+			final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
+			final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
+			final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
+					.getRemotesFromConfig().keySet());	
+			
+			remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+				
+				JLabel toReturn = new JLabel(value.toString());
+				
+				/**
+				 * The border for padding.
+				 */
+				final Border padding = BorderFactory.createEmptyBorder(
+						0, 
+						UIConstants.COMPONENT_LEFT_PADDING, 
+						0, 
+						UIConstants.COMPONENT_RIGHT_PADDING
+						);
+				
+				toReturn.setBorder(padding);
+				
+				return toReturn;
+			});
+			
+			for(String remote : remotesNames) {
+				existsRemotes = true;
+				URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
+						remote, ConfigConstants.CONFIG_KEY_URL));
+				Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
+						sourceURL, null);
+				for(Ref branch: branchesConfig) {
+					final String branchName = branch.getName();
+					final String remoteC = branchConfig.getRemote();
+					final String mergeC = branchConfig.getMerge();
+					if(remoteC !=null && remoteC.equals(remote) 
+							&& mergeC != null && mergeC.equals(branchName)) {
+						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
+						foundedBranchRemote = true;
+						remoteItem.setFirstSelection(true);
+						remoteBranchItems.addItem(remoteItem);
+						remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
+					} else {
+						remoteBranchItems.addItem(new RemoteBranchItem(remote, branchName));
+					}
 				}
 			}
 			
-			remotes.addActionListener(e -> {
-				branches.removeAllItems();
-			});
+			if(!foundedBranchRemote) {
+			  RemoteBranchItem remoteItem = new RemoteBranchItem(null, null);
+			  remoteItem.setFirstSelection(true);
+			  remoteBranchItems.addItem(remoteItem);	
+			  remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
+			}
 			
-		} catch (NoRepositorySelected e) {
+		} catch (NoRepositorySelected | URISyntaxException e) {
 			LOGGER.error(e, e);
 		}
 
-		getContentPane().add(createGUIPanel());
-		
-		setSize(MIN_WIDTH, MIN_WIDTH);
-		
-		pack();
-		
-		JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
-				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-				if (parentFrame != null) {
-					setIconImage(parentFrame.getIconImage());
-					setLocationRelativeTo(parentFrame);
-				}
+		if(!existsRemotes) {
+			currentStatus = STATUS_REMOTE_NOT_EXISTS;
+			this.doCancel();
+		} else if(!foundedBranchRemote) {
+			currentStatus = STATUS_BRANCHES_NOT_EXIST;
+			this.doCancel();
+		} else {
+			getContentPane().add(createGUIPanel());
 
-				setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			pack();
 
-				this.setVisible(true);
-				// this.setResizable(false);
+			JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+					(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+					if (parentFrame != null) {
+						setIconImage(parentFrame.getIconImage());
+						setLocationRelativeTo(parentFrame);
+					}
+
+					setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+					this.setVisible(true);
+					this.setResizable(false);
+		}
+		
 	}
-	
+
+
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(DIALOG_WIDTH, super.getPreferredSize().height);
+	}
 	
 	/**
 	 * Create the dialog GUI.
@@ -134,7 +206,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		constraints.gridwidth = 1;
 		constraints.gridheight = 1;
 		constraints.anchor = GridBagConstraints.WEST;
-		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
+		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
 		constraints.weightx = 0;
 		constraints.weighty = 0;
 		constraints.fill = GridBagConstraints.NONE;
@@ -144,37 +216,30 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
 		constraints.gridx++;
 		guiPanel.add(new JLabel(currentBranch), constraints);
-		
+
 		constraints.gridx = 0;
 		constraints.gridy++;
 		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH) + ":"), constraints);
-		
-		constraints.weightx = 1;
-		constraints.gridx++;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		guiPanel.add(remotes, constraints);
-		
-		constraints.gridx = 0;
-		constraints.gridy++;
-		constraints.fill = GridBagConstraints.NONE;
-		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH) + ":"), constraints);
 
 		constraints.weightx = 1;
 		constraints.gridx++;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
-		guiPanel.add(branches, constraints);
-		
+		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
+		guiPanel.add(remoteBranchItems, constraints);
+
 		return guiPanel;
 	}
-	
-	
+
+
 	@Override
 	protected void doOK() {
-		if(firstSelection != null && !firstSelection.equals(remotes.getSelectedItem())) {
+		RemoteBranchItem currentSelectedBranch = (RemoteBranchItem) remoteBranchItems.getSelectedItem();
+		if(!currentSelectedBranch.isUndefined() && !currentSelectedBranch.isFirstSelection()) {
 			try {
 				BranchConfigurations branchConfig = new BranchConfigurations(
 						GitAccess.getInstance().getRepository().getConfig(), currentBranch);
-				branchConfig.setRemote((String)remotes.getSelectedItem());
+				branchConfig.setRemote(currentSelectedBranch.remote);
+				branchConfig.setMerge(currentSelectedBranch.branch);
 				GitAccess.getInstance().updateConfigFile();
 			} catch (NoRepositorySelected e) {
 				LOGGER.error(e, e);
@@ -182,6 +247,84 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		}
 		
 		super.doOK();
+	}
+	
+	
+	/**
+	 * @return The dialog status.
+	 */
+	public int getStatusResult() {
+		return currentStatus;
+	}
+
+	
+	
+	/**
+	 * Used to help us to store the remote branch informations.
+	 * 
+	 * @author alex_smarandache
+	 *
+	 */
+	private class RemoteBranchItem {
+		
+		/**
+		 * Constant when no remote or repo are selected.
+		 */
+		private static final String NONE = "<none>";
+		
+		/**
+		 * The remote from config.
+		 */
+		final String remote;
+		
+		/**
+		 * A branch from current remote.
+		 */
+		final String branch;
+		
+        /**
+         * <code>true</code> if this item represents the first selection.
+         */
+		private boolean isFirstSelection = false;
+		
+		
+		/**
+		 * Constructor.
+		 * 
+		 * @param remote
+		 * @param branch
+		 */
+		RemoteBranchItem(String remote, String branch) {
+			this.remote = remote;
+			this.branch = branch;
+		}
+		
+		
+		/**
+		 * @return <code>true</code> if this item represents the first selection.
+		 */
+		public boolean isFirstSelection() {
+			return isFirstSelection;
+		}
+
+        /**
+         * @param isFirstSelection <code>true</code> if this item represents the first selection.
+         */
+		public void setFirstSelection(boolean isFirstSelection) {
+			this.isFirstSelection = isFirstSelection;
+		}
+		
+		/**
+		 * @return <code>true</code> if the remote or branch are undefined.
+		 */
+		public boolean isUndefined() {
+			return remote ==null || branch == null;
+		}
+
+		@Override
+		public String toString() {
+			return isUndefined() ? NONE : remote + "/" + branch;
+		}
 	}
 	
 }

@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="No_Branches_Founded">
+        <comment>Message displayed when no branches are founded.</comment>
+        <val lang="en_US">Remote branches are not founded in remote repositories.</val>
+        <val lang="de_DE">Remote branches are not founded in remote repositories.</val>
+        <val lang="fr_FR">Remote branches are not founded in remote repositories.</val>
+        <val lang="ja_JP">Remote branches are not founded in remote repositories.</val>
+        <val lang="nl_NL">Remote branches are not founded in remote repositories.</val>
+        <val lang="zh_CN">Remote branches are not founded in remote repositories.</val>
+    </key>
      <key value="Remote_Already_Exists_Confirmation_Message">
         <comment>Message to confirm the remote replace.</comment>
         <val lang="en_US">The "{0}" remote location already exists in the repository's configuration. Do you want to update the URL?</val>
