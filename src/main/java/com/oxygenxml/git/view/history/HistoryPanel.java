@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -30,14 +29,13 @@ import java.util.Optional;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -87,6 +85,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -155,14 +154,15 @@ public class HistoryPanel extends JPanel {
   private final CommitsGraphCellRender graphCellRender;
   
   /**
-   * Contains all modes to present history.
-   */
-  private final JComboBox<HistoryStrategy> presentHistoryStrategy;
-  
-  /**
    * The current strategy to present history.
    */
   private HistoryStrategy currentStrategy;
+  
+  /**
+   * Button that contains all strategy to present history.
+   */
+  private final SplitMenuButton presentHistoryStrategyButton = new SplitMenuButton(STRATEGY_STRING_MAP.get(HistoryStrategy.ALL_BRANCHES), 
+		  null, true, false, true, true);
   
   /**
    * Used to convert strategy to string value. 
@@ -187,33 +187,9 @@ public class HistoryPanel extends JPanel {
     setLayout(new BorderLayout());
     
     graphCellRender = new CommitsGraphCellRender();
-    presentHistoryStrategy = new JComboBox<>();
-    
-    presentHistoryStrategy.addItem(HistoryStrategy.ALL_BRANCHES);
-    presentHistoryStrategy.addItem(HistoryStrategy.ALL_LOCAL_BRANCHES);
-    presentHistoryStrategy.addItem(HistoryStrategy.CURRENT_BRANCH);
-    presentHistoryStrategy.addItem(HistoryStrategy.CURRENT_LOCAL_BRANCH);
+  
+    addPresentHistoryActions(presentHistoryStrategyButton);
     currentStrategy = HistoryStrategy.ALL_BRANCHES;
-    
-    presentHistoryStrategy.addItemListener(event -> {
-    	if (event.getStateChange() == ItemEvent.SELECTED) {
-    		currentStrategy = (HistoryStrategy)event.getItem();
-    		refresh();
-         }  
-    });
-    
-    presentHistoryStrategy.setRenderer(new DefaultListCellRenderer() {
-    	
-    	@Override
-    	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-    			boolean cellHasFocus) {
-    		JLabel valueLabel = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-    		
-    		valueLabel.setText(STRATEGY_STRING_MAP.get(value));
-    		
-    		return valueLabel;
-    	}
-    });
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
     historyTable = new Table();
@@ -375,6 +351,37 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  private void addPresentHistoryActions(SplitMenuButton button) {
+	  
+	  
+	  ButtonGroup branchActionsGroup = new ButtonGroup();
+	 
+	  STRATEGY_STRING_MAP.keySet().forEach(strategy -> {
+		 
+		   String strategyName = STRATEGY_STRING_MAP.get(strategy);
+		   AbstractAction action = new AbstractAction(strategyName) {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				currentStrategy = strategy;
+				button.setText(strategyName);
+				refresh();
+			}
+			
+		   };
+		   
+		   JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(action);
+		   branchActionsGroup.add(menuItem);
+		   button.add(menuItem);
+		   if(HistoryStrategy.ALL_BRANCHES == strategy) {
+			   menuItem.setSelected(true);
+		   }
+	  }
+	 );
+	 
+  }
+  
+  
   /**
    * Treat editor saved event.
    * 
@@ -628,7 +635,7 @@ public class HistoryPanel extends JPanel {
     constr.gridx++;
     constr.fill = GridBagConstraints.NONE;
     constr.weightx = 0;
-    topPanel.add(presentHistoryStrategy, constr);
+    topPanel.add(presentHistoryStrategyButton, constr);
     
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
     refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
@@ -989,5 +996,6 @@ public class HistoryPanel extends JPanel {
   public JTable getHistoryTable() {
     return historyTable;
   }
+  
 
 }
