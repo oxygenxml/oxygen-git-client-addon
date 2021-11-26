@@ -667,6 +667,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     FileSystemUtil.deleteRecursivelly(new File("target/test-resources"));
     
     new File("src/test/resources/Options.xml").delete();
+    GitAccess.getInstance().getStatusCache().resetCache();
   }
 
   /**

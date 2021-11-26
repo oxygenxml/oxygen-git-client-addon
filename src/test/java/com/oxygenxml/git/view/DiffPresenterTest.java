@@ -312,6 +312,12 @@ public class DiffPresenterTest extends GitTestBase {
     assertTrue(TestUtil.read(new URL(right)).startsWith("Subproject commit "));
   }
   
+  @Override
+  public void tearDown() throws Exception {
+    // TODO Auto-generated method stub
+//    super.tearDown();
+  }
+  
   @Test
   public void testRebasingFileDiff() throws Exception{
      //The local repositories. 

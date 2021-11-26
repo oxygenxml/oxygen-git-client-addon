@@ -704,7 +704,7 @@ public class RevCommitUtil {
           if (lastRevFiles.contains(path)) {
             // The current discovered path is the same as in the target revision.
             if (LOGGER.isDebugEnabled()) {
-              LOGGER.info("Same path as in target. Stop. " + revCommit.getFullMessage());
+              LOGGER.debug("Same path as in target. Stop. " + revCommit.getFullMessage());
             }
             break;
           }
@@ -718,7 +718,7 @@ public class RevCommitUtil {
           if (!same) {
             // Do a diff with rename detection.
             if (LOGGER.isDebugEnabled()) {
-              LOGGER.info("Search for a rename at revision " + revCommit.getFullMessage());
+              LOGGER.debug("Search for a rename at revision " + revCommit.getFullMessage());
             }
 
             List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);

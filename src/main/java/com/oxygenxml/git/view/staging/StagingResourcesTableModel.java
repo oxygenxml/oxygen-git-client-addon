@@ -215,7 +215,8 @@ public class StagingResourcesTableModel extends AbstractTableModel {
     switch (changeEvent.getGitOperation()) {
       case STAGE:
         if (inIndex) {
-          insertRows(GitAccess.getInstance().getStagedFile(((FileGitEventInfo) changeEvent).getAffectedFilePaths()));
+          List<FileStatus> stagedFile = GitAccess.getInstance().getStagedFile(((FileGitEventInfo) changeEvent).getAffectedFilePaths());
+          insertRows(stagedFile);
         } else {
           deleteRows(((FileGitEventInfo) changeEvent).getAffectedFileStatuses());
         }

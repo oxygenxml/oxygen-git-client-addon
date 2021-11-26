@@ -26,15 +26,22 @@ public class GitStatus {
    */
   private List<FileStatus> stagedFiles;
   
+  private final boolean hasUncommittedChanges;
+  
+  public boolean hasUncommittedChanges() {
+    return hasUncommittedChanges;
+  }
+
   /**
    * Constructor.
    * 
    * @param unstagedFiles Unstaged files.
    * @param stagedFiles Staged files.
    */
-  public GitStatus(List<FileStatus> unstagedFiles, List<FileStatus> stagedFiles) {
+  public GitStatus(List<FileStatus> unstagedFiles, List<FileStatus> stagedFiles, boolean hasUncommittedChanges) {
     this.unstagedFiles = unstagedFiles;
     this.stagedFiles = stagedFiles;
+    this.hasUncommittedChanges = hasUncommittedChanges;
     logger.debug("Create GitStatus...");
     logger.debug("GitStatus unstaged files: " + unstagedFiles);
     logger.debug("GitStatus staged files: " + stagedFiles);

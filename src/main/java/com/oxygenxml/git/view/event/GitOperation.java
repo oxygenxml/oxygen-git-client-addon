@@ -89,10 +89,6 @@ public enum GitOperation {
    */
   STASH_DROP,
   /**
-   * Stash list operation.
-   */
-  STASH_LIST,
-  /**
    * Stash pop operation.
    */
   STASH_POP,

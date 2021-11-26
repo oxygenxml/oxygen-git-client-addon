@@ -133,7 +133,7 @@ public class GitController extends GitControllerBase {
    */
   protected void showPullFailedBecauseOfCertainChanges(List<String> filesWithChanges, String message) {
     if (logger.isDebugEnabled()) {
-      logger.info("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
+      logger.debug("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
     }
     FileStatusDialog.showWarningMessage(
         translator.getTranslation(Tags.PULL_STATUS), 

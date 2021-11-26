@@ -44,7 +44,6 @@ import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.StashCreateCommand;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
@@ -84,7 +83,6 @@ import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
-import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
@@ -167,11 +165,19 @@ public class GitAccess {
 	 * Translation support.
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
+	
+	private StatusCache statusCache = null;
 
 	/**
 	 * Singleton instance.
 	 */
-	private GitAccess() {}
+	private GitAccess() {
+	  statusCache = new StatusCache(GitListeners.getInstance(), this::getGit);
+	}
+	
+	public StatusCache getStatusCache() {
+    return statusCache;
+  }
 
 	/**
 	 * @return the singleton instance.
@@ -485,22 +491,10 @@ public class GitAccess {
 	}
 	
 	/**
-	 * @return A status of the Working Copy, with the unstaged and staged files.
-	 */
-	public GitStatus getStatus() {
-	  GitStatus gitStatus = null;
-	  if (git != null) {
-	    try {
-	      LOGGER.debug("-- Compute our GitStatus -> getStatus() --");
-	      Status status = git.status().call();
-	      LOGGER.debug("-- Get JGit status -> git.status().call() --");
-	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
-	    } catch (GitAPIException e) {
-	      LOGGER.error(e, e);
-	    }
-	  }
-    return gitStatus != null ? gitStatus 
-        : new GitStatus(Collections.emptyList(),Collections.emptyList());
+   * @return A status of the Working Copy, with the unstaged and staged files.
+   */
+  public GitStatus getStatus() {
+    return statusCache.getStatus();
   }
 	
 	/**
@@ -531,144 +525,16 @@ public class GitAccess {
         LOGGER.debug("Prepare fot JGit status, in paths " + paths);
       }
       
-      StatusCommand statusCmd = git.status();
-      for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
-        statusCmd.addPath(iterator.next());
+      if (paths != null && !paths.isEmpty()) {
+        // We have paths. Build a fresh copy.
+        return new GitStatusCommand(git).getUnstagedFiles(paths);
+      } else {
+        return statusCache.getStatus().getUnstagedFiles();
       }
-      try {
-        Status status = statusCmd.call();
-        LOGGER.debug("JGit Status computed: " + status);
-        return getUnstagedFiles(status);
-      } catch (GitAPIException e) {
-        LOGGER.error(e, e);
-      }
+      
     }
     
     return Collections.emptyList();
-  }
-
-	/**
-	 * Makes a diff between the files from the last commit and the files from the
-	 * working directory. If there are diffs, they will be saved and returned.
-	 * 
-	 * @param status The repository's status.
-	 * 
-	 * @return The unstaged files and their states.
-	 */
-	private List<FileStatus> getUnstagedFiles(Status status) {
-	  LOGGER.debug("PRIVATE - GET UNSTAGE FOR GIVEN STATUS " + status);
-		List<FileStatus> unstagedFiles = new ArrayList<>();
-		if (git != null) {
-			try {
-				Set<String> submodules = getSubmoduleAccess().getSubmodules();
-        addSubmodulesToUnstaged(unstagedFiles, submodules);
-				addUntrackedFilesToUnstaged(status, unstagedFiles, submodules);
-        addModifiedFilesToUnstaged(status, unstagedFiles, submodules);
-        addMissingFilesToUnstaged(status, unstagedFiles, submodules);
-				addConflictingFilesToUnstaged(status, unstagedFiles);
-			} catch (NoWorkTreeException | GitAPIException e1) {
-			  LOGGER.error(e1, e1);
-			}
-		}
-		return unstagedFiles;
-	}
-
-	/**
-	 * Add conflicting files to the list of resources that are not staged.
-	 * 
-	 * @param status        The repository's status.
-	 * @param unstagedFiles The list of unstaged (not in the INDEX) files.
-	 */
-  private void addConflictingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles) {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addConflictingFilesToUnstaged: " + status.getConflicting());
-    }
-    for (String fileName : status.getConflicting()) {
-      unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
-    }
-  }
-
-  /**
-	 * Add missing files to the list of resources that are not staged (not in the
-	 * INDEX).
-   * 
-   * @param status        The repository's status.
-   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
-   * @param submodules    The set of submodules.
-   */
-  private void addMissingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addMissingFilesToUnstaged: " + status.getMissing());
-    }
-    for (String string : status.getMissing()) {
-    	if (!submodules.contains(string)) {
-    		unstagedFiles.add(new FileStatus(GitChangeType.MISSING, string));
-    	}
-    }
-  }
-
-  /**
-	 * Add modified files to the list of resources that are not staged (not in the
-	 * INDEX).
-   * 
-   * @param status        The repository's status.
-   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
-   * @param submodules    The set of submodules.
-   */
-  private void addModifiedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addModifiedFilesToUnstaged " + status.getModified());
-    }
-    for (String string : status.getModified()) {
-      // A file that was modified compared to the one from INDEX.
-    	if (!submodules.contains(string)) {
-    		unstagedFiles.add(new FileStatus(GitChangeType.MODIFIED, string));
-    	}
-    }
-  }
-
-  /**
-	 * Add untracked files (i.e. newly created files) to the list of resources that
-	 * are not staged (not in the INDEX).
-   * 
-   * @param status        The repository's status.
-   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
-   * @param submodules    The set of submodules.
-   */
-  private void addUntrackedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addUntrackedFilesToUnstaged " + status.getUntracked());
-    }
-    for (String string : status.getUntracked()) {
-    	if (!submodules.contains(string)) {
-    		unstagedFiles.add(new FileStatus(GitChangeType.UNTRACKED, string));
-    	}
-    }
-  }
-
-  /**
-   * Add submodules to the list of resources that are not staged.
-   * 
-   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
-   * @param submodules    The set of submodules.
-   * 
-	 * @throws GitAPIException When an error occurs when trying to check the
-	 *                         submodules status.
-   */
-  private void addSubmodulesToUnstaged(List<FileStatus> unstagedFiles, Set<String> submodules) throws GitAPIException {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addSubmodulesToUnstaged " + submodules);
-    }
-    for (String submodulePath : submodules) {
-    	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(submodulePath);
-			if (submoduleStatus != null && submoduleStatus.getHeadId() != null
-    	    && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
-			  
-    		unstagedFiles.add(
-    		    new FileStatus(GitChangeType.SUBMODULE, submodulePath).setDescription(
-    		        RepoUtil.extractSubmoduleChangeDescription(git.getRepository(), submoduleStatus)));
-    	}
-    }
   }
 
   /**
@@ -1434,62 +1300,15 @@ public class GitAccess {
    */
   public List<FileStatus> getStagedFile(Collection<String> paths) {
     if (git != null) {
-      StatusCommand statusCmd = git.status();
-			for (String path : paths) {
-				statusCmd.addPath(path);
-			}
-
-      try {
-        Status status = statusCmd.call();
-        return getStagedFiles(status);
-			} catch (GitAPIException e) {
-			  LOGGER.error(e, e);
+      if (paths != null && !paths.isEmpty()) {
+        return new GitStatusCommand(git).getStagedFile(paths);
+      } else {
+        statusCache.getStatus().getStagedFiles();
       }
     }
     
     return Collections.emptyList();
   }
-
-	/**
-	 * Checks which files from the given subset are in the Index and returns their
-	 * state.
-	 * 
-	 * @param status The current status.
-	 * 
-	 * @return - a set containing the subset of files present in the INDEX.
-	 */
-  private List<FileStatus> getStagedFiles(Status status) {
-    List<FileStatus> stagedFiles = new ArrayList<>();
-    Set<String> submodules = getSubmoduleAccess().getSubmodules();
-
-    for (String fileName : status.getChanged()) {
-      // File from INDEX, modified from HEAD
-      if (submodules.contains(fileName)) {
-        stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
-      } else {
-        stagedFiles.add(new FileStatus(GitChangeType.CHANGED, fileName));
-      }
-    }
-    for (String fileName : status.getAdded()) {
-      // Newly created files added in the INDEX
-      if (submodules.contains(fileName)) {
-        stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
-      } else {
-        stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
-      }
-    }
-    for (String fileName : status.getRemoved()) {
-      // A delete added in the INDEX, file is present in HEAD.
-      if (submodules.contains(fileName)) {
-        stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
-      } else {
-        stagedFiles.add(new FileStatus(GitChangeType.REMOVED, fileName));
-      }
-    }
-
-    return stagedFiles;
-  }
-
 	/**
 	 * Gets the conflicting file from the git status
 	 * 
@@ -2254,13 +2073,13 @@ public class GitAccess {
 
 		try {
 			Repository repository = this.getRepository();
-			if (filePath == null && git.status().call().hasUncommittedChanges()) {
+			if (filePath == null && statusCache.getStatus().hasUncommittedChanges()) {
 				revisions.add(UNCOMMITED_CHANGES);
 			}
             
 			RenameTracker renTracker = renameTracker.length == 0 ? null : renameTracker[0];
 			RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository, renTracker);
-		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
+		} catch (NoWorkTreeException | NoRepositorySelected | IOException e) {
 			LOGGER.error(e, e);
 		}
 		
@@ -2451,13 +2270,10 @@ public class GitAccess {
 	  Collection<RevCommit> stashedRefsCollection = null;
 	  if(git != null) {
 		  try {
-		    fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
 			  StashListCommand stashList = git.stashList();
 			  stashedRefsCollection = stashList.call();
-			  fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()));
 		  } catch (Exception e) {
 			  LOGGER.debug(e, e);
-			  fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()), e);
 		  }
 	  }
     return stashedRefsCollection;
