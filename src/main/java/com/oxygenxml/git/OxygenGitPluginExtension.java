@@ -223,7 +223,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           	  customizeBranchView(viewInfo);
           	}
           });
-
+			
+		   // Listens on the save event in the Oxygen editor and invalidates the cache.
+			GitAccess.getInstance().getStatusCache().installEditorsHook(pluginWS);
 			
 			// Present the view to the user if it is the first run of the plugin
 			final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();

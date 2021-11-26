@@ -1,11 +1,18 @@
 package com.oxygenxml.git.service;
 
+import java.net.URL;
 import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
+
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
+import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 
 /**
  * A cache intended to avoid reading the file system too often.
@@ -43,5 +50,34 @@ public class StatusCache {
 
   public synchronized void resetCache() {
     cache = null;
+  }
+
+  public void installEditorsHook(PluginWorkspace pluginWorkspace) {
+    pluginWorkspace.addEditorChangeListener(
+        new WSEditorChangeListener() {
+          @Override
+          public void editorOpened(final URL editorLocation) {
+            addEditorSaveHook(pluginWorkspace.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA));
+          }
+        },
+        PluginWorkspace.MAIN_EDITING_AREA);
+  }
+
+  /**
+   * Adds a hook to refresh the models if the editor is part of the Git working copy.
+   * 
+   * @param editorLocation Editor to check.
+   */
+  private void addEditorSaveHook(WSEditor editorAccess) {
+    if (editorAccess != null) {
+      editorAccess.addEditorListener(new WSEditorListener() {
+        @Override
+        public void editorSaved(int operationType) {
+          if (RepoUtil.isFileFromRepository(editorAccess.getEditorLocation())) {
+            resetCache();
+          }
+        }
+      });
+    }
   }
 }

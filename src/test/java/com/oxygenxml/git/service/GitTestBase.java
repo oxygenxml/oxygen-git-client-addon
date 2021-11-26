@@ -429,7 +429,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     Mockito.when(pluginWSMock.getEditorAccess((URL) Mockito.any(), Mockito.anyInt())).then(new Answer<WSEditor>() {
       @Override
       public WSEditor answer(InvocationOnMock invocation) throws Throwable {
-        WSEditor wsEditorMock = createWSEditorMock();
+        WSEditor wsEditorMock = createWSEditorMock((URL) invocation.getArguments()[0]);
         
         return wsEditorMock;
       }
@@ -544,6 +544,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     });
     
     OptionsManager.getInstance().loadOptions(wsOptions);
+    
+    gitAccess.getStatusCache().installEditorsHook(pluginWSMock);
   }
   
   /**
@@ -600,7 +602,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     c.install();
   }
 
-  private WSEditor createWSEditorMock() {
+  private WSEditor createWSEditorMock(URL editorLocation) {
     WSEditor wsEditorMock = Mockito.mock(WSEditor.class);
     
     Mockito.doAnswer(new Answer<Void>() {
@@ -620,6 +622,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         return null;
       }
     }).when(wsEditorMock).removeEditorListener((WSEditorListener) Mockito.any());
+    
+    Mockito.doReturn(editorLocation).when(wsEditorMock).getEditorLocation();
 
     
     return wsEditorMock;
