@@ -2875,14 +2875,15 @@ public class GitAccess {
 			LOGGER.error(e,e);
 		}
 	    
-		return remoteConfig == null ? Constants.DEFAULT_REMOTE_NAME : remoteConfig;
+		return remoteConfig;
 	}
 	
 	/**
 	 * @return The remote value for current branch.
 	 */
 	public String getRemoteFromCurrentBranch()  {
-		return getBranchRemoteFromConfig(getBranchInfo().getBranchName());
+		String remoteConfig = getBranchRemoteFromConfig(getBranchInfo().getBranchName());
+		return remoteConfig != null ? remoteConfig : Constants.DEFAULT_REMOTE_NAME;
 	}
 	
 	/**
