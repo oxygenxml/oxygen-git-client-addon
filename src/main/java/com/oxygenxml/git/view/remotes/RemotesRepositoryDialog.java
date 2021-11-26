@@ -563,7 +563,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				constraints.gridwidth = 1;
 				constraints.gridheight = 1;
 				constraints.anchor = GridBagConstraints.WEST;
-				constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
+				constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 				constraints.weightx = 0;
 				constraints.weighty = 0;
 				constraints.fill = GridBagConstraints.NONE;
@@ -573,11 +573,12 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 				constraints.gridx++;
 				constraints.weightx = 1;
+				constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
 				constraints.fill = GridBagConstraints.HORIZONTAL;
 				guiPanel.add(remoteNameTF, constraints);
 
 				constraints.gridx = 0;
-				constraints.insets = new Insets(0, 0, 0, 0);
+				constraints.insets = new Insets(0, 0, 0, UIConstants.COMPONENT_RIGHT_PADDING);
 				constraints.gridy++;
 				constraints.fill = GridBagConstraints.NONE;
 				constraints.weightx = 0;
@@ -586,6 +587,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 				constraints.gridx++;
 				constraints.weightx = 1;
+				constraints.insets = new Insets(0, 0, 0, 0);
 				constraints.fill = GridBagConstraints.HORIZONTAL;
 				guiPanel.add(remoteURLTF, constraints);
 
