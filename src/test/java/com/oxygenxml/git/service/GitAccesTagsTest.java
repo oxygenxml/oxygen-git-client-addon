@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -84,7 +85,7 @@ public class GitAccesTagsTest {
    */
   @Test
   public void testMultipleTagsOnACommit() throws Exception {
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     
     //Make 3tags on the same commit
     String commitID = commitsCharacteristics.get(0).getCommitId();
@@ -113,7 +114,7 @@ public class GitAccesTagsTest {
    */
   @Test
   public void testCreateAndExistsMethods() throws Exception {
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     
     //Make 2 tags on 2 commits
     gitAccess.tagCommit("Tag1", "lala", commitsCharacteristics.get(0).getCommitId());
@@ -145,7 +146,7 @@ public class GitAccesTagsTest {
    */
   @Test
   public void testDeleteMethod() throws GitAPIException, IOException, NoRepositorySelected {
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     
     gitAccess.tagCommit("Tagul1", "lala", commitsCharacteristics.get(1).getCommitId());
     gitAccess.tagCommit("Tagul2", "", commitsCharacteristics.get(2).getCommitId());
@@ -176,7 +177,7 @@ public class GitAccesTagsTest {
     URL url = gitAccess.getRepository().getDirectory().toURI().toURL();
     gitAccess.clone(new URIish(url), file, null, "refs/heads/main");
 
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String commitId = commitsCharacteristics.get(0).getCommitId();
     gitAccess.tagCommit("Tag", "", commitId);
     gitAccess.pushTag("Tag");

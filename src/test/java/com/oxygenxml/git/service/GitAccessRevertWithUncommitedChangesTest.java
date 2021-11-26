@@ -15,6 +15,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.actions.RevertCommitAction;
 
 
@@ -94,7 +95,7 @@ public class GitAccessRevertWithUncommitedChangesTest extends GitTestBase {
         status.getStagedFiles().toString());
 
     // The history at this moment
-    final List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    final List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String initialHistory = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
@@ -124,7 +125,7 @@ public class GitAccessRevertWithUncommitedChangesTest extends GitTestBase {
     errorOkButton.doClick();
 
     flushAWT();
-    List<CommitCharacteristics> commitsChr =  gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsChr =  gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     assertEquals(
         initialHistory,
         dumpHistory(commitsChr).replaceAll(regex, "DATE"));

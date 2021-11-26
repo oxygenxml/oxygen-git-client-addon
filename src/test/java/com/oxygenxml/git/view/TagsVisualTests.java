@@ -19,6 +19,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.tags.CreateTagDialog;
@@ -103,7 +104,7 @@ public class TagsVisualTests extends GitTestBase {
     
     //Make 3 tags ( 2nd tag will be pushed )
     
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String commitIdForTag1 = commitsCharacteristics.get(0).getCommitId();
     gitAccess.tagCommit("Tag1", "MesajTag1", commitIdForTag1);
     sleep(1000);
@@ -239,7 +240,7 @@ public class TagsVisualTests extends GitTestBase {
     
     //Make 1 tag then make the others with the CreateTag Dialog
 
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String commitIdForTag1 = commitsCharacteristics.get(0).getCommitId();
     gitAccess.tagCommit("Tag1", "MesajTag1", commitIdForTag1);
 

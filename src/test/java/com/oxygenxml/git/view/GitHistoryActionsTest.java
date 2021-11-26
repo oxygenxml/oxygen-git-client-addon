@@ -25,6 +25,7 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -49,7 +50,7 @@ public class GitHistoryActionsTest extends GitTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
 
       String dump = dumpHistory(commitsCharacteristics);
 
@@ -195,7 +196,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       setFileContent(new File(wcTree, "file1.txt"), "branza");
       
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       dump = dumpHistory(commitsCharacteristics);
       expected = 
           "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
@@ -233,7 +234,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       Files.delete(new File(wcTree, "file1.txt").toPath());
       Files.delete(newFile.toPath());
       
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       dump = dumpHistory(commitsCharacteristics);
       expected = 
           "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
@@ -328,7 +329,7 @@ public class GitHistoryActionsTest extends GitTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
   
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
   
       String dump = dumpHistory(commitsCharacteristics);
   

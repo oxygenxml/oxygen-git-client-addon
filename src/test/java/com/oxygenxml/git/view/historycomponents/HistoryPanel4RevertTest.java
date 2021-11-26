@@ -16,6 +16,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 import com.oxygenxml.git.view.history.HistoryPanel;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 
 public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
   private static final GitController PUSH_PULL_CONTROLLER = new GitController(GitAccess.getInstance());
@@ -64,7 +65,7 @@ public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
 
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       String dump = dumpHistory(commitsCharacteristics);
       String expected = "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
           + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
@@ -92,7 +93,7 @@ public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
       sleep(400);
 
       // Check the history of the new branch
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       dump = dumpHistory(commitsCharacteristics);
       expected = "[ Revert \"Changes.\"\n"
           + "\n"

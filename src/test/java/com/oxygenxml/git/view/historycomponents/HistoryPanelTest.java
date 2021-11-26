@@ -21,6 +21,7 @@ import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.FileHistoryPresenter;
 import com.oxygenxml.git.view.history.HistoryAffectedFileCellRender;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.util.UIUtil;
 
 /**
@@ -46,7 +47,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
 
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
 
       String dump = dumpHistory(commitsCharacteristics);
 
@@ -157,7 +158,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
 
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
 
       String dump = dumpHistory(commitsCharacteristics);
 
@@ -258,7 +259,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     File wcTree = new File("target/gen/GitHistoryTest_testChangeBranchEvent");
     generateRepositoryAndLoad(script, wcTree);
 
-    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
 
     String dump = dumpHistory(commitsCharacteristics);
 

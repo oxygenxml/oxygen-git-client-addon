@@ -23,6 +23,8 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
+import com.oxygenxml.git.view.history.RenameTracker;
 import com.oxygenxml.git.view.historycomponents.HistoryPanelTestBase;
 
 /**
@@ -48,7 +50,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
 
       String dump = dumpHistory(commitsCharacteristics);
 
@@ -65,7 +67,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
 //          expected, dump);
 
 
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("root.txt");
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, "root.txt", new RenameTracker());
 
       dump = dumpHistory(commitsCharacteristics);
 
@@ -102,7 +104,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       assertEquals(5, commitsCharacteristics.size());
       
       Map<String, String> fileLists = new LinkedHashMap<>();
@@ -169,7 +171,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       GitAccess.getInstance().setBranch("main");
   
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
   
       String dump = dumpHistory(commitsCharacteristics);
   
@@ -199,7 +201,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
   
   
       GitAccess.getInstance().setBranch("feature");
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
   
       dump = dumpHistory(commitsCharacteristics);
   
@@ -240,7 +242,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       GitAccess.getInstance().setBranch("main");
       
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
   
       String dump = dumpHistory(commitsCharacteristics);
   
@@ -262,7 +264,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
   
   
       GitAccess.getInstance().setBranch("feature");
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
   
       dump = dumpHistory(commitsCharacteristics);
   
@@ -326,7 +328,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       GitAccess.getInstance().setRepositorySynchronously(localRepository.getWorkTree().getAbsolutePath());
       GitAccess.getInstance().fetch();
       
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
 
       String dump = dumpHistory(commitsCharacteristics);
 
@@ -368,7 +370,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       try {
         GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
   
-        List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("root.txt");
+        List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, "root.txt", new RenameTracker());
         String dump = dumpHistory(commitsCharacteristics);
   
         String expected = "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -398,7 +400,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       generateRepositoryAndLoad(script, wcTree);
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("file_renamed_again.txt");
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, "file_renamed_again.txt", new RenameTracker());
       //--------------------------
       // Tests the detection of rename paths.
       //---------------------------
@@ -447,7 +449,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       generateRepositoryAndLoad(script, wcTree);
     
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("file_renamed_again.txt");
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, "file_renamed_again.txt", new RenameTracker());
     
       String dump = dumpHistory(commitsCharacteristics);
     
