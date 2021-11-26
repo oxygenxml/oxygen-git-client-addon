@@ -119,9 +119,9 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				}
 			}
 
-			firstBranchSelection = (String)branches.getSelectedItem();
 			BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
 			branches.setSelectedItem(remotes.getSelectedItem() + "/" + branchConfig.getMerge());
+			firstBranchSelection = (String)branches.getSelectedItem();
 
 		} catch (NoRepositorySelected e) {
 			LOGGER.error(e, e);
