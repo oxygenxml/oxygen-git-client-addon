@@ -68,6 +68,27 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	 */
 	private String currentBranch;
 	
+	/**
+	 * The current dialog status.
+	 */
+	private int currentStatus = STATUS_OK;
+	
+	/**
+	 * Constant for status ok.
+	 */
+	private static final int STATUS_OK = 0;
+	
+	/**
+	 * Constant for status when the remote doesn't exists.
+	 */
+	public static final int STATUS_REMOTE_NOT_EXISTS = 1;
+	
+	/**
+	 * Constant for status when branches are not founded.
+	 */
+	public static final int STATUS_BRANCHES_NOT_EXIST = 2;
+	
+	
 
 	/**
 	 * Constructor.
@@ -76,13 +97,15 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 				TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
+		boolean existsRemotes = false;
+		boolean foundedBranchRemote = false;
+		
 		try {
 			currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
 			final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
 			final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
 			final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
 					.getRemotesFromConfig().keySet());	
-			boolean foundedBranchRemote = false;
 			
 			remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
 				
@@ -104,6 +127,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 			});
 			
 			for(String remote : remotesNames) {
+				existsRemotes = true;
 				URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
 						remote, ConfigConstants.CONFIG_KEY_URL));
 				Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
@@ -124,7 +148,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 					}
 				}
 			}
-
+			
 			if(!foundedBranchRemote) {
 			  RemoteBranchItem remoteItem = new RemoteBranchItem(null, null);
 			  remoteItem.setFirstSelection(true);
@@ -136,21 +160,30 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 			LOGGER.error(e, e);
 		}
 
-		getContentPane().add(createGUIPanel());
+		if(!existsRemotes) {
+			currentStatus = STATUS_REMOTE_NOT_EXISTS;
+			this.doCancel();
+		} else if(!foundedBranchRemote) {
+			currentStatus = STATUS_BRANCHES_NOT_EXIST;
+			this.doCancel();
+		} else {
+			getContentPane().add(createGUIPanel());
 
-		pack();
+			pack();
 
-		JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
-				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-				if (parentFrame != null) {
-					setIconImage(parentFrame.getIconImage());
-					setLocationRelativeTo(parentFrame);
-				}
+			JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+					(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+					if (parentFrame != null) {
+						setIconImage(parentFrame.getIconImage());
+						setLocationRelativeTo(parentFrame);
+					}
 
-				setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-				this.setVisible(true);
-				this.setResizable(false);
+					this.setVisible(true);
+					this.setResizable(false);
+		}
+		
 	}
 
 
@@ -215,7 +248,16 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		
 		super.doOK();
 	}
+	
+	
+	/**
+	 * @return The dialog status.
+	 */
+	public int getStatusResult() {
+		return currentStatus;
+	}
 
+	
 	
 	/**
 	 * Used to help us to store the remote branch informations.

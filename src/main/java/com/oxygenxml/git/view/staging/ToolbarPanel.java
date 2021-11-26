@@ -57,8 +57,10 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
+import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
@@ -78,6 +80,7 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -1820,7 +1823,17 @@ public class ToolbarPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				 new CurrentBranchRemotesDialog();
+				 CurrentBranchRemotesDialog dialog = new CurrentBranchRemotesDialog();
+				 if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_REMOTE_NOT_EXISTS) {
+					 OKCancelDialog addRemoteDialog = new AddRemoteDialog();
+					 addRemoteDialog.setVisible(true);
+					 if(addRemoteDialog.getResult() == OKCancelDialog.RESULT_OK) {
+						 this.actionPerformed(arg0);
+					 }
+				 } else if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_BRANCHES_NOT_EXIST) {
+					 FileStatusDialog.showErrorMessage(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), null, 
+							 TRANSLATOR.getTranslation(Tags.NO_BRANCHES_FOUNDED));
+				 }
 			}
 			
 		};

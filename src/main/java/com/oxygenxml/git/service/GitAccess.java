@@ -1,7 +1,6 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -2975,15 +2974,15 @@ public class GitAccess {
 	 */
 	public void updateConfigFile() throws NoRepositorySelected {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
-		File file = new File(getConfigFilePath());
-		String text = GitAccess.getInstance().getRepository().getConfig().toText();
-		  try(FileWriter myWriter = new FileWriter(file)) {
-			  myWriter.write(text);
-		  }  catch (IOException e1) {
-				LOGGER.error(e1, e1);
-				fireOperationFailed(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE), e1);
-		  }
-		  fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
+		
+		try {
+			GitAccess.getInstance().getRepository().getConfig().save();
+		} catch (IOException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE), e);
+		}
+		
+		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 	}
 	
 	public String getConfigFilePath() throws NoRepositorySelected {
