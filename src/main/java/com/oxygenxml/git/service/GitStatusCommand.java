@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
@@ -25,9 +26,9 @@ public class GitStatusCommand {
    * Logger for logging.
    */
   private static final Logger LOGGER = Logger.getLogger(GitAccess.class);
-  private Git git;
+  private Supplier<Git> git;
 
-  GitStatusCommand(Git git) {
+  GitStatusCommand(Supplier<Git> git) {
     this.git = git;
     
   }
@@ -40,7 +41,7 @@ public class GitStatusCommand {
     if (git != null) {
       try {
         LOGGER.debug("-- Compute our GitStatus -> getStatus() --");
-        Status status = git.status().call();
+        Status status = git.get().status().call();
         LOGGER.debug("-- Get JGit status -> git.status().call() --");
         gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status), status.hasUncommittedChanges());
       } catch (GitAPIException e) {
@@ -79,7 +80,7 @@ public class GitStatusCommand {
         LOGGER.debug("Prepare fot JGit status, in paths " + paths);
       }
       
-      StatusCommand statusCmd = git.status();
+      StatusCommand statusCmd = git.get().status();
       for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
         statusCmd.addPath(iterator.next());
       }
@@ -208,13 +209,14 @@ public class GitStatusCommand {
       LOGGER.debug("addSubmodulesToUnstaged " + submodules);
     }
     for (String submodulePath : submodules) {
-      SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(submodulePath);
+      SubmoduleStatus submoduleStatus = git.get().submoduleStatus().call().get(submodulePath);
       if (submoduleStatus != null && submoduleStatus.getHeadId() != null
           && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
         
         unstagedFiles.add(
             new FileStatus(GitChangeType.SUBMODULE, submodulePath).setDescription(
-                RepoUtil.extractSubmoduleChangeDescription(git.getRepository(), submoduleStatus)));
+                RepoUtil.extractSubmoduleChangeDescription(git.get().getRepository(), submoduleStatus)));
+        
       }
     }
   }
@@ -223,7 +225,7 @@ public class GitStatusCommand {
    * @return API for working with submodules.
    */
   public SubmoduleAccess getSubmoduleAccess() {
-    return SubmoduleAccess.wrap(() -> git);
+    return SubmoduleAccess.wrap(git);
   }
 
   
@@ -249,7 +251,7 @@ public class GitStatusCommand {
   */
  public List<FileStatus> getStagedFile(Collection<String> paths) {
    if (git != null) {
-     StatusCommand statusCmd = git.status();
+     StatusCommand statusCmd = git.get().status();
      for (String path : paths) {
        statusCmd.addPath(path);
      }

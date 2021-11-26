@@ -527,7 +527,7 @@ public class GitAccess {
       
       if (paths != null && !paths.isEmpty()) {
         // We have paths. Build a fresh copy.
-        return new GitStatusCommand(git).getUnstagedFiles(paths);
+        return new GitStatusCommand(() -> git).getUnstagedFiles(paths);
       } else {
         return statusCache.getStatus().getUnstagedFiles();
       }
@@ -1301,9 +1301,9 @@ public class GitAccess {
   public List<FileStatus> getStagedFile(Collection<String> paths) {
     if (git != null) {
       if (paths != null && !paths.isEmpty()) {
-        return new GitStatusCommand(git).getStagedFile(paths);
+        return new GitStatusCommand(() -> git).getStagedFile(paths);
       } else {
-        statusCache.getStatus().getStagedFiles();
+        return statusCache.getStatus().getStagedFiles();
       }
     }
     
@@ -1942,6 +1942,7 @@ public class GitAccess {
    */
   public void cleanUp() {
     listeners.clear();
+    statusCache = new StatusCache(listeners, () -> git);
     closeRepo();
   }
 	

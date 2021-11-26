@@ -36,7 +36,7 @@ public class StatusCache {
    */
   public synchronized GitStatus getStatus() {
     if (cache == null) {
-      cache = new GitStatusCommand(statusComputer.get()).getStatus();
+      cache = new GitStatusCommand(statusComputer).getStatus();
     }
     return cache;
   }
