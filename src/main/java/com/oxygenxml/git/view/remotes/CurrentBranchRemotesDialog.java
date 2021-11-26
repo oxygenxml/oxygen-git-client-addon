@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.remotes;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -45,9 +46,9 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
-	 * The minimum default dialog width.
+	 * The default dialog width.
 	 */
-	private static final int MIN_WIDTH = 200;
+	private static final int DIALOG_WIDTH = 400;
 
 	/**
 	 * Logger for logging.
@@ -129,7 +130,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
 		getContentPane().add(createGUIPanel());
 
-		setSize(MIN_WIDTH, MIN_WIDTH);
+		//setSize(MIN_WIDTH, MIN_WIDTH);
 
 		pack();
 
@@ -147,6 +148,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	}
 
 
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(DIALOG_WIDTH, super.getPreferredSize().height);
+	}
+	
 	/**
 	 * Create the dialog GUI.
 	 * 
@@ -161,7 +167,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		constraints.gridwidth = 1;
 		constraints.gridheight = 1;
 		constraints.anchor = GridBagConstraints.WEST;
-		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
+		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
 		constraints.weightx = 0;
 		constraints.weighty = 0;
 		constraints.fill = GridBagConstraints.NONE;
@@ -179,16 +185,20 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		constraints.weightx = 1;
 		constraints.gridx++;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
 		guiPanel.add(remotes, constraints);
 
 		constraints.gridx = 0;
+		constraints.weightx = 0;
 		constraints.gridy++;
 		constraints.fill = GridBagConstraints.NONE;
+		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
 		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH)), constraints);
 
 		constraints.weightx = 1;
 		constraints.gridx++;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
 		guiPanel.add(branches, constraints);
 
 		return guiPanel;

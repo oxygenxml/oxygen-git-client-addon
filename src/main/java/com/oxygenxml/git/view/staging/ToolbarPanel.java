@@ -1793,7 +1793,7 @@ public class ToolbarPanel extends JPanel {
    * @return The created action.
    */
   private Action createEditConfigFileAction() {
-	  return new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT_CONFIG_FILE) + "...") {
+	  return new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT_CONFIG_FILE)) {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
