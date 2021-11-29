@@ -146,6 +146,10 @@ public class Icons {
    */
   public static final String QUESTION_ICON = "/images/Help32.png";
   /**
+   * Warning icon small size.
+   */
+  public static final String SMALL_WARNING_ICON = "/images/Warning16.png";
+  /**
    * Warning icon.
    */
   public static final String WARNING_ICON = "/images/Warning32.png";

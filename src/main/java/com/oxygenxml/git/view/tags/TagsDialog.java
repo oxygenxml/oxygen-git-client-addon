@@ -5,7 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -172,38 +171,33 @@ public class TagsDialog extends OKCancelDialog {
     buttonsGridBagConstraints.anchor = GridBagConstraints.SOUTHEAST;
     buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
     buttonsGridBagConstraints.insets = new Insets(UIConstants.INDENT_5PX, 0, UIConstants.INDENT_5PX, UIConstants.INDENT_5PX);
+    checkoutButton = new JButton(TRANSLATOR.getTranslation(Tags.CHECKOUT + "..."));
+    checkoutButton.addActionListener(e -> {
+    	 int selectedRow = (tagsTable.getSelectedRow());
+		  if(selectedRow >= 0) {
+			  GitTag tag = ((TagsTableModel)tagsTable.getModel()).getItemAt(selectedRow);
+			  String tagID = tag.getTagID();
+			  Action action = new CheckoutCommitAction(tagID);
+			  action.actionPerformed(e);
+		  }
+	});
+    
+    checkoutButton.setEnabled(false);
+    buttonsPanel.add(checkoutButton, buttonsGridBagConstraints);
+
     pushButton = new JButton(TRANSLATOR.getTranslation(Tags.PUSH));
     pushButton.addActionListener(createPushListener());
     pushButton.setEnabled(false);
+    buttonsGridBagConstraints.gridx ++;
     buttonsPanel.add(pushButton, buttonsGridBagConstraints);
-
+    
     deleteButton = new JButton(TRANSLATOR.getTranslation(Tags.DELETE));
     deleteButton.addActionListener(createDeleteListener());
     deleteButton.setEnabled(false);
 
     buttonsGridBagConstraints.gridx ++;
-    buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
-    
-    checkoutButton = new JButton(TRANSLATOR.getTranslation(Tags.CHECKOUT));
-    checkoutButton.addActionListener(new ActionListener() {
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			  int selectedRow = (tagsTable.getSelectedRow());
-			  if(selectedRow >= 0) {
-				  GitTag tag = ((TagsTableModel)tagsTable.getModel()).getItemAt(selectedRow);
-				  String tagID = tag.getTagID();
-				  Action action = new CheckoutCommitAction(tagID);
-				  action.actionPerformed(e);
-			  }
-		      
-		}
-	});
-    
-    checkoutButton.setEnabled(false);
-    buttonsGridBagConstraints.gridx ++;
     buttonsGridBagConstraints.insets = new Insets(UIConstants.INDENT_5PX, 0, UIConstants.INDENT_5PX, 0);
-    buttonsPanel.add(checkoutButton, buttonsGridBagConstraints);
+    buttonsPanel.add(deleteButton, buttonsGridBagConstraints);  
     
     gbc.gridx = 0;
     gbc.gridy++;
