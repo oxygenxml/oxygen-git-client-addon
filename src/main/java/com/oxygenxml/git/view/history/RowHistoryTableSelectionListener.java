@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
@@ -36,7 +35,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
 	@Override
     public void actionPerformed(ActionEvent e) {
-	    GitOperationScheduler.getInstance().schedule(() -> setCommitDescription());
+	   setCommitDescription();
     }
     
     

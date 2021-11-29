@@ -105,7 +105,7 @@ public class RevCommitUtil {
       
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
-          RevCommit oldCommit = rw.parseCommit(commit.getParent(0));
+          RevCommit oldCommit = commit.getParentCount() > 0 ? rw.parseCommit(commit.getParent(0)) : null;
           RevCommit[] parents = commit.getParents();
           
           for (RevCommit parent : parents) {
