@@ -105,7 +105,7 @@ public class RevCommitUtil {
       
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
-
+          RevCommit oldCommit = rw.parseCommit(commit.getParent(0));
           RevCommit[] parents = commit.getParents();
           
           for (RevCommit parent : parents) {
@@ -116,9 +116,9 @@ public class RevCommitUtil {
             treewalk.setRecursive(true);
             treewalk.setFilter(TreeFilter.ANY_DIFF);
             
-            changedFiles = FileStatusUtil.compute(repository, treewalk, commit, TreeFilter.ALL);
+            changedFiles = FileStatusUtil.compute(repository, treewalk, commit, oldCommit, TreeFilter.ALL);
             
-            if(parents.length ==  3) {
+            if(parents.length > 2) {
               addUntrackedFiles(changedFiles, repository, rw, commit);
             }          
         }

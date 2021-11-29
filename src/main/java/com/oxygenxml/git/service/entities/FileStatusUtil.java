@@ -2,10 +2,14 @@ package com.oxygenxml.git.service.entities;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.RenameDetector;
@@ -14,8 +18,10 @@ import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.NullProgressMonitor;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
@@ -53,10 +59,10 @@ public class FileStatusUtil {
    * @throws IOException
    */
   public static List<FileStatus> compute(final Repository repository,
-      final TreeWalk walk, final RevCommit commit,
+      final TreeWalk walk, final RevCommit commit, final RevCommit oldCommit,
       final TreeFilter... markTreeFilters) throws MissingObjectException,
   IncorrectObjectTypeException, CorruptObjectException, IOException {
-    return compute(repository, walk, commit, commit.getParents(),
+    return compute(repository, walk, commit, oldCommit, commit.getParents(),
         markTreeFilters);
   }
   
@@ -79,13 +85,14 @@ public class FileStatusUtil {
    */
 
   public static List<FileStatus> compute(final Repository repository,
-      final TreeWalk walk, final RevCommit commit,
+      final TreeWalk walk, final RevCommit commit, final RevCommit oldCommit,
       final RevCommit[] parents,
       final TreeFilter... markTreeFilters) throws MissingObjectException,
   IncorrectObjectTypeException, CorruptObjectException, IOException {
 
     final List<FileStatus> filesToReturn = new ArrayList<>();
 
+    
     if (parents.length > 0) {
       walk.reset(trees(commit, parents));
     } else {
@@ -122,64 +129,19 @@ public class FileStatusUtil {
         filesToReturn.add(currentFileStatus);
       }
       
-    }
-    
-    else { // DiffEntry does not support walks with more than two trees
-      final int nTree = walk.getTreeCount();
-      final int myTree = nTree - 1;
-
-      while (walk.next()) {
-        if (matchAnyParent(walk, myTree)) {
-          continue;
+    } else { // TODO Maybe we can find a faster way to generate the affected files in this type of commits.
+        try {
+          filesToReturn.addAll(getChanges(repository, commit, oldCommit));
+        } catch (IOException | GitAPIException e) {
+         
         }
-
-        String mergedFilePath = walk.getPathString();
-        
-        int m0 = 0;
-        for (int i = 0; i < myTree; i++) {
-          m0 |= walk.getRawMode(i);
-        }
-        
-        ChangeType mergedFileChangeType = ChangeType.MODIFY;
-        
-        final int m1 = walk.getRawMode(myTree);
-        
-        if (m0 == 0 && m1 != 0) {
-          mergedFileChangeType = ChangeType.ADD;
-        } else if (m0 != 0 && m1 == 0) {
-          mergedFileChangeType = ChangeType.DELETE;
-        }
-        
-        filesToReturn.add(new FileStatus(toGitChangeType(mergedFileChangeType), mergedFilePath));
       }
 
-    }
+    
 
     return filesToReturn;
   }
-
   
-  /**
-   * @param walk   The tree walk.
-   * @param myTree Index to current tree
-   * 
-   * @return <code>true</code> if any parent match with tree argument.
-   */
-  private static boolean matchAnyParent(final TreeWalk walk, final int myTree) {
-    final int m = walk.getRawMode(myTree);
-    boolean toReturn = false;
-    
-    for (int i = 0; i < myTree; i++) {
-      if (walk.getRawMode(i) == m && walk.idEqual(i, myTree)) {
-        toReturn = true;
-        break;
-      }
-    }
-    
-    return toReturn;
-  }
-
-
   
   /**
    * Compute and return the objects id of current commit trees.
@@ -235,4 +197,71 @@ public class FileStatusUtil {
         || diffChange == ChangeType.COPY;
   }
 
+  
+  /**
+   * Gets all the files changed between two revisions.
+   * 
+   * @param repository Repository.
+   * @param newCommit The new commit.
+   * @param oldCommit The previous commit.
+   * 
+   * @return A list with changed files. Never <code>null</code>.
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  private static List<FileStatus> getChanges(Repository repository, RevCommit newCommit, RevCommit oldCommit) throws IOException, GitAPIException {
+    List<DiffEntry> diffs = diff(repository, newCommit, oldCommit);
+
+    return diffs
+        .stream()
+        .map(t -> new FileStatusOverDiffEntry(t, newCommit.getId().name(), oldCommit.getId().name()))
+        .collect(Collectors.toList());
+  }
+
+
+  /**
+   * Gets all the files changed between two revisions.
+   * 
+   * @param repository Repository.
+   * @param newCommit The new commit.
+   * @param oldCommit The previous commit.
+   * 
+   * @return A list with changed files. Never <code>null</code>.
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  private static List<DiffEntry> diff(
+      Repository repository, 
+      RevCommit newCommit, 
+      RevCommit oldCommit) throws IOException, GitAPIException {
+    List<DiffEntry> collect = Collections.emptyList();
+    try (ObjectReader reader = repository.newObjectReader()) {
+      CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+      newTreeIter.reset(reader, newCommit.getTree().getId());
+
+      CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+      if (oldCommit != null) {
+        oldTreeIter.reset(reader, oldCommit.getTree().getId());
+      }
+
+
+      // finally get the list of changed files
+      try (Git git = new Git(repository)) {
+        List<DiffEntry> diffs= git.diff()
+            .setNewTree(newTreeIter)
+            .setOldTree(oldTreeIter)
+            .call();
+
+        // Identify potential renames.
+        RenameDetector rd = new RenameDetector(git.getRepository());
+        rd.addAll(diffs);
+        collect = rd.compute();
+      }
+    }
+
+    return collect;
+  }
+
+ 
+  
 }
