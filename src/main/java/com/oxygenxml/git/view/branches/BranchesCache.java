@@ -40,7 +40,8 @@ public class BranchesCache {
 	 * @param path the path
 	 * @param text the extracted text
 	 * 
-	 * @return
+	 * @return The computed tool tip text.
+	 * 
 	 * @throws NoRepositorySelected 
 	 * @throws IOException 
 	 * @throws GitAPIException 
