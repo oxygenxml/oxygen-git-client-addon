@@ -3,7 +3,7 @@ package com.oxygenxml.git.view.history;
 import java.util.Comparator;
 
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.view.stash.FilesTableModel;
+import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 
 /**
  * Model for affected files in History.
@@ -11,7 +11,12 @@ import com.oxygenxml.git.view.stash.FilesTableModel;
  * @author Alex_Smarandache
  *
  */
-public class HistoryTableAffectedFilesModel extends FilesTableModel {
+public class HistoryTableAffectedFilesModel extends StagingResourcesTableModel {
+
+  public HistoryTableAffectedFilesModel() {
+    super(null, true);
+  }
+
 
   /**
    * Presenter for file in history.

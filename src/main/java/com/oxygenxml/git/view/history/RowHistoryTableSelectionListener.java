@@ -36,8 +36,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
 	@Override
     public void actionPerformed(ActionEvent e) {
-      
-      setCommitDescription();
+	    GitOperationScheduler.getInstance().schedule(() -> setCommitDescription());
     }
     
     
@@ -48,6 +47,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     @SuppressWarnings("java:S1192")
     private void setCommitDescription() {
       int selectedRow = historyTable.getSelectedRow();
+      HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) changesTable.getModel();
+      dataModel.setFilesStatus(new ArrayList<>());
       if (selectedRow != -1) {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
@@ -79,7 +80,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
         commitDescriptionPane.setText(commitDescription.toString());
         commitDescriptionPane.setCaretPosition(0);
 
-        updateDataModel(commitCharacteristics);
+       updateDataModel(commitCharacteristics);
       }
     }
 
@@ -129,20 +130,18 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
      * @param commitCharacteristics Details about the current commit.
      */
     private void updateDataModel(CommitCharacteristics commitCharacteristics) {
-    	GitOperationScheduler.getInstance().schedule(() -> {
-    		HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) changesTable.getModel();
-            List<FileStatus> files = new ArrayList<>();
-            if(GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
-            	try {
-            		files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
-            	} catch (IOException | GitAPIException e) {
-        			LOGGER.error(e, e);
-        		}
-            } else {
-            	files.addAll(GitAccess.getInstance().getUnstagedFiles());
-            }
-        	SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(files));
-    	});
+      HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) changesTable.getModel();
+      List<FileStatus> files = new ArrayList<>();
+      if(GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
+        try {
+          files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
+        } catch (IOException | GitAPIException e) {
+        LOGGER.error(e, e);
+      }
+      } else {
+        files.addAll(GitAccess.getInstance().getUnstagedFiles());
+      }
+      SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(files));
     }
   }
   

@@ -50,6 +50,7 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
+import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
@@ -95,35 +96,55 @@ public class RevCommitUtil {
    * @throws GitAPIException
    */
   public static List<FileStatus> getChangedFiles(String commitID) throws IOException, GitAPIException {
-    List<FileStatus> changedFiles = Collections.emptyList();
+    List<FileStatus> changedFiles = new ArrayList<>();
     try {
       Repository repository = GitAccess.getInstance().getRepository();
       if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitID)) {
         ObjectId head = repository.resolve(commitID);
 
+      
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
 
-          if (commit.getParentCount() > 0) {
-            RevCommit oldC = rw.parseCommit(commit.getParent(0));
-            changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
-            if (commit.getParentCount() > 2) {
-              addUntrackedFiles(changedFiles, repository, rw, commit);
-            }
-          } else {
-            changedFiles = RevCommitUtil.getFiles(repository, commit);
+          RevCommit[] parents = commit.getParents();
+          
+          for (RevCommit parent : parents) {
+            rw.parseBody(parent);
           }
+          
+          TreeWalk treewalk = new TreeWalk(rw.getObjectReader());
+            treewalk.setRecursive(true);
+            treewalk.setFilter(TreeFilter.ANY_DIFF);
+            
+            changedFiles = FileStatusUtil.compute(repository, treewalk, commit, TreeFilter.ALL);
+            
+            if(parents.length ==  3) {
+              addUntrackedFiles(changedFiles, repository, rw, commit);
+            }          
         }
       } else {
         changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch(MissingObjectException exc) {
     	LOGGER.debug(exc, exc);
-    } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
+    } catch (RevisionSyntaxException | IOException | NoRepositorySelected e) {
       LOGGER.error(e, e);
     }
 
     return changedFiles;
+  }
+  
+  private static GitChangeType map(ChangeType diffChange) {
+    GitChangeType toreturn = GitChangeType.ADD;
+    if (ChangeType.DELETE == diffChange) {
+      toreturn = GitChangeType.REMOVED;
+    } else if (ChangeType.MODIFY == diffChange) {
+      toreturn = GitChangeType.CHANGED;
+    } else if (ChangeType.RENAME == diffChange || diffChange == ChangeType.COPY) {
+      toreturn = GitChangeType.RENAME;
+    }
+    
+    return toreturn;
   }
 
 
@@ -142,9 +163,11 @@ public class RevCommitUtil {
     oldC = revWalk.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
     try (TreeWalk treeWalk = new TreeWalk(repository)) {
       treeWalk.addTree(commit.getTree());
+      
       treeWalk.setRecursive(false);
       treeWalk.setFilter(null);
       treeWalk.reset(oldC.getTree().getId());
+    
       while (treeWalk.next()) {
         if (treeWalk.isSubtree()) {
           treeWalk.enterSubtree();
@@ -201,6 +224,7 @@ public class RevCommitUtil {
   }
 
 
+  
   /**
    * Gets all the files changed between two revisions.
    * 
