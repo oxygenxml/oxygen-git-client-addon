@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -75,7 +74,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 	/**
 	 * Queue with actions to execute after user confirmation.
 	 */
-	private final transient Queue<Action> actionsToExecute = new LinkedList<>();
+	private final transient Queue<Runnable> actionsToExecute = new LinkedList<>();
 
 
 	/**
@@ -108,8 +107,6 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				revalidate();
 				pack();
 				repaint();
-				
-				this.setVisible(true);
 	}
 	
 	@Override
@@ -132,7 +129,26 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
     	return getSize();
     }
 	
+    
+    /**
+     * Make the dialog visible and save the new config file if the result is OK.
+     */
+    public void configureRemotes() {
+		super.setVisible(true);
+		
+		if(getResult() == RESULT_OK) {
+			while(!actionsToExecute.isEmpty()) {
+				actionsToExecute.remove().run();
+			}
+			try {
+				GitAccess.getInstance().updateConfigFile();
+			} catch (NoRepositorySelected e) {
+				LOGGER.error(e, e);
+			}
+		}
+	}
 
+    
     /**
      * Create the main panel.
      * 
@@ -169,22 +185,24 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		return remotesPanel;
 	}
 
-	
-	@Override
-	protected void doOK() {
-		while(!actionsToExecute.isEmpty()) {
-			actionsToExecute.remove().actionPerformed(null);
-		}
-		try {
-			GitAccess.getInstance().updateConfigFile();
-		} catch (NoRepositorySelected e) {
-			LOGGER.error(e, e);
-		}
-		super.doOK();
+	/**
+	 * Add an new action in queue.
+	 * 
+	 * @param oldRemote   Old remote name.
+	 * @param newRemote   New remote name.
+	 * @param newURL      New URL.
+	 */
+	private void scheduleRemoteUpdate(String oldRemote, String newRemote, String newURL) {
+		actionsToExecute.add(() -> {
+			try {
+				GitAccess.getInstance().updateRemote(oldRemote, newRemote, newURL);
+			} catch (NoRepositorySelected e1) {
+				LOGGER.error(e1, e1);
+			} 
+		});
 	}
-
-
-
+	
+	
 	/**
 	 * Factory for UI components on this dialog.
 	 * 
@@ -261,7 +279,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 			return remotesTable;
 		}
-
+		
 
 		/**
 		 * Create panel with buttons.
@@ -318,28 +336,10 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 						final boolean remoteNameAlreadyExists = remotesModel.remoteAlreadyExists(remoteName);
 						
 						if(remoteNameAlreadyExists) {
-							actionsToExecute.add(new AbstractAction() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									try {
-										GitAccess.getInstance().updateRemote(remoteName, remoteName, remoteURL);
-									} catch (NoRepositorySelected e1) {
-										LOGGER.error(e1, e1);
-									}	
-								}
-							});
+							scheduleRemoteUpdate(remoteName, remoteName, remoteURL);
 							remotesModel.editRemote(remoteName,remoteName, remoteURL);	
 						} else {
-							actionsToExecute.add(new AbstractAction() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									try {
-										GitAccess.getInstance().updateRemote(null, remoteName, remoteURL);
-									} catch (NoRepositorySelected e1) {
-										LOGGER.error(e1, e1);
-									}	
-								}
-							});
+							scheduleRemoteUpdate(null, remoteName, remoteURL);
 							remotesModel.addRemote(dialog.getRemoteName(), dialog.getRemoteURL());	
 						}
 					}
@@ -368,17 +368,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 							final String remoteName = dialog.getRemoteName();
 							final String remoteURL = dialog.getRemoteURL();
 
-							actionsToExecute.add(new AbstractAction() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									try {
-										GitAccess.getInstance().updateRemote(oldRemoteName, remoteName, remoteURL);
-									} catch (NoRepositorySelected e1) {
-										LOGGER.error(e1, e1);
-									}	
-								}
-							});
-
+							scheduleRemoteUpdate(oldRemoteName, remoteName, remoteURL);
 							remotesModel.editRemote(selectedRow, dialog.getRemoteName(), dialog.getRemoteURL());
 						}
 					}
@@ -413,14 +403,17 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 						            TRANSLATOR.getTranslation(Tags.NO));
 						    if (OKCancelDialog.RESULT_OK == answer) {
 
-								actionsToExecute.add(new AbstractAction() {
+						    
+								actionsToExecute.add(new Runnable() {
+									
 									@Override
-									public void actionPerformed(ActionEvent e) {
+									public void run() {
 										try {
 											GitAccess.getInstance().removeRemote(remoteName);
 										} catch (NoRepositorySelected e1) {
 											LOGGER.error(e1, e1);
 										}	
+										
 									}
 								});
 

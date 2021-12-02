@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,10 +56,8 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
-import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
@@ -70,8 +67,8 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
-import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
 import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
+import com.oxygenxml.git.view.remotes.SetRemoteAction;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.tags.GitTagsManager;
@@ -80,7 +77,6 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -1757,7 +1753,7 @@ public class ToolbarPanel extends JPanel {
     };
     
     remoteButton.addActionToMenu(createRemotesAction(), false);
-    remoteButton.addActionToMenu(createCurrentBranchRemote(), false);
+    remoteButton.addActionToMenu(new SetRemoteAction(), false);
     remoteButton.addActionToMenu(createEditConfigFileAction(), false);
     
     return remoteButton;
@@ -1778,7 +1774,7 @@ public class ToolbarPanel extends JPanel {
             if (LOGGER.isDebugEnabled()) {
               LOGGER.debug("Push Button Clicked");
             }
-           new RemotesRepositoryDialog();
+           new RemotesRepositoryDialog().configureRemotes();
           }
         } catch (NoRepositorySelected e1) {
           if(LOGGER.isDebugEnabled()) {
@@ -1800,40 +1796,12 @@ public class ToolbarPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				 URL configFileURL;
 				try {
-					configFileURL = URLUtil.correct(new File(GitAccess.getInstance().getConfigFilePath()));
-					PluginWorkspaceProvider.getPluginWorkspace().open(configFileURL, null, "text/plain");
+					PluginWorkspaceProvider.getPluginWorkspace().open(URLUtil.correct(new File(GitAccess.getInstance().getConfigFilePath())), 
+							null, "text/plain");
 				} catch (MalformedURLException | NoRepositorySelected e) {
 					LOGGER.error(e, e);
 				} 
-			}
-			
-		};
-  }
-  
-  
-  /**
-   * Create action for edit the config file.
-   * 
-   * @return The created action.
-   */
-  private Action createCurrentBranchRemote() {
-	  return new AbstractAction(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH) +  "...") {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				 CurrentBranchRemotesDialog dialog = new CurrentBranchRemotesDialog();
-				 if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_REMOTE_NOT_EXISTS) {
-					 OKCancelDialog addRemoteDialog = new AddRemoteDialog();
-					 addRemoteDialog.setVisible(true);
-					 if(addRemoteDialog.getResult() == OKCancelDialog.RESULT_OK) {
-						 this.actionPerformed(arg0);
-					 }
-				 } else if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_BRANCHES_NOT_EXIST) {
-					 FileStatusDialog.showErrorMessage(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), null, 
-							 TRANSLATOR.getTranslation(Tags.NO_BRANCHES_FOUNDED));
-				 }
 			}
 			
 		};
