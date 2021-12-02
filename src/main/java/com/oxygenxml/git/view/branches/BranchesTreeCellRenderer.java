@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -16,18 +14,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
-import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
@@ -40,10 +32,7 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  *
  */
 public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
- /**
-  * The translator.
-  */
-  private static final Translator TRANSLATOR = Translator.getInstance();
+
   /**
    * The corner size for the current branch border.
    */
@@ -64,20 +53,27 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * Supplies the current branch.
    */
   private final Supplier<String> currentBranchNameSupplier;
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = LogManager.getLogger(BranchesTreeCellRenderer.class.getName());
-  /**
-   * Date format.
-   */
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
   
   /**
    * Cache with information about nodes.  
    */
   private final transient BranchesCache cache;
 
+  /**
+   * The branch name.
+   */
+  private String branchName = null;
+  
+  /**
+   * The branch path.
+   */
+  private String path = null;
+  
+  /**
+   * <code>true</code> if node is a leaf.
+   */
+  private boolean isLeaf = false;
+  
   
   /**
    * Constructor.
@@ -108,38 +104,34 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
       
     Icon icon = null;
-    String text = "";
-    String path = value.toString();
+    branchName = "";
+    this.isLeaf = leaf;
+    path = value.toString();
     if (((DefaultMutableTreeNode) value).getParent() == null) {
       icon = Icons.getIcon(Icons.LOCAL_REPO);
     } else {
       RenderingInfo renderingInfo = getRenderingInfo(path);
       icon = renderingInfo.getIcon();
-      text = renderingInfo.getTooltip();
+      branchName = renderingInfo.getTooltip();
     }
     
-    label.setIcon(icon);
-    if (!text.isEmpty()) {
-      label.setText(text);
-      try {
-        label.setToolTipText(cache.getToolTip(leaf, path, text));
-      } catch (GitAPIException | IOException | NoRepositorySelected e) {
-        LOGGER.error(e, e);
-      }
+    this.setIcon(icon);
+    if (!branchName.isEmpty()) {
+      this.setText(branchName);
     }
       Font font = label.getFont();
-      label.setFont(font.deriveFont(Font.PLAIN));
-      label.setBorder(new EmptyBorder(0, 5, 0, 0));
+      this.setFont(font.deriveFont(Font.PLAIN));
+      this.setBorder(new EmptyBorder(0, 5, 0, 0));
       if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
         // Mark the current branch
-        label.setFont(font.deriveFont(Font.BOLD));
-        label.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
+        this.setFont(font.deriveFont(Font.BOLD));
+        this.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
       }
       // Active/inactive table selection
       if (sel) {
         setSelectionColors(tree);
       }
-    return label;
+    return this;
   }
 
   
@@ -217,5 +209,9 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
   }
  
+  @Override
+	public String getToolTipText() {
+		return cache != null ? cache.getToolTip(isLeaf, path, branchName) : super.getToolTipText();
+	}
   
 }

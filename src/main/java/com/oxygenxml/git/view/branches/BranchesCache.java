@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -30,6 +32,11 @@ public class BranchesCache {
 	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
+	 * Logger for logging.
+	 */
+	private static final Logger LOGGER = LogManager.getLogger(BranchesCache.class.getName());
+
+	/**
 	 * A map where: <code>key</code>: the node value, <code>value</code>: the tool tip for node. 
 	 */
 	private final Map<String, String> nodesTooltips = new HashMap<>();
@@ -37,8 +44,8 @@ public class BranchesCache {
 
 	/**
 	 * @param leaf <code>true<code> if is leaf
-	 * @param path the path
-	 * @param text the extracted text
+	 * @param path the branch path
+	 * @param branchName the branch name
 	 * 
 	 * @return The computed tool tip text.
 	 * 
@@ -46,15 +53,15 @@ public class BranchesCache {
 	 * @throws IOException 
 	 * @throws GitAPIException 
 	 */
-	public String getToolTip(boolean leaf, String path, String text) throws GitAPIException, IOException, NoRepositorySelected {
-		String toolTipText = nodesTooltips.get(path);
-
-		if(toolTipText == null) {
-			toolTipText = ToolTipContentProvider.computeToolTipText(leaf, path, text);
-			nodesTooltips.put(path, toolTipText);
-		}
-
-		return toolTipText;
+	public String getToolTip(boolean leaf, String path, String branchName) {
+		return !branchName.isEmpty()? nodesTooltips.computeIfAbsent(path, s -> {
+			try {
+				return ToolTipContentProvider.computeToolTipText(leaf, path, branchName);
+			} catch (GitAPIException | IOException | NoRepositorySelected e) {
+				LOGGER.error(e, e);
+				return null;
+			}
+		}) : null;
 	}
 
 
@@ -64,7 +71,7 @@ public class BranchesCache {
 	public void reset() {
 		nodesTooltips.clear();
 	}
-	
+
 
 	/**
 	 * Inner class with generate tool tip responsibility.
@@ -73,7 +80,7 @@ public class BranchesCache {
 	 *
 	 */
 	private static final class ToolTipContentProvider {
-		
+
 		/**
 		 * Compute tooltip text.
 		 * 
@@ -87,7 +94,7 @@ public class BranchesCache {
 		 * @throws IOException
 		 * @throws NoRepositorySelected
 		 */
-		 static String computeToolTipText(boolean leaf, String path, String text) throws GitAPIException, IOException, NoRepositorySelected {
+		static String computeToolTipText(boolean leaf, String path, String text) throws GitAPIException, IOException, NoRepositorySelected {
 			String toolTipText = null;
 			if (GitAccess.getInstance().isRepoInitialized() && leaf) {
 				if(path.contains(Constants.R_REMOTES)) {
@@ -196,6 +203,6 @@ public class BranchesCache {
 		}
 	}
 
-	
+
 
 }
