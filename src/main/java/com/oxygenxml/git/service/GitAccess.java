@@ -1826,6 +1826,7 @@ public class GitAccess {
         git.fetch()
             .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/" + getRemoteFromCurrentBranch() + "/*"))
             .setCheckFetchedObjects(true)
+            .setRemote(getRemoteFromCurrentBranch())
             .setRemoveDeletedRefs(true)
 						.setCredentialsProvider(credentialsProvider)
 						.call();

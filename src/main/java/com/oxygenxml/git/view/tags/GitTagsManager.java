@@ -46,7 +46,7 @@ public class GitTagsManager {
     List<String> remoteTagsTitles = new ArrayList<>(); 
     
     CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(GitAccess.getInstance().getHostName());
-    Collection <Ref> refs = GitAccess.getInstance().getGit().lsRemote().setCredentialsProvider(credentialsProvider).setTags(true).call();
+    Collection <Ref> refs = GitAccess.getInstance().getGit().lsRemote().setRemote(GitAccess.getInstance().getRemoteFromCurrentBranch()).setCredentialsProvider(credentialsProvider).setTags(true).call();
     for (Ref ref : refs) {
       remoteTagsTitles.add(Repository.shortenRefName(ref.getName()));
     }
