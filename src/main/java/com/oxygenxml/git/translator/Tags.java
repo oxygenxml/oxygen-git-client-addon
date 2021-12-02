@@ -1653,4 +1653,10 @@ public class Tags {
    */
   public static final String NO_BRANCHES_FOUNDED = "No_Branches_Founded";
   
+  /**
+   * Create a new branch option.
+   */
+  public static final String CREATE_A_NEW_BRANCH = "Create_A_New_Branch";
+  
 }
+

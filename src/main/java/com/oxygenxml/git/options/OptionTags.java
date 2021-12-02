@@ -115,5 +115,10 @@ public class OptionTags {
    * The tag option for including the untracked files in the stash.
    */
   public static final String STASH_INCLUDE_UNTRACKED = "com.oxygenxml.git.stash.include.untracked";
+  
+  /**
+   * <code>true</code> if the create new branch option is selected.
+   */
+  public static final String CHECKOUT_COMMIT_SELECT_NEW_BRANCH = "com.oxygenxml.git.checkout.commit.select.new.branch";
 
 }

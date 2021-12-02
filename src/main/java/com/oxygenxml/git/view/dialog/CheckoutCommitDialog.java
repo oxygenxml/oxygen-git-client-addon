@@ -29,6 +29,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -39,6 +40,7 @@ import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
@@ -53,7 +55,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	/**
 	 * Left inset for the inner panels.
 	 */
-	private static final int INNER_PANELS_LEFT_INSET = 5;
+	private static final int LEFT_INDENT = 23;
 
 	/**
 	 * Translator.
@@ -78,7 +80,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	/**
 	 * Radio button for detached HEAD.
 	 */
-	private JRadioButton detachedHEADRadio;
+	private final JRadioButton detachedHEADRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.DETACHED_HEAD));
 
 	/**
 	 * Create branch panel.
@@ -104,8 +106,18 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	 * The commit path.
 	 */
 	private final String commitPath;
+	
+	/**
+	 * Contains the previous branch name.
+	 */
+	private String previousBranchNameUpdate = "";
+	
+	/**
+	 * Contains the options storage.
+	 */
+	private WSOptionsStorage optionsStorage;
 
-
+	
 
 	/**
 	 * Constructor.
@@ -170,9 +182,9 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.gridwidth = 1;
 
-		// Basic authentication radio
+		// Create new branch radio
 		ButtonGroup buttonGroup = new ButtonGroup();
-		createNewBranchRadio = new JRadioButton(TRANSLATOR.getTranslation("Create a new branch"));
+		createNewBranchRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.CREATE_A_NEW_BRANCH));
 		createNewBranchRadio.setFocusPainted(false);
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridx = 0;
@@ -183,22 +195,10 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		// Create branch panel.
 		createBranchPanel = createNewBranchPanel();
 		gbc.gridy ++;
-		gbc.insets = new Insets(0, INNER_PANELS_LEFT_INSET, 0, 0);
+		gbc.insets = new Insets(0, 23, 0, 0);
 		panel.add(createBranchPanel, gbc);
 
-		// Error message area.
-		errorMessageTextArea.setVisible(true);
-		errorMessageTextArea.setForeground(Color.RED);
-		Font font = errorMessageTextArea.getFont();
-		errorMessageTextArea.setFont(font.deriveFont(font.getSize() - 1.0f));
-		gbc.gridy ++;
-		gbc.gridx = 0;
-		gbc.gridwidth = 1;
-		gbc.anchor = GridBagConstraints.WEST;
-		panel.add(errorMessageTextArea, gbc);
-
 		// Detached HEAD radio
-		detachedHEADRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.DETACHED_HEAD));
 		detachedHEADRadio.setFocusPainted(false);
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridx = 0;
@@ -208,16 +208,16 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 
 		// Warning about detached HEAD.
 		warningAboutDeteachedHEAD = new JLabel();
+		gbc.insets = new Insets(0, LEFT_INDENT, 0, 0);
 		warningAboutDeteachedHEAD.setText(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.DETACHED_HEAD_WARNING_MESSAGE)));
-		warningAboutDeteachedHEAD.setIcon(Icons.getIcon(Icons.WARNING_ICON));
-		warningAboutDeteachedHEAD.setDisabledIcon(Icons.getIcon(Icons.WARNING_ICON));
+		warningAboutDeteachedHEAD.setIcon(Icons.getIcon(Icons.SMALL_WARNING_ICON));
+		warningAboutDeteachedHEAD.setDisabledIcon(Icons.getIcon(Icons.SMALL_WARNING_ICON));
 		gbc.insets = new Insets(
 				0,
-				INNER_PANELS_LEFT_INSET,
+				LEFT_INDENT,
 				UIConstants.LAST_LINE_COMPONENT_BOTTOM_PADDING,
 				0);
 		gbc.gridx = 0;
-
 		gbc.gridy ++;
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -235,7 +235,18 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 
 		setOkButtonText(TRANSLATOR.getTranslation(Tags.CHECKOUT));
 
-		createNewBranchRadio.doClick();
+		optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
+	    if(optionsStorage != null) {
+	    	boolean selectNewBranchRadio = Boolean.parseBoolean(optionsStorage.getOption(OptionTags.CHECKOUT_COMMIT_SELECT_NEW_BRANCH, Boolean.toString(true)));
+	    	if(selectNewBranchRadio) {
+	    	   createNewBranchRadio.doClick();
+	    	} else {
+	    		detachedHEADRadio.doClick();
+	    	}
+	    } else {
+	    	createNewBranchRadio.doClick();
+	    }
+	    
 	}
 
 
@@ -252,6 +263,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		if(detachedHEADRadio.isSelected()) {
 			getOkButton().setEnabled(true);
 			errorMessageTextArea.setText("");
+			previousBranchNameUpdate = null;
 		} else {
 			updateUI(branchNameTextField.getText());
 		}
@@ -261,7 +273,10 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 				branchNameTextField.requestFocus();
 			}
 		});
-
+		
+		optionsStorage.setOption(
+	              OptionTags.CHECKOUT_COMMIT_SELECT_NEW_BRANCH,
+	              Boolean.toString(createNewBranchRadio.isSelected()));
 	}
 
 
@@ -286,7 +301,10 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 
 		branchNameTextField = OxygenUIComponentsFactory.createTextField();
 		updateUI("");
-		Runnable updateRunnable = () -> updateUI(branchNameTextField.getText());
+		Runnable updateRunnable = () -> {
+			errorMessageTextArea.setVisible(true);
+			updateUI(branchNameTextField.getText());
+		};
 
 		branchNameTextField.getDocument().addDocumentListener(new CoalescingDocumentListener(updateRunnable));
 		branchNameTextField.requestFocus();
@@ -299,7 +317,16 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		c.weightx = 1;
 		c.gridx ++;
 		createNewBranchPanel.add(branchNameTextField, c);
-
+		
+		c.gridy++;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		errorMessageTextArea.setVisible(true);
+		errorMessageTextArea.setForeground(Color.RED);
+		Font font = errorMessageTextArea.getFont();
+		errorMessageTextArea.setFont(font.deriveFont(font.getSize() - 1.0f));
+		createNewBranchPanel.add(errorMessageTextArea, c);
+            
 		return createNewBranchPanel;
 	}
 
@@ -307,7 +334,11 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	protected void doOK() {
 		try {
 			if(createNewBranchRadio.isSelected()) {
-				if(commit != null) {
+				if("".equals(branchNameTextField.getText())) {
+					previousBranchNameUpdate = null;
+					updateUI("");
+					return;
+				} else if(commit != null) {
 				  GitAccess.getInstance().checkoutCommit(commit, branchNameTextField.getText());	
 				} else {
 				  GitAccess.getInstance().checkoutCommit(commitPath, branchNameTextField.getText());	
@@ -337,6 +368,9 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		boolean titleContainsSpace = false;
 		boolean titleContainsInvalidChars = false;
 
+		if(previousBranchNameUpdate != null && branchName.equals(previousBranchNameUpdate)) {
+			return;
+		}
 		if (!branchName.isEmpty()) {
 			titleContainsSpace = branchName.contains(" ");
 			titleContainsInvalidChars = !Repository.isValidRefName(Constants.R_HEADS + branchName);
@@ -357,13 +391,15 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		}
 
 		boolean isBranchNameValid = !branchName.isEmpty() && !titleAlreadyExists && !titleContainsSpace && !titleContainsInvalidChars;
-		if(detachedHEADRadio != null && !detachedHEADRadio.isSelected()) {
+		if(!detachedHEADRadio.isSelected()) {
 			getOkButton().setEnabled(isBranchNameValid);	
 		}
 
 		if(isBranchNameValid) {
 			errorMessageTextArea.setText("");
 		}
+		
+		previousBranchNameUpdate = branchName;
 
 	}
 

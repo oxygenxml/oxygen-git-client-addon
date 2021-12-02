@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -16,21 +14,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.PersonIdent;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
-import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
@@ -43,7 +32,7 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  *
  */
 public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
-  private static final Translator TRANSLATOR = Translator.getInstance();
+
   /**
    * The corner size for the current branch border.
    */
@@ -64,15 +53,28 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * Supplies the current branch.
    */
   private final Supplier<String> currentBranchNameSupplier;
+  
   /**
-   * Logger for logging.
+   * Cache with information about nodes.  
    */
-  private static final Logger LOGGER = LogManager.getLogger(BranchesTreeCellRenderer.class.getName());
-  /**
-   * Date format.
-   */
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
+  private final transient BranchesCache cache;
 
+  /**
+   * The branch name.
+   */
+  private String branchName = null;
+  
+  /**
+   * The branch path.
+   */
+  private String path = null;
+  
+  /**
+   * <code>true</code> if node is a leaf.
+   */
+  private boolean isLeaf = false;
+  
+  
   /**
    * Constructor.
    *
@@ -80,12 +82,15 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * @param currentBranchNameSupplier Gives us the current branch name.
    */
   public BranchesTreeCellRenderer(
+	  BranchesCache cache,
       BooleanSupplier isContextMenuShowing,
       Supplier<String> currentBranchNameSupplier) {
+	this.cache = cache;
     this.isContextMenuShowing = isContextMenuShowing;
     this.currentBranchNameSupplier = currentBranchNameSupplier;
   }
 
+  
   /**
    * @see DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
    */
@@ -99,70 +104,36 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
       
     Icon icon = null;
-    String text = "";
-    String path = value.toString();
+    branchName = "";
+    this.isLeaf = leaf;
+    path = value.toString();
     if (((DefaultMutableTreeNode) value).getParent() == null) {
       icon = Icons.getIcon(Icons.LOCAL_REPO);
     } else {
       RenderingInfo renderingInfo = getRenderingInfo(path);
       icon = renderingInfo.getIcon();
-      text = renderingInfo.getTooltip();
+      branchName = renderingInfo.getTooltip();
     }
     
-    label.setIcon(icon);
-    if (!text.isEmpty()) {
-      label.setText(text);
-      try {
-        String toolTipText = computeToolTipText(leaf, path, text);
-        label.setToolTipText(toolTipText);
-      } catch (GitAPIException | IOException | NoRepositorySelected e) {
-        LOGGER.error(e, e);
-      }
+    this.setIcon(icon);
+    if (!branchName.isEmpty()) {
+      this.setText(branchName);
     }
       Font font = label.getFont();
-      label.setFont(font.deriveFont(Font.PLAIN));
-      label.setBorder(new EmptyBorder(0, 5, 0, 0));
+      this.setFont(font.deriveFont(Font.PLAIN));
+      this.setBorder(new EmptyBorder(0, 5, 0, 0));
       if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
         // Mark the current branch
-        label.setFont(font.deriveFont(Font.BOLD));
-        label.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
+        this.setFont(font.deriveFont(Font.BOLD));
+        this.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
       }
       // Active/inactive table selection
       if (sel) {
         setSelectionColors(tree);
       }
-    return label;
+    return this;
   }
 
-  /**
-   * Compute tooltip text.
-   * 
-   * @param leaf <code>true<code> if is leaf
-   * @param path the path
-   * @param text the extracted text
-   * 
-   * @return the computed tooltip.
-   * 
-   * @throws GitAPIException
-   * @throws IOException
-   * @throws NoRepositorySelected
-   */
-  private String computeToolTipText(boolean leaf, String path, String text) throws GitAPIException, IOException, NoRepositorySelected {
-    String toolTipText = null;
-    if (GitAccess.getInstance().isRepoInitialized() && leaf) {
-      if(path.contains(Constants.R_REMOTES)) {
-        toolTipText = constructRemoteBranchToolTip(text, path);
-      } else if (path.contains(Constants.R_HEADS)) {
-        String branchName = BranchesUtil.createBranchPath(
-            path,
-            BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
-        if(BranchesUtil.existsLocalBranch(branchName)) {
-          toolTipText = constructLocalBranchToolTip(branchName);
-        }    
-      }
-    }
-    return toolTipText;
-  }
   
   /**
    * Get the rendering info (such as icon) for the given branch.
@@ -183,6 +154,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
     return renderingInfo;
   }
+  
 
   /**
    * Set selection background and border colors.
@@ -200,6 +172,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
     }
   }
+  
 
   /**
    * Paints the node, and in case it is also selected, take care not to draw the dashed rectangle border.
@@ -218,6 +191,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
   }
 
+  
   /**
    * Paints the border for the selected node.
    *
@@ -234,92 +208,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       g.drawRect(x, y, w - 1, h - 1);
     }
   }
-  
-  /**
-   * Construct message for local branches.
-   * 
-   * @param nameBranch name of the branch.
-   * 
-   * @return the message.
-   * 
-   * @throws GitAPIException
-   * @throws IOException
-   * @throws NoRepositorySelected 
-   */
-  private String constructLocalBranchToolTip(String nameBranch) throws GitAPIException, IOException, NoRepositorySelected {
-    StringBuilder toolTipText = new StringBuilder();
-    PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(nameBranch).getAuthorIdent();
-    String remoteBranchName = GitAccess.getInstance().getUpstreamBranchShortNameFromConfig(nameBranch);
-    boolean foundRemoteBranch = remoteBranchName != null;
-    toolTipText.append("<html><p>")
-      .append(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH))
-      .append(" ")
-      .append(nameBranch);
-    if(foundRemoteBranch) {
-      toolTipText.append("<br>")
-        .append(TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH))
-        .append(" ")
-        .append(remoteBranchName);
-    }
-    toolTipText.append("<br>")
-      .append("<br>")
-      .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
-      .append(":<br>- ")
-      .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
-      .append(": ")
-      .append(authorDetails.getName())
-      .append(" &lt;")
-      .append(authorDetails.getEmailAddress())
-      .append("&gt;<br> - ")
-      .append(TRANSLATOR.getTranslation(Tags.DATE))
-      .append(": ")
-      .append(dateFormat.format(authorDetails.getWhen()))
-      .append("</p></html>");
-    return toolTipText.toString();
-  }
-  
-  /**
-   * Construct message for remote branches.
-   * 
-   * @param branchName name of the branch.
-   * @param path       the location of the branch.
-   * 
-   * @return the message.
-   * 
-   * @throws GitAPIException
-   * @throws IOException
-   * @throws NoRepositorySelected
-   */
-  private String constructRemoteBranchToolTip(String branchName, String path) throws GitAPIException, IOException, NoRepositorySelected {
-    StringBuilder toolTipText = new StringBuilder();
-    PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent();
-    String remoteURL = GitAccess.getInstance().getRemoteURLFromConfig();
-    toolTipText.append("<html><p>")
-      .append(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH))
-      .append(" ")
-      .append(Constants.DEFAULT_REMOTE_NAME)
-      .append("/")
-      .append(branchName)
-      .append("<br>")
-      .append(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL))
-      .append(": ")
-      .append("<a href=\"" + remoteURL + "\">")
-      .append(remoteURL + "</a>")
-      .append("<br>")
-      .append("<br>")
-      .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
-      .append(":<br>- ")
-      .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
-      .append(": ")
-      .append(authorDetails.getName())
-      .append(" &lt;")
-      .append(authorDetails.getEmailAddress())
-      .append("&gt;<br> - ")
-      .append(TRANSLATOR.getTranslation(Tags.DATE))
-      .append(": ")
-      .append(dateFormat.format(authorDetails.getWhen()))
-      .append("</p></html>");
-    return toolTipText.toString();
-  }
+ 
+  @Override
+	public String getToolTipText() {
+		return cache != null ? cache.getToolTip(isLeaf, path, branchName) : super.getToolTipText();
+	}
   
 }
