@@ -92,7 +92,6 @@ public class FileStatusUtil {
 
     final List<FileStatus> filesToReturn = new ArrayList<>();
 
-    
     if (parents.length > 0) {
       walk.reset(trees(commit, parents));
     } else {
@@ -108,26 +107,13 @@ public class FileStatusUtil {
       detector.addAll(entries);
       List<DiffEntry> renames = detector.compute(walk.getObjectReader(),NullProgressMonitor.INSTANCE);
       
-      for (DiffEntry fileDiff : renames) {
+      for (DiffEntry fileDiff : renames) { 
         final FileStatus currentFileStatus = new FileStatus(toGitChangeType(fileDiff.getChangeType()), fileDiff.getNewPath());
         filesToReturn.add(currentFileStatus);
-
-        for (Iterator<DiffEntry> xentriesIterator = xentries.iterator(); xentriesIterator.hasNext();) {
-          DiffEntry n = xentriesIterator.next();
-          if (fileDiff.getOldPath().equals(n.getOldPath()) || 
-              fileDiff.getNewPath().equals(n.getNewPath())) {
-            xentriesIterator.remove();
-          }
-        }
+        cleanDiffEntries(fileDiff, xentries);
       }
       
-      for (DiffEntry fileDiff : xentries) {
-        final FileStatus currentFileStatus = new FileStatus(
-            toGitChangeType(fileDiff.getChangeType()), 
-            fileDiff.getChangeType() != ChangeType.DELETE ?
-            fileDiff.getNewPath() : fileDiff.getOldPath());
-        filesToReturn.add(currentFileStatus);
-      }
+      addFiles(filesToReturn, xentries);
       
     } else { // TODO Maybe we can find a faster way to generate the affected files in this type of commits.
         try {
@@ -135,13 +121,45 @@ public class FileStatusUtil {
         } catch (IOException | GitAPIException e) {
          
         }
-      }
-
-    
+      }    
 
     return filesToReturn;
   }
   
+  
+  /**
+   * Clean diff entries from xentries list raported to file diff. If the list has an element with the same old and new path, this element will be removed from list.
+   * 
+   * @param fileDiff The diff entry to delete from xentries.
+   * @param xentries The list with diff entry.
+   */
+  private static void cleanDiffEntries(DiffEntry fileDiff, List<DiffEntry> xentries) {
+	  for (Iterator<DiffEntry> xentriesIterator = xentries.iterator(); xentriesIterator.hasNext();) {
+		  DiffEntry n = xentriesIterator.next();
+		  if (fileDiff.getOldPath().equals(n.getOldPath()) || 
+				  fileDiff.getNewPath().equals(n.getNewPath())) {
+			  xentriesIterator.remove();
+		  }
+	  }
+  }
+  
+  
+  /**
+   * Add the file status for each diff entry from xentries.
+   * 
+   * @param files      list to append the new files statuses
+   * @param xentries   list with diff entry to append
+   */
+  private static void addFiles(List<FileStatus> files, List<DiffEntry> xentries) {
+	  for (DiffEntry fileDiff : xentries) {
+		  final FileStatus currentFileStatus = new FileStatus(
+				  toGitChangeType(fileDiff.getChangeType()), 
+				  fileDiff.getChangeType() != ChangeType.DELETE ?
+						  fileDiff.getNewPath() : fileDiff.getOldPath());
+		  files.add(currentFileStatus);
+	  }
+  }
+
   
   /**
    * Compute and return the objects id of current commit trees.
@@ -165,9 +183,9 @@ public class FileStatusUtil {
 
 
   /**
-   * Map between the {@link DiffEntry} types and our {@link GitChangeType}
+   * Map between the {@link ChangeType} types and our {@link GitChangeType}
    * 
-   * @param entry Comparison data.
+   * @param diffChange Comparison data.
    * 
    * @return The type of change.
    */
@@ -203,7 +221,7 @@ public class FileStatusUtil {
    * 
    * @param repository Repository.
    * @param newCommit The new commit.
-   * @param oldCommit The previous commit.
+   * @param oldCommit The previous commit. Maybe <code>null<code>.
    * 
    * @return A list with changed files. Never <code>null</code>.
    * @throws IOException
@@ -214,7 +232,7 @@ public class FileStatusUtil {
 
     return diffs
         .stream()
-        .map(t -> new FileStatusOverDiffEntry(t, newCommit.getId().name(), oldCommit.getId().name()))
+        .map(t -> new FileStatusOverDiffEntry(t, newCommit.getId().name(), oldCommit != null ? oldCommit.getId().name() : null))
         .collect(Collectors.toList());
   }
 
@@ -224,7 +242,7 @@ public class FileStatusUtil {
    * 
    * @param repository Repository.
    * @param newCommit The new commit.
-   * @param oldCommit The previous commit.
+   * @param oldCommit The previous commit. Maybe <code>null<code>.
    * 
    * @return A list with changed files. Never <code>null</code>.
    * @throws IOException

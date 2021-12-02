@@ -19,7 +19,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -132,19 +131,6 @@ public class RevCommitUtil {
     }
 
     return changedFiles;
-  }
-  
-  private static GitChangeType map(ChangeType diffChange) {
-    GitChangeType toreturn = GitChangeType.ADD;
-    if (ChangeType.DELETE == diffChange) {
-      toreturn = GitChangeType.REMOVED;
-    } else if (ChangeType.MODIFY == diffChange) {
-      toreturn = GitChangeType.CHANGED;
-    } else if (ChangeType.RENAME == diffChange || diffChange == ChangeType.COPY) {
-      toreturn = GitChangeType.RENAME;
-    }
-    
-    return toreturn;
   }
 
 
@@ -337,7 +323,7 @@ public class RevCommitUtil {
     DiffEntry toReturn = null;
     List<DiffEntry> diffs = diff(repository, commit, parent);
     for (DiffEntry diffEntry : diffs) {
-      if (isRename(diffEntry) && diffEntry.getNewPath().equals(path)) {
+      if (FileStatusUtil.isRename(diffEntry.getChangeType()) && diffEntry.getNewPath().equals(path)) {
         toReturn = diffEntry;
         break;
       }
@@ -345,19 +331,6 @@ public class RevCommitUtil {
 
     return Optional.ofNullable(toReturn);
   }
-
-  /**
-   * Checks the change type to see if it represents a rename.
-   * 
-   * @param ent Diff entry.
-   * 
-   * @return <code>true</code> if this change represents a rename.
-   */
-  public static boolean isRename(DiffEntry ent) {
-    return ent.getChangeType() == ChangeType.RENAME
-        || ent.getChangeType() == ChangeType.COPY;
-  }
-
 
 
   /**
@@ -747,7 +720,7 @@ public class RevCommitUtil {
 
             List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
             for (DiffEntry diffEntry : diff) {
-              if (isRename(diffEntry) 
+              if (FileStatusUtil.isRename(diffEntry.getChangeType()) 
                   && path.equals(diffEntry.getOldPath())) {
                 // Match.
                 path = diffEntry.getNewPath();
@@ -881,7 +854,7 @@ public class RevCommitUtil {
       List<DiffEntry> collect = rd.compute();
 
       for (DiffEntry diffEntry : collect) {
-        if (isRename(diffEntry) && diffEntry.getOldPath().equals(path)) {
+        if (FileStatusUtil.isRename(diffEntry.getChangeType()) && diffEntry.getOldPath().equals(path)) {
           toReturn = diffEntry.getNewPath();
           break;
         }
