@@ -652,10 +652,14 @@ public class HistoryPanel extends JPanel {
           historyTable.getSelectionModel().removeListSelectionListener(revisionDataUpdater);
         }
 
-        HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
-        dataModel.setFilesStatus(Collections.emptyList());
-        FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter(filePath);
-        dataModel.setFilePathPresenter(fileHistoryPresenter);
+        final FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter(filePath);
+        
+        SwingUtilities.invokeLater(() -> {
+        	 final HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
+             dataModel.setFilesStatus(Collections.emptyList());
+             dataModel.setFilePathPresenter(fileHistoryPresenter);
+        });
+          
         HistoryAffectedFileCellRender cellRender = (HistoryAffectedFileCellRender) affectedFilesTable.getDefaultRenderer(FileStatus.class);
         cellRender.setFilePresenter(fileHistoryPresenter);
         commitDescriptionPane.setText("");

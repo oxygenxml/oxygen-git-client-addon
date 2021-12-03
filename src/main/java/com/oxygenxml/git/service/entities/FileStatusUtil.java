@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.jgit.annotations.NonNull;
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -59,7 +61,7 @@ public class FileStatusUtil {
    * @throws IOException
    */
   public static List<FileStatus> compute(final Repository repository,
-      final TreeWalk walk, final RevCommit commit, final RevCommit oldCommit,
+      final TreeWalk walk, final RevCommit commit, @Nullable final RevCommit oldCommit,
       final TreeFilter... markTreeFilters) throws MissingObjectException,
   IncorrectObjectTypeException, CorruptObjectException, IOException {
     return compute(repository, walk, commit, oldCommit, commit.getParents(),
@@ -83,7 +85,7 @@ public class FileStatusUtil {
    * @throws CorruptObjectException
    * @throws IOException
    */
-
+  @NonNull
   public static List<FileStatus> compute(final Repository repository,
       final TreeWalk walk, final RevCommit commit, final RevCommit oldCommit,
       final RevCommit[] parents,
@@ -115,7 +117,9 @@ public class FileStatusUtil {
       
       addFiles(filesToReturn, xentries);
       
-    } else { // TODO Maybe we can find a faster way to generate the affected files in this type of commits.
+    } else { 
+    	// This case is for merge commits, this file extraction method is a bit slower than before. 
+    	// It should be seen in the future if a faster way can be found to generate affected files in merge commits.
         try {
           filesToReturn.addAll(getChanges(repository, commit, oldCommit));
         } catch (IOException | GitAPIException e) {
