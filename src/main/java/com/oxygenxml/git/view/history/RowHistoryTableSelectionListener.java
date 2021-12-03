@@ -195,6 +195,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * @param commits                     The list of commits and their characteristics.
 	 * @param changesTable                The table that presents the files changed in a commit.
 	 * @param renameTracker               The rename tracker for presented file.
+	 * @param filePresenter               The current file presenter.
 	 */
 	public RowHistoryTableSelectionListener(
 	    int updateDelay,
@@ -202,14 +203,15 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	    JEditorPane commitDescriptionPane,
 		List<CommitCharacteristics> commits, 
 		JTable changesTable,
-		RenameTracker renameTracker
+		RenameTracker renameTracker,
+		FileHistoryPresenter filePresenter
 		) {
 		this.changesTable = changesTable;
 		descriptionUpdateTimer = new Timer(updateDelay, descriptionUpdateListener);
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
-		this.filePresenter = ((HistoryTableAffectedFilesModel)changesTable.getModel()).getFilePathPresenter();
+		this.filePresenter = filePresenter;
 	    this.renameTracker = renameTracker;
 	}
 
