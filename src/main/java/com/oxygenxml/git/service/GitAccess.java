@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
@@ -66,6 +67,7 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
+import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -879,7 +881,7 @@ public class GitAccess {
    * 
    * @return the remote branches or an empty list.
    */
-  private Collection<Ref> doListRemoteBranchesInternal(
+  public Collection<Ref> doListRemoteBranchesInternal(
       URIish repoURL,
       AuthExceptionMessagePresenter excMessPresenter) {
     Collection<Ref> remoteRefs = Collections.emptySet();
@@ -1026,7 +1028,7 @@ public class GitAccess {
 		}
 
 
-		PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider);
+		PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider).setRemote(getRemoteFromCurrentBranch());
 		String localBranchName = getBranchInfo().getBranchName();
 		String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
 		if (upstreamBranch != null) {
@@ -1070,8 +1072,6 @@ public class GitAccess {
 		response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 
 
-
-
 		return response;
 	}
 
@@ -1107,7 +1107,8 @@ public class GitAccess {
 		  ObjectId oldHead = resolveHead(repository);
       PullCommand pullCmd = git.pull()
           .setRebase(PullType.REBASE == pullType)
-          .setCredentialsProvider(credentialsProvider);
+          .setCredentialsProvider(credentialsProvider)
+          .setRemote(getRemoteFromCurrentBranch());
       PullResult pullCommandResult = pullCmd.call();
 
 		  // Get fetch result
@@ -1825,15 +1826,16 @@ public class GitAccess {
 			Set<String> sections = config.getSections();
 			if (sections.contains(ConfigConstants.CONFIG_KEY_REMOTE)) {
         git.fetch()
-            .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
+            .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/" + getRemoteFromCurrentBranch() + "/*"))
             .setCheckFetchedObjects(true)
+            .setRemote(getRemoteFromCurrentBranch())
             .setRemoveDeletedRefs(true)
 						.setCredentialsProvider(credentialsProvider)
 						.call();
 			}
 		} catch (TransportException e) {
 		  LOGGER.debug(e, e);
-			
+		
 			Throwable cause = e;
 	    while (cause.getCause() != null) {
 	      cause = cause.getCause();
@@ -1965,14 +1967,15 @@ public class GitAccess {
    * @param remoteBranchName The branch to checkout (short name).
    * @throws GitAPIException 
    */
-  public void checkoutRemoteBranchWithNewName(String newBranchName, String remoteBranchName) throws GitAPIException{
+  public void checkoutRemoteBranchWithNewName(String newBranchName, String remoteBranchName, String...remote) throws GitAPIException{
     fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
+    String remoteString = remote.length ==  0 ? Constants.DEFAULT_REMOTE_NAME : remote[0];
     try {
       git.checkout()
           .setCreateBranch(true)
           .setName(newBranchName)
           .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-          .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
+          .setStartPoint(remoteString + "/" + remoteBranchName)
           .call();
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
     } catch (GitAPIException e) {
@@ -2038,7 +2041,7 @@ public class GitAccess {
 	 */
 	public String getRemoteFromConfig(String branchName) throws NoRepositorySelected {
 	  Repository repository = GitAccess.getInstance().getRepository();
-	  return repository.getConfig().getString("branch", branchName, ConfigConstants.CONFIG_KEY_REMOTE);
+	  return repository.getConfig().getString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_REMOTE);
 	}
 	
 	/**
@@ -2050,7 +2053,8 @@ public class GitAccess {
    */
   public String getRemoteURLFromConfig() throws NoRepositorySelected {
     Repository repository = GitAccess.getInstance().getRepository();
-    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, Constants.DEFAULT_REMOTE_NAME, "url");
+    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, 
+        getRemoteFromCurrentBranch(), ConfigConstants.CONFIG_KEY_URL);
   }
 
   /**
@@ -2868,6 +2872,147 @@ public class GitAccess {
 		}
 		
 		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+	}
+
+
+	/**
+	 * @param branchName The branch name.
+	 * 
+	 * @return The remote value from config.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public String getBranchRemoteFromConfig(String branchName) {
+		String remoteConfig = null;
+		try {
+			Repository repository = this.getRepository();
+			StoredConfig config = repository.getConfig();
+			BranchConfig branchConfig = new BranchConfig(config, branchName);
+			remoteConfig = branchConfig.getRemote();
+		} catch (NoRepositorySelected e) {
+			LOGGER.error(e,e);
+		}
+	    
+		return remoteConfig;
+	}
+	
+	/**
+	 * @return The remote value for current branch.
+	 */
+	public String getRemoteFromCurrentBranch()  {
+		String remoteConfig = getBranchRemoteFromConfig(getBranchInfo().getBranchName());
+		return remoteConfig != null ? remoteConfig : Constants.DEFAULT_REMOTE_NAME;
+	}
+
+	
+	/**
+	 * @param branchName      The branch name.
+	 * @param newRemoteValue  The value for the new remote value in branch config.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public void setBranchRemoteFromConfig(String branchName, String newRemoteValue) throws NoRepositorySelected {
+		Repository repository = this.getRepository();
+		StoredConfig config = repository.getConfig();
+		config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_REMOTE, newRemoteValue);
+	}
+	
+	
+	/**
+	 * Get all remotes from project config file.
+	 * 
+	 * @return A map when <code>key</code> = remote name, <code>value</code> = URL for this remote.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public Map<String, String> getRemotesFromConfig() throws NoRepositorySelected {
+		Map<String, String> remotesMap = new TreeMap<>();
+	
+		StoredConfig config = getRepository().getConfig();
+	    Set<String> remotes = config.getSubsections(ConfigConstants.CONFIG_KEY_REMOTE);
+	    
+	    for(String remote : remotes) {
+	    	remotesMap.put(remote, config.getString(ConfigConstants.CONFIG_KEY_REMOTE, remote, "url"));
+	    }
+		
+		return remotesMap;
+	}
+	
+	
+	/**
+	 * Update remote values.
+	 * <br><br>
+	 * The config file will be not updated.
+	 * 
+	 * @param oldRemote   Old remote name.
+	 * @param newRemote   New remote name.
+	 * @param newURL      New URL.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public void updateRemote(String oldRemote, String newRemote, String newURL)  throws NoRepositorySelected {
+		if(oldRemote != null && !oldRemote.equals(newRemote)) {
+			removeRemote(oldRemote);
+		}
+		StoredConfig config = getRepository().getConfig();
+		List<String> info = new ArrayList<>();
+		info.add(newURL);
+		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, ConfigConstants.CONFIG_KEY_URL, info);
+		info.clear();
+		info.add("+refs/heads/*:refs/remotes/" + newRemote + "/*");
+		config.setStringList(ConfigConstants.CONFIG_KEY_REMOTE, newRemote, ConfigConstants.CONFIG_FETCH_SECTION, info);
+	}
+	
+	
+	/**
+	 * Remove the given  remote. 
+	 * <br><br>
+	 * The config file will be not updated.
+	 * 
+	 * @param remote  Remote to remove
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public void removeRemote(String remote) throws NoRepositorySelected {
+		StoredConfig config = getRepository().getConfig();
+		config.unsetSection(ConfigConstants.CONFIG_KEY_REMOTE, remote);
+	
+		// remove all branches with this remote
+		Set<String> branchesSection = config.getSubsections(ConfigConstants.CONFIG_BRANCH_SECTION);
+		branchesSection.forEach(branchName -> {
+			if(config.getString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_REMOTE).equals(remote)) {
+				config.unsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, branchName);
+			}
+		});
+	}
+	
+	
+	/**
+	 * Updates the config file with new configurations.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public void updateConfigFile() throws NoRepositorySelected {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
+		
+		try {
+			GitAccess.getInstance().getRepository().getConfig().save();
+		} catch (IOException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE), e);
+		}
+		
+		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
+	}
+	
+	/**
+	 * @return Return path for config file of current repository.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public String getConfigFilePath() throws NoRepositorySelected {
+		final String pathDelimiter = "\\";
+		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
 	}
 
 }

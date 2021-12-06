@@ -1579,7 +1579,84 @@ public class Tags {
   public static final String TAG = "Tag";
   
   /**
+   * Used in remotes table column title for remote name.
+   */
+  public static final String NAME = "Name";
+  
+  /**
+   * Used in remotes table column title for remote URL.
+   */
+  public static final String URL = "URL";
+  
+  /**
+   * Add remote.
+   */
+  public static final String ADD_REMOTE = "Add_Remote";
+  
+  /**
+   * Add.
+   */
+  public static final String ADD = "Add";
+  
+  /**
+   * Edit.
+   */
+  public static final String EDIT = "Edit";
+  
+  /**
+   * Edit remote.
+   */
+  public static final String EDIT_REMOTE = "Edit_Remote";
+  
+  /**
+   * Remote name.
+   */
+  public static final String REMOTE_NAME = "Remote_Name";
+  
+  /**
+   * Remote URL.
+   */
+  public static final String REMOTE_URL = "Remote_URL";
+  
+  /**
+   * Message to confirm remote deleting.
+   */
+  public static final String DELETE_REMOTE_CONFIRMATION_MESSAGE = "Delete_Remote_Confirmation_Message";
+  
+  /**
+   * Message to confirm the remote replace.
+   */
+  public static final String REMOTE_ALREADY_EXISTS_CONFIRMATION_MESSAGE = "Remote_Already_Exists_Confirmation_Message";
+ 
+  /**
+   * Title for remotes dialog.
+   */
+  public static final String REMOTES_DIALOG_TITLE = "Remotes_Dialog_Title";
+  
+  /**
+   * Title for dialog to configure remote for current branch.
+   */
+  public static final String CONFIGURE_REMOTE_FOR_BRANCH = "Current_Remote_For_Branch";
+  
+  /**
+   * Delete remote.
+   */
+  public static final String DELETE_REMOTE = "Delete_Remote";
+
+  /**
+   * Action name to edit the config file of the current repository.
+   */
+  public static final String EDIT_CONFIG_FILE = "Edit_Config_File";
+  
+  /**
+   * Message displayed when no branches are founded.
+   */
+  public static final String NO_BRANCHES_FOUNDED = "No_Branches_Founded";
+  
+  /**
    * Create a new branch option.
    */
   public static final String CREATE_A_NEW_BRANCH = "Create_A_New_Branch";
+  
 }
+

@@ -39,6 +39,7 @@ import javax.swing.JTextArea;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.MockSystemReader;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -178,6 +179,39 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     flushAWT();
     
     remoteRepos.add(remoteRepo);
+  }
+  
+  
+  /**
+   * Add a remote in local repository config file.
+   *  
+   * @param localRepository  The local repository.
+   * @param remoteRepo       The remote repository.
+   * @param remoteName       The remote name.
+   * 
+   * @throws URISyntaxException 
+   * @throws IOException 
+   */
+  protected void addRemote(@NonNull final Repository localRepository, 
+      @NonNull  final Repository remoteRepo, 
+      @NonNull  final String remoteName) throws URISyntaxException, IOException {
+    
+    StoredConfig config = localRepository.getConfig();
+    RemoteConfig remoteConfig = new RemoteConfig(config, remoteName);
+    remoteConfig.addURI(new URIish(remoteRepo.getDirectory().toURI().toURL()));
+    remoteConfig.addFetchRefSpec(new RefSpec("+refs/heads/*:refs/remotes/" + remoteName + "/*"));
+
+    remoteConfig.update(config);
+   
+    config.save();
+    
+    refreshSupport.call();
+    waitForScheduler();
+    sleep(400);
+    flushAWT();
+    
+    remoteRepos.add(remoteRepo);
+    
   }
 
   /**
@@ -943,6 +977,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     return result;
   }
 
+  
   /**
    * Serializes the commit date into a "d MMM yyyy" format that can be asserted inside tests.
    * 

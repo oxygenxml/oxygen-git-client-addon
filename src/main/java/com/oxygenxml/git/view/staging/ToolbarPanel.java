@@ -9,7 +9,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,12 +67,15 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
+import com.oxygenxml.git.view.remotes.SetRemoteAction;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -187,6 +192,11 @@ public class ToolbarPanel extends JPanel {
    * Button for push
    */
   private ToolbarButton pushButton;
+  
+  /**
+   * Button for remote.
+   */
+  private SplitMenuButton remotesButton;
 
   /**
    * Button for stash
@@ -349,7 +359,9 @@ public class ToolbarPanel extends JPanel {
     addSubmoduleSelectButton();
     addHistoryButton(historyController);
     addTagsShowButton();
+    addRemotesButton();
     addSettingsButton();
+    
     this.add(gitToolbar, gbc);
 
   }
@@ -381,6 +393,7 @@ public class ToolbarPanel extends JPanel {
     pushButton.setEnabled(isRepoSelected);
     pullMenuButton.setEnabled(isRepoSelected);
     historyButton.setEnabled(isRepoSelected);
+    remotesButton.setEnabled(isRepoSelected);
     
     refreshStashButton();
     refreshTagsButton();
@@ -1701,7 +1714,106 @@ public class ToolbarPanel extends JPanel {
   public ToolbarButton getShowTagsButton() {
     return showTagsButton;
   }
+  
+  
+  
+  // ==========  REMOTES  ==========
+  
+  /**
+   * Adds to the tool bar the remotes button.
+   */
+  private void addRemotesButton() {
+    remotesButton = createRemotesButton();
+    remotesButton.setIcon(Icons.getIcon(Icons.REMOTE));
 
+    gitToolbar.add(remotesButton);
+    remotesButton.setEnabled(false);
+  }
+
+  
+  /**
+   * Create the "Remotes" button.
+   * 
+   * @return the "Remotes" button.
+   */
+  private SplitMenuButton createRemotesButton() {
+    SplitMenuButton remoteButton = new SplitMenuButton( // NOSONAR (java:S110)
+            null,
+            Icons.getIcon(Icons.REMOTE),
+            false,
+            false,
+            true,
+            false) { 
+
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+
+    };
+    
+    remoteButton.addActionToMenu(createRemotesAction(), false);
+    remoteButton.addActionToMenu(new SetRemoteAction(), false);
+    remoteButton.addActionToMenu(createEditConfigFileAction(), false);
+    
+    return remoteButton;
+  }
+  
+  
+  /**
+   * Create the "Remotes" action.
+   *
+   * @return the "Remotes" action
+   */
+  private Action createRemotesAction() {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.REMOTES_DIALOG_TITLE) +  "...") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          if (GitAccess.getInstance().getRepository() != null) {
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("Push Button Clicked");
+            }
+           new RemotesRepositoryDialog().configureRemotes();
+          }
+        } catch (NoRepositorySelected e1) {
+          if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug(e1, e1);
+          }
+        }
+      }
+    };
+  }
+  
+  
+  /**
+   * Create action for edit the config file.
+   * 
+   * @return The created action.
+   */
+  private Action createEditConfigFileAction() {
+	  return new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT_CONFIG_FILE)) {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					PluginWorkspaceProvider.getPluginWorkspace().open(URLUtil.correct(new File(GitAccess.getInstance().getConfigFilePath())), 
+							null, "text/plain");
+				} catch (MalformedURLException | NoRepositorySelected e) {
+					LOGGER.error(e, e);
+				} 
+			}
+			
+		};
+  }
+  
+  
+  /**
+   * @return The remote button.
+   */
+  public SplitMenuButton getRemoteButton() {
+    return remotesButton;
+  }
 
 
   // ========== SETTINGS ==========

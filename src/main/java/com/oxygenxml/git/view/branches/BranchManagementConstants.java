@@ -36,4 +36,9 @@ public final class BranchManagementConstants {
    * The level from which to start adding remote branches to the branch path in the branches tree.
    */
   public static final int REMOTE_BRANCH_NODE_TREE_LEVEL = 3;
+  
+  /**
+   * The level for remote of remote branch.
+   */
+  public static final int REMOTE_BRANCH_REMOTE_NODE_TREE_LEVEL = 2;
 }
