@@ -98,19 +98,20 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
 		boolean existsRemotes = false;
+		boolean foundedBranchRemoteForCurrentLocalBranch = false;
 		boolean foundedBranchRemote = false;
-		
+
 		try {
 			currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
 			final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
 			final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
 			final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
 					.getRemotesFromConfig().keySet());	
-			
+
 			remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
-				
+
 				JLabel toReturn = new JLabel(value.toString());
-				
+
 				/**
 				 * The border for padding.
 				 */
@@ -120,12 +121,12 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 						0, 
 						UIConstants.COMPONENT_RIGHT_PADDING
 						);
-				
+
 				toReturn.setBorder(padding);
-				
+
 				return toReturn;
 			});
-			
+
 			for(String remote : remotesNames) {
 				existsRemotes = true;
 				URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
@@ -139,23 +140,24 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 					if(remoteC !=null && remoteC.equals(remote) 
 							&& mergeC != null && mergeC.equals(branchName)) {
 						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
-						foundedBranchRemote = true;
+						foundedBranchRemoteForCurrentLocalBranch = true;
 						remoteItem.setFirstSelection(true);
 						remoteBranchItems.addItem(remoteItem);
 						remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
 					} else {
 						remoteBranchItems.addItem(new RemoteBranchItem(remote, branchName));
 					}
+					foundedBranchRemote = true;
 				}
 			}
-			
-			if(!foundedBranchRemote) {
-			  RemoteBranchItem remoteItem = new RemoteBranchItem(null, null);
-			  remoteItem.setFirstSelection(true);
-			  remoteBranchItems.addItem(remoteItem);	
-			  remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
+
+			if(!foundedBranchRemoteForCurrentLocalBranch) {
+				RemoteBranchItem remoteItem = new RemoteBranchItem(null, null);
+				remoteItem.setFirstSelection(true);
+				remoteBranchItems.addItem(remoteItem);	
+				remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
 			}
-			
+
 		} catch (NoRepositorySelected | URISyntaxException e) {
 			LOGGER.error(e, e);
 		}
@@ -183,7 +185,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 					this.setVisible(true);
 					this.setResizable(false);
 		}
-		
+
 	}
 
 
