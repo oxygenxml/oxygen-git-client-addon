@@ -35,20 +35,20 @@ public class SetRemoteAction extends AbstractAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		setRemoteAction();
+		setRemote();
 	}
 
 	
 	/**
 	 * Tries to set the remote for current branch.
 	 */
-	private void setRemoteAction() {
+	private void setRemote() {
 		CurrentBranchRemotesDialog dialog = new CurrentBranchRemotesDialog();
 		if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_REMOTE_NOT_EXISTS) {
 			OKCancelDialog addRemoteDialog = new AddRemoteDialog();
 			addRemoteDialog.setVisible(true);
 			if(addRemoteDialog.getResult() == OKCancelDialog.RESULT_OK) {
-				setRemoteAction();
+				setRemote();
 			}
 		} else if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_BRANCHES_NOT_EXIST) {
 			FileStatusDialog.showErrorMessage(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), null, 

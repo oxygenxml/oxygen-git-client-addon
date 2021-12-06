@@ -136,22 +136,23 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 	
     
     /**
-     * Make the dialog visible and save the new config file if the result is OK.
+     * Present the current remote repositories, offers the user edit capabilities 
+     * and saves the new remotes in the config file is the user confirms it.
      */
     public void configureRemotes() {
-		super.setVisible(true);
-		
-		if(getResult() == RESULT_OK) {
-			while(!actionsToExecute.isEmpty()) {
-				actionsToExecute.remove().run();
-			}
-			try {
-				GitAccess.getInstance().updateConfigFile();
-			} catch (NoRepositorySelected e) {
-				LOGGER.error(e, e);
-			}
-		}
-	}
+      super.setVisible(true);
+
+      if(getResult() == RESULT_OK) {
+        while(!actionsToExecute.isEmpty()) {
+          actionsToExecute.remove().run();
+        }
+        try {
+          GitAccess.getInstance().updateConfigFile();
+        } catch (NoRepositorySelected e) {
+          LOGGER.error(e, e);
+        }
+      }
+    }
 
     
     /**
