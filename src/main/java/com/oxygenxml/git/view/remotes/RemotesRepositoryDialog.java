@@ -70,6 +70,11 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 	 * The dialog height.
 	 */
 	private static final int DIALOG_HEIGHT = 250;
+	
+	/**
+	 * The table that contains the remotes.
+	 */
+	private JTable remoteTable;
 
 	/**
 	 * Queue with actions to execute after user confirmation.
@@ -171,7 +176,8 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		constraints.weighty = 1;
 		constraints.fill = GridBagConstraints.BOTH;
 
-		JScrollPane tableRemotesScrollPane = new JScrollPane(factory.createRemotesTable());
+		remoteTable = factory.createRemotesTable();
+		JScrollPane tableRemotesScrollPane = new JScrollPane(remoteTable);
 
 		remotesPanel.add(tableRemotesScrollPane, constraints);
 
@@ -184,23 +190,26 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 		return remotesPanel;
 	}
-
+	
+	
 	/**
-	 * Add an new action in queue.
+	 * Used for tests !!!
 	 * 
-	 * @param oldRemote   Old remote name.
-	 * @param newRemote   New remote name.
-	 * @param newURL      New URL.
+	 * @return The table model.
 	 */
-	private void scheduleRemoteUpdate(String oldRemote, String newRemote, String newURL) {
-		actionsToExecute.add(() -> {
-			try {
-				GitAccess.getInstance().updateRemote(oldRemote, newRemote, newURL);
-			} catch (NoRepositorySelected e1) {
-				LOGGER.error(e1, e1);
-			} 
-		});
+	public RemotesTableModel getModel() {
+	  return (RemotesTableModel) this.remoteTable.getModel();
 	}
+	
+	/**
+   * Used for tests !!!
+   * 
+   * @return The remote table.
+   */
+  public JTable getTable() {
+    return remoteTable;
+  }
+	
 	
 	
 	/**
@@ -237,6 +246,25 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		private JTable remotesTable;
 
 
+		
+		/**
+	   * Add an new action in queue.
+	   * 
+	   * @param oldRemote   Old remote name.
+	   * @param newRemote   New remote name.
+	   * @param newURL      New URL.
+	   */
+	  private void scheduleRemoteUpdate(String oldRemote, String newRemote, String newURL) {
+	    actionsToExecute.add(() -> {
+	      try {
+	        GitAccess.getInstance().updateRemote(oldRemote, newRemote, newURL);
+	      } catch (NoRepositorySelected e1) {
+	        LOGGER.error(e1, e1);
+	      } 
+	    });
+	  }
+	  
+	  
 		/**
 		 * Creates the remotes table.
 		 * 

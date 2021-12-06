@@ -256,16 +256,25 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	public int getStatusResult() {
 		return currentStatus;
 	}
+	
 
-	
-	
 	/**
+	 * !!! Used for tests !!! 
+	 *
+	 * @return The remote branch items.
+	 */
+	public JComboBox<RemoteBranchItem> getRemoteBranchItems() {
+    return remoteBranchItems;
+  }
+	
+
+  /**
 	 * Used to help us to store the remote branch informations.
 	 * 
 	 * @author alex_smarandache
 	 *
 	 */
-	private class RemoteBranchItem {
+	 public static class RemoteBranchItem {
 		
 		/**
 		 * Constant when no remote or repo are selected.
@@ -282,10 +291,10 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		 */
 		final String branch;
 		
-        /**
-         * <code>true</code> if this item represents the first selection.
-         */
-		private boolean isFirstSelection = false;
+     /**
+      * <code>true</code> if this item represents the first selection.
+      */
+		 private boolean isFirstSelection = false;
 		
 		
 		/**

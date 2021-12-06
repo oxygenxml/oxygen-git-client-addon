@@ -1807,6 +1807,13 @@ public class ToolbarPanel extends JPanel {
 		};
   }
   
+  
+  /**
+   * @return The remote button.
+   */
+  public SplitMenuButton getRemoteButton() {
+    return remotesButton;
+  }
 
 
   // ========== SETTINGS ==========

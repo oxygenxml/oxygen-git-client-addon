@@ -151,12 +151,25 @@ public class TestUtil {
    * Searches for the first text field.
    * 
    * @param parent  The parent container.
-   * @param index   The index of the button in the list of all buttons having that text.
+   * 
    * @return        The text field, or null if there is no button having that text.
    */
   public static JTextField findFirstTextField(Container parent) {
+    return findNthTextField(parent, 1);
+  }
+  
+  /**
+   * Searches for the first text field.
+   * 
+   * @param parent  The parent container.
+   * @param n       The index text field to find.
+   * 
+   * @return        The text field, or null if there is no button having that text.
+   */
+  public static JTextField findNthTextField(Container parent, int n) {
     JTextField result = null;
-
+    int counter = 0;
+    
     ComponentFinder cf = new ComponentFinder(JTextField.class);
     @SuppressWarnings("unchecked")
     List<Component> allTextFields = cf.findAll(parent);
@@ -166,14 +179,16 @@ public class TestUtil {
       JTextField textField = (JTextField) iterator.next();
       boolean equals = textField.getText() != null ;
       if (equals) {
+        counter++;
         result = textField;
-        break;
+        if(counter == n) {
+          break;
+        }
       }
     }
 
-    return result;
+    return counter == n ? result : null;
   }
-  
   
   /**
    * Gets the content from a given URL.
