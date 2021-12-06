@@ -121,6 +121,7 @@ public class OptionsWithTagsTest {
         + "WARN_ON_CHANGE_COMMIT_ID\n"
         + "SSH_PROMPT_ANSWERS\n"
         + "PERSONAL_ACCES_TOKENS_LIST\n"
-        + "STASH_INCLUDE_UNTRACKED", dump);
+        + "STASH_INCLUDE_UNTRACKED\n"
+        + "CHECKOUT_COMMIT_SELECT_NEW_BRANCH", dump);
   }
 }
