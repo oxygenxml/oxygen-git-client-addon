@@ -2051,7 +2051,8 @@ public class GitAccess {
    */
   public String getRemoteURLFromConfig() throws NoRepositorySelected {
     Repository repository = GitAccess.getInstance().getRepository();
-    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, getRemoteFromCurrentBranch(), "url");
+    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, 
+        getRemoteFromCurrentBranch(), ConfigConstants.CONFIG_KEY_URL);
   }
 
 	/**
@@ -2992,7 +2993,7 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public String getConfigFilePath() throws NoRepositorySelected {
-		final String pathDelimiter = "/";
+		final String pathDelimiter = "\\";
 		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
 	}
 }
