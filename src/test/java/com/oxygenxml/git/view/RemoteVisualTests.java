@@ -554,7 +554,7 @@ public class RemoteVisualTests extends GitTestBase {
       
       flushAWT();
     
-      assertTrue(urlString[0].replace('/', '\\').endsWith("target\\test-resources\\GitAccessRemote\\localRepository\\.git\\config"));
+      assertTrue(urlString[0].endsWith("target/test-resources/GitAccessRemote/localRepository/.git/config"));
       assertEquals("text/plain", textTypeString[0]);
 
     } finally {

@@ -3011,7 +3011,7 @@ public class GitAccess {
 	 * @throws NoRepositorySelected
 	 */
 	public String getConfigFilePath() throws NoRepositorySelected {
-		final String pathDelimiter = "\\";
+		final String pathDelimiter = "/";
 		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
 	}
 
