@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Create_A_New_Branch">
+        <comment>Create a new branch option.</comment>
+        <val lang="en_US">Create a new branch</val>
+        <val lang="de_DE">Create a new branch</val>
+        <val lang="fr_FR">Create a new branch</val>
+        <val lang="ja_JP">Create a new branch</val>
+        <val lang="nl_NL">Create a new branch</val>
+        <val lang="zh_CN">Create a new branch</val>
+    </key>
      <key value="Tag">
         <comment>Tag.</comment>
         <val lang="en_US">Tag</val>

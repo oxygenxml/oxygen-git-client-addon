@@ -107,6 +107,12 @@ public class BranchManagementPanel extends JPanel {
    * Provides the actions for a node in the branches tree.
    */
   private BranchTreeMenuActionsProvider branchesTreeActionProvider;
+  
+  /**
+   * A cache with informations about branches.
+   */
+  private final BranchesCache cache = new BranchesCache();
+  
 
   /**
    * Constructor.
@@ -266,7 +272,7 @@ public class BranchManagementPanel extends JPanel {
   private void createBranchesTree() {
     branchesTree = new Tree(new BranchManagementTreeModel(null, allBranches));
     ToolTipManager.sharedInstance().registerComponent(branchesTree);
-    branchesTree.setCellRenderer(new BranchesTreeCellRenderer(() -> isContextMenuShowing, () -> currentBranchName));
+    branchesTree.setCellRenderer(new BranchesTreeCellRenderer(cache, () -> isContextMenuShowing, () -> currentBranchName));
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
     branchesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -415,6 +421,7 @@ public class BranchManagementPanel extends JPanel {
    * Refresh branches.
    */
   public void refreshBranches() {
+    cache.reset();
     currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     allBranches = getAllBranches();
     filterTree(searchField.getText());

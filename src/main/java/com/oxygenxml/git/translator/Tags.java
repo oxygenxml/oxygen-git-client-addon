@@ -1577,4 +1577,9 @@ public class Tags {
    * Tag.
    */
   public static final String TAG = "Tag";
+  
+  /**
+   * Create a new branch option.
+   */
+  public static final String CREATE_A_NEW_BRANCH = "Create_A_New_Branch";
 }
