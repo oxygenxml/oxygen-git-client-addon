@@ -2858,6 +2858,10 @@ public class GitAccess {
 	 */
 	private void doCheckoutCommit(@NonNull CheckoutCommand checkoutCommand,
 			@Nullable String branchName) throws GitAPIException {
+		if(checkoutCommand == null) {
+			return;
+		}
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 		checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
 		if(branchName != null) {
 			checkoutCommand.setCreateBranch(true).setName(branchName);
@@ -2874,7 +2878,7 @@ public class GitAccess {
 		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 	}
 
-
+	
 	/**
 	 * @param branchName The branch name.
 	 * 

@@ -36,6 +36,12 @@ public class BranchesUtil {
   private static final Translator TRANSLATOR = Translator.getInstance();
   
   /**
+   * The maximum length for a branch name.
+   */
+  public static final int BRANCH_NAME_MAXIMUM_LENGTH = 250;
+  
+  
+  /**
     * Constructor.
     *
     * @throws UnsupportedOperationException when invoked.

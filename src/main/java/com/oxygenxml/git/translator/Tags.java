@@ -1658,5 +1658,10 @@ public class Tags {
    */
   public static final String CREATE_A_NEW_BRANCH = "Create_A_New_Branch";
   
+  /**
+   * Message when branch name is too long.
+   */
+  public static final String BRANCH_NAME_TOO_LONG = "Branch_Name_Too_Long";
+  
 }
 
