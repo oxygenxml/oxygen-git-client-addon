@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.MessageFormat;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
@@ -137,7 +138,6 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 
 		this.setResizable(true);
 		this.pack();
-		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setVisible(true);
 	}
@@ -161,7 +161,6 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		this.setResizable(true);
 		this.pack();
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setVisible(true);
 	}
 
@@ -364,20 +363,26 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	 */
 	private void updateUI(String branchName) {
 
-		boolean titleAlreadyExists = false;
-		boolean titleContainsSpace = false;
+		boolean titleAlreadyExists        = false;
+		boolean titleContainsSpace        = false;
 		boolean titleContainsInvalidChars = false;
-
+        boolean titleTooLong              = false;
+		
 		if(previousBranchNameUpdate != null && branchName.equals(previousBranchNameUpdate)) {
 			return;
 		}
 		if (!branchName.isEmpty()) {
 			titleContainsSpace = branchName.contains(" ");
 			titleContainsInvalidChars = !Repository.isValidRefName(Constants.R_HEADS + branchName);
+			titleTooLong = branchName.length() > BranchesUtil.BRANCH_NAME_MAXIMUM_LENGTH;
+			
 			if (titleContainsSpace) {
 				errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.BRANCH_CONTAINS_SPACES));
 			} else if (titleContainsInvalidChars) {
 				errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.BRANCH_CONTAINS_INVALID_CHARS));
+			} else if (titleTooLong) {
+				errorMessageTextArea.setText(MessageFormat.format(TRANSLATOR.getTranslation(Tags.BRANCH_NAME_TOO_LONG),
+						BranchesUtil.BRANCH_NAME_MAXIMUM_LENGTH));
 			} else {
 				try {
 					titleAlreadyExists = BranchesUtil.existsLocalBranch(branchName);
@@ -390,7 +395,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 			errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.EMPTY_BRANCH_NAME));
 		}
 
-		boolean isBranchNameValid = !branchName.isEmpty() && !titleAlreadyExists && !titleContainsSpace && !titleContainsInvalidChars;
+		boolean isBranchNameValid = !branchName.isEmpty() && !titleAlreadyExists && !titleContainsSpace && !titleContainsInvalidChars && !titleTooLong;
 		if(!detachedHEADRadio.isSelected()) {
 			getOkButton().setEnabled(isBranchNameValid);	
 		}

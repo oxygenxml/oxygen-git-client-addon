@@ -2856,24 +2856,27 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException Errors while invoking git commands.
 	 */
-	private void doCheckoutCommit(@NonNull CheckoutCommand checkoutCommand,
-			@Nullable String branchName) throws GitAPIException {
-		checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
-		if(branchName != null) {
-			checkoutCommand.setCreateBranch(true).setName(branchName);
-		} else {
-			checkoutCommand.setCreateBranch(false).setName(Constants.HEAD);
-		}
-		try {
-			checkoutCommand.call();
-		} catch(GitAPIException e) {
-			fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
-			throw e;
-		}
-		
-		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
-	}
+	private void doCheckoutCommit(CheckoutCommand checkoutCommand, String branchName) throws GitAPIException {
+	  
+	  if(checkoutCommand != null) {
+	    
+	    fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+	    checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
+	    if(branchName != null) {
+	      checkoutCommand.setCreateBranch(true).setName(branchName);
+	    } else {
+	      checkoutCommand.setCreateBranch(false).setName(Constants.HEAD);
+	    }
+	    try {
+	      checkoutCommand.call();
+	    } catch(GitAPIException e) {
+	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
+	      throw e;
+	    }
 
+	    fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+	  }
+	}
 
 	/**
 	 * @param branchName The branch name.

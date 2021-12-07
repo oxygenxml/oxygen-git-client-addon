@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -43,15 +45,17 @@ public class GitTagsManager {
    */
   public static List<String> getRemoteTagsTitle() throws GitAPIException{
     
-    List<String> remoteTagsTitles = new ArrayList<>(); 
     
     CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(GitAccess.getInstance().getHostName());
-    Collection <Ref> refs = GitAccess.getInstance().getGit().lsRemote().setRemote(GitAccess.getInstance().getRemoteFromCurrentBranch()).setCredentialsProvider(credentialsProvider).setTags(true).call();
-    for (Ref ref : refs) {
-      remoteTagsTitles.add(Repository.shortenRefName(ref.getName()));
-    }
+    Collection <Ref> refs = GitAccess.getInstance()
+        .getGit()
+        .lsRemote()
+        .setRemote(GitAccess.getInstance().getRemoteFromCurrentBranch())
+        .setCredentialsProvider(credentialsProvider)
+        .setTags(true)
+        .call();
     
-    return remoteTagsTitles;
+    return refs.stream().map(t -> Repository.shortenRefName(t.getName())).collect(Collectors.toList());
   }
   
   /**
@@ -113,10 +117,9 @@ public class GitTagsManager {
    * @throws NoRepositorySelected 
    * @throws IOException 
    */
-  public static List<GitTag> getLocalTags() throws GitAPIException, NoRepositorySelected, IOException{
+  public static List<GitTag> getLocalTags() throws GitAPIException, NoRepositorySelected, IOException {
     List<GitTag> allTags = new ArrayList<>();
     List<String> remoteTagsTitle = getRemoteTagsTitle();
-    
     
     List<Ref> refs = GitAccess.getInstance().getGit().tagList().call();
     Repository repository = GitAccess.getInstance().getRepository();
@@ -178,12 +181,13 @@ public class GitTagsManager {
    */
   public static int getNoOfTags() throws GitAPIException {
 	  GitAccess gitAccess = GitAccess.getInstance();
-    List<Ref> refs = null;
+    
+	  List<Ref> refs = null;
     if(gitAccess.isRepoInitialized()) {
     	refs = gitAccess.getGit().tagList().call();
     }
-    int noOfTags = refs == null ? 0 : refs.size();
-    return noOfTags;
+
+    return Optional.ofNullable(refs).map(List<Ref>::size).orElse(0);
   }
   
 }
