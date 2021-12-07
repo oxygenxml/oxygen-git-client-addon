@@ -18,7 +18,6 @@ public class HistoryTableAffectedFilesModel extends FilesTableModel {
    */
   private transient FileHistoryPresenter fileHistoryPresenter;
   
- 
   
   /**
    * Sets the new presented file. If no file is presented then set null value. 
@@ -36,16 +35,16 @@ public class HistoryTableAffectedFilesModel extends FilesTableModel {
           boolean file2IsFiltered = !searchedFile.equals(f2.getFileLocation()) &&
               !f2.getFileLocation().startsWith(searchedFile + "/", 0);
           comparationResult = Boolean.compare(file1IsFiltered, file2IsFiltered);
-          if(comparationResult == 0) {
-              // Both are filtered or both are matched. Second level sort.
-              comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
-              if(comparationResult == 0) {
-                // Same change type. Third level sort.
-                comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
-              }
-          }
-        }     
-        
+        }
+        if(comparationResult == 0) {
+            // Both are filtered or both are matched. Second level sort.
+            comparationResult = f1.getChangeType().compareTo(f2.getChangeType());
+            if(comparationResult == 0) {
+              // Same change type. Third level sort.
+              comparationResult = f1.getFileLocation().compareTo(f2.getFileLocation());
+            }
+        }
+          
         return comparationResult;
       };
       
