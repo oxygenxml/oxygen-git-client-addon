@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+     <key value="Branch_Name_Too_Long">
+        <comment>Message when branch name is too long.</comment>
+        <val lang="en_US">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="de_DE">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="fr_FR">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="ja_JP">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="nl_NL">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="zh_CN">The name is too long. The allowed character limit is {0} characters.</val>
+    </key>
     <key value="No_Branches_Founded">
         <comment>Message displayed when no branches are founded.</comment>
         <val lang="en_US">Remote branches are not founded in remote repositories.</val>
@@ -116,6 +125,15 @@
         <val lang="nl_NL">URL</val>
         <val lang="zh_CN">URL</val>
     </key>
+     <key value="Create_A_New_Branch">
+        <comment>Create a new branch option.</comment>
+        <val lang="en_US">Create a new branch</val>
+        <val lang="de_DE">Create a new branch</val>
+        <val lang="fr_FR">Create a new branch</val>
+        <val lang="ja_JP">Create a new branch</val>
+        <val lang="nl_NL">Create a new branch</val>
+        <val lang="zh_CN">Create a new branch</val>
+    </key>
      <key value="Tag">
         <comment>Tag.</comment>
         <val lang="en_US">Tag</val>
@@ -137,12 +155,12 @@
     </key>
      <key value="Uncommited_changes_when_checkout_commit">
         <comment>The the message displayed when the checkout commit is attempted and there are uncommited changes.</comment>
-        <val lang="en_US">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="de_DE">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="fr_FR">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="ja_JP">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="nl_NL">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="zh_CN">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="en_US">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="de_DE">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="fr_FR">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="ja_JP">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="nl_NL">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="zh_CN">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
     </key>
     <key value="Detached_HEAD_Warning_Message">
         <comment>The warning message about detached HEAD.</comment>
@@ -3226,3 +3244,4 @@
         <val lang="zh_CN">Detached HEAD</val>
     </key>
 </translation>
+    

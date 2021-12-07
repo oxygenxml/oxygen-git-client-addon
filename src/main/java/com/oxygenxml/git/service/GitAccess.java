@@ -22,6 +22,8 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.log4j.Logger;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
+import org.eclipse.jgit.annotations.NonNull;
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutCommand.Stage;
@@ -1827,6 +1829,7 @@ public class GitAccess {
         git.fetch()
             .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/" + getRemoteFromCurrentBranch() + "/*"))
             .setCheckFetchedObjects(true)
+            .setRemote(getRemoteFromCurrentBranch())
             .setRemoveDeletedRefs(true)
 						.setCredentialsProvider(credentialsProvider)
 						.call();
@@ -2042,7 +2045,7 @@ public class GitAccess {
 	  return repository.getConfig().getString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_REMOTE);
 	}
 	
-	 /**
+	/**
    * Get the URL of the current remote.
    * 
    * @return The URL of the remote.
@@ -2051,9 +2054,25 @@ public class GitAccess {
    */
   public String getRemoteURLFromConfig() throws NoRepositorySelected {
     Repository repository = GitAccess.getInstance().getRepository();
-    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, getRemoteFromCurrentBranch(), "url");
+    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, 
+        getRemoteFromCurrentBranch(), ConfigConstants.CONFIG_KEY_URL);
   }
 
+  /**
+   * Get the URL of the current remote.
+   * 
+   * @param remote The remote.
+   * 
+   * @return The URL of the remote.
+   * 
+   * @throws NoRepositorySelected 
+   */
+  public String getRemoteURLFromConfig(@NonNull final String remote) throws NoRepositorySelected {
+    Repository repository = GitAccess.getInstance().getRepository();
+    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, 
+        remote, ConfigConstants.CONFIG_KEY_URL);
+  }
+  
 	/**
 	 * Gets the full remote-tracking branch name or null is the local branch is not tracking a remote branch.
 	 * 
@@ -2066,7 +2085,7 @@ public class GitAccess {
 	public String getUpstreamBranchNameFromConfig(String localBranchShortName) {
 	  return git != null ? RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName) : null;
   }
-	
+
 	 /**
    * Gets Get a shortened more user friendly ref name for the remote-tracking branch name or null is the local branch is not tracking a remote branch.
    * 
@@ -2829,13 +2848,13 @@ public class GitAccess {
 	/**
 	 * Used to do a checkout commit.
 	 * 
-	 * @param startPoint                    The start commit.
+	 * @param startPoint                    The start commit. <code>null</code> the index is used.
 	 * @param branchName                    The new branch name. <code>null</code> to do a headless checkout.
 	 *
 	 * @throws GitAPIException Errors while invoking git commands.
 	 */
-	public void checkoutCommit(String startPoint, 
-			String branchName) throws GitAPIException {
+	public void checkoutCommit(@Nullable String startPoint, 
+			@Nullable String branchName) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 		CheckoutCommand checkoutCommand = this.git.checkout();
 		checkoutCommand.setStartPoint(startPoint);
@@ -2844,32 +2863,35 @@ public class GitAccess {
 	
 	
 	/**
-	 * Used to do a checkout commit.
+	 * Used to do a checkout commit. If the branchName is null, no branch will de created.
 	 * 
 	 * @param checkoutCommand         Checkout command to do the checkout.
-	 * @param shouldCreateANewBranch  <code>true</code> if should create a new branch.
-	 * @param branchName              The new branch name(if shouldCreateANewBranch is <code>true</code>).
+	 * @param branchName              The new branch name.
 	 * 
 	 * @throws GitAPIException Errors while invoking git commands.
 	 */
-	private void doCheckoutCommit(CheckoutCommand checkoutCommand,
-			String branchName) throws GitAPIException {
-		checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
-		if(branchName != null) {
-			checkoutCommand.setCreateBranch(true).setName(branchName);
-		} else {
-			checkoutCommand.setCreateBranch(false).setName(Constants.HEAD);
-		}
-		try {
-			checkoutCommand.call();
-		} catch(GitAPIException e) {
-			fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
-			throw e;
-		}
-		
-		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+	private void doCheckoutCommit(CheckoutCommand checkoutCommand, String branchName) throws GitAPIException {
+	  
+	  if(checkoutCommand != null) {
+	    
+	    fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+	    checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
+	    if(branchName != null) {
+	      checkoutCommand.setCreateBranch(true).setName(branchName);
+	    } else {
+	      checkoutCommand.setCreateBranch(false).setName(Constants.HEAD);
+	    }
+	    try {
+	      checkoutCommand.call();
+	    } catch(GitAPIException e) {
+	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
+	      throw e;
+	    }
+
+	    fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
+	  }
 	}
-	
+
 	/**
 	 * @param branchName The branch name.
 	 * 
@@ -2898,6 +2920,7 @@ public class GitAccess {
 		String remoteConfig = getBranchRemoteFromConfig(getBranchInfo().getBranchName());
 		return remoteConfig != null ? remoteConfig : Constants.DEFAULT_REMOTE_NAME;
 	}
+
 	
 	/**
 	 * @param branchName      The branch name.
@@ -3008,4 +3031,5 @@ public class GitAccess {
 		final String pathDelimiter = "/";
 		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
 	}
+
 }

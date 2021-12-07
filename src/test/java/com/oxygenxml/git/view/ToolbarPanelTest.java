@@ -259,6 +259,7 @@ public class ToolbarPanelTest extends GitTestBase {
     assertFalse(toolbar.getPushButton().isEnabled());
     assertFalse(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
+    assertFalse(toolbar.getRemoteButton().isEnabled());
     assertFalse(toolbar.getSubmoduleSelectButton().isEnabled());
     assertFalse(toolbar.getShowTagsButton().isEnabled());
     assertTrue(toolbar.getSettingsMenuButton().isEnabled());
@@ -278,7 +279,7 @@ public class ToolbarPanelTest extends GitTestBase {
     assertFalse(toolbar.getStashButton().isEnabled());
     assertFalse(toolbar.getSubmoduleSelectButton().isEnabled());
     assertFalse(toolbar.getShowTagsButton().isEnabled());
-
+    assertTrue(toolbar.getRemoteButton().isEnabled());
     assertTrue(toolbar.getSettingsMenuButton().isEnabled());
   }
   

@@ -170,7 +170,7 @@ public class FilesTableModel extends AbstractTableModel {
 	  if(comparator != null) {
 		  this.filesStatuses.sort(comparator);
 	  }
-	  fireTableRowsInserted(0, filesStatuses.size());
+	  fireTableRowsUpdated(0, filesStatuses.size());
   }
   
   
