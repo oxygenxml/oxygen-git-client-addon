@@ -66,7 +66,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	/**
 	 * The current branch.
 	 */
-	private String currentBranch;
+	private final String currentBranch;
 	
 	/**
 	 * The current dialog status.
@@ -99,15 +99,16 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				);
 		boolean existsRemotes = false;
 		boolean foundedBranchRemoteForCurrentLocalBranch = false;
-		boolean foundedBranchRemote = false;
+		final List<RemoteBranchItem> branchesToAdd = new ArrayList<>();
+		
+		currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
 
 		try {
-			currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
 			final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
 			final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
 			final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
-					.getRemotesFromConfig().keySet());	
-
+					.getRemotesFromConfig().keySet());
+			
 			remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
 
 				JLabel toReturn = new JLabel(value.toString());
@@ -133,6 +134,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 						remote, ConfigConstants.CONFIG_KEY_URL));
 				Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
 						sourceURL, null);
+				
 				for(Ref branch: branchesConfig) {
 					final String branchName = branch.getName();
 					final String remoteC = branchConfig.getRemote();
@@ -142,12 +144,10 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
 						foundedBranchRemoteForCurrentLocalBranch = true;
 						remoteItem.setFirstSelection(true);
-						remoteBranchItems.addItem(remoteItem);
-						remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
+						branchesToAdd.add(remoteItem);
 					} else {
-						remoteBranchItems.addItem(new RemoteBranchItem(remote, branchName));
+						branchesToAdd.add(new RemoteBranchItem(remote, branchName));
 					}
-					foundedBranchRemote = true;
 				}
 			}
 
@@ -165,10 +165,24 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		if(!existsRemotes) {
 			currentStatus = STATUS_REMOTE_NOT_EXISTS;
 			this.doCancel();
-		} else if(!foundedBranchRemote) {
+		} else if(branchesToAdd.isEmpty()) {
 			currentStatus = STATUS_BRANCHES_NOT_EXIST;
 			this.doCancel();
 		} else {
+			branchesToAdd.sort((b1, b2) -> {
+				int comparasionResult = Boolean.compare(b2.branch.endsWith(currentBranch), b1.branch.endsWith(currentBranch));
+				if(comparasionResult == 0) {
+					comparasionResult = b1.toString().compareTo(b2.toString());
+				}
+				return comparasionResult;
+			});
+			
+			branchesToAdd.forEach(branch -> {
+				remoteBranchItems.addItem(branch);
+				if(branch.isFirstSelection()) {
+					remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
+				}
+			});
 			getContentPane().add(createGUIPanel());
 
 			pack();
