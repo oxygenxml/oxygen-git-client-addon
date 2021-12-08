@@ -1663,5 +1663,25 @@ public class Tags {
    */
   public static final String BRANCH_NAME_TOO_LONG = "Branch_Name_Too_Long";
   
+  /**
+   * Current branch.
+   */
+  public static final String CURRENT_BRANCH = "Current_Branch";		
+  
+  /**
+   * Current local branch.
+   */
+  public static final String CURRENT_LOCAL_BRANCH = "Current_Local_Branch";
+  
+  /**
+   * All branches.
+   */
+  public static final String ALL_BRANCHES = "All_Branches";
+  
+  /**
+   * All local branches.
+   */
+  public static final String ALL_LOCAL_BRANCHES = "All_Local_Branches";
+  
 }
 

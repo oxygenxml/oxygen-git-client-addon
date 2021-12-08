@@ -8,10 +8,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -42,10 +40,7 @@ import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
-import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -563,141 +558,6 @@ public class RevCommitUtil {
 		  commits.add(new CommitCharacteristics(commit));
 	  }
 
-  }
-  
-  
-  /**
-   * Collects all renames for the current file path.
-   * 
-   * @param filePath An optional resource path. 
-   * @param repository Loaded repository.
-   * 
-   * @return <code>null</code> if filePath are null or the following map:
-   * <br>
-   * The keys are the time of the next commit in which the file whose history 
-   *   is shown is involved(or even the commit if this is the last one). 
-   * <br>
-   * The values ​​have the path of the file that was before it changed.
-   * 
-   * @throws IOException 
-   * @throws GitAPIException
-   */
-  public static Map<Integer, String> getCurrentFileOldPaths(
-      String filePath, 
-      Repository repository) throws IOException, GitAPIException {
-      
-	  if(filePath == null) {
-		  return null;
-	  }
-	  
-	  Map<Integer, String> renames = new TreeMap<>();
-	  
-    // a RevWalk allows to walk over commits based on some filtering that is defined
-    // EXM-44307 Show current branch commits only.
-    String fullBranch = repository.getFullBranch();
-    Ref branchHead = repository.exactRef(fullBranch);
-    if (branchHead != null) {
-      try (RevWalk revWalk = new RevWalk(repository)) {
-
-        RevCommit revCommit = revWalk.parseCommit(branchHead.getObjectId());
-        revWalk.markStart(revCommit);
-
-        // If we have a remote, put it as well.
-        String fullRemoteBranchName = getUpstreamBranchName(repository, repository.getBranch());
-        if (fullRemoteBranchName != null) {
-          Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
-          if (fullRemoteBranchHead != null) {
-            revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
-          }
-        }
-
-        collectRenames(filePath, repository, renames, revWalk);
-      }
-
-    } else {
-      // Probably a new repository without any history. 
-    }
-    
-    return renames;
-  }
-
-  
-  /**
-   * Collects all file path renames by waking the revision iterator.
-   * 
-   * @param filePath     An optional resource path. If not null, only the revisions that changed this resource are collected.
-   * @param renamesFile  Map when collect the renames and time when are made.
-   * @param repository   Loaded repository.
-   * @param revWalk      Revision iterator.
-   * 
-   * @throws IOException
-   * @throws GitAPIException
-   */
-  private static void collectRenames(
-		  String filePath,
-		  Repository repository,
-		  Map<Integer, String> renamesFile,
-		  RevWalk revWalk) throws IOException, GitAPIException {
-
-	  if (filePath != null) {
-		  revWalk.setTreeFilter(
-		          AndTreeFilter.create(
-		              PathFilterGroup.createFromStrings(filePath),
-		              TreeFilter.ANY_DIFF)
-		          );
-	  }
-
-	  RevCommit lastProcessedRevision = null;
-	    for (RevCommit commit : revWalk) {
-	      if(lastProcessedRevision == null) {
-	    	  renamesFile.put(commit.getCommitTime(), filePath);
-	      }
-	      lastProcessedRevision = commit;
-	    }
-
-	    // If we are following a resource, check for rename events.
-	    if (filePath != null && lastProcessedRevision != null) {
-	      handleRename(filePath, repository, renamesFile, lastProcessedRevision);
-	    }
-	  
-  }
-  
-  
-  /**
-   * Checks for a rename operation. If the resource was renamed between the current revision and the previous one,
-   * it will continue collecting revisions based on the previous resource name/path.  
-   * 
-   * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
-   * @param commits Revisions are collected in here.
-   * @param repository Loaded repository.
-   * @param currentCommit The last revision encountered for the file path.
-   * 
-   * @throws IOException
-   * @throws GitAPIException
-   */
-  private static void handleRename(
-      String filePath,  
-      Repository repository,
-      Map<Integer, String> renamesFile,
-      RevCommit currentCommit)
-          throws IOException, GitAPIException {
-    try (RevWalk plotWalk = new RevWalk(repository)) {
-      RevCommit commit = plotWalk.parseCommit(currentCommit.getId());
-
-      if (commit.getParentCount() > 0) {
-        RevCommit parent = commit.getParent(0);
-        plotWalk.parseHeaders(parent);
-
-        Optional<DiffEntry> renameRev = RevCommitUtil.findRename(repository, parent, commit, filePath);
-        if (renameRev.isPresent()) {
-          String oldPath = renameRev.get().getOldPath();
-          
-          plotWalk.markStart(commit);
-
-          collectRenames(oldPath, repository, renamesFile, plotWalk);
-        } 
-      }
-    }
   }
   
   
