@@ -8,6 +8,25 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+
+    <key value="Please_Try_Again">
+        <comment>Please try again message.</comment>
+        <val lang="en_US">Please try again.</val>
+        <val lang="de_DE">Please try again.</val>
+        <val lang="fr_FR">Please try again.</val>
+        <val lang="ja_JP">Please try again.</val>
+        <val lang="nl_NL">Please try again.</val>
+        <val lang="zh_CN">Please try again.</val>
+        </key>
+   <key value="Previous_passphrase_invalid">
+        <comment>Message shown when a previous SSH passphrase was invalid.</comment>
+        <val lang="en_US">The previous SSH passphrase was invalid.</val>
+        <val lang="de_DE">The previous SSH passphrase was invalid.</val>
+        <val lang="fr_FR">The previous SSH passphrase was invalid.</val>
+        <val lang="ja_JP">The previous SSH passphrase was invalid.</val>
+        <val lang="nl_NL">The previous SSH passphrase was invalid.</val>
+        <val lang="zh_CN">The previous SSH passphrase was invalid.</val>
+        </key>
      <key value="Branch_Name_Too_Long">
         <comment>Message when branch name is too long.</comment>
         <val lang="en_US">The name is too long. The allowed character limit is {0} characters.</val>
@@ -2527,15 +2546,6 @@
         <val lang="nl_NL">Nee</val>
         <val lang="zh_CN">不</val>
     </key>
-    <key value="Previous_passphrase_invalid">
-        <comment>Message shown when a previous SSH passphrase was invalid.</comment>
-        <val lang="en_US">The previous passphrase is invalid.</val>
-        <val lang="de_DE">Der vorherige SSH-Passphrase ist ungültig.</val>
-        <val lang="fr_FR">Le passphrase précédent est invalide.</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Het vorige wachtwoord is ongeldig.</val>
-        <val lang="zh_CN">之前的密码无效.</val>
-    </key>
     <key value="Pull_status">
         <comment>Label.</comment>
         <val lang="en_US">Pull status</val>
@@ -2554,7 +2564,6 @@
         <val lang="nl_NL">Voer uw SSH wachtwoord in</val>
         <val lang="zh_CN">请输入您的 SSH 密码</val>
     </key>
-
     <key value="Working_Copy_Label">
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>

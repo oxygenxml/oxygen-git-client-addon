@@ -381,7 +381,7 @@ public class PanelRefresh implements GitRefreshSupport {
         
         String message =  TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
                 + " "
-                + TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+                + TRANSLATOR.getTranslation(Tags.PLEASE_TRY_AGAIN);
         String passphrase = new PassphraseDialog(message).getPassphrase();
         if(passphrase != null) {
           return fetch();

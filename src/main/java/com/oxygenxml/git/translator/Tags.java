@@ -1663,5 +1663,10 @@ public class Tags {
    */
   public static final String BRANCH_NAME_TOO_LONG = "Branch_Name_Too_Long";
   
+  /**
+   * Please try again message.
+   */
+  public static final String PLEASE_TRY_AGAIN = "Please_Try_Again";
+  
 }
 
