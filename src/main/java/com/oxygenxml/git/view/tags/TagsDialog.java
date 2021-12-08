@@ -171,7 +171,7 @@ public class TagsDialog extends OKCancelDialog {
     buttonsGridBagConstraints.anchor = GridBagConstraints.SOUTHEAST;
     buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
     buttonsGridBagConstraints.insets = new Insets(UIConstants.INDENT_5PX, 0, UIConstants.INDENT_5PX, UIConstants.INDENT_5PX);
-    checkoutButton = new JButton(TRANSLATOR.getTranslation(Tags.CHECKOUT + "..."));
+    checkoutButton = new JButton(TRANSLATOR.getTranslation(Tags.CHECKOUT) + "...");
     checkoutButton.addActionListener(e -> {
     	 int selectedRow = (tagsTable.getSelectedRow());
 		  if(selectedRow >= 0) {
