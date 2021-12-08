@@ -75,7 +75,6 @@ import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
-import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -1797,7 +1796,7 @@ public class ToolbarPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					PluginWorkspaceProvider.getPluginWorkspace().open(URLUtil.correct(new File(GitAccess.getInstance().getConfigFilePath())), 
+					PluginWorkspaceProvider.getPluginWorkspace().open((new File(GitAccess.getInstance().getConfigFilePath()).toURI().toURL()), 
 							null, "text/plain");
 				} catch (MalformedURLException | NoRepositorySelected e) {
 					LOGGER.error(e, e);

@@ -131,7 +131,8 @@ public class TagsTest {
    */
   @Test
   public void testTagsHaveCorrespondingKeys() throws Exception {
-    String[] oxygenKeys = {"Filter_hint", "Close", "Cancel", "Preferences", "Git_client", "Create", "Ok"};
+    String[] oxygenKeys = {"Filter_hint", "Close", "Cancel", "Preferences", "Git_client", "Create", 
+        "Ok", "Name", "Add", "Edit"};
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("i18n/translation.xml");
     NodeList keys = doc.getDocumentElement().getElementsByTagName("key");
