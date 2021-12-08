@@ -134,7 +134,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 						remote, ConfigConstants.CONFIG_KEY_URL));
 				Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
 						sourceURL, null);
-				
+			
 				for(Ref branch: branchesConfig) {
 					final String branchName = branch.getName();
 					final String remoteC = branchConfig.getRemote();
@@ -170,7 +170,8 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 			this.doCancel();
 		} else {
 			branchesToAdd.sort((b1, b2) -> {
-				int comparasionResult = Boolean.compare(b2.branch.endsWith(currentBranch), b1.branch.endsWith(currentBranch));
+				int comparasionResult = !b1.isUndefined() && !b2.isUndefined() ? 
+						Boolean.compare(b2.branch.endsWith(currentBranch), b1.branch.endsWith(currentBranch)) : 0;
 				if(comparasionResult == 0) {
 					comparasionResult = b1.toString().compareTo(b2.toString());
 				}
