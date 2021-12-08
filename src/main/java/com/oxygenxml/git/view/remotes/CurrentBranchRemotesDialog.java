@@ -21,6 +21,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.URIish;
 
@@ -141,12 +142,12 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 					final String mergeC = branchConfig.getMerge();
 					if(remoteC !=null && remoteC.equals(remote) 
 							&& mergeC != null && mergeC.equals(branchName)) {
-						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
+						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, Repository.shortenRefName(branchName));
 						foundedBranchRemoteForCurrentLocalBranch = true;
 						remoteItem.setFirstSelection(true);
 						branchesToAdd.add(remoteItem);
 					} else {
-						branchesToAdd.add(new RemoteBranchItem(remote, branchName));
+						branchesToAdd.add(new RemoteBranchItem(remote, Repository.shortenRefName(branchName)));
 					}
 				}
 			}
@@ -206,8 +207,9 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(DIALOG_WIDTH, super.getPreferredSize().height);
+		return new Dimension(Math.max(DIALOG_WIDTH, super.getPreferredSize().width), super.getPreferredSize().height);
 	}
+	
 	
 	/**
 	 * Create the dialog GUI.
