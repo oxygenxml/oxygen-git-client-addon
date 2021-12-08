@@ -3,7 +3,6 @@ package com.oxygenxml.git.service.entities;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
-import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.utils.Equaler;
 
 /**
@@ -31,7 +30,7 @@ public class FileStatusOverDiffEntry extends FileStatus {
    * @param oldRevId The old revision id used to compute the inner {@link DiffEntry}.
    */
   public FileStatusOverDiffEntry(DiffEntry entry, String newRevId, String oldRevId) {
-    super(map(entry), getPath(entry));
+    super(FileStatusUtil.toGitChangeType(entry.getChangeType()), getPath(entry));
     
     this.entry = entry;
     this.newRevId = newRevId;
@@ -63,27 +62,6 @@ public class FileStatusOverDiffEntry extends FileStatus {
     }
     
     return entry.getNewPath();
-  }
-  
-  /**
-   * Map between the {@link DiffEntry} types and our {@link GitChangeType}
-   * 
-   * @param entry Comparison data.
-   * 
-   * @return The type of change.
-   */
-  private static GitChangeType map(DiffEntry entry) {
-    GitChangeType toreturn = GitChangeType.ADD;
-    ChangeType diffChange = entry.getChangeType();
-    if (ChangeType.DELETE == diffChange) {
-      toreturn = GitChangeType.REMOVED;
-    } else if (ChangeType.MODIFY == diffChange) {
-      toreturn = GitChangeType.CHANGED;
-    } else if (RevCommitUtil.isRename(entry)) {
-      toreturn = GitChangeType.RENAME;
-    }
-    
-    return toreturn;
   }
   
   /**

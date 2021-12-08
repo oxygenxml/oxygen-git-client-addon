@@ -293,14 +293,19 @@ public class GitHistoryTest extends HistoryPanelTestBase {
    */
   @Test
   public void testHistory_UpstreamBranchAhead() throws Exception {
+    
     URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
     
     File wcTree = new File("target/gen/GitHistoryTest_testHistoryRemote");
-    RepoGenerationScript.generateRepository(script, wcTree);
-    
     File remoteDir = new File("target/gen/GitHistoryTest_testHistoryRemote_RemoteRepo");
+    
+    FileUtils.deleteDirectory(wcTree);
+    FileUtils.deleteDirectory(remoteDir);
+    
+    RepoGenerationScript.generateRepository(script, wcTree);
     Repository remoteRepository = null;
     try {
+      
       
       Repository localRepository = GitAccess.getInstance().getRepository();
       remoteDir.mkdirs();
@@ -346,11 +351,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     } finally {
       GitAccess.getInstance().closeRepo();
       remoteRepository.close();
-      
-      FileUtils.deleteDirectory(wcTree);
-      FileUtils.deleteDirectory(remoteDir);
     }
-  
   }
 
   /**

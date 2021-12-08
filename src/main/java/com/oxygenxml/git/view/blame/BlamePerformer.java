@@ -277,7 +277,7 @@ public class BlamePerformer {
       cancelCaretSyncTask();
       
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.info("Dispose " + textpage.getParentEditor().getEditorLocation());
+        LOGGER.debug("Dispose " + textpage.getParentEditor().getEditorLocation());
       }
       
       JTextArea textArea = (JTextArea) textpage.getTextComponent();

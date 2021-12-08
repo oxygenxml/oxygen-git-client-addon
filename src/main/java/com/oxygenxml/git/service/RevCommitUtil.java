@@ -19,7 +19,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -50,6 +49,7 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
+import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
@@ -95,31 +95,38 @@ public class RevCommitUtil {
    * @throws GitAPIException
    */
   public static List<FileStatus> getChangedFiles(String commitID) throws IOException, GitAPIException {
-    List<FileStatus> changedFiles = Collections.emptyList();
+    List<FileStatus> changedFiles = new ArrayList<>();
     try {
       Repository repository = GitAccess.getInstance().getRepository();
       if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitID)) {
         ObjectId head = repository.resolve(commitID);
 
+      
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
-
-          if (commit.getParentCount() > 0) {
-            RevCommit oldC = rw.parseCommit(commit.getParent(0));
-            changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
-            if (commit.getParentCount() > 2) {
-              addUntrackedFiles(changedFiles, repository, rw, commit);
-            }
-          } else {
-            changedFiles = RevCommitUtil.getFiles(repository, commit);
+          RevCommit oldCommit = commit.getParentCount() > 0 ? rw.parseCommit(commit.getParent(0)) : null;
+          RevCommit[] parents = commit.getParents();
+          
+          for (RevCommit parent : parents) {
+            rw.parseBody(parent);
           }
+          
+          TreeWalk treewalk = new TreeWalk(rw.getObjectReader());
+            treewalk.setRecursive(true);
+            treewalk.setFilter(TreeFilter.ANY_DIFF);
+            
+            changedFiles = FileStatusUtil.compute(repository, treewalk, commit, oldCommit, TreeFilter.ALL);
+            
+            if(parents.length > 2) {
+              addUntrackedFiles(changedFiles, repository, rw, commit);
+            }          
         }
       } else {
         changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch(MissingObjectException exc) {
     	LOGGER.debug(exc, exc);
-    } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
+    } catch (RevisionSyntaxException | IOException | NoRepositorySelected e) {
       LOGGER.error(e, e);
     }
 
@@ -142,9 +149,11 @@ public class RevCommitUtil {
     oldC = revWalk.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
     try (TreeWalk treeWalk = new TreeWalk(repository)) {
       treeWalk.addTree(commit.getTree());
+      
       treeWalk.setRecursive(false);
       treeWalk.setFilter(null);
       treeWalk.reset(oldC.getTree().getId());
+    
       while (treeWalk.next()) {
         if (treeWalk.isSubtree()) {
           treeWalk.enterSubtree();
@@ -201,6 +210,7 @@ public class RevCommitUtil {
   }
 
 
+  
   /**
    * Gets all the files changed between two revisions.
    * 
@@ -313,7 +323,7 @@ public class RevCommitUtil {
     DiffEntry toReturn = null;
     List<DiffEntry> diffs = diff(repository, commit, parent);
     for (DiffEntry diffEntry : diffs) {
-      if (isRename(diffEntry) && diffEntry.getNewPath().equals(path)) {
+      if (FileStatusUtil.isRename(diffEntry.getChangeType()) && diffEntry.getNewPath().equals(path)) {
         toReturn = diffEntry;
         break;
       }
@@ -321,19 +331,6 @@ public class RevCommitUtil {
 
     return Optional.ofNullable(toReturn);
   }
-
-  /**
-   * Checks the change type to see if it represents a rename.
-   * 
-   * @param ent Diff entry.
-   * 
-   * @return <code>true</code> if this change represents a rename.
-   */
-  public static boolean isRename(DiffEntry ent) {
-    return ent.getChangeType() == ChangeType.RENAME
-        || ent.getChangeType() == ChangeType.COPY;
-  }
-
 
 
   /**
@@ -704,7 +701,7 @@ public class RevCommitUtil {
           if (lastRevFiles.contains(path)) {
             // The current discovered path is the same as in the target revision.
             if (LOGGER.isDebugEnabled()) {
-              LOGGER.info("Same path as in target. Stop. " + revCommit.getFullMessage());
+              LOGGER.debug("Same path as in target. Stop. " + revCommit.getFullMessage());
             }
             break;
           }
@@ -718,12 +715,12 @@ public class RevCommitUtil {
           if (!same) {
             // Do a diff with rename detection.
             if (LOGGER.isDebugEnabled()) {
-              LOGGER.info("Search for a rename at revision " + revCommit.getFullMessage());
+              LOGGER.debug("Search for a rename at revision " + revCommit.getFullMessage());
             }
 
             List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
             for (DiffEntry diffEntry : diff) {
-              if (isRename(diffEntry) 
+              if (FileStatusUtil.isRename(diffEntry.getChangeType()) 
                   && path.equals(diffEntry.getOldPath())) {
                 // Match.
                 path = diffEntry.getNewPath();
@@ -857,7 +854,7 @@ public class RevCommitUtil {
       List<DiffEntry> collect = rd.compute();
 
       for (DiffEntry diffEntry : collect) {
-        if (isRename(diffEntry) && diffEntry.getOldPath().equals(path)) {
+        if (FileStatusUtil.isRename(diffEntry.getChangeType()) && diffEntry.getOldPath().equals(path)) {
           toReturn = diffEntry.getNewPath();
           break;
         }

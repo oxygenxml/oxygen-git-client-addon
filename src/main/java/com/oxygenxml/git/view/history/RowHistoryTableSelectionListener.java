@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
@@ -36,8 +35,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
 	@Override
     public void actionPerformed(ActionEvent e) {
-      
-      setCommitDescription();
+	   setCommitDescription();
     }
     
     
@@ -48,6 +46,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     @SuppressWarnings("java:S1192")
     private void setCommitDescription() {
       int selectedRow = historyTable.getSelectedRow();
+      HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) changesTable.getModel();
+      dataModel.setFilesStatus(new ArrayList<>());
       if (selectedRow != -1) {
         CommitCharacteristics commitCharacteristics = ((HistoryCommitTableModel) historyTable.getModel())
             .getAllCommits().get(selectedRow);
@@ -79,7 +79,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
         commitDescriptionPane.setText(commitDescription.toString());
         commitDescriptionPane.setCaretPosition(0);
 
-        updateDataModel(commitCharacteristics);
+       updateDataModel(commitCharacteristics);
       }
     }
 
@@ -129,20 +129,18 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
      * @param commitCharacteristics Details about the current commit.
      */
     private void updateDataModel(CommitCharacteristics commitCharacteristics) {
-    	GitOperationScheduler.getInstance().schedule(() -> {
-    		HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) changesTable.getModel();
-            List<FileStatus> files = new ArrayList<>();
-            if(GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
-            	try {
-            		files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
-            	} catch (IOException | GitAPIException e) {
-        			LOGGER.error(e, e);
-        		}
-            } else {
-            	files.addAll(GitAccess.getInstance().getUnstagedFiles());
-            }
-        	SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(files));
-    	});
+      HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) changesTable.getModel();
+      List<FileStatus> files = new ArrayList<>();
+      if(GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
+        try {
+          files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
+        } catch (IOException | GitAPIException e) {
+        LOGGER.error(e, e);
+      }
+      } else {
+        files.addAll(GitAccess.getInstance().getUnstagedFiles());
+      }
+      SwingUtilities.invokeLater(() -> dataModel.setFilesStatus(files));
     }
   }
   
@@ -197,6 +195,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * @param commits                     The list of commits and their characteristics.
 	 * @param changesTable                The table that presents the files changed in a commit.
 	 * @param renameTracker               The rename tracker for presented file.
+	 * @param filePresenter               The current file presenter.
 	 */
 	public RowHistoryTableSelectionListener(
 	    int updateDelay,
@@ -204,14 +203,15 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	    JEditorPane commitDescriptionPane,
 		List<CommitCharacteristics> commits, 
 		JTable changesTable,
-		RenameTracker renameTracker
+		RenameTracker renameTracker,
+		FileHistoryPresenter filePresenter
 		) {
 		this.changesTable = changesTable;
 		descriptionUpdateTimer = new Timer(updateDelay, descriptionUpdateListener);
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
-		this.filePresenter = ((HistoryTableAffectedFilesModel)changesTable.getModel()).getFilePathPresenter();
+		this.filePresenter = filePresenter;
 	    this.renameTracker = renameTracker;
 	}
 

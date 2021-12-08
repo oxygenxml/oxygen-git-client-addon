@@ -48,7 +48,8 @@ public class RevertCommitTest extends GitTestBase {
   public void setUp() throws Exception {
     super.setUp();
     
-    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    // A mock is already initialized in the super.
+    StandalonePluginWorkspace pluginWSMock = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     Mockito.doAnswer(invocation -> {
       Object[] arguments = invocation.getArguments();
       errMsg[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";

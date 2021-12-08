@@ -112,6 +112,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
     @Override
     public void windowActivated(WindowEvent e) {
+      // Reset when you leave oxygen. Subsequent calls will recompute it.
+      gitController.getGitAccess().getStatusCache().resetCache();
       super.windowActivated(e);
       boolean isStagingPanelShowing = stagingPanel != null && stagingPanel.isShowing();
       if (isStagingPanelShowing && refresh) {
@@ -221,7 +223,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           	  customizeBranchView(viewInfo);
           	}
           });
-
+			
+		   // Listens on the save event in the Oxygen editor and invalidates the cache.
+			GitAccess.getInstance().getStatusCache().installEditorsHook(pluginWS);
 			
 			// Present the view to the user if it is the first run of the plugin
 			final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();

@@ -98,6 +98,10 @@ public class HistoryPanel extends JPanel {
    */
   private static GitAccess gitAccess = GitAccess.getInstance();
   /**
+   * The translator.
+   */
+  private static final Translator TRANSLATOR = Translator.getInstance();
+  /**
    * Table view that presents the commits.
    */
   JTable historyTable;
@@ -148,6 +152,11 @@ public class HistoryPanel extends JPanel {
    * The graph cell render.
    */
   private final CommitsGraphCellRender graphCellRender;
+  
+  /**
+   * The file presenter for repository commits history.
+   */
+  private final transient FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter();
 
   
   /**
@@ -618,9 +627,7 @@ public class HistoryPanel extends JPanel {
    *                 view already presents the history for the given resource.
    */
   private void showHistory(String filePath, boolean force) {
-	  
-    Translator translator = Translator.getInstance();
-
+	 
     SwingUtilities.invokeLater(() -> updateSelectionMode(filePath));
 
     if (force
@@ -634,11 +641,11 @@ public class HistoryPanel extends JPanel {
         tryFetch();
 
         File directory = gitAccess.getWorkingCopy();
-        historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
-            + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
+        historyLabelMessage = TRANSLATOR.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
+            + TRANSLATOR.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
         if (filePath != null) {
           directory = new File(directory, filePath);
-          historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
+          historyLabelMessage += " " + TRANSLATOR.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
         
         historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
@@ -652,20 +659,25 @@ public class HistoryPanel extends JPanel {
           historyTable.getSelectionModel().removeListSelectionListener(revisionDataUpdater);
         }
 
-        HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
-        dataModel.setFilesStatus(Collections.emptyList());
-        FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter(filePath);
-        dataModel.setFilePathPresenter(fileHistoryPresenter);
+        fileHistoryPresenter.setFilePath(filePath);
+        
+        SwingUtilities.invokeLater(() -> {
+        	 final HistoryTableAffectedFilesModel dataModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
+             dataModel.setFilesStatus(Collections.emptyList());
+             dataModel.setFilePathPresenter(fileHistoryPresenter);
+        });
+       
         HistoryAffectedFileCellRender cellRender = (HistoryAffectedFileCellRender) affectedFilesTable.getDefaultRenderer(FileStatus.class);
         cellRender.setFilePresenter(fileHistoryPresenter);
+        
         commitDescriptionPane.setText("");
         
-        RenameTracker renameTracker = new RenameTracker();
+        final RenameTracker renameTracker = new RenameTracker();
         final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath, renameTracker);
 
-        Repository repo = gitAccess.getRepository();
-        
-        CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
+        final Repository repo = gitAccess.getRepository();
+       
+        final CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
             repo.getFullBranch());
 
         // Compute the row height.
@@ -673,7 +685,7 @@ public class HistoryPanel extends JPanel {
             gitAccess.getBranchInfo().getBranchName(), getTagMap(repo),
             gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_LOCAL),
             gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_REMOTE));
-        int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
+        final int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
 
         SwingUtilities.invokeLater(() -> {
           HistoryCommitTableModel historyModel = new HistoryCommitTableModel(commitCharacteristicsVector);
@@ -684,14 +696,14 @@ public class HistoryPanel extends JPanel {
           historyTable.setDefaultRenderer(PlotCommit.class, graphCellRender);
           historyTable.setDefaultRenderer(CommitCharacteristics.class, renderer);
           historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer(UIUtil.DATE_FORMAT_PATTERN));
-          TableColumn authorColumn = historyTable.getColumn(translator.getTranslation(Tags.AUTHOR));
+          TableColumn authorColumn = historyTable.getColumn(TRANSLATOR.getTranslation(Tags.AUTHOR));
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
           historyTable.setRowHeight(rh);
         });
 
         revisionDataUpdater = new RowHistoryTableSelectionListener(getUpdateDelay(), 
         	historyTable, commitDescriptionPane, commitCharacteristicsVector, 
-        	affectedFilesTable, renameTracker
+        	affectedFilesTable, renameTracker, fileHistoryPresenter
         );
         historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
 
@@ -703,20 +715,7 @@ public class HistoryPanel extends JPanel {
         commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
 
         // Select the local branch HEAD.
-        if (!commitCharacteristicsVector.isEmpty()) {
-          String fullBranch = repo.getFullBranch();
-          Ref branchHead = repo.exactRef(fullBranch);
-          if (branchHead != null) {
-            ObjectId objectId = branchHead.getObjectId();
-            if (objectId != null) {
-              selectCommit(objectId);
-            }
-          }
-        } else {
-          PluginWorkspaceProvider.getPluginWorkspace()
-              .showInformationMessage(translator.getTranslation(Tags.GIT_HISTORY) + ": "
-                  + StringUtils.toLowerCase(translator.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
-        }
+        selectLocalBranchHead(commitCharacteristicsVector, repo);
 
       } catch (NoRepositorySelected | IOException e) {
         LOGGER.debug(e, e);
@@ -725,11 +724,40 @@ public class HistoryPanel extends JPanel {
       }
     } else {
       if (historyTable.getModel().getRowCount() == 0) {
-        PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(translator.getTranslation(Tags.GIT_HISTORY)
-            + ": " + StringUtils.toLowerCase(translator.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
+        PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(TRANSLATOR.getTranslation(Tags.GIT_HISTORY)
+            + ": " + StringUtils.toLowerCase(TRANSLATOR.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
       }
     }
   }
+
+  
+  /**
+   * Select the local branch HEAD.
+   * 
+   * @param commitCharacteristicsVector List of the commit characteristics.
+   * @param repo                        The current repository.
+   * 
+   * @throws IOException 
+   */
+  private void selectLocalBranchHead(final List<CommitCharacteristics> commitCharacteristics,
+		  final Repository repo) throws IOException {
+	  if (!commitCharacteristics.isEmpty()) {
+		  String fullBranch = repo.getFullBranch();
+		  Ref branchHead = repo.exactRef(fullBranch);
+		  if (branchHead != null) {
+			  ObjectId objectId = branchHead.getObjectId();
+			  if (objectId != null) {
+				  selectCommit(objectId);
+			  }
+		  }
+	  } else {
+		  PluginWorkspaceProvider.getPluginWorkspace()
+		  .showInformationMessage(TRANSLATOR.getTranslation(Tags.GIT_HISTORY) + ": "
+				  + StringUtils.toLowerCase(TRANSLATOR.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
+	  }
+  }
+  
+
 
   /**
    * Gets the tags from the current repository.

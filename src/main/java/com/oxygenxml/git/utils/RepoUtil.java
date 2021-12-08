@@ -38,6 +38,8 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+
 /**
  * Utility methods for detecting a Git repository and repository related issues.
  * @author alex_jitianu
@@ -406,6 +408,28 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
       LOGGER.debug(e1, e1);
     }
     return Optional.empty();
+  }
+  
+  public static boolean isFileFromRepository(URL editorLocation) {
+    boolean toRet = false;
+    File locateFile = null;
+    if ("file".equals(editorLocation.getProtocol())) {
+      locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
+      if (locateFile != null) {
+        String fileInWorkPath = locateFile.toString();
+        fileInWorkPath = FileUtil.rewriteSeparator(fileInWorkPath);
+
+        try {
+          String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+          selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
+
+          toRet = fileInWorkPath.startsWith(selectedRepositoryPath);
+        } catch (NoRepositorySelected ex) {
+          // No repository loaded.
+        }
+      }
+    }
+    return toRet;
   }
 
 }

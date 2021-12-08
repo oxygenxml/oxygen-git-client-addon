@@ -53,7 +53,8 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
   public void setUp() throws Exception {
     super.setUp();
     
-    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    // The plugin workspace is already mocked and initialized in super.
+    StandalonePluginWorkspace pluginWSMock = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     Mockito.doAnswer(invocation -> {
       Object[] arguments = invocation.getArguments();
       errMsg[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";

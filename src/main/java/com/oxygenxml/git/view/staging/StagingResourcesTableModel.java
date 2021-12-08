@@ -51,7 +51,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * Compares file statuses.
 	 */
-	private final Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
+	private Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
 		int comparationResult = 0;
 
 		// Both are filtered or both are matched. Second level sort.
@@ -215,7 +215,8 @@ public class StagingResourcesTableModel extends AbstractTableModel {
     switch (changeEvent.getGitOperation()) {
       case STAGE:
         if (inIndex) {
-          insertRows(GitAccess.getInstance().getStagedFile(((FileGitEventInfo) changeEvent).getAffectedFilePaths()));
+          List<FileStatus> stagedFile = GitAccess.getInstance().getStagedFile(((FileGitEventInfo) changeEvent).getAffectedFilePaths());
+          insertRows(stagedFile);
         } else {
           deleteRows(((FileGitEventInfo) changeEvent).getAffectedFileStatuses());
         }
@@ -332,5 +333,9 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	  return -1;
 	}
 
+	
+	public void setComparator(Comparator<FileStatus> comparator) {
+	  this.fileStatusComparator = comparator;
+	}
 	
 }
