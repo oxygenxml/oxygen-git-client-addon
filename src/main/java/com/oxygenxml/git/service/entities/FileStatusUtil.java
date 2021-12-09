@@ -110,7 +110,8 @@ public class FileStatusUtil {
       List<DiffEntry> renames = detector.compute(walk.getObjectReader(),NullProgressMonitor.INSTANCE);
       
       for (DiffEntry fileDiff : renames) { 
-        final FileStatus currentFileStatus = new FileStatus(toGitChangeType(fileDiff.getChangeType()), fileDiff.getNewPath());
+        final ChangeType changeType = fileDiff.getChangeType();
+        final FileStatus currentFileStatus = new FileStatus(toGitChangeType(changeType), changeType != ChangeType.DELETE ? fileDiff.getNewPath() : fileDiff.getOldPath());
         filesToReturn.add(currentFileStatus);
         cleanDiffEntries(fileDiff, xentries);
       }
