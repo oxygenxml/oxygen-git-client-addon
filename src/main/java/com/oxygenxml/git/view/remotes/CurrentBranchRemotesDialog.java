@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 
@@ -110,9 +111,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 			final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
 					.getRemotesFromConfig().keySet());
 			
+			final ListCellRenderer<? super RemoteBranchItem> oldRender = remoteBranchItems.getRenderer();
 			remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
 
-				JLabel toReturn = new JLabel(value.toString());
+				JLabel toReturn = (JLabel) 
+				    oldRender.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 				/**
 				 * The border for padding.
