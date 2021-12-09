@@ -23,11 +23,21 @@ public class StatusCache {
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(StatusCache.class);
-  
-  
+  /**
+   * Inner cache.
+   */
   private GitStatus cache = null;
+  /**
+   * A supplier of a newly computed status.
+   */
   private Supplier<Git> statusComputer;
   
+  /**
+   * Constructor.
+   * 
+   * @param listeners The repository for installing Git  event listeners.
+   * @param statusComputer A supplier of a newly computed status.
+   */
   public StatusCache(GitListeners listeners, Supplier<Git> statusComputer) {
     this.statusComputer = statusComputer;
     listeners.addGitListener(new GitEventAdapter() {
@@ -39,7 +49,7 @@ public class StatusCache {
   }
   
   /**
-   * @return Cached status.
+   * @return A status of the currently loaded Git repository.
    */
   public synchronized GitStatus getStatus() {
     if (cache == null) {
@@ -48,10 +58,19 @@ public class StatusCache {
     return cache;
   }
 
+  /**
+   * Reset inner cache.
+   */
   public synchronized void resetCache() {
     cache = null;
   }
 
+  /**
+   * Install hooks on the editing area to invalidate inner cache when files from 
+   * the repository are edited.
+   * 
+   * @param pluginWorkspace Workspace access.
+   */
   public void installEditorsHook(PluginWorkspace pluginWorkspace) {
     pluginWorkspace.addEditorChangeListener(
         new WSEditorChangeListener() {

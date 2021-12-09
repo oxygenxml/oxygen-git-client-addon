@@ -26,8 +26,16 @@ public class GitStatus {
    */
   private List<FileStatus> stagedFiles;
   
+  /**
+   * Whether there are uncommitted changes. {@code true} if any tracked file is changed
+   */
   private final boolean hasUncommittedChanges;
   
+  /**
+   * Whether there are uncommitted changes.
+   *
+   * @return {@code true} if any tracked file is changed.
+   */
   public boolean hasUncommittedChanges() {
     return hasUncommittedChanges;
   }
@@ -37,14 +45,17 @@ public class GitStatus {
    * 
    * @param unstagedFiles Unstaged files.
    * @param stagedFiles Staged files.
+   * @param hasUncommittedChanges  {@code true} if any tracked file is changed.
    */
   public GitStatus(List<FileStatus> unstagedFiles, List<FileStatus> stagedFiles, boolean hasUncommittedChanges) {
     this.unstagedFiles = unstagedFiles;
     this.stagedFiles = stagedFiles;
     this.hasUncommittedChanges = hasUncommittedChanges;
-    logger.debug("Create GitStatus...");
-    logger.debug("GitStatus unstaged files: " + unstagedFiles);
-    logger.debug("GitStatus staged files: " + stagedFiles);
+    if (logger.isDebugEnabled()) {
+      logger.debug("Create GitStatus...");
+      logger.debug("GitStatus unstaged files: " + unstagedFiles);
+      logger.debug("GitStatus staged files: " + stagedFiles);
+    }
   }
   
   /**

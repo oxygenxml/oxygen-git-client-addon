@@ -20,14 +20,28 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.RepoUtil;
 
+/**
+ * A wrapper over a JGit status command that performs groups the files into stage and 
+ * unstaged.
+ * 
+ * @author alex_jitianu
+ */
 public class GitStatusCommand {
   
   /**
    * Logger for logging.
    */
   private static final Logger LOGGER = Logger.getLogger(GitAccess.class);
+  /**
+   * A provider for the JGit API.
+   */
   private Supplier<Git> git;
 
+  /**
+   * Constructor.
+   * 
+   * @param git Supplier for the current git repository.
+   */
   GitStatusCommand(Supplier<Git> git) {
     this.git = git;
     
