@@ -173,11 +173,12 @@ public class BranchesCache {
 			StringBuilder toolTipText = new StringBuilder();
 			final SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
 			PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent();
-			String remoteURL = GitAccess.getInstance().getRemoteURLFromConfig();
+			String[] pathDetails = path.split("/");
+			String remoteURL = GitAccess.getInstance().getRemoteURLFromConfig(pathDetails[2]);
 			toolTipText.append("<html><p>")
 			.append(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH))
 			.append(" ")
-			.append(Constants.DEFAULT_REMOTE_NAME)
+			.append(pathDetails[2])
 			.append("/")
 			.append(branchName)
 			.append("<br>")
@@ -199,6 +200,7 @@ public class BranchesCache {
 			.append(": ")
 			.append(dateFormat.format(authorDetails.getWhen()))
 			.append("</p></html>");
+			
 			return toolTipText.toString();
 		}
 	}

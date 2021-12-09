@@ -47,21 +47,21 @@
     </key>
      <key value="Remote_Already_Exists_Confirmation_Message">
         <comment>Message to confirm the remote replace.</comment>
-        <val lang="en_US">The "{0}" remote location already exists in the repository's configuration. Do you want to update the URL?</val>
-        <val lang="de_DE">The "{0}" remote location already exists in the repository's configuration. Do you want to update the URL?</val>
-        <val lang="fr_FR">The '{0}' remote location already exists in the repository's configuration. Do you want to update the URL?</val>
-        <val lang="ja_JP">The '{0}' remote location already exists in the repository's configuration. Do you want to update the URL?</val>
-        <val lang="nl_NL">The '{0}' remote location already exists in the repository's configuration. Do you want to update the URL?</val>
-        <val lang="zh_CN">The '{0}' remote location already exists in the repository's configuration. Do you want to update the URL?</val>
+        <val lang="en_US">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="de_DE">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="fr_FR">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="ja_JP">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="nl_NL">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="zh_CN">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
     </key>
     <key value="Delete_Remote_Confirmation_Message">
         <comment>Message to confirm remote deleting.</comment>
-        <val lang="en_US">Are you sure you want to delete the "{0}" remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="de_DE">Are you sure you want to delete the "{0}" remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="fr_FR">Are you sure you want to delete the '{0}' remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="ja_JP">Are you sure you want to delete the '{0}' remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="nl_NL">Are you sure you want to delete the '{0}' remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="zh_CN">Are you sure you want to delete the '{0}' remote location from the repository's configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="en_US">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="de_DE">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="fr_FR">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="ja_JP">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="nl_NL">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="zh_CN">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
     </key>
     <key value="Edit_Config_File">
         <comment>Action name to edit the config file of the current repository.</comment>
@@ -174,12 +174,12 @@
     </key>
      <key value="Uncommited_changes_when_checkout_commit">
         <comment>The the message displayed when the checkout commit is attempted and there are uncommited changes.</comment>
-        <val lang="en_US">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
-        <val lang="de_DE">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
-        <val lang="fr_FR">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
-        <val lang="ja_JP">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
-        <val lang="nl_NL">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
-        <val lang="zh_CN">There are uncommited changes. Commit, stash or discard your changes before you try again.</val>
+        <val lang="en_US">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="de_DE">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="fr_FR">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="ja_JP">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="nl_NL">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="zh_CN">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
     </key>
     <key value="Detached_HEAD_Warning_Message">
         <comment>The warning message about detached HEAD.</comment>
