@@ -102,6 +102,8 @@ public class FileStatusUtil {
       walk.addTree(commit.getTree());
     }
 
+    final String commitName     = commit.getName();
+    final String oldCommitName  = oldCommit !=null ? oldCommit.getName() : null;
     if (walk.getTreeCount() <= 2) {
       List<DiffEntry> entries = DiffEntry.scan(walk, false, markTreeFilters);
       List<DiffEntry> xentries = new LinkedList<>(entries);
@@ -110,13 +112,13 @@ public class FileStatusUtil {
       List<DiffEntry> renames = detector.compute(walk.getObjectReader(),NullProgressMonitor.INSTANCE);
       
       for (DiffEntry fileDiff : renames) { 
-        final ChangeType changeType = fileDiff.getChangeType();
-        final FileStatus currentFileStatus = new FileStatus(toGitChangeType(changeType), changeType != ChangeType.DELETE ? fileDiff.getNewPath() : fileDiff.getOldPath());
+        final FileStatus currentFileStatus = new FileStatusOverDiffEntry
+            (fileDiff, commitName, oldCommitName);
         filesToReturn.add(currentFileStatus);
         cleanDiffEntries(fileDiff, xentries);
       }
       
-      addFiles(filesToReturn, xentries);
+      addFiles(filesToReturn, xentries, commitName, oldCommitName);
       
     } else { 
     	// This case is for merge commits, this file extraction method is a bit slower than before. 
@@ -155,13 +157,12 @@ public class FileStatusUtil {
    * @param files      list to append the new files statuses
    * @param xentries   list with diff entry to append
    */
-  private static void addFiles(List<FileStatus> files, List<DiffEntry> xentries) {
-	  for (DiffEntry fileDiff : xentries) {
-		  final FileStatus currentFileStatus = new FileStatus(
-				  toGitChangeType(fileDiff.getChangeType()), 
-				  fileDiff.getChangeType() != ChangeType.DELETE ?
-						  fileDiff.getNewPath() : fileDiff.getOldPath());
-		  files.add(currentFileStatus);
+  private static void addFiles(final List<FileStatus> files, 
+      final List<DiffEntry> xentries, final String commit, final String oldCommit) {
+	  for (DiffEntry fileDiff : xentries) {  
+	    final FileStatus currentFileStatus = new FileStatusOverDiffEntry
+          (fileDiff, commit, oldCommit);
+	    files.add(currentFileStatus);
 	  }
   }
 
