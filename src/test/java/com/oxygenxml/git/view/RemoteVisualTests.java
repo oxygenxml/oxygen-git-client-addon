@@ -469,11 +469,11 @@ public class RemoteVisualTests extends GitTestBase {
       assertEquals(2, remoteBranches.getItemCount());
       assertEquals("origin", gitAccess.getRemoteFromCurrentBranch());
       RemoteBranchItem currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
-      assertEquals("origin/refs/heads/main", currentSelected.toString());
+      assertEquals("origin/main", currentSelected.toString());
       
       remoteBranches.setSelectedIndex(1);
       currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
-      assertEquals("remote2_name/refs/heads/main", currentSelected.toString());
+      assertEquals("remote2_name/main", currentSelected.toString());
       
       flushAWT();
       sleep(500);
@@ -486,12 +486,11 @@ public class RemoteVisualTests extends GitTestBase {
       trackRemoteDialog[0] = (CurrentBranchRemotesDialog) findDialog(Tags.CONFIGURE_REMOTE_FOR_BRANCH);
       assertNotNull(trackRemoteDialog);
       flushAWT();
-      
       remoteBranches = trackRemoteDialog[0].getRemoteBranchItems();
       assertNotNull(remoteBranches);
       assertEquals(remote2, gitAccess.getRemoteFromCurrentBranch());
       currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
-      assertEquals("remote2_name/refs/heads/main", currentSelected.toString());
+      assertEquals("remote2_name/main", currentSelected.toString());
 
     } finally {
       frame.setVisible(false);

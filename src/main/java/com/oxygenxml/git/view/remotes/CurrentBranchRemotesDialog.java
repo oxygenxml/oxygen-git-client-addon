@@ -142,12 +142,12 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 					final String mergeC = branchConfig.getMerge();
 					if(remoteC !=null && remoteC.equals(remote) 
 							&& mergeC != null && mergeC.equals(branchName)) {
-						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, Repository.shortenRefName(branchName));
+						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
 						foundedBranchRemoteForCurrentLocalBranch = true;
 						remoteItem.setFirstSelection(true);
 						branchesToAdd.add(remoteItem);
 					} else {
-						branchesToAdd.add(new RemoteBranchItem(remote, Repository.shortenRefName(branchName)));
+						branchesToAdd.add(new RemoteBranchItem(remote, branchName));
 					}
 				}
 			}
@@ -310,10 +310,15 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		 */
 		final String branch;
 		
-     /**
-      * <code>true</code> if this item represents the first selection.
-      */
-		 private boolean isFirstSelection = false;
+		/**
+		 * The branch short name.
+		 */
+		private final String branchShortName;
+		
+    /**
+     * <code>true</code> if this item represents the first selection.
+     */
+		private boolean isFirstSelection = false;
 		
 		
 		/**
@@ -325,6 +330,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		RemoteBranchItem(String remote, String branch) {
 			this.remote = remote;
 			this.branch = branch;
+			this.branchShortName = Repository.shortenRefName(branch);
 		}
 		
 		
@@ -351,7 +357,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
 		@Override
 		public String toString() {
-			return isUndefined() ? NONE : remote + "/" + branch;
+			return isUndefined() ? NONE : remote + "/" + branchShortName;
 		}
 	}
 	

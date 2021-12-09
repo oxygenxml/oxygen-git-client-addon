@@ -3,6 +3,7 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2825,6 +2826,7 @@ public class GitAccess {
 		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 	}
 	
+	
 	/**
 	 * @return Return path for config file of current repository.
 	 * 
@@ -2833,6 +2835,41 @@ public class GitAccess {
 	public String getConfigFilePath() throws NoRepositorySelected {
 		final String pathDelimiter = "/";
 		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
+	}
+	
+	
+	/**
+	 * Compute a list with all remote branches. 
+	 * <br>
+	 * This means that a list will be built with each remote branch that currently exists in each remote 
+	 * in the configuration file.
+	 * 
+	 * @return A list with all remote branches.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	@NonNull
+	public List<String> getAllRemotesBranches() throws NoRepositorySelected {
+	  final List<String> branchList = new ArrayList<>();
+	  final StoredConfig config = getRepository().getConfig();
+	  final Set<String> remotes = getRemotesFromConfig().keySet();
+	  
+	  for(String remote : remotes) {
+	    try {
+	      final URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
+	          remote, ConfigConstants.CONFIG_KEY_URL));
+	      Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
+	          sourceURL, null);
+	      for(Ref branch: branchesConfig) {
+	        final String branchName = Repository.shortenRefName(branch.getName());
+	        branchList.add(Constants.R_REMOTES + remote + "/" + branchName); 
+	      }
+	    } catch (URISyntaxException e) {
+	      LOGGER.error(e, e);
+	    }
+	  }
+
+	  return branchList;
 	}
 
 }
