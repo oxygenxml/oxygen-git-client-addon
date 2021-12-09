@@ -140,9 +140,9 @@ public class BranchesUtil {
     if (repository != null) {
       List<Ref> branches = new ArrayList<>();
       branches.addAll(GitAccess.getInstance().getLocalBranchList());
-      branches.addAll(GitAccess.getInstance().getRemoteBrachListForCurrentRepo());
       branchList = branches.stream().map(Ref::getName).collect(Collectors.toList());
     }
+    branchList.addAll(GitAccess.getInstance().getAllRemotesBranches());
     return branchList;
   }
   
