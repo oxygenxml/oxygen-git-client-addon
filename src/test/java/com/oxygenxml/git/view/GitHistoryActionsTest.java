@@ -233,6 +233,10 @@ public class GitHistoryActionsTest extends GitTestBase {
       Files.delete(new File(wcTree, "file1.txt").toPath());
       Files.delete(newFile.toPath());
       
+      // Assuming the delete was performed outside Oxygen so we need to simulate 
+      // a window activation event that resets cache.
+      GitAccess.getInstance().getStatusCache().resetCache();
+      
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
       dump = dumpHistory(commitsCharacteristics);
       expected = 
