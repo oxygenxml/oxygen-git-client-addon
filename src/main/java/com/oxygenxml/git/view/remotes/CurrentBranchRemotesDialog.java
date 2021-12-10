@@ -333,7 +333,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		RemoteBranchItem(String remote, String branch) {
 			this.remote = remote;
 			this.branch = branch;
-			this.branchShortName = Repository.shortenRefName(branch);
+			this.branchShortName = branch != null ? Repository.shortenRefName(branch) : null;
 		}
 		
 		
