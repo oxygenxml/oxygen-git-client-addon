@@ -8,6 +8,7 @@ import org.eclipse.jgit.api.Git;
 
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -43,7 +44,12 @@ public class StatusCache {
     listeners.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
-        resetCache();
+        if (// If you push changes the state of the working copy doesn't change.
+            info.getGitOperation() != GitOperation.PUSH &&
+            // If another branch is removed the state of the working copy doesn't change.
+            info.getGitOperation() != GitOperation.DELETE_BRANCH) {
+          resetCache();
+        }
       }
     });
   }
@@ -62,6 +68,7 @@ public class StatusCache {
    * Reset inner cache.
    */
   public synchronized void resetCache() {
+    logger.info("Reset cahche", new Exception());
     cache = null;
   }
 
