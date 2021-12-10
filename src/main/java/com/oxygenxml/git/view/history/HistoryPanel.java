@@ -353,12 +353,12 @@ public class HistoryPanel extends JPanel {
 	  
 	  for(HistoryStrategy strategy : strategies) {
 		   
-		   AbstractAction action = new AbstractAction(strategies.toString()) {
+		   AbstractAction action = new AbstractAction(strategy.toString()) {
 		
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				currentStrategy = strategy;
-				button.setText(strategies.toString());
+				button.setText(strategy.toString());
 				refresh();
 			}
 			
