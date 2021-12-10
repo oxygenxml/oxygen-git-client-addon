@@ -2858,7 +2858,7 @@ public class GitAccess {
 	    try {
 	      final URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
 	          remote, ConfigConstants.CONFIG_KEY_URL));
-	      Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
+	      Collection<Ref> branchesConfig = doListRemoteBranchesInternal(
 	          sourceURL, null);
 	      for(Ref branch: branchesConfig) {
 	        final String branchName = Repository.shortenRefName(branch.getName());
