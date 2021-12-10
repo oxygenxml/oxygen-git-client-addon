@@ -46,61 +46,56 @@ public class FlatView2Test extends FlatViewTestBase {
    */
   @Test
   public void testAPullCannotLockRef() throws Exception {
-    PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-    try {
-      final boolean[] showErrorMessageCalled = new boolean[] {false};
-      
-      StandalonePluginWorkspace pluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-      Mockito.doAnswer(new Answer<Void>() {
-        @Override
-        public Void answer(InvocationOnMock invocation) throws Throwable {
-          showErrorMessageCalled[0] = true;
-          return null;
-        }
-      }).when(pluginWorkspaceMock).showErrorMessage(Mockito.anyString());
-      PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspaceMock);
-      
-      String localTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_local_pullCannotLock";
-      String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote_pullCannotLock";
+    PluginWorkspace pluginWorkspaceMock = PluginWorkspaceProvider.getPluginWorkspace();
+    final boolean[] showErrorMessageCalled = new boolean[] {false};
 
-      // Create repositories
-      Repository remoteRepo = createRepository(remoteTestRepository);
-      Repository localRepo = createRepository(localTestRepository);
-      bindLocalToRemote(localRepo , remoteRepo);
-      sleep(700);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        showErrorMessageCalled[0] = true;
+        return null;
+      }
+    }).when(pluginWorkspaceMock).showErrorMessage(Mockito.anyString());
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspaceMock);
 
-      // Create a new file and push it.
-      String fileName = "test.txt";
-      File file = commitNewFile(localTestRepository, fileName, "content");
-      PushResponse push = push("", "");
-      assertEquals("status: OK message null", push.toString());
+    String localTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_local_pullCannotLock";
+    String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote_pullCannotLock";
 
-      // Create lock files
-      String repoDir = GitAccess.getInstance().getRepository().getDirectory().getAbsolutePath();
-      Ref ref = GitAccess.getInstance().getRemoteBrachListForCurrentRepo().get(0);
-      File lockFile = new File(repoDir, ref.getName() + ".lock");
-      boolean createNewFile = lockFile.createNewFile();
-      assertTrue("Unnable to create lock file " + lockFile.getAbsolutePath(), createNewFile);
-      setFileContent(lockFile, GitAccess.getInstance().getLastLocalCommitInRepo().getName());
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    bindLocalToRemote(localRepo , remoteRepo);
+    sleep(700);
 
-      // Commit a new version of the file.
-      setFileContent(file, "modified");
-      GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, fileName));
-      GitAccess.getInstance().commit("modified");
-      push("", "");
-      assertEquals("status: OK message null", push.toString());
+    // Create a new file and push it.
+    String fileName = "test.txt";
+    File file = commitNewFile(localTestRepository, fileName, "content");
+    PushResponse push = push("", "");
+    assertEquals("status: OK message null", push.toString());
 
-      // Pull should throw "Lock failed" error
-      PullResponse pullResponse = pull("", "", PullType.MERGE_FF, false);
-      assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
-      assertTrue(showErrorMessageCalled[0]);
-      Future<?> execute = ((GitController) stagingPanel.getGitController()).pull();
-      execute.get();
-      flushAWT();
-      assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());
-    } finally {
-      PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
-    }
+    // Create lock files
+    String repoDir = GitAccess.getInstance().getRepository().getDirectory().getAbsolutePath();
+    Ref ref = GitAccess.getInstance().getRemoteBrachListForCurrentRepo().get(0);
+    File lockFile = new File(repoDir, ref.getName() + ".lock");
+    boolean createNewFile = lockFile.createNewFile();
+    assertTrue("Unnable to create lock file " + lockFile.getAbsolutePath(), createNewFile);
+    setFileContent(lockFile, GitAccess.getInstance().getLastLocalCommitInRepo().getName());
+
+    // Commit a new version of the file.
+    setFileContent(file, "modified");
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, fileName));
+    GitAccess.getInstance().commit("modified");
+    push("", "");
+    assertEquals("status: OK message null", push.toString());
+
+    // Pull should throw "Lock failed" error
+    PullResponse pullResponse = pull("", "", PullType.MERGE_FF, false);
+    assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
+    assertTrue(showErrorMessageCalled[0]);
+    Future<?> execute = ((GitController) stagingPanel.getGitController()).pull();
+    execute.get();
+    flushAWT();
+    assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());
   }
   
   /**
