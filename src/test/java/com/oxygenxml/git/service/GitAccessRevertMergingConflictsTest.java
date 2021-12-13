@@ -24,6 +24,8 @@ import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
+import com.oxygenxml.git.view.history.RenameTracker;
 import com.oxygenxml.git.view.history.actions.RevertCommitAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -142,7 +144,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     flushAWT();
 
     // ------------- Checkout branch: LOCAL_BRANCH_NAME1 -------------
-    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+     gitAccess.setBranch(LOCAL_BRANCH_NAME1);
 
     // Commit on this branch
     setFileContent(file1, "local file 1 on new branch");
@@ -201,7 +203,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     assertTrue(TestUtil.read(file2.toURI().toURL()).contains("<<<<<<< HEAD\n" + "local file 2 modifications\n"
         + "=======\n" + "local file 2 on new branch\n" + ">>>>>>>"));
 
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
     String initialHistory = 
             "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
             "[ 2nd commit on main branch , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -215,7 +217,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
         initialHistory,
         dumpHistory(commitsCharacteristics).replaceAll(regex, "DATE"));
 
-    CommitCharacteristics commitToRevert = gitAccess.getCommitsCharacteristics(null).get(4);
+    CommitCharacteristics commitToRevert = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker()).get(4);
     RevertCommitAction revertAction = new RevertCommitAction(commitToRevert);
     SwingUtilities.invokeLater(() -> revertAction.actionPerformed(null));
     flushAWT();
@@ -233,3 +235,4 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
   }
 
 }
+

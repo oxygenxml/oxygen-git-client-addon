@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 
 public class GitAccessResetToCommitTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessRestoreLastCommitTest";
@@ -84,7 +85,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         status.getStagedFiles().toString());
     
     // The history at this moment
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
@@ -109,7 +110,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         "[(changeType=CHANGED, fileLocation=local.txt), (changeType=ADD, fileLocation=local_2.txt)]",
         status.getStagedFiles().toString());
     
-    commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         // Those commits are missing from the history, because we soft reset the branch
         // "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -144,7 +145,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         status.getStagedFiles().toString());
 
     // The history at this moment
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
@@ -168,7 +169,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         "[]",
         status.getStagedFiles().toString());
     
-    commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
        // This commit is missing from the history, because we reset the branch to it
        // "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -205,7 +206,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         status.getStagedFiles().toString());
     
     // The history at this moment
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
@@ -228,7 +229,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         "[]",
         status.getStagedFiles().toString());
     
-    commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     expected =
         // Those commits and the uncommitted changes are missing from the history, because we hard reset the branch
         // "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 

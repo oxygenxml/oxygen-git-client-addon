@@ -8,7 +8,6 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
-
     <key value="Please_Try_Again">
         <comment>Please try again message.</comment>
         <val lang="en_US">Please try again.</val>
@@ -27,6 +26,42 @@
         <val lang="nl_NL">The previous SSH passphrase was invalid.</val>
         <val lang="zh_CN">The previous SSH passphrase was invalid.</val>
         </key>
+     <key value="All_Branches">
+        <comment>All branches.</comment>
+        <val lang="en_US">All branches</val>
+        <val lang="de_DE">All branches</val>
+        <val lang="fr_FR">All branches</val>
+        <val lang="ja_JP">All branches</val>
+        <val lang="nl_NL">All branches</val>
+        <val lang="zh_CN">All branches</val>
+    </key>
+     <key value="All_Local_Branches">
+        <comment>All local branches.</comment>
+        <val lang="en_US">All local branches</val>
+        <val lang="de_DE">All local branches</val>
+        <val lang="fr_FR">All local branches</val>
+        <val lang="ja_JP">All local branches</val>
+        <val lang="nl_NL">All local branches</val>
+        <val lang="zh_CN">All local branches</val>
+    </key>
+     <key value="Current_Local_Branch">
+        <comment>Current local branch.</comment>
+        <val lang="en_US">Current local branch</val>
+        <val lang="de_DE">Current local branch</val>
+        <val lang="fr_FR">Current local branch</val>
+        <val lang="ja_JP">Current local branch</val>
+        <val lang="nl_NL">Current local branch</val>
+        <val lang="zh_CN">Current local branch</val>
+    </key>
+      <key value="Current_Branch">
+        <comment>Current branch.</comment>
+        <val lang="en_US">Current branch</val>
+        <val lang="de_DE">Current branch</val>
+        <val lang="fr_FR">Current branch</val>
+        <val lang="ja_JP">Current branch</val>
+        <val lang="nl_NL">Current branch</val>
+        <val lang="zh_CN">Current branch</val>
+    </key>
      <key value="Branch_Name_Too_Long">
         <comment>Message when branch name is too long.</comment>
         <val lang="en_US">The name is too long. The allowed character limit is {0} characters.</val>

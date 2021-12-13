@@ -129,7 +129,7 @@ public class HistoryContextualActionsTest extends GitTestBase {
     
     GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
    
     Iterator<CommitCharacteristics> iterator = commitsCharacteristics.iterator();
     CommitCharacteristics commitCharacteristic = iterator.next();

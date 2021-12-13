@@ -28,11 +28,13 @@ import java.util.Optional;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -82,6 +84,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -157,6 +160,17 @@ public class HistoryPanel extends JPanel {
    * The file presenter for repository commits history.
    */
   private final transient FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter();
+  /*
+   * The current strategy to present history.
+   */
+  private HistoryStrategy currentStrategy;
+  
+  /**
+   * Button that contains all strategy to present history.
+   */
+  private final SplitMenuButton presentHistoryStrategyButton = new SplitMenuButton(HistoryStrategy.ALL_BRANCHES.toString(), 
+		  null, true, false, true, true);
+  
 
   
   /**
@@ -168,6 +182,9 @@ public class HistoryPanel extends JPanel {
     setLayout(new BorderLayout());
     
     graphCellRender = new CommitsGraphCellRender();
+  
+    addPresentHistoryActions(presentHistoryStrategyButton);
+    currentStrategy = HistoryStrategy.ALL_BRANCHES;
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
     historyTable = new Table();
@@ -329,6 +346,45 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
+  /**
+   * Add actions for present history in different way. 
+   * <br>
+   * History could be presented so: All branches(remote + locals), All local branches, Current branch(remote + local), Current local branch.
+   * 
+   * @param button
+   */
+  private void addPresentHistoryActions(final SplitMenuButton button) {
+	  
+	  final ButtonGroup branchActionsGroup = new ButtonGroup();
+	  final HistoryStrategy[] strategies    = HistoryStrategy.values();
+	  
+	  for(HistoryStrategy strategy : strategies) {
+		   
+		   AbstractAction action = new AbstractAction(strategy.toString()) {
+		
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				currentStrategy = strategy;
+				button.setText(strategy.toString());
+				refresh();
+			}
+			
+		   };
+		   
+		   final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(action);
+		   branchActionsGroup.add(menuItem);
+		   button.add(menuItem);
+		   if(HistoryStrategy.ALL_BRANCHES == strategy) {
+			   menuItem.setSelected(true);
+		   }
+	  }
+  }
+	
+	 
+  
+  
+  
   /**
    * Treat editor saved event.
    * 
@@ -356,6 +412,7 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
   /**
    * Opens the first action in the contextual menu when an element inside the
    * history table is double clicked.
@@ -383,6 +440,7 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
   /**
    * Creates the table that presents the files changed in a revision.
    * 
@@ -434,6 +492,7 @@ public class HistoryPanel extends JPanel {
     return table;
   }
 
+  
   /**
    * Show the contextual menu on the resources changed on a revision.
    * 
@@ -460,6 +519,7 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
   /**
    * Show the contextual menu on the history table.
    * 
@@ -493,6 +553,7 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
   /**
    * Checks if a row is selected and selects it if it isn't.
    * 
@@ -507,6 +568,7 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
   /**
    * Creates a split pane and puts the two components in it.
    * 
@@ -530,6 +592,7 @@ public class HistoryPanel extends JPanel {
 
     return splitPane;
   }
+  
 
   /**
    * Initializes the split with the proper font and other properties.
@@ -549,6 +612,7 @@ public class HistoryPanel extends JPanel {
     editorPane.setEditable(false);
 
   }
+  
 
   /**
    * Creates the toolbar.
@@ -578,6 +642,12 @@ public class HistoryPanel extends JPanel {
         refresh();
       }
     };
+    
+    constr.gridx++;
+    constr.fill = GridBagConstraints.NONE;
+    constr.weightx = 0;
+    topPanel.add(presentHistoryStrategyButton, constr);
+    
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
     refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
     ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
@@ -596,12 +666,14 @@ public class HistoryPanel extends JPanel {
     add(topPanel, BorderLayout.NORTH);
   }
 
+  
   /**
    * Shows the commit history for the entire repository.
    */
   public void showRepositoryHistory() {
     showHistory(null, true);
   }
+  
 
   /**
    * Shows the commit history for the given file.
@@ -612,12 +684,14 @@ public class HistoryPanel extends JPanel {
     showHistory(filePath, false);
   }
 
+  
   /**
    * Refresh.
    */
   public void refresh() {
     GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
   }
+  
 
   /**
    * Shows the commit history for the entire repository.
@@ -672,8 +746,9 @@ public class HistoryPanel extends JPanel {
         
         commitDescriptionPane.setText("");
         
-        final RenameTracker renameTracker = new RenameTracker();
-        final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath, renameTracker);
+        RenameTracker renameTracker = new RenameTracker();
+        final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(
+        		currentStrategy, filePath, renameTracker);
 
         final Repository repo = gitAccess.getRepository();
        
@@ -758,7 +833,6 @@ public class HistoryPanel extends JPanel {
   }
   
 
-
   /**
    * Gets the tags from the current repository.
    * 
@@ -777,6 +851,7 @@ public class HistoryPanel extends JPanel {
     return tagMap;
   }
 
+  
   /**
    * Gets the preferred height needed to render the commit information.
    * 
@@ -796,6 +871,7 @@ public class HistoryPanel extends JPanel {
     return rowHeight;
   }
 
+  
   /**
    * Gets the first actually commit from the list of commits. It ignores the
    * {@link GitAccess.UNCOMMITED_CHANGES} entry.
@@ -818,6 +894,7 @@ public class HistoryPanel extends JPanel {
     return first;
   }
 
+  
   /**
    * Updates the selection model in the table to either single and multiple.
    * 
@@ -832,6 +909,7 @@ public class HistoryPanel extends JPanel {
         historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
   }
+  
 
   /**
    * @return A cell renderer for the author column.
@@ -853,6 +931,7 @@ public class HistoryPanel extends JPanel {
       }
     };
   }
+  
 
   /**
    * Tries a fetch to update remote information.
@@ -867,11 +946,13 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
   /**
    * Coalescing for selecting the row in HistoryTable.
    */
   static final int TIMER_DELAY = 500;
 
+  
   /**
    * @return Milliseconds. Controls how fast the satellite views are updated after
    *         a new revision is selected.
@@ -879,6 +960,7 @@ public class HistoryPanel extends JPanel {
   protected int getUpdateDelay() {
     return TIMER_DELAY;
   }
+  
 
   /**
    * Distribute widths to the columns according to their content.
@@ -906,6 +988,7 @@ public class HistoryPanel extends JPanel {
     column.setPreferredWidth(commitIdColWidth);
   }
 
+  
   /**
    * Shows the commit history for the given file.
    * 
@@ -920,6 +1003,7 @@ public class HistoryPanel extends JPanel {
     }
   }
 
+  
   /**
    * Selects the commit with the given ID.
    * 
@@ -948,6 +1032,7 @@ public class HistoryPanel extends JPanel {
   public JTable getAffectedFilesTable() {
     return affectedFilesTable;
   }
+  
 
   /**
    * @return the history table.
@@ -955,5 +1040,6 @@ public class HistoryPanel extends JPanel {
   public JTable getHistoryTable() {
     return historyTable;
   }
+  
 
 }

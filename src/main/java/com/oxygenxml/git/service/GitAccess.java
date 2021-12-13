@@ -121,6 +121,7 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.RenameTracker;
 import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
@@ -2091,7 +2092,7 @@ public class GitAccess {
 	 * 
 	 * @return a Vector with commits characteristics of the current repository.
 	 */
-	public List<CommitCharacteristics> getCommitsCharacteristics(String filePath, RenameTracker... renameTracker) {
+	public List<CommitCharacteristics> getCommitsCharacteristics(HistoryStrategy strategy,  String filePath, RenameTracker renameTracker) {
 		List<CommitCharacteristics> revisions = new ArrayList<>();
 
 		try {
@@ -2100,8 +2101,21 @@ public class GitAccess {
 				revisions.add(UNCOMMITED_CHANGES);
 			}
             
-			RenameTracker renTracker = renameTracker.length == 0 ? null : renameTracker[0];
-			RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository, renTracker);
+			switch (strategy) {
+			case ALL_BRANCHES:
+				RevCommitUtil.collectAllBranchesRevisions(filePath, revisions, repository, renameTracker);
+				break;
+			case ALL_LOCAL_BRANCHES:
+				RevCommitUtil.collectLocalBranchesRevisions(filePath, revisions, repository, renameTracker);
+				break;
+			case CURRENT_BRANCH:
+				RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository, renameTracker);
+				break;
+			case CURRENT_LOCAL_BRANCH:
+				RevCommitUtil.collectCurrentLocalBranchRevisions(filePath, revisions, repository, renameTracker);
+				break;
+			}
+			
 		} catch (NoWorkTreeException | NoRepositorySelected | IOException e) {
 			LOGGER.error(e, e);
 		}

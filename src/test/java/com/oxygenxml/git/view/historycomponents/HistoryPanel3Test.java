@@ -22,6 +22,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 import com.oxygenxml.git.view.history.HistoryPanel;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 
 /**
  * UI level tests for history.
@@ -76,7 +77,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
 
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       String dump = dumpHistory(commitsCharacteristics);
       String expected =  
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -105,7 +106,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       assertEquals("new_branch", GitAccess.getInstance().getBranchInfo().getBranchName());
       
       // Check the history of the new branch
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       dump = dumpHistory(commitsCharacteristics);
       expected =  
               "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 

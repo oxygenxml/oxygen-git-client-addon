@@ -25,7 +25,9 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
+import com.oxygenxml.git.view.history.RenameTracker;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -49,7 +51,8 @@ public class GitHistoryActionsTest extends GitTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+    		  HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
 
       String dump = dumpHistory(commitsCharacteristics);
 
@@ -195,7 +198,8 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       setFileContent(new File(wcTree, "file1.txt"), "branza");
       
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+    		  HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
       dump = dumpHistory(commitsCharacteristics);
       expected = 
           "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
@@ -237,7 +241,8 @@ public class GitHistoryActionsTest extends GitTestBase {
       // a window activation event that resets cache.
       GitAccess.getInstance().getStatusCache().resetCache();
       
-      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+    		  HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
       dump = dumpHistory(commitsCharacteristics);
       expected = 
           "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
@@ -332,7 +337,8 @@ public class GitHistoryActionsTest extends GitTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
   
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+    		  HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
   
       String dump = dumpHistory(commitsCharacteristics);
   

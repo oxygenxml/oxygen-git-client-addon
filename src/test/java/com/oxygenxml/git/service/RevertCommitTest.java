@@ -17,6 +17,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.actions.RevertCommitAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -48,8 +49,7 @@ public class RevertCommitTest extends GitTestBase {
   public void setUp() throws Exception {
     super.setUp();
     
-    // A mock is already initialized in the super.
-    StandalonePluginWorkspace pluginWSMock = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.doAnswer(invocation -> {
       Object[] arguments = invocation.getArguments();
       errMsg[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
@@ -105,7 +105,7 @@ public class RevertCommitTest extends GitTestBase {
   @Test
   public void testRevertCommit_cannotRevertFirstVersion() throws Exception {
     // The history at this moment
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String expected = "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
         + "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
         + "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + "";
@@ -128,7 +128,7 @@ public class RevertCommitTest extends GitTestBase {
     assertTrue(errMsg[0].contains("Cannot revert"));
     
     // The history stays the same
-    commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     expected = "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
         + "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
         + "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + "";
@@ -147,7 +147,7 @@ public class RevertCommitTest extends GitTestBase {
   @Test
   public void testRevertCommit() throws Exception {
     // The history at this moment
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String expected = "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
         + "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
         + "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + "";
@@ -168,7 +168,7 @@ public class RevertCommitTest extends GitTestBase {
     sleep(300);
     
     // New commit added (for the reverted changes)
-    commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     assertEquals(4, commitsCharacteristics.size());
     assertTrue(commitsCharacteristics.get(0).getCommitMessage().startsWith("Revert \"Modified a file\""));
 
@@ -189,7 +189,7 @@ public class RevertCommitTest extends GitTestBase {
     gitAccess.commit("Modified a file again");
     
     // The history at this moment
-    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String expected = "[ Modified a file again , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
@@ -221,3 +221,4 @@ public class RevertCommitTest extends GitTestBase {
   }
   
 }
+

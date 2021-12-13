@@ -15,6 +15,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.HistoryTableAffectedFilesModel;
 
 /**
@@ -35,7 +36,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
   
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       String dump = dumpHistory(commitsCharacteristics, true);
       String expected =  
           "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -99,7 +100,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/history_script_follow_move.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowCopyRenames"));
   
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       String dump = dumpHistory(commitsCharacteristics, true);
       String expected =  
           "[ Move , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -160,7 +161,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/EXM-44300/script.txt"), 
         new File("target/gen/HistoryPanelTest/testActionsOnRenamedFile"));
 
-    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String dump = dumpHistory(commitsCharacteristics, true);
     String expected =  
         "[ Fourth , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -212,7 +213,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/file_content_script.txt"), 
         new File("target/gen/HistoryPanelTest/testMultipleSelectionHistoryActions"));
 
-    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String dump = dumpHistory(commitsCharacteristics, true);
     String expected =  
         "[ Third. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 

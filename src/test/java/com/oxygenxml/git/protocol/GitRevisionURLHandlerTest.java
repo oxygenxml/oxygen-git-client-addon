@@ -16,6 +16,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 
 /**
  * Tests for obtaining different versions of a file ({@link VersionIdentifier}) through a protocol.
@@ -97,7 +98,7 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
       indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/file1.txt";
       assertEquals("file 1 Third commit.", TestUtil.read(new URL(indexVersionURL)));
       
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       
       assertEquals(3, commitsCharacteristics.size());
       
