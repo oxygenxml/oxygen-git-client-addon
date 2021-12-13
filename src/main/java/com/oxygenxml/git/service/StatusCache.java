@@ -41,7 +41,7 @@ public class StatusCache {
    */
   public StatusCache(GitListeners listeners, Supplier<Git> statusComputer) {
     this.statusComputer = statusComputer;
-    listeners.addGitListener(new GitEventAdapter() {
+    listeners.addGitPriorityListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (// If you push changes the state of the working copy doesn't change.

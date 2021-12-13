@@ -16,6 +16,10 @@ public class GitListeners {
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(GitListeners.class);
+  /**
+   * Receive notifications when things change. First ones to be notified.
+   */
+  private HashSet<GitEventListener> gitEventPriorityListeners = new LinkedHashSet<>();
   
   /**
    * Receive notifications when things change.
@@ -50,6 +54,10 @@ public class GitListeners {
       logger.debug("Fire operation about to start: " + info);
     }
     
+    for (GitEventListener gitEventListener : gitEventPriorityListeners) {
+      gitEventListener.operationAboutToStart(info);
+    }
+    
     for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.operationAboutToStart(info);
     }
@@ -63,6 +71,10 @@ public class GitListeners {
   public void fireOperationSuccessfullyEnded(GitEventInfo info) {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation successfully ended: " + info);
+    }
+    
+    for (GitEventListener gitEventListener : gitEventPriorityListeners) {
+      gitEventListener.operationSuccessfullyEnded(info);
     }
     
     for (GitEventListener gitEventListener : gitEventListeners) {
@@ -81,12 +93,27 @@ public class GitListeners {
       logger.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
     }
     
+    for (GitEventListener gitEventListener : gitEventPriorityListeners) {
+      gitEventListener.operationFailed(info, t);
+    }
+    
     for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.operationFailed(info, t);
     }
   }
   
-  
+  /**
+   * Add a listener that gets notified about file or repository changes.
+   * 
+   * @param listener The listener to add.
+   */
+  @SuppressWarnings("unchecked")
+  void addGitPriorityListener(GitEventListener listener) {
+    HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventPriorityListeners.clone();
+    clone.add(listener);
+    
+    gitEventPriorityListeners = clone;
+  } 
 
   /**
    * Add a listener that gets notified about file or repository changes.
@@ -115,6 +142,7 @@ public class GitListeners {
   }
 
   public void clear() {
+    gitEventPriorityListeners.clear();
     gitEventListeners.clear();
   }
 }
