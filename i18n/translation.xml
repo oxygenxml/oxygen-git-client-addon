@@ -12,7 +12,7 @@
         <comment>Please try again message.</comment>
         <val lang="en_US">Please try again.</val>
         <val lang="de_DE">Please try again.</val>
-        <val lang="fr_FR">Please try again.</val>
+        <val lang="fr_FR">Veuillez réessayer.</val>
         <val lang="ja_JP">Please try again.</val>
         <val lang="nl_NL">Please try again.</val>
         <val lang="zh_CN">Please try again.</val>
@@ -21,7 +21,7 @@
         <comment>Message shown when a previous SSH passphrase was invalid.</comment>
         <val lang="en_US">The previous SSH passphrase was invalid.</val>
         <val lang="de_DE">The previous SSH passphrase was invalid.</val>
-        <val lang="fr_FR">The previous SSH passphrase was invalid.</val>
+        <val lang="fr_FR">La phrase de passe SSH précédente n'était pas valide.</val>
         <val lang="ja_JP">The previous SSH passphrase was invalid.</val>
         <val lang="nl_NL">The previous SSH passphrase was invalid.</val>
         <val lang="zh_CN">The previous SSH passphrase was invalid.</val>
@@ -30,7 +30,7 @@
         <comment>All branches.</comment>
         <val lang="en_US">All branches</val>
         <val lang="de_DE">All branches</val>
-        <val lang="fr_FR">All branches</val>
+        <val lang="fr_FR">Toutes les branches</val>
         <val lang="ja_JP">All branches</val>
         <val lang="nl_NL">All branches</val>
         <val lang="zh_CN">All branches</val>
@@ -39,7 +39,7 @@
         <comment>All local branches.</comment>
         <val lang="en_US">All local branches</val>
         <val lang="de_DE">All local branches</val>
-        <val lang="fr_FR">All local branches</val>
+        <val lang="fr_FR">Toutes les branches locales</val>
         <val lang="ja_JP">All local branches</val>
         <val lang="nl_NL">All local branches</val>
         <val lang="zh_CN">All local branches</val>
@@ -48,7 +48,7 @@
         <comment>Current local branch.</comment>
         <val lang="en_US">Current local branch</val>
         <val lang="de_DE">Current local branch</val>
-        <val lang="fr_FR">Current local branch</val>
+        <val lang="fr_FR">Branche locale actuelle</val>
         <val lang="ja_JP">Current local branch</val>
         <val lang="nl_NL">Current local branch</val>
         <val lang="zh_CN">Current local branch</val>
@@ -57,7 +57,7 @@
         <comment>Current branch.</comment>
         <val lang="en_US">Current branch</val>
         <val lang="de_DE">Current branch</val>
-        <val lang="fr_FR">Current branch</val>
+        <val lang="fr_FR">Branche actuelle</val>
         <val lang="ja_JP">Current branch</val>
         <val lang="nl_NL">Current branch</val>
         <val lang="zh_CN">Current branch</val>
@@ -66,25 +66,25 @@
         <comment>Message when branch name is too long.</comment>
         <val lang="en_US">The name is too long. The allowed character limit is {0} characters.</val>
         <val lang="de_DE">The name is too long. The allowed character limit is {0} characters.</val>
-        <val lang="fr_FR">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="fr_FR">Le nom est trop long. La limite autorisée est de {0} caractères.</val>
         <val lang="ja_JP">The name is too long. The allowed character limit is {0} characters.</val>
         <val lang="nl_NL">The name is too long. The allowed character limit is {0} characters.</val>
         <val lang="zh_CN">The name is too long. The allowed character limit is {0} characters.</val>
     </key>
     <key value="No_Branches_Founded">
-        <comment>Message displayed when no branches are founded.</comment>
-        <val lang="en_US">Remote branches are not founded in remote repositories.</val>
-        <val lang="de_DE">Remote branches are not founded in remote repositories.</val>
-        <val lang="fr_FR">Remote branches are not founded in remote repositories.</val>
-        <val lang="ja_JP">Remote branches are not founded in remote repositories.</val>
-        <val lang="nl_NL">Remote branches are not founded in remote repositories.</val>
-        <val lang="zh_CN">Remote branches are not founded in remote repositories.</val>
+        <comment>Message displayed when no branches are found.</comment>
+        <val lang="en_US">Remote branches are not found in remote repositories.</val>
+        <val lang="de_DE">Remote branches are not found in remote repositories.</val>
+        <val lang="fr_FR">Aucune branche remote trouvée dans les dépôts remote.</val>
+        <val lang="ja_JP">Remote branches are not found in remote repositories.</val>
+        <val lang="nl_NL">Remote branches are not found in remote repositories.</val>
+        <val lang="zh_CN">Remote branches are not found in remote repositories.</val>
     </key>
      <key value="Remote_Already_Exists_Confirmation_Message">
         <comment>Message to confirm the remote replace.</comment>
         <val lang="en_US">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
         <val lang="de_DE">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
-        <val lang="fr_FR">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="fr_FR">L''emplacement remote "{0}" existe déjà dans la configuration du dépôt. Voulez-vous mettre à jour l''URL?</val>
         <val lang="ja_JP">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
         <val lang="nl_NL">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
         <val lang="zh_CN">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
@@ -93,7 +93,7 @@
         <comment>Message to confirm remote deleting.</comment>
         <val lang="en_US">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
         <val lang="de_DE">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="fr_FR">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer l''emplacement remote "{0}" de la configuration du dépôt? Toutes les configurations de branches qui lui sont associées seront également supprimées.</val>
         <val lang="ja_JP">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
         <val lang="nl_NL">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
         <val lang="zh_CN">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
@@ -102,7 +102,7 @@
         <comment>Action name to edit the config file of the current repository.</comment>
         <val lang="en_US">Edit config file</val>
         <val lang="de_DE">Edit config file</val>
-        <val lang="fr_FR">Edit config file</val>
+        <val lang="fr_FR">Modifier le fichier de configuration</val>
         <val lang="ja_JP">Edit config file</val>
         <val lang="nl_NL">Edit config file</val>
         <val lang="zh_CN">Edit config file</val>
@@ -111,7 +111,7 @@
         <comment>Title for remotes dialog.</comment>
         <val lang="en_US">Manage remote repositories</val>
         <val lang="de_DE">Manage remote repositories</val>
-        <val lang="fr_FR">Manage remote repositories</val>
+        <val lang="fr_FR">Gérer les dépôts remote</val>
         <val lang="ja_JP">Manage remote repositories</val>
         <val lang="nl_NL">Manage remote repositories</val>
         <val lang="zh_CN">Manage remote repositories</val>
@@ -120,7 +120,7 @@
         <comment>Title for dialog to configure remote for current branch.</comment>
         <val lang="en_US">Track remote branch</val>
         <val lang="de_DE">Track remote branch</val>
-        <val lang="fr_FR">Track remote branch</val>
+        <val lang="fr_FR">Suivre la branche remote</val>
         <val lang="ja_JP">Track remote branch</val>
         <val lang="nl_NL">Track remote branch</val>
         <val lang="zh_CN">Track remote branch</val>
@@ -129,7 +129,7 @@
         <comment>Remote URL.</comment>
         <val lang="en_US">Remote URL</val>
         <val lang="de_DE">Remote URL</val>
-        <val lang="fr_FR">Remote URL</val>
+        <val lang="fr_FR">URL du remote</val>
         <val lang="ja_JP">Remote URL</val>
         <val lang="nl_NL">Remote URL</val>
         <val lang="zh_CN">Remote URL</val>
@@ -138,7 +138,7 @@
         <comment>Remote name.</comment>
         <val lang="en_US">Remote name</val>
         <val lang="de_DE">Remote name</val>
-        <val lang="fr_FR">Remote name</val>
+        <val lang="fr_FR">Nom du remote</val>
         <val lang="ja_JP">Remote name</val>
         <val lang="nl_NL">Remote name</val>
         <val lang="zh_CN">Remote name</val>
@@ -147,7 +147,7 @@
         <comment>Delete remote.</comment>
         <val lang="en_US">Delete remote</val>
         <val lang="de_DE">Delete remote</val>
-        <val lang="fr_FR">Delete remote</val>
+        <val lang="fr_FR">Supprimer le remote</val>
         <val lang="ja_JP">Delete remote</val>
         <val lang="nl_NL">Delete remote</val>
         <val lang="zh_CN">Delete remote</val>
@@ -156,7 +156,7 @@
         <comment>Edit remote.</comment>
         <val lang="en_US">Edit remote</val>
         <val lang="de_DE">Edit remote</val>
-        <val lang="fr_FR">Edit remote</val>
+        <val lang="fr_FR">Modifier le remote</val>
         <val lang="ja_JP">Edit remote</val>
         <val lang="nl_NL">Edit remote</val>
         <val lang="zh_CN">Edit remote</val>
@@ -165,7 +165,7 @@
         <comment>Add remote.</comment>
         <val lang="en_US">Add remote</val>
         <val lang="de_DE">Add remote</val>
-        <val lang="fr_FR">Add remote</val>
+        <val lang="fr_FR">Ajouter un remote</val>
         <val lang="ja_JP">Add remote</val>
         <val lang="nl_NL">Add remote</val>
         <val lang="zh_CN">Add remote</val>
@@ -174,7 +174,7 @@
         <comment>URL.</comment>
         <val lang="en_US">URL</val>
         <val lang="de_DE">URL</val>
-        <val lang="fr_FR">URL</val>
+        <val lang="fr_FR" skipTranslation="true">URL</val>
         <val lang="ja_JP">URL</val>
         <val lang="nl_NL">URL</val>
         <val lang="zh_CN">URL</val>
@@ -183,7 +183,7 @@
         <comment>Create a new branch option.</comment>
         <val lang="en_US">Create a new branch</val>
         <val lang="de_DE">Create a new branch</val>
-        <val lang="fr_FR">Create a new branch</val>
+        <val lang="fr_FR">Créer une nouvelle branche</val>
         <val lang="ja_JP">Create a new branch</val>
         <val lang="nl_NL">Create a new branch</val>
         <val lang="zh_CN">Create a new branch</val>
@@ -192,7 +192,7 @@
         <comment>Tag.</comment>
         <val lang="en_US">Tag</val>
         <val lang="de_DE">Tag</val>
-        <val lang="fr_FR">Tag</val>
+        <val lang="fr_FR">Étiquette</val>
         <val lang="ja_JP">Tag</val>
         <val lang="nl_NL">Tag</val>
         <val lang="zh_CN">Tag</val>
@@ -202,7 +202,7 @@
             local branch."</comment>
         <val lang="en_US">A local branch with the same name already exists.</val>
         <val lang="de_DE">A local branch with the same name already exists.</val>
-        <val lang="fr_FR">A local branch with the same name already exists.</val>
+        <val lang="fr_FR">Une branche locale portant le même nom existe déjà.</val>
         <val lang="ja_JP">A local branch with the same name already exists.</val>
         <val lang="nl_NL">A local branch with the same name already exists.</val>
         <val lang="zh_CN">A local branch with the same name already exists..</val>
@@ -211,7 +211,7 @@
         <comment>The the message displayed when the checkout commit is attempted and there are uncommited changes.</comment>
         <val lang="en_US">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
         <val lang="de_DE">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="fr_FR">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="fr_FR">Il y a des modifications hors commit. Effectuez un commit, une remise ou abandonnez vos modifications avant de réessayer.</val>
         <val lang="ja_JP">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
         <val lang="nl_NL">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
         <val lang="zh_CN">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
@@ -219,8 +219,8 @@
     <key value="Detached_HEAD_Warning_Message">
         <comment>The warning message about detached HEAD.</comment>
         <val lang="en_US">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
-        <val lang="de_DE">No local branch will be created. If you want to make changes, it is recomended to create to create a new local branch instead.</val>
-        <val lang="fr_FR">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="de_DE">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="fr_FR">Aucune branche locale ne sera créée. Si vous voulez faire des modifications, il est recommandé de créer une nouvelle branche locale à la place.</val>
         <val lang="ja_JP">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
         <val lang="nl_NL">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
         <val lang="zh_CN">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
@@ -229,7 +229,7 @@
         <comment>The message for enter the branch name.</comment>
         <val lang="en_US">Branch name</val>
         <val lang="de_DE">Branch name</val>
-        <val lang="fr_FR">Branch name</val>
+        <val lang="fr_FR">Nom de la branche</val>
         <val lang="ja_JP">Branch name</val>
         <val lang="nl_NL">Branch name</val>
         <val lang="zh_CN">Branch name</val>
@@ -238,16 +238,16 @@
         <comment>The message for error when we have an empty name for branch.</comment>
         <val lang="en_US">The branch name cannot be empty.</val>
         <val lang="de_DE">The branch name cannot be empty.</val>
-        <val lang="fr_FR">The branch name cannot be empty.</val>
+        <val lang="fr_FR">Le nom de la branche ne peut pas être vide.</val>
         <val lang="ja_JP">The branch name cannot be empty.</val>
         <val lang="nl_NL">The branch name cannot be empty.</val>
         <val lang="zh_CN">The branch name cannot be empty.</val>
     </key>
     <key value="Branch_Contains_Spaces">
         <comment>The message for error when we have a tag with spaces.</comment>
-        <val lang="en_US">Spaces are not allowed in a branch name..</val>
+        <val lang="en_US">Spaces are not allowed in a branch name.</val>
         <val lang="de_DE">Spaces are not allowed in a branch name.</val>
-        <val lang="fr_FR">Spaces are not allowed in a branch name..</val>
+        <val lang="fr_FR">Les espaces ne sont pas autorisés dans le nom d'une branche.</val>
         <val lang="ja_JP">Spaces are not allowed in a branch name.</val>
         <val lang="nl_NL">Spaces are not allowed in a branch name.</val>
         <val lang="zh_CN">Spaces are not allowed in a branch name.</val>
@@ -256,7 +256,7 @@
         <comment>The message for error when we have a branch with invalid chars.</comment>
         <val lang="en_US">The branch name contains not allowed characters.</val>
         <val lang="de_DE">The branch name contains not allowed characters.</val>
-        <val lang="fr_FR">The branch name contains not allowed characters.</val>
+        <val lang="fr_FR">Le nom de la branche contient des caractères non autorisés.</val>
         <val lang="ja_JP">The branch name contains not allowed characters.</val>
         <val lang="nl_NL">The branch name contains not allowed characters.</val>
         <val lang="zh_CN">The branch name contains not allowed characters.</val>
@@ -265,7 +265,7 @@
         <comment>"The tool tip for the button that opens the branch manager side view."</comment>
         <val lang="en_US">Press to show the Git Branch Manager view.</val>
         <val lang="de_DE">Press to show the Git Branch Manager view.</val>
-        <val lang="fr_FR">Press to show the Git Branch Manager view.</val>
+        <val lang="fr_FR">Appuyez pour afficher la vue Gestionnaire de Branches Git.</val>
         <val lang="ja_JP">Press to show the Git Branch Manager view.</val>
         <val lang="nl_NL">Press to show the Git Branch Manager view.</val>
         <val lang="zh_CN">Press to show the Git Branch Manager view.</val>
@@ -274,7 +274,7 @@
         <comment>Column title in list stash.</comment>
         <val lang="en_US">Creation date</val>
         <val lang="de_DE">Creation date</val>
-        <val lang="fr_FR">Creation date</val>
+        <val lang="fr_FR">Date de création</val>
         <val lang="ja_JP">Creation date</val>
         <val lang="nl_NL">Creation date</val>
         <val lang="zh_CN">Creation date</val>
@@ -283,7 +283,7 @@
         <comment>The title for Graph column in Git history.</comment>
         <val lang="en_US">Graph</val>
         <val lang="de_DE">Graph</val>
-        <val lang="fr_FR">Graph</val>
+        <val lang="fr_FR">Graphe</val>
         <val lang="ja_JP">Graph</val>
         <val lang="nl_NL">Graph</val>
         <val lang="zh_CN">Graph</val>
@@ -297,7 +297,7 @@
         <val lang="de_DE">Kann Änderungen nicht ziehen (pull) ({0}), da Konflikte zwischen den lokalen Änderungen und den eingehenden Änderungen festgestellt worden sind.\nÜbergeben (commit), verstecken (stash) oder verwerfen (discard) Sie die lokalen Änderungen und versuchen Sie es erneut.</val>
         <val lang="fr_FR">Impossible d''effectuer un pull des ({0}) modifications car des conflits
             ont été détectés entre les modifications locales dans les fichiers répertoriés
-            ci-dessous et les modifications distantes entrantes.\nEffectuez un commit, une remise ou
+            ci-dessous et les modifications remote entrantes.\nEffectuez un commit, une remise ou
             abandonnez les modifications locales en conflit et réessayez.</val>
         <val lang="ja_JP">以下にリストされたファイルのローカル変更と受信リモート変更の間で競合が検出されたため、変更をプル ({0}) できません。\n競合するローカル変更をコミット、一時退避、または破棄して、再試行してください。</val>
         <val lang="nl_NL">Kan ({0}) wijzigingen niet ophalen omdat er conflicten zijn gedetecteerd tussen lokale wijzigingen in de onderstaande bestanden en de inkomende externe wijzigingen.\nLeg de conflicterende lokale wijzigingen vast, bewaar ze of negeer ze en probeer het opnieuw.</val>
