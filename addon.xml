@@ -26,6 +26,15 @@
 				showing the history of the repository resources, and more. The add-on also includes a built-in tool for comparing and merging changes.
 			</p>
                     </div>
+                    <div>
+                        <h3>What's new in version 3.0.1</h3>
+                        <ol>
+                            <li><b>Critical/Security:</b> The add-on no longer distributes log4j libraries to avoid the
+                                Log4Shell exploit. For more info see: <a
+                                    href="https://www.randori.com/blog/cve-2021-44228/" 
+                                    >CVE-2021-44228</a>.</li>
+                        </ol>
+                    </div>
 		    <div>
                         <h3>What's new in version 3.0.0</h3>
                         <ol>
