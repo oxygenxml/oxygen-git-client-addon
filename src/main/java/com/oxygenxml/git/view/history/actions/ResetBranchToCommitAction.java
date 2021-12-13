@@ -10,6 +10,7 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.ResetToCommitDialog;
 
@@ -27,6 +28,11 @@ public class ResetBranchToCommitAction extends AbstractAction {
    * Commit characteristics.
    */
   private CommitCharacteristics commitCharacteristics; // NOSONAR
+  
+  /**
+   * Constant for branch name maximum length.
+   */
+  private static final int BRANCH_NAME_MAXIMUM_LENGTH = 50;
 
   /**
    * Constructor.
@@ -37,7 +43,7 @@ public class ResetBranchToCommitAction extends AbstractAction {
     super(
         MessageFormat.format(
             translator.getTranslation(Tags.RESET_BRANCH_TO_THIS_COMMIT),
-            GitAccess.getInstance().getBranchInfo().getBranchName()) + "...");
+            TextFormatUtil.shortenText(GitAccess.getInstance().getBranchInfo().getBranchName(), BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")) + "...");
     this.commitCharacteristics = commitCharacteristics;
   }
 
