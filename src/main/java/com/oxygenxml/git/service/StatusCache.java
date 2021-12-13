@@ -68,7 +68,7 @@ public class StatusCache {
    * Reset inner cache.
    */
   public synchronized void resetCache() {
-    logger.info("Reset cahche", new Exception());
+    logger.debug("Reset cahche", new Exception());
     cache = null;
   }
 
