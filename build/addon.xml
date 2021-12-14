@@ -1,11 +1,8 @@
 <!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/19.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
-<xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
+<xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
-        <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/3.0.0/oxygen-git-client-3.0.0-plugin.jar"/>
-        <xt:version>3.0.0</xt:version>
+        <xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/3.0.1/oxygen-git-client-3.0.1-plugin.jar"/>
+        <xt:version>3.0.1</xt:version>
         <xt:oxy_version>22.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
@@ -25,6 +22,13 @@
 				pushing/pulling changes to/from the remote repository, creating, checking out and deleting branches,
 				showing the history of the repository resources, and more. The add-on also includes a built-in tool for comparing and merging changes.
 			</p>
+                    </div>
+                    <div>
+                        <h3>What's new in version 3.0.1</h3>
+                        <ol>
+                            <li><b>Critical/Security:</b> The add-on no longer distributes log4j libraries to avoid the
+                                Log4Shell exploit. For more info see: <a href="https://www.randori.com/blog/cve-2021-44228/">CVE-2021-44228</a>.</li>
+                        </ol>
                     </div>
 		    <div>
                         <h3>What's new in version 3.0.0</h3>
@@ -153,8 +157,8 @@
                             <li>The Git History view now has better automatic refresh support.</li>
                             <li>A confirmation dialog box has been added for instances when you try
                                 to commit without a message.</li>
-                            <li>The add-on now contributes a preferences page (Options > Preferences
-                                > Plugins > Git Client) that contains a "Notify me about new commits
+                            <li>The add-on now contributes a preferences page (Options &gt; Preferences
+                                &gt; Plugins &gt; Git Client) that contains a "Notify me about new commits
                                 in the remote repository" option. When this option is selected,
                                 Oxygen will show notification messages when it detects that new
                                 commits have been pushed to the remote repository.</li>
@@ -164,9 +168,7 @@
                             <li>Various other minor improvements and bug fixes were
                                 implemented.</li>
                         </ol>
-                        <p>For more information about the add-on's features, see <a
-                                href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md"
-                                >the README document</a>.</p>
+                        <p>For more information about the add-on's features, see <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md">the README document</a>.</p>
                     </div>
                     <div>
                         <h3>What's new in version 2.2.0</h3>
@@ -195,9 +197,7 @@
                                 user.</li>
                             <li>Fixed other small bugs.</li>
                         </ol>
-                        <p>For more information about the add-on's features, see <a
-                                href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md"
-                                >the README document</a>.</p>
+                        <p>For more information about the add-on's features, see <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md">the README document</a>.</p>
                     </div>
                     <div>
                         <h3>What's new in version 2.1.1</h3>
@@ -246,9 +246,7 @@
                     <div>
                         <h3>What's new in version 1.5.2</h3>
                         <ol>
-                            <li>Updated to JGit version 5.4.2 which comes with various bug fixes: <a
-                                    href="https://projects.eclipse.org/projects/technology.jgit/releases/5.4.2/review"
-                                    >https://projects.eclipse.org/projects/technology.jgit/releases/5.4.2/review</a></li>
+                            <li>Updated to JGit version 5.4.2 which comes with various bug fixes: <a href="https://projects.eclipse.org/projects/technology.jgit/releases/5.4.2/review">https://projects.eclipse.org/projects/technology.jgit/releases/5.4.2/review</a></li>
                             <li>Fixed issue: Oxygen freezes on start-up.</li>
                             <li>Fixed issue: Opening a Git repository fails with a
                                 java.lang.NullPointerException.</li>
@@ -271,8 +269,7 @@
                             <li>Updated to JGit 5.3.1.</li>
                             <li>The add-on now works with more kinds of SSH keys, by using JGit's
                                 new SSH session factory based on 'Apache MINA sshd' by default. See
-                                    <a href="https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2"
-                                    >https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2</a> for a
+                                    <a href="https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2">https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2</a> for a
                                 full list of benefits.</li>
                             <!-- <li>The add-on now allows comparing images.</li> -->
                             <li>The tooltips of the push/pull buttons and the branch label now also
@@ -347,12 +344,10 @@
                     <div>
                         <h1>Using the plugin</h1>
                         <p><b>Note:</b> After installing the plugin, if the <b>Git Staging</b> view
-                            is not visible, you can open it from the <b>Window > Show View</b>
+                            is not visible, you can open it from the <b>Window &gt; Show View</b>
                             menu.</p>
                         <p>For information about how to use the Git Client, please see the README
-                            document on GitHub: <a
-                                href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md"
-                                >
+                            document on GitHub: <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md">
                                 https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md</a>.</p>
                     </div>
                 </body>
