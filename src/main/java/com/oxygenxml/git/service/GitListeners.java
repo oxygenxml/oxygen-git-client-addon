@@ -141,7 +141,10 @@ public class GitListeners {
     gitEventListeners = clone;
   }
 
-  public void clear() {
+  /**
+   * Drops all recorded listeners. Usually used from tests.
+   */
+  void clear() {
     gitEventPriorityListeners.clear();
     gitEventListeners.clear();
   }

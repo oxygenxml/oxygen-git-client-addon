@@ -171,7 +171,9 @@ public class GitAccess {
 	 * Translation support.
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
-	
+	/**
+	 * Keeps a cache of the computed status to avoid processing overhead.
+	 */
 	private StatusCache statusCache = null;
 
 	/**
@@ -181,6 +183,9 @@ public class GitAccess {
 	  statusCache = new StatusCache(GitListeners.getInstance(), this::getGit);
 	}
 	
+	/**
+	 * @return A cache of the computed status to avoid processing overhead.
+	 */
 	public StatusCache getStatusCache() {
     return statusCache;
   }

@@ -410,6 +410,14 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
     return Optional.empty();
   }
   
+  /**
+   * Checks if the file is from the currently loaded Git repository.
+   * 
+   * @param editorLocation File location.
+   * 
+   * @return <code>true</code> if the file is from the currently loaded Git repository.
+   * <code>false</code> otherwise.
+   */
   public static boolean isFileFromRepository(URL editorLocation) {
     boolean toRet = false;
     File locateFile = null;
