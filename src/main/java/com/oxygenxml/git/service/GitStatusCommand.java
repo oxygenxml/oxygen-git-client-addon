@@ -52,7 +52,7 @@ public class GitStatusCommand {
    */
   public GitStatus getStatus() {
     GitStatus gitStatus = null;
-    if (git != null) {
+    if (git != null && git.get() != null) {
       try {
         LOGGER.debug("-- Compute our GitStatus -> getStatus() --");
         Status status = git.get().status().call();
