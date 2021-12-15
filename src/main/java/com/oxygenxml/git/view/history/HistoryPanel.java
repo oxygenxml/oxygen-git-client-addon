@@ -184,7 +184,7 @@ public class HistoryPanel extends JPanel {
     graphCellRender = new CommitsGraphCellRender();
   
     addPresentHistoryActions(presentHistoryStrategyButton);
-    currentStrategy = HistoryStrategy.ALL_BRANCHES;
+    currentStrategy = HistoryStrategy.CURRENT_BRANCH;
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
     historyTable = new Table();
