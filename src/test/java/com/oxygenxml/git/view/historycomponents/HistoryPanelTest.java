@@ -304,6 +304,89 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
 
     expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n";
     expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+    
     assertEquals(expected, dump);
+  }
+  
+  
+  /**
+   * Tests all methods to present history of the current repository.
+   * <br><br>
+   * EXM-49236
+   * 
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testHistoryStrategies() throws Exception {
+    
+    URL script = getClass().getClassLoader().getResource("scripts/history_script_branches.txt");
+
+    File wcTree = new File("target/gen/GitHistoryTest_testChangeBranchEvent");
+    generateRepositoryAndLoad(script, wcTree);
+
+    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
+
+    String dump = dumpHistory(commitsCharacteristics);
+
+    String expected = "[ Changed on main branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
+        + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
+        + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
+        + "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n"
+        + "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n";
+    expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+    
+    assertEquals(expected, dump);
+    
+    commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.ALL_LOCAL_BRANCHES, null, null);
+
+    dump = dumpHistory(commitsCharacteristics);
+
+    expected = 
+        "[ Changed on feature branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n"
+        + "[ Changed on main branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
+        + "[ Feature branch commit. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n"
+        + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
+        + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
+        + "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n"
+        + "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n";
+    expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+    
+    assertEquals(expected, dump);
+    
+    commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.CURRENT_BRANCH, null, null);
+
+    dump = dumpHistory(commitsCharacteristics);
+
+    expected = "[ Changed on main branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
+        + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
+        + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
+        + "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n"
+        + "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n";
+    expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+    
+    assertEquals(expected, dump);
+    
+    commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.ALL_BRANCHES, null, null);
+
+    dump = dumpHistory(commitsCharacteristics);
+
+    expected = 
+        "[ Changed on feature branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n"
+        + "[ Changed on main branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
+        + "[ Feature branch commit. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n"
+        + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
+        + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
+        + "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n"
+        + "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n";
+    expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+    
+    assertEquals(expected, dump);
+  
   }
 }
