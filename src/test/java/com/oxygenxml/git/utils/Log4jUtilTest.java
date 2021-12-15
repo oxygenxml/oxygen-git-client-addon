@@ -51,7 +51,7 @@ public class Log4jUtilTest {
     //=====================
     
     Exception ex = new IOException("A test");
-    LoggerContext.getContext().getLogger(FS.class).error(ex,  ex);
+    LoggerContext.getContext().getLogger(FS.class.toString()).error(ex,  ex);
 
     Assert.assertTrue("The log must pass: " + writer.toString(), writer.toString().contains("java.io.IOException: A test"));
 
@@ -74,7 +74,7 @@ public class Log4jUtilTest {
     writer.getBuffer().setLength(0);
     perm = new FilePermission(".probe-64fe0316-10fa-4fa1-b163-d79366318e4b", "write");
     ex = new AccessControlException("access denied "+ perm, perm);
-    LoggerContext.getContext().getLogger(Log4jUtilTest.class).error(ex,  ex);
+    LoggerContext.getContext().getLogger(Log4jUtilTest.class.toString()).error(ex,  ex);
     
     Assert.assertTrue("The log must pass: " + writer.toString(), writer.toString().startsWith("java.security.AccessControlException: access denied (\"java.io.FilePermission\" \".probe-64fe0316-10fa-4fa1-b163-d79366318e4b\" \"write\")"));
   }
