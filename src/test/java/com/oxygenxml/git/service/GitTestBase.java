@@ -157,14 +157,33 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    */
   protected void bindLocalToRemote(Repository localRepository, Repository remoteRepo)
       throws NoRepositorySelected, URISyntaxException, MalformedURLException, IOException {
+    bindLocalToRemote(localRepository, remoteRepo, "origin", "main");
+  }
+  
+  
+  /**
+   * Binds the local repository to the remote one.
+   * 
+   * @param localRepository The local repository.
+   * @param remoteRepo      The remote repository.
+   * @param remoteName      The remote name.
+   * @param branchName      The branch name.
+   * 
+   * @throws NoRepositorySelected
+   * @throws URISyntaxException
+   * @throws MalformedURLException
+   * @throws IOException
+   */
+  protected void bindLocalToRemote(Repository localRepository, Repository remoteRepo, 
+      String remoteName, String branchName)
+      throws NoRepositorySelected, URISyntaxException, MalformedURLException, IOException {
     
     StoredConfig config = localRepository.getConfig();
-    RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
+    RemoteConfig remoteConfig = new RemoteConfig(config, remoteName);
     remoteConfig.addURI(new URIish(remoteRepo.getDirectory().toURI().toURL()));
-    remoteConfig.addFetchRefSpec(new RefSpec("+refs/heads/*:refs/remotes/origin/*"));
-    
-    String branchName = "main";
-    String remoteName = "origin";
+    remoteConfig.addFetchRefSpec(new RefSpec("+refs/heads/*:refs/remotes/" + remoteName + "/*"));
+   
+
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
 
@@ -180,6 +199,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     remoteRepos.add(remoteRepo);
   }
+
   
   
   /**

@@ -572,6 +572,178 @@ public class BranchManagementTest extends GitTestBase{
   
   
   /**
+   * <p><b>Description:</b> Tests the filter for branches on a tree with both local and remote branches with more remotes.</p>
+   * <p><b>Bug ID:</b>  EXM-49458</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testBranchesTreeCustomRemote() throws Exception {
+    bindLocalToRemote(localRepository , remoteRepository, "fork", "main");
+    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    //Make the first commit for the local repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.createBranch(LOCAL_BRANCH_NAME2);
+    
+    gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
+    
+    file = new File(REMOTE_TEST_REPOSITORY + "remote1.txt");
+    file.createNewFile();
+    setFileContent(file, "remote content");
+    
+    //Make the first commit for the remote repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
+    gitAccess.commit("First remote commit.");
+    gitAccess.createBranch(REMOTE_BRANCH_NAME1);
+    gitAccess.createBranch(REMOTE_BRANCH_NAME2);
+    
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    gitAccess.fetch();
+
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    branchManagementPanel.filterTree("ewu82m");
+    flushAWT();
+    GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    StringBuilder actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n",
+        actualTree.toString());
+    
+    branchManagementPanel.filterTree("ai");
+    flushAWT();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/fork/\n" + 
+        "      refs/remotes/fork/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" +
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
+        actualTree.toString());
+    
+    branchManagementPanel.filterTree("Branch");
+    flushAWT();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/LocalBranch\n" + 
+        "    refs/heads/LocalBranch2\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/fork/\n" + 
+        "      refs/remotes/fork/RemoteBranch\n" + 
+        "      refs/remotes/fork/RemoteBranch2\n" +
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/RemoteBranch\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n",
+        actualTree.toString());
+    
+    branchManagementPanel.filterTree("2");
+    flushAWT();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/LocalBranch2\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/fork/\n" + 
+        "      refs/remotes/fork/RemoteBranch2\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "",
+        actualTree.toString());
+    
+    branchManagementPanel.filterTree("al");
+    flushAWT();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/LocalBranch\n" + 
+        "    refs/heads/LocalBranch2\n" + 
+        "",
+        actualTree.toString());
+    
+    branchManagementPanel.filterTree("Rem");
+    flushAWT();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/fork/\n" + 
+        "      refs/remotes/fork/RemoteBranch\n" + 
+        "      refs/remotes/fork/RemoteBranch2\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/RemoteBranch\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "",
+        actualTree.toString());
+    
+    branchManagementPanel.filterTree("ai");
+    flushAWT();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/fork/\n" + 
+        "      refs/remotes/fork/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
+        "",
+        actualTree.toString());
+    
+    branchManagementPanel.filterTree("a");
+    flushAWT();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/LocalBranch\n" + 
+        "    refs/heads/LocalBranch2\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/fork/\n" + 
+        "      refs/remotes/fork/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
+        "      refs/remotes/fork/RemoteBranch\n" + 
+        "      refs/remotes/fork/RemoteBranch2\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
+        "      refs/remotes/origin/RemoteBranch\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "",
+        actualTree.toString());
+  }
+  
+  
+  
+  /**
    * <p><b>Description:</b> Tests the tool tips for branches on a tree with both local and remote branches.</p>
    * <p><b>Bug ID:</b> EXM-46438</p>
    * 
@@ -732,6 +904,75 @@ public class BranchManagementTest extends GitTestBase{
         "<html><p>Local_branch main<br>"
         // Also has upstream
         + "Upstream_branch origin/main<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    assertNull(leaf.getNextLeaf());
+    
+  }
+  
+  
+  /**
+   * <p><b>Description:</b> Tests the tool tips for branches that contain slashes
+   * in their names with a custom remote.</p>
+   * <p><b>Bug ID:</b> EXM-49458</p>
+   * 
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testBranchesTreeToolTipsMultipleRemotes() throws Exception {
+    final String localTestRepository  = "target/test-resources/GitAccessCheckoutNewBranch/localRepository";
+    final String remoteTestRepository = "target/test-resources/GitAccessCheckoutNewBranch/remoteRepository";
+    
+    //Creates the remote repository.
+    createRepository(remoteTestRepository);
+    remoteRepository = gitAccess.getRepository();
+    
+    //Creates the local repository.
+    createRepository(localTestRepository);
+    localRepository = gitAccess.getRepository();
+    
+    bindLocalToRemote(localRepository , remoteRepository, "fork", "main");
+    
+    // Local repo
+    File file = new File(localTestRepository + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    gitAccess.createBranch("the/breanci");
+    
+    // Local repo again
+    gitAccess.setRepositorySynchronously(localTestRepository);
+    
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    
+    JTree tree = branchManagementPanel.getTree();
+    GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    DefaultMutableTreeNode leaf = root.getFirstLeaf();
+    JLabel rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 3, true);
+    assertEquals("breanci", rendererLabel.getText());
+    assertEquals(
+        "<html><p>Local_branch the/breanci<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 4, true);
+    assertEquals(
+        "<html><p>Local_branch main<br>"
+        // Also has upstream
+        + "Upstream_branch fork/main<br><br>"
         + "Last_Commit_Details:<br>"
         + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
         + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
