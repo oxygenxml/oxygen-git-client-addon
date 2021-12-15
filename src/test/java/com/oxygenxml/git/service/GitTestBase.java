@@ -461,8 +461,10 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        WSEditorChangeListener listener = (WSEditorChangeListener) invocation.getArguments()[0];
-        editorChangeListeners.add(listener);
+        if (invocation.getArguments().length > 0 ) {
+          WSEditorChangeListener listener = (WSEditorChangeListener) invocation.getArguments()[0];
+          editorChangeListeners.add(listener);
+        }
         return null;
       }
     }).when(pluginWSMock).addEditorChangeListener(
