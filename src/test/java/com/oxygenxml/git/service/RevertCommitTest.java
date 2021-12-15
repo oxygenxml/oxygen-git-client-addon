@@ -12,10 +12,13 @@ import javax.swing.SwingUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.actions.RevertCommitAction;
@@ -24,6 +27,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.ColorTheme;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Tests the revert action
@@ -60,6 +64,40 @@ public class RevertCommitTest extends GitTestBase {
     ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
     Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
     Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
+    
+    UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+    Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
+    Mockito.when(utilAccessMock.locateFile((URL) Mockito.any())).then(new Answer<File>() {
+      @Override
+      public File answer(InvocationOnMock invocation) throws Throwable {
+        URL url = (URL) invocation.getArguments()[0];
+        
+        String path = url.getPath();
+        if (PlatformDetectionUtil.isWin() && path.startsWith("/")) {
+          path = path.substring(1, path.length());
+        }
+        
+        return new File(url.getPath());
+      }
+    });
+    
+   //    PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName()
+    Mockito.when(utilAccessMock.getFileName(Mockito.anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        String file = (String) invocation.getArguments()[0];
+        file = file.replace('\\', '/');
+        int index = file.lastIndexOf("/");
+        return index != -1 ? file.substring(index + 1) : file;
+      }
+    });
+    
+    Mockito.when(utilAccessMock.uncorrectURL(Mockito.anyString())).then(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        return invocation.getArguments()[0].toString().replace("%20", " ");
+      }
+    });
     
     ImageUtilities imageUtilities = Mockito.mock(ImageUtilities.class);
     Mockito.doReturn(null).when(imageUtilities).loadIcon((URL)Mockito.any());
