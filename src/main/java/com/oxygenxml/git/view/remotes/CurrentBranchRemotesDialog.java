@@ -100,16 +100,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
 		boolean existsRemotes = false;
-		boolean foundedBranchRemoteForCurrentLocalBranch = false;
 		final List<RemoteBranchItem> branchesToAdd = new ArrayList<>();
 		
 		currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
 
 		try {
-			final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
-			final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
-			final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
-					.getRemotesFromConfig().keySet());
 			
 			final ListCellRenderer<? super RemoteBranchItem> oldRender = remoteBranchItems.getRenderer();
 			remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
@@ -132,35 +127,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				return toReturn;
 			});
 
-			for(String remote : remotesNames) {
-				existsRemotes = true;
-				URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
-						remote, ConfigConstants.CONFIG_KEY_URL));
-				Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
-						sourceURL, null);
-			
-				for(Ref branch: branchesConfig) {
-					final String branchName = branch.getName();
-					final String remoteC = branchConfig.getRemote();
-					final String mergeC = branchConfig.getMerge();
-					if(remoteC !=null && remoteC.equals(remote) 
-							&& mergeC != null && mergeC.equals(branchName)) {
-						RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
-						foundedBranchRemoteForCurrentLocalBranch = true;
-						remoteItem.setFirstSelection(true);
-						branchesToAdd.add(remoteItem);
-					} else {
-						branchesToAdd.add(new RemoteBranchItem(remote, branchName));
-					}
-				}
-			}
-
-			if(!foundedBranchRemoteForCurrentLocalBranch) {
-				RemoteBranchItem remoteItem = new RemoteBranchItem(null, null);
-				remoteItem.setFirstSelection(true);
-				remoteBranchItems.addItem(remoteItem);	
-				remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
-			}
+			existsRemotes = addRemoteBranches(branchesToAdd);
 
 		} catch (NoRepositorySelected | URISyntaxException e) {
 			LOGGER.error(e, e);
@@ -205,6 +172,59 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 					this.setResizable(false);
 		}
 
+	}
+
+    
+	/**
+	 * Add remote branches for current repository. 
+	 * 
+	 * @param branchesToAdd List to add the branches.
+     *
+	 * @return <code>true</code> if at least a branch is founded.
+	 * 
+	 * @throws URISyntaxException
+	 * @throws NoRepositorySelected 
+	 */
+	private boolean addRemoteBranches(final List<RemoteBranchItem> branchesToAdd) throws URISyntaxException, NoRepositorySelected {
+		
+		final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
+		final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
+		final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
+				.getRemotesFromConfig().keySet());
+		boolean foundedBranchRemoteForCurrentLocalBranch = false;
+		boolean existsRemotes = false;
+		
+		for(String remote : remotesNames) {
+			existsRemotes = true;
+			final URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
+					remote, ConfigConstants.CONFIG_KEY_URL));
+			final Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
+					sourceURL, null);
+		
+			for(Ref branch: branchesConfig) {
+				final String branchName = branch.getName();
+				final String remoteC = branchConfig.getRemote();
+				final String mergeC = branchConfig.getMerge();
+				if(remoteC !=null && remoteC.equals(remote) 
+						&& mergeC != null && mergeC.equals(branchName)) {
+					final RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
+					foundedBranchRemoteForCurrentLocalBranch = true;
+					remoteItem.setFirstSelection(true);
+					branchesToAdd.add(remoteItem);
+				} else {
+					branchesToAdd.add(new RemoteBranchItem(remote, branchName));
+				}
+			}
+		}
+
+		if(!foundedBranchRemoteForCurrentLocalBranch) {
+			final RemoteBranchItem remoteItem = new RemoteBranchItem(null, null);
+			remoteItem.setFirstSelection(true);
+			remoteBranchItems.addItem(remoteItem);	
+			remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
+		}
+		
+		return existsRemotes;
 	}
 
 
@@ -330,7 +350,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		 * @param remote
 		 * @param branch
 		 */
-		RemoteBranchItem(String remote, String branch) {
+		RemoteBranchItem(final String remote, final String branch) {
 			this.remote = remote;
 			this.branch = branch;
 			this.branchShortName = branch != null ? Repository.shortenRefName(branch) : null;
@@ -355,7 +375,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		 * @return <code>true</code> if the remote or branch are undefined.
 		 */
 		public boolean isUndefined() {
-			return remote ==null || branch == null;
+			return remote == null || branch == null;
 		}
 
 		@Override
