@@ -15,11 +15,13 @@ import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.RepositoryState;
 
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
@@ -281,8 +283,9 @@ public class BranchTreeMenuActionsProvider {
 
     String mergeActionName = MessageFormat.format(
         Translator.getInstance().getTranslation(Tags.MERGE_BRANCH1_INTO_BRANCH2),
-        selectedBranch,
-        currentBranch);
+        TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
+        TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")
+    );
 
     return new AbstractAction(mergeActionName) {
       @Override

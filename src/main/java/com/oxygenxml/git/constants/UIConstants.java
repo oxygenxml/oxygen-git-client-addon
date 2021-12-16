@@ -98,5 +98,11 @@ public class UIConstants {
    * HGAP for Windows.
    */
   public static final int HGAP_WIN = 7;
+  
+  /**
+   * Constant for branch name maximum length.
+   */
+  public static final int BRANCH_NAME_MAXIMUM_LENGTH = 50;
+
 
 }
