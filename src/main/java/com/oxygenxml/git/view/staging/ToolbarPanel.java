@@ -1751,6 +1751,8 @@ public class ToolbarPanel extends JPanel {
 
     };
     
+    remoteButton.setToolTipText(TRANSLATOR.getTranslation(Tags.REMOTE_BUTTON_TOOLTIP));
+    
     remoteButton.addActionToMenu(createRemotesAction(), false);
     remoteButton.addActionToMenu(new SetRemoteAction(), false);
     remoteButton.addActionToMenu(createEditConfigFileAction(), false);

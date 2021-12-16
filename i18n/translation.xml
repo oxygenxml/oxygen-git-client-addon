@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+     <key value="Remote_Button_Tooltip">
+        <comment>Tool tip text for remote repositories button.</comment>
+        <val lang="en_US">Configure the remote repositories where to push the commits.</val>
+        <val lang="de_DE">Configure the remote repositories where to push the commits.</val>
+        <val lang="fr_FR">Configure the remote repositories where to push the commits.</val>
+        <val lang="ja_JP">Configure the remote repositories where to push the commits.</val>
+        <val lang="nl_NL">Configure the remote repositories where to push the commits.</val>
+        <val lang="zh_CN">Configure the remote repositories where to push the commits.</val>
+        </key>
     <key value="Please_Try_Again">
         <comment>Please try again message.</comment>
         <val lang="en_US">Please try again.</val>
