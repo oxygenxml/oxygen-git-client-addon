@@ -168,7 +168,7 @@ public class HistoryPanel extends JPanel {
   /**
    * Button that contains all strategy to present history.
    */
-  private final SplitMenuButton presentHistoryStrategyButton = new SplitMenuButton(HistoryStrategy.ALL_BRANCHES.toString(), 
+  private final SplitMenuButton presentHistoryStrategyButton = new SplitMenuButton(HistoryStrategy.CURRENT_BRANCH.toString(), 
 		  null, true, false, true, true);
   
 
@@ -375,7 +375,7 @@ public class HistoryPanel extends JPanel {
 		   final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(action);
 		   branchActionsGroup.add(menuItem);
 		   button.add(menuItem);
-		   if(HistoryStrategy.ALL_BRANCHES == strategy) {
+		   if(HistoryStrategy.CURRENT_BRANCH == strategy) {
 			   menuItem.setSelected(true);
 		   }
 	  }
