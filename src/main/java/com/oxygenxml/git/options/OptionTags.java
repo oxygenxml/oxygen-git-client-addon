@@ -120,5 +120,10 @@ public class OptionTags {
    * <code>true</code> if the create new branch option is selected.
    */
   public static final String CHECKOUT_COMMIT_SELECT_NEW_BRANCH = "com.oxygenxml.git.checkout.commit.select.new.branch";
+  
+  /**
+   * The tag option for history strategy to present commits history.
+   */
+  public static final String HISTORY_STRATEGY = "com.oxygenxml.git.history.strategy";
 
 }

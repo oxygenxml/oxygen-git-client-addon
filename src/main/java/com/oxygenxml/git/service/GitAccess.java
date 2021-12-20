@@ -2730,7 +2730,7 @@ public class GitAccess {
 			BranchConfig branchConfig = new BranchConfig(config, branchName);
 			remoteConfig = branchConfig.getRemote();
 		} catch (NoRepositorySelected e) {
-			LOGGER.error(e,e);
+			LOGGER.debug(e,e);
 		}
 	    
 		return remoteConfig;

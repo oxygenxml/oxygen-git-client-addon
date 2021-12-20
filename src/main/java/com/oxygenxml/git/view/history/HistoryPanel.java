@@ -57,6 +57,7 @@ import org.eclipse.jgit.util.StringUtils;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -84,6 +85,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -168,11 +170,15 @@ public class HistoryPanel extends JPanel {
   /**
    * Button that contains all strategy to present history.
    */
-  private final SplitMenuButton presentHistoryStrategyButton = new SplitMenuButton(HistoryStrategy.CURRENT_BRANCH.toString(), 
-		  null, true, false, true, true);
+  private final SplitMenuButton presentHistoryStrategyButton; 
   
+  /**
+   * Contains the options storage.
+   */
+  private final WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();;
 
   
+
   /**
    * Constructor.
    * 
@@ -183,8 +189,17 @@ public class HistoryPanel extends JPanel {
     
     graphCellRender = new CommitsGraphCellRender();
   
+    currentStrategy = HistoryStrategy.getStrategy(optionsStorage.getOption(OptionTags.HISTORY_STRATEGY, 
+        HistoryStrategy.CURRENT_BRANCH.toString()));
+    
+    if(currentStrategy == null) {
+      currentStrategy = HistoryStrategy.CURRENT_BRANCH;
+    }
+    
+    presentHistoryStrategyButton = new SplitMenuButton(currentStrategy.toString(), 
+        null, true, false, true, true);
+    
     addPresentHistoryActions(presentHistoryStrategyButton);
-    currentStrategy = HistoryStrategy.CURRENT_BRANCH;
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
     historyTable = new Table();
@@ -367,6 +382,7 @@ public class HistoryPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				currentStrategy = strategy;
 				button.setText(strategy.toString());
+				optionsStorage.setOption(OptionTags.HISTORY_STRATEGY, strategy.toString());
 				refresh();
 			}
 			
@@ -375,7 +391,7 @@ public class HistoryPanel extends JPanel {
 		   final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(action);
 		   branchActionsGroup.add(menuItem);
 		   button.add(menuItem);
-		   if(HistoryStrategy.CURRENT_BRANCH == strategy) {
+		   if(currentStrategy.equals(strategy)) {
 			   menuItem.setSelected(true);
 		   }
 	  }
