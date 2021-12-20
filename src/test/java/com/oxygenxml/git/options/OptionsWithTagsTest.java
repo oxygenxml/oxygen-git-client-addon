@@ -122,6 +122,7 @@ public class OptionsWithTagsTest {
         + "SSH_PROMPT_ANSWERS\n"
         + "PERSONAL_ACCES_TOKENS_LIST\n"
         + "STASH_INCLUDE_UNTRACKED\n"
-        + "CHECKOUT_COMMIT_SELECT_NEW_BRANCH", dump);
+        + "CHECKOUT_COMMIT_SELECT_NEW_BRANCH\n"
+        + "HISTORY_STRATEGY", dump);
   }
 }
