@@ -22,6 +22,8 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
@@ -76,6 +78,8 @@ import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -286,6 +290,9 @@ public class ToolbarPanel extends JPanel {
    * <code>true</code> if a repository is selected.
    */
   private boolean isRepoSelected;
+  
+  private JMenuBar menuBar;
+
 
 
   /**
@@ -305,7 +312,7 @@ public class ToolbarPanel extends JPanel {
     this.refreshSupport = refreshSupport;
 
     createGUI(historyController, branchManagementViewPresenter);
-
+    
     gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
@@ -1754,6 +1761,25 @@ public class ToolbarPanel extends JPanel {
     remoteButton.addActionToMenu(createRemotesAction(), false);
     remoteButton.addActionToMenu(new SetRemoteAction(), false);
     remoteButton.addActionToMenu(createEditConfigFileAction(), false);
+    
+       ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).addMenuBarCustomizer(new MenuBarCustomizer() {
+		
+		@Override
+		public void customizeMainMenu(JMenuBar mainMenu) {
+			JMenu myMenu = new JMenu("Git");
+			myMenu.add(createRemotesAction());
+			  // Add your menu after the Tools menu
+			for(int i = 0; i < mainMenu.getMenuCount(); i++) {
+				JMenu menu = mainMenu.getMenu(i);
+				if(TRANSLATOR.getTranslation(Tags.TOOLS).equals(menu.getText())) {
+					mainMenu.add(myMenu, i + 1);
+					break;
+				}
+			}
+			
+		}
+	});
+   
     
     return remoteButton;
   }

@@ -1686,6 +1686,7 @@ public class Tags {
    * All local branches.
    */
   public static final String ALL_LOCAL_BRANCHES = "All_Local_Branches";
+public static final String TOOLS = "Tools";
   
 }
 
