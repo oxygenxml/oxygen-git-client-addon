@@ -346,9 +346,9 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     dump = dumpHistory(commitsCharacteristics);
 
     expected = 
-        "[ Changed on feature branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n"
-        + "[ Changed on main branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
-        + "[ Feature branch commit. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n"
+        "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n"
+        + "[ Changed on main branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
+        + "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n"
         + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
         + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
         + "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n"
@@ -377,9 +377,9 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     dump = dumpHistory(commitsCharacteristics);
 
     expected = 
-        "[ Changed on feature branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n"
-        + "[ Changed on main branch. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
-        + "[ Feature branch commit. , 15 Dec 2021 , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n"
+        "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n"
+        + "[ Changed on main branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
+        + "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n"
         + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
         + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
         + "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n"

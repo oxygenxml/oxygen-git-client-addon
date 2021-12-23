@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.history;
 
+import org.eclipse.jgit.annotations.Nullable;
+
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -51,6 +53,30 @@ public enum HistoryStrategy {
 	@Override
 	public String toString() {
 	    return this.stringValue;
+	}
+	
+	/**
+	 * Return the strategy with to string value equals with given argument or <code>null</code>
+	 * 
+	 * @param strategy The string value for searched strategy.
+	 * 
+	 * @return The founded strategy or <code>null</code>
+	 */
+	@Nullable
+	public static HistoryStrategy getStrategy(String strategy) {
+	  HistoryStrategy toReturn = null;
+	  
+	  if(ALL_BRANCHES.toString().equals(strategy)) {
+	    toReturn = ALL_BRANCHES;
+	  } else if(ALL_LOCAL_BRANCHES.toString().equals(strategy)) {
+      toReturn = ALL_LOCAL_BRANCHES;
+    } else if(CURRENT_BRANCH.toString().equals(strategy)) {
+      toReturn = CURRENT_BRANCH;
+    } else if(CURRENT_LOCAL_BRANCH.toString().equals(strategy)) {
+      toReturn = CURRENT_LOCAL_BRANCH;
+    }
+	  
+	  return toReturn;
 	}
 
 }

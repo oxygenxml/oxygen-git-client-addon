@@ -1688,5 +1688,10 @@ public class Tags {
   public static final String ALL_LOCAL_BRANCHES = "All_Local_Branches";
 public static final String TOOLS = "Tools";
   
+  /**
+   * Tool tip text for remote repositories button.
+   */
+  public static final String REMOTE_BUTTON_TOOLTIP = "Remote_Button_Tooltip";
+  
 }
 
