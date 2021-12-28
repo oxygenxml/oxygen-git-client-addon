@@ -35,6 +35,8 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.HistoryController;
+import com.oxygenxml.git.view.refresh.IRefreshable;
+import com.oxygenxml.git.view.refresh.IRefresher;
 import com.oxygenxml.git.view.tags.GitTagsManager;
 
 
@@ -44,7 +46,7 @@ import com.oxygenxml.git.view.tags.GitTagsManager;
  * @author Alex_Smarandache
  *
  */
-public class GitActionsManager {
+public class GitActionsManager implements IRefresher, IRefreshable {
 	
 	/**
 	 * Clone new repository action.
@@ -141,6 +143,10 @@ public class GitActionsManager {
 	 */
 	private final List<AbstractAction>           allActions;
 
+	/**
+	 * List with refreshables associate with this class.
+	 */
+	private final List<IRefreshable>             refreshables;
 
 
 	/**
@@ -158,6 +164,7 @@ public class GitActionsManager {
 		this.historyController             = historyController;
 		this.branchManagementViewPresenter = branchManagementViewPresenter;
 		this.allActions                    = new ArrayList<>();  
+		this.refreshables                  = new ArrayList<>(); 
 		gitController.addGitListener(new GitEventAdapter() {
 			@Override
 			public void operationSuccessfullyEnded(GitEventInfo info) {
@@ -362,8 +369,10 @@ public class GitActionsManager {
 	/**
 	 * Refresh actions after a git operation that could affect the action.
 	 */
+	@Override
 	public void refresh() {
 		Repository repo = null;
+		
 		try {
 			repo = gitController.getGitAccess().getRepository();
 		} catch (NoRepositorySelected e) {
@@ -382,6 +391,8 @@ public class GitActionsManager {
 			updateActionsStatus();
 		}
 
+		updateAll();
+		
 	}
 	
 	
@@ -420,6 +431,36 @@ public class GitActionsManager {
 		    int noOfStashes = stashes == null ? 0 : stashes.size();
 		    listStashesAction.setEnabled(noOfStashes > 0);
 		}
+	}
+
+
+	@Override
+	public void addRefreshable(IRefreshable refreshable) {
+		refreshables.add(refreshable);
+	}
+
+
+	@Override
+	public void removeRefreshable(IRefreshable refreshable) {
+		refreshables.remove(refreshable);
+	}
+
+
+	@Override
+	public void removeRefreshable(int indexToRemove) {
+		refreshables.remove(indexToRemove);
+	}
+
+
+	@Override
+	public List<IRefreshable> getRefreshables() {
+		return refreshables;
+	}
+
+
+	@Override
+	public void updateAll() {
+		refreshables.forEach(refreshable -> refreshable.refresh());
 	}
 	
 }

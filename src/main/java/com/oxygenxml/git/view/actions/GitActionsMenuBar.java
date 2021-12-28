@@ -1,5 +1,8 @@
 package com.oxygenxml.git.view.actions;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JMenu;
@@ -9,6 +12,7 @@ import javax.swing.JMenuItem;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.refresh.IRefreshable;
 
 import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
@@ -20,7 +24,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  * @author Alex_Smarandache
  *
  */
-public class GitActionsMenuBar implements MenuBarCustomizer {
+public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
 	/**
 	 * The translator for translations.
@@ -36,7 +40,17 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	 * Used to generate the disabled icons for menu actions.
 	 */
 	private final JButton buttonsFactoryIcon;
-
+	
+	/**
+	 * The git actions manager.
+	 */
+	private GitActionsManager gitActionsManager;
+	
+	/**
+	 * The pull menu item.
+	 */
+	private JMenu pullMenuItem;
+	
 	
 	
 	/**
@@ -59,7 +73,9 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 		 * The unique instance of Git menu bae.
 		 */
 		static final GitActionsMenuBar INSTANCE = new GitActionsMenuBar();
+		
 	}
+	
 	
 	
 	/**
@@ -79,7 +95,14 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	 */
 	public void populateMenu(final GitActionsManager gitActionsManager) {
 		
+		if(this.gitActionsManager != null) {
+			this.gitActionsManager.removeRefreshable(this);
+		}
+		
 		gitMenu.removeAll();
+		
+		gitActionsManager.addRefreshable(this);
+		this.gitActionsManager = gitActionsManager;
 
 		// Add clone repository item
 		final JMenuItem cloneRepositoryMenuItem = OxygenUIComponentsFactory.createMenuItem(
@@ -98,7 +121,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 		gitMenu.add(pushMenuItem);
 
 		// Add pull options
-		final JMenu pullMenuItem = OxygenUIComponentsFactory.createMenu(
+		pullMenuItem = OxygenUIComponentsFactory.createMenu(
 				TRANSLATOR.getTranslation("Pull"));
 		pullMenuItem.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
 		pullMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_PULL_ICON)));
@@ -200,6 +223,16 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	 */
 	public boolean isVisible() {
 		return gitMenu.isVisible();
+	}
+
+
+	@Override
+	public void refresh() {
+		if(gitActionsManager != null) {
+			pullMenuItem.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() 
+					|| gitActionsManager.getPullMergeAction().isEnabled());
+		}
+		
 	}
 	
 }
