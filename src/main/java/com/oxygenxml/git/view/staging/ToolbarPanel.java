@@ -9,21 +9,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
@@ -56,6 +51,14 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
+import com.oxygenxml.git.view.actions.GitActionsManager;
+import com.oxygenxml.git.view.actions.internal.EditConfigFileAction;
+import com.oxygenxml.git.view.actions.internal.ListStashesAction;
+import com.oxygenxml.git.view.actions.internal.ManageRemoteRepositoriesAction;
+import com.oxygenxml.git.view.actions.internal.PullAction;
+import com.oxygenxml.git.view.actions.internal.SetRemoteAction;
+import com.oxygenxml.git.view.actions.internal.ShowTagsAction;
+import com.oxygenxml.git.view.actions.internal.StashChangesAction;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
@@ -69,17 +72,11 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
-import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
-import com.oxygenxml.git.view.remotes.SetRemoteAction;
-import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.tags.GitTagsManager;
-import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -91,39 +88,6 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  *
  */
 public class ToolbarPanel extends JPanel {
-
-  /**
-   * Pull action.
-   */
-  private final class PullAction extends AbstractAction {
-
-    private static final String PULL_TYPE_ACTION_PROP = "pullType";
-
-    private final PullType pullType;
-
-    public PullAction(String name, PullType pullType) {
-      super(name);
-      this.pullType = pullType;
-      putValue(PULL_TYPE_ACTION_PROP, pullType);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      try {
-        if (GitAccess.getInstance().getRepository() != null) {
-          if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Pull action invoked");
-          }
-          gitController.pull(pullType);
-          OptionsManager.getInstance().saveDefaultPullType(pullType);
-        }
-      } catch (NoRepositorySelected e1) {
-        if(LOGGER.isDebugEnabled()) {
-          LOGGER.debug(e1, e1);
-        }
-      }
-    }
-  }
 
   /**
    * The git access.
@@ -291,11 +255,19 @@ public class ToolbarPanel extends JPanel {
    */
   private boolean isRepoSelected;
   
-  private JMenuBar menuBar;
+  private GitActionsManager gitActionsManager;
 
 
 
-  /**
+  public GitActionsManager getGitActionsManager() {
+	return gitActionsManager;
+}
+
+public void setGitActionsManager(GitActionsManager gitActionsManager) {
+	this.gitActionsManager = gitActionsManager;
+}
+
+/**
    * Constructor.
    * 
    * @param gitController     Git controller.
@@ -379,6 +351,9 @@ public class ToolbarPanel extends JPanel {
    */
   public void refresh() {
 
+	  if(gitActionsManager != null) {
+		  gitActionsManager.refresh();
+	  }
     this.pullsBehind = GIT_ACCESS.getPullsBehind();
     try {
       this.pushesAhead = GIT_ACCESS.getPushesAhead();
@@ -989,16 +964,14 @@ public class ToolbarPanel extends JPanel {
     };
 
     // Pull (merge)
-    PullAction pullMergeAction = new PullAction(
-            TRANSLATOR.getTranslation(Tags.PULL_MERGE),
-            PullType.MERGE_FF);
-    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(pullMergeAction);
+    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(new PullAction(gitController, TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF));
     pullMergeMenuItem.addActionListener(radioMenuItemActionListener);
     splitMenuButton.add(pullMergeMenuItem);
     pullActionsGroup.add(pullMergeMenuItem);
 
     // Pull (rebase)
     PullAction pullRebaseAction = new PullAction(
+    		gitController,
             TRANSLATOR.getTranslation(Tags.PULL_REBASE),
             PullType.REBASE);
     JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(pullRebaseAction);
@@ -1026,7 +999,7 @@ public class ToolbarPanel extends JPanel {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        try {
+        try { 
           if (GitAccess.getInstance().getRepository() != null) {
             if (LOGGER.isDebugEnabled()) {
               LOGGER.debug("Push Button Clicked");
@@ -1542,22 +1515,8 @@ public class ToolbarPanel extends JPanel {
    * @param splitMenuButton The menu button to add to.
    */
   private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
-    stashChangesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_CHANGES) + "...") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        StashUtil.stashChanges();
-      }
-    };
-    splitMenuButton.addActionToMenu(stashChangesAction, false);
-
-    listStashesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.LIST_STASHES)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ListStashesDialog stashesDialog = new ListStashesDialog();
-        stashesDialog.setVisible(true);
-      }
-    };
-    splitMenuButton.addActionToMenu(listStashesAction, false);
+    splitMenuButton.addActionToMenu(new StashChangesAction(), false);
+    splitMenuButton.addActionToMenu(new ListStashesAction(), false);
   }
 
 
@@ -1565,7 +1524,7 @@ public class ToolbarPanel extends JPanel {
    * Refresh the status for stash button.
    */
   public void refreshStashButton() {
-    Collection<RevCommit> stashes = GIT_ACCESS.listStashes();
+   /* Collection<RevCommit> stashes = GIT_ACCESS.listStashes();
     noOfStashes = stashes == null ? 0 : stashes.size();
 
     List<FileStatus> unstagedFiles = GIT_ACCESS.getUnstagedFiles();
@@ -1584,7 +1543,7 @@ public class ToolbarPanel extends JPanel {
       stashButton.setEnabled(existsLocalFiles || existsStashes);
     } else {
       stashButton.setEnabled(false);
-    }
+    }*/
     
   }
 
@@ -1678,21 +1637,9 @@ public class ToolbarPanel extends JPanel {
    * Add the "Show Tags" button
    */
   private void addTagsShowButton() {
-    Action showTagsAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          TagsDialog dialog = new TagsDialog();
-          dialog.setVisible(true);
-        } catch (GitAPIException | IOException | NoRepositorySelected ex) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-        }
-      }
-    };
-
-    showTagsButton = new ToolbarButton(showTagsAction, false);
+    showTagsButton = new ToolbarButton(new ShowTagsAction(), false);
     showTagsButton.setIcon(Icons.getIcon(Icons.TAG));
-    showTagsButton.setToolTipText(TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_TAGS_TOOLTIP));
+    showTagsButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_TAGS));
     setDefaultToolbarButtonWidth(showTagsButton);
     showTagsButton.setEnabled(false);
     gitToolbar.add(showTagsButton);
@@ -1760,80 +1707,14 @@ public class ToolbarPanel extends JPanel {
     
     remoteButton.setToolTipText(TRANSLATOR.getTranslation(Tags.REMOTE_BUTTON_TOOLTIP));
     
-    remoteButton.addActionToMenu(createRemotesAction(), false);
+    remoteButton.addActionToMenu(new ManageRemoteRepositoriesAction(), false);
     remoteButton.addActionToMenu(new SetRemoteAction(), false);
-    remoteButton.addActionToMenu(createEditConfigFileAction(), false);
-    
-       ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).addMenuBarCustomizer(new MenuBarCustomizer() {
-		
-		@Override
-		public void customizeMainMenu(JMenuBar mainMenu) {
-			JMenu myMenu = new JMenu("Git");
-			myMenu.add(createRemotesAction());
-			  // Add your menu after the Tools menu
-			for(int i = 0; i < mainMenu.getMenuCount(); i++) {
-				JMenu menu = mainMenu.getMenu(i);
-				if(TRANSLATOR.getTranslation(Tags.TOOLS).equals(menu.getText())) {
-					mainMenu.add(myMenu, i + 1);
-					break;
-				}
-			}
-			
-		}
-	});
-   
+    remoteButton.addActionToMenu(new EditConfigFileAction(), false);
     
     return remoteButton;
   }
   
-  
-  /**
-   * Create the "Remotes" action.
-   *
-   * @return the "Remotes" action
-   */
-  private Action createRemotesAction() {
-    return new AbstractAction(TRANSLATOR.getTranslation(Tags.REMOTES_DIALOG_TITLE) +  "...") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          if (GitAccess.getInstance().getRepository() != null) {
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Push Button Clicked");
-            }
-           new RemotesRepositoryDialog().configureRemotes();
-          }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1, e1);
-          }
-        }
-      }
-    };
-  }
-  
-  
-  /**
-   * Create action for edit the config file.
-   * 
-   * @return The created action.
-   */
-  private Action createEditConfigFileAction() {
-	  return new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT_CONFIG_FILE)) {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					PluginWorkspaceProvider.getPluginWorkspace().open((new File(GitAccess.getInstance().getConfigFilePath()).toURI().toURL()), 
-							null, "text/plain");
-				} catch (MalformedURLException | NoRepositorySelected e) {
-					LOGGER.error(e, e);
-				} 
-			}
-			
-		};
-  }
-  
+   
   
   /**
    * @return The remote button.

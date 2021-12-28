@@ -1520,9 +1520,9 @@ public class Tags {
   public static final String TAG_DETAILS_DIALOG_COMMIT_AUTHOR= "Tag_Details_Dialog_Commit_Author"; 
   
   /**
-   * The tooltip for the toolbar tags icon
+   * Show tags.
    */
-  public static final String TOOLBAR_PANEL_TAGS_TOOLTIP= "Toolbar_Panel_Tags_Tooltip";
+  public static final String SHOW_TAGS= "Show_Tags";
   
   /**
    * The title of the dialog for deleting a tag
@@ -1686,12 +1686,21 @@ public class Tags {
    * All local branches.
    */
   public static final String ALL_LOCAL_BRANCHES = "All_Local_Branches";
-public static final String TOOLS = "Tools";
+  
+  /**
+   * Tools.
+   */
+  public static final String TOOLS = "Tools";
   
   /**
    * Tool tip text for remote repositories button.
    */
   public static final String REMOTE_BUTTON_TOOLTIP = "Remote_Button_Tooltip";
+  
+  /**
+   * Show branches.
+   */
+  public static final String SHOW_BRANCHES= "Show_Branches";
   
 }
 

@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Show_Branches">
+        <comment>Show branches</comment>
+        <val lang="en_US">Show branches</val>
+        <val lang="de_DE">Show branches</val>
+        <val lang="fr_FR">Show branches</val>
+        <val lang="ja_JP">Show branches</val>
+        <val lang="nl_NL">Show branches</val>
+        <val lang="zh_CN">Show branches</val>
+    </key>
      <key value="Remote_Button_Tooltip">
         <comment>Tool tip text for remote repositories button.</comment>
         <val lang="en_US">Configure the remote repositories where to push the commits.</val>
@@ -639,8 +648,8 @@
         <val lang="nl_NL">Auteur</val>
         <val lang="zh_CN">作者</val>
     </key>
-    <key value="Toolbar_Panel_Tags_Tooltip">
-        <comment>The tooltip for the toolbar tags icon</comment>
+    <key value="Show_Tags">
+        <comment>Show_Tags</comment>
         <val lang="en_US">Show Tags</val>
         <val lang="de_DE">Zeige Tags</val>
         <val lang="fr_FR">Affiche les étiquettes</val>

@@ -134,7 +134,7 @@ public class TagsVisualTests extends GitTestBase {
       
       ToolbarButton showTagsButton = toolbarPanel.getShowTagsButton();
       // Test the "Show Tags" button tooltip text
-      assertEquals(Tags.TOOLBAR_PANEL_TAGS_TOOLTIP, showTagsButton.getToolTipText());
+      assertEquals(Tags.SHOW_TAGS, showTagsButton.getToolTipText());
       
       // Click the showTags Button and verify if the dialog is correct generated
       showTagsButton.doClick();

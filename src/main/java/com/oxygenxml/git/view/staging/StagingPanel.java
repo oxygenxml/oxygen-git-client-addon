@@ -36,6 +36,8 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
+import com.oxygenxml.git.view.actions.GitActionsManager;
+import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitController;
@@ -50,6 +52,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Main panel containing all the other panels. It also creates them
@@ -193,7 +196,12 @@ public class StagingPanel extends JPanel {
 		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
 		commitPanel = new CommitAndStatusPanel(gitController);
+		GitActionsManager gitA = new GitActionsManager(gitController, historyController, branchManagementViewPresenter);
+		StandalonePluginWorkspace plugin = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+		plugin.addMenuBarCustomizer(new GitActionsMenuBar(
+				gitA));
 		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
+		toolbarPanel.setGitActionsManager(gitA);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
 		
 		// adds the unstaged and the staged panels to a split pane
