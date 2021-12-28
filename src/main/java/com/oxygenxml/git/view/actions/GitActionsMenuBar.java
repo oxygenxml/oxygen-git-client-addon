@@ -28,22 +28,51 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	/**
 	 * The Git menu.
 	 */
-	private final JMenu gitMenu;
+	private final JMenu gitMenu = OxygenUIComponentsFactory.createMenu("Git");
 
+	
+	
 	/**
-	 * Git actions manager.
+	 * Hidden constructor.
 	 */
-	private final GitActionsManager gitActionsManager;
-
+	private GitActionsMenuBar() {
+		// nothing
+	}
+	
+	
 	/**
-	 * Constructor.
+	 * Helper class for singleton pattern.
+	 * 
+	 * @author alex_smarandache
+	 *
+	 */
+	private static class SingletonHelper {
+		
+		/**
+		 * The unique instance of Git menu bae.
+		 */
+		static final GitActionsMenuBar INSTANCE = new GitActionsMenuBar();
+	}
+	
+	
+	/**
+	 * @return The singleton instance.
+	 */
+	public static GitActionsMenuBar getInstance() {
+		return SingletonHelper.INSTANCE;
+	}
+	
+	
+	/**
+	 * Populate menu with actions from git actions manager. 
+	 * <br><br>
+	 * This method will remove any previous component from this menu.
 	 * 
 	 * @param gitActionsManager The manager for git actions.
 	 */
-	public GitActionsMenuBar(final GitActionsManager gitActionsManager) {
-
-		this.gitMenu = OxygenUIComponentsFactory.createMenu("Git");
-		this.gitActionsManager = gitActionsManager;
+	public void populateMenu(final GitActionsManager gitActionsManager) {
+		
+		gitMenu.removeAll();
 
 		// Add clone repository item
 		final JMenuItem cloneRepositoryMenuItem = new JMenuItem(gitActionsManager.getCloneRepositoryAction());
@@ -111,6 +140,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 
 	}
 
+	
 	@Override
 	public void customizeMainMenu(JMenuBar mainMenu) {
 		for (int i = 0; i < mainMenu.getMenuCount(); i++) {

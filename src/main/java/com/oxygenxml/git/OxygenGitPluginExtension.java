@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -38,6 +39,8 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
+import com.oxygenxml.git.view.actions.GitActionsManager;
+import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
@@ -56,9 +59,11 @@ import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
+import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
 import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
@@ -184,6 +189,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
+	  pluginWS.addMenuBarCustomizer(GitActionsMenuBar.getInstance());
 	  pluginWorkspaceAccess = pluginWS;
 	  gitController = new GitController(GitAccess.getInstance());
 		try {

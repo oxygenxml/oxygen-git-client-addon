@@ -197,9 +197,7 @@ public class StagingPanel extends JPanel {
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
 		commitPanel = new CommitAndStatusPanel(gitController);
 		GitActionsManager gitA = new GitActionsManager(gitController, historyController, branchManagementViewPresenter);
-		StandalonePluginWorkspace plugin = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-		plugin.addMenuBarCustomizer(new GitActionsMenuBar(
-				gitA));
+		GitActionsMenuBar.getInstance().populateMenu(gitA);
 		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
 		toolbarPanel.setGitActionsManager(gitA);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
