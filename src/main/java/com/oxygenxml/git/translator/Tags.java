@@ -14,6 +14,7 @@ public class Tags {
   private Tags() {
     // Nothing.
   }
+  
   /**
    * Last commit details.
    */
@@ -1700,7 +1701,13 @@ public class Tags {
   /**
    * Show branches.
    */
-  public static final String SHOW_BRANCHES= "Show_Branches";
+  public static final String SHOW_BRANCHES = "Show_Branches";
+  
+  /**
+   * Pull.
+   */
+  public static final String PULL= "Pull";
+  
   
 }
 

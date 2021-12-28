@@ -8,8 +8,17 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Pull">
+        <comment>Pull.</comment>
+        <val lang="en_US">Pull</val>
+        <val lang="de_DE">Pull</val>
+        <val lang="fr_FR">Pull</val>
+        <val lang="ja_JP">Pull</val>
+        <val lang="nl_NL">Pull</val>
+        <val lang="zh_CN">Pull</val>
+    </key>
     <key value="Show_Branches">
-        <comment>Show branches</comment>
+        <comment>Show branches.</comment>
         <val lang="en_US">Show branches</val>
         <val lang="de_DE">Show branches</val>
         <val lang="fr_FR">Show branches</val>

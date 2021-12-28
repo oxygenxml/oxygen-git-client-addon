@@ -34,7 +34,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	/**
 	 * The Git menu.
 	 */
-	private final JMenu gitMenu = OxygenUIComponentsFactory.createMenu("Git");
+	private final JMenu gitMenu;
 	
 	/**
 	 * Used to generate the disabled icons for menu actions.
@@ -57,6 +57,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 * Hidden constructor.
 	 */
 	private GitActionsMenuBar() {
+		gitMenu = OxygenUIComponentsFactory.createMenu(TRANSLATOR.getTranslation(Tags.GIT));
 		buttonsFactoryIcon = new Button("");
 	}
 	

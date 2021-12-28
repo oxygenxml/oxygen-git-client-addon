@@ -56,6 +56,7 @@ public class PullAction extends AbstractAction {
       this.gitController = gitController;
     }
 
+    
     @Override
     public void actionPerformed(ActionEvent e) {
       try {
@@ -72,5 +73,6 @@ public class PullAction extends AbstractAction {
         }
       }
     }
+    
     
   }
