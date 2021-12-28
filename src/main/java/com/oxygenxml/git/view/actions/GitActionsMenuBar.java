@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.actions;
 
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -29,6 +31,11 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	 * The Git menu.
 	 */
 	private final JMenu gitMenu = OxygenUIComponentsFactory.createMenu("Git");
+	
+	/**
+	 * Used to generate the disabled icons for menu actions.
+	 */
+	private final JButton buttonsFactoryIcon;
 
 	
 	
@@ -36,7 +43,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	 * Hidden constructor.
 	 */
 	private GitActionsMenuBar() {
-		// nothing
+		buttonsFactoryIcon = new Button("");
 	}
 	
 	
@@ -75,65 +82,76 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 		gitMenu.removeAll();
 
 		// Add clone repository item
-		final JMenuItem cloneRepositoryMenuItem = new JMenuItem(gitActionsManager.getCloneRepositoryAction());
+		final JMenuItem cloneRepositoryMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getCloneRepositoryAction());
 		cloneRepositoryMenuItem.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
 		cloneRepositoryMenuItem
-				.setDisabledIcon(new Button(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON)).getDisabledIcon());
+				.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON)));
 		gitMenu.add(cloneRepositoryMenuItem);
 
 		// Add push menu item
-		final JMenuItem pushMenuItem = new JMenuItem(gitActionsManager.getPushAction());
+		final JMenuItem pushMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getPushAction());
 		gitActionsManager.getPushAction().setEnabled(false);
 		pushMenuItem.setIcon(Icons.getIcon(Icons.GIT_PUSH_ICON));
-		pushMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.GIT_PUSH_ICON)).getDisabledIcon());
+		pushMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_PUSH_ICON)));
 		gitMenu.add(pushMenuItem);
 
 		// Add pull options
-		final JMenu pullMenuItem = new JMenu(TRANSLATOR.getTranslation("Pull"));
+		final JMenu pullMenuItem = OxygenUIComponentsFactory.createMenu(
+				TRANSLATOR.getTranslation("Pull"));
 		pullMenuItem.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
-		pullMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.GIT_PULL_ICON)).getDisabledIcon());
-		pullMenuItem.add(new JMenuItem(gitActionsManager.getPullMergeAction()));
-		pullMenuItem.add(new JMenuItem(gitActionsManager.getPullRebaseAction()));
+		pullMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_PULL_ICON)));
+		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getPullMergeAction()));
+		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getPullRebaseAction()));
 		gitMenu.add(pullMenuItem);
 
 		// Add show branches item
 		gitMenu.addSeparator();
-		final JMenuItem showBranchesMenuItem = new JMenuItem(gitActionsManager.getShowBranchesAction());
+		final JMenuItem showBranchesMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getShowBranchesAction());
 		showBranchesMenuItem.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
-		showBranchesMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.GIT_BRANCH_ICON)).getDisabledIcon());
+		showBranchesMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON)));
 		gitMenu.add(showBranchesMenuItem);
 
 		// Add show tags item
-		final JMenuItem showTagsMenuItem = new JMenuItem(gitActionsManager.getShowTagsAction());
+		final JMenuItem showTagsMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getShowTagsAction());
 		showTagsMenuItem.setIcon(Icons.getIcon(Icons.TAG));
-		showTagsMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.TAG)).getDisabledIcon());
+		showTagsMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.TAG)));
 		gitMenu.add(showTagsMenuItem);
 
 		// Add show history item
-		final JMenuItem showHistoryMenuItem = new JMenuItem(gitActionsManager.getShowHistoryAction());
+		final JMenuItem showHistoryMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getShowHistoryAction());
 		showHistoryMenuItem.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-		showHistoryMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.GIT_HISTORY)).getDisabledIcon());
+		showHistoryMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_HISTORY)));
 		gitMenu.add(showHistoryMenuItem);
 
 		// Add submodules item
-		final JMenuItem submodulesMenuItem = new JMenuItem(gitActionsManager.getSubmoduleAction());
+		final JMenuItem submodulesMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getSubmoduleAction());
 		submodulesMenuItem.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
-		submodulesMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.GIT_SUBMODULE_ICON)).getDisabledIcon());
+		submodulesMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON)));
 		gitMenu.add(submodulesMenuItem);
 
 		// Add stash actions
 		gitMenu.addSeparator();
 		gitMenu.add(gitActionsManager.getStashChangesAction());
-		final JMenuItem listStashesMenuItem = new JMenuItem(gitActionsManager.getListStashesAction());
+		final JMenuItem listStashesMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getListStashesAction());
 		listStashesMenuItem.setIcon(Icons.getIcon(Icons.STASH_ICON));
-		listStashesMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.STASH_ICON)).getDisabledIcon());
+		listStashesMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.STASH_ICON)));
 		gitMenu.add(listStashesMenuItem);
 
 		// Add remote actions
 		gitMenu.addSeparator();
-		final JMenuItem manageRemoteMenuItem = new JMenuItem(gitActionsManager.getManageRemoteRepositoriesAction());
+		final JMenuItem manageRemoteMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getManageRemoteRepositoriesAction());
 		manageRemoteMenuItem.setIcon(Icons.getIcon(Icons.REMOTE));
-		manageRemoteMenuItem.setDisabledIcon(new Button(Icons.getIcon(Icons.REMOTE)).getDisabledIcon());
+		manageRemoteMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.REMOTE)));
 		gitMenu.add(manageRemoteMenuItem);
 		gitMenu.add(gitActionsManager.getTrackRemoteBranchAction());
 		gitMenu.add(gitActionsManager.getEditConfigAction());
@@ -141,6 +159,9 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	}
 
 	
+	/**
+	 * Add git menu after "Tools" menu.
+	 */
 	@Override
 	public void customizeMainMenu(JMenuBar mainMenu) {
 		for (int i = 0; i < mainMenu.getMenuCount(); i++) {
@@ -151,5 +172,34 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 		}
 
 	}
+	
+    
+	/**
+	 * Used to generate a disable icon for given icon as argument.
+	 * 
+	 * @param icon The given icon.
+	 * 
+	 * @return The disabled icon for given icon.
+	 */
+	private Icon getDisabledIcon(Icon icon) {
+		buttonsFactoryIcon.setIcon(icon);
+		return buttonsFactoryIcon.getDisabledIcon();
+	}
 
+	
+	/**
+	 * @param isVisible <code>true</code> if the menu should be visible.
+	 */
+	public void setVisible(boolean isVisible) {
+		gitMenu.setVisible(isVisible);
+	}
+	
+	
+	/**
+	 * @return <code>true</code> if the menu is visible.
+	 */
+	public boolean isVisible() {
+		return gitMenu.isVisible();
+	}
+	
 }
