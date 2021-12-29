@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+     <key value="Show_Staging">
+        <comment>Show staging.</comment>
+        <val lang="en_US">Show staging</val>
+        <val lang="de_DE">Show staging</val>
+        <val lang="fr_FR">Show staging</val>
+        <val lang="ja_JP">Show staging</val>
+        <val lang="nl_NL">Show staging</val>
+        <val lang="zh_CN">Show staging</val>
+    </key>
     <key value="Open_Repository">
         <comment>Open repository.</comment>
         <val lang="en_US">Open repository</val>
@@ -668,8 +677,8 @@
     </key>
     <key value="Show_Tags">
         <comment>Show_Tags</comment>
-        <val lang="en_US">Show Tags</val>
-        <val lang="de_DE">Zeige Tags</val>
+        <val lang="en_US">Show tags</val>
+        <val lang="de_DE">Zeige tags</val>
         <val lang="fr_FR">Affiche les étiquettes</val>
         <val lang="ja_JP">タグを表示する</val>
         <val lang="nl_NL">Tags weergeven</val>

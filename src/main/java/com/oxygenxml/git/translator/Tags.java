@@ -1713,6 +1713,11 @@ public class Tags {
    */
   public static final String OPEN_REPOSITORY = "Open_Repository";
   
+  /**
+   * Show staging.
+   */
+  public static final String SHOW_STAGING = "Show_Staging";
+  
   
 }
 

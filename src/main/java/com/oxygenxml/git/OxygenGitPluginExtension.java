@@ -86,7 +86,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
 	 * ID of the Git staging view. Defined in plugin.xml.
 	 */
-	static final String GIT_STAGING_VIEW = "GitStagingView";
+	public static final String GIT_STAGING_VIEW = "GitStagingView";
 
 	/**
 	 * ID of the Git History view.

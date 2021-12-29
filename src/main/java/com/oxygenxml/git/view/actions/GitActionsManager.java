@@ -27,6 +27,7 @@ import com.oxygenxml.git.view.actions.internal.PushAction;
 import com.oxygenxml.git.view.actions.internal.SetRemoteAction;
 import com.oxygenxml.git.view.actions.internal.ShowBranchesAction;
 import com.oxygenxml.git.view.actions.internal.ShowHistoryAction;
+import com.oxygenxml.git.view.actions.internal.ShowStagingAction;
 import com.oxygenxml.git.view.actions.internal.ShowTagsAction;
 import com.oxygenxml.git.view.actions.internal.StashChangesAction;
 import com.oxygenxml.git.view.actions.internal.SubmodulesAction;
@@ -73,6 +74,11 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * Pull rebase action.
 	 */
 	private AbstractAction pullRebaseAction               = null;
+	
+	/**
+	 * Action to show git staging.
+	 */
+	private AbstractAction showStagingAction              = null;
 
 	/**
 	 * Action to show branches.
@@ -281,6 +287,21 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 
 
 	/**
+	 * @return The show staging action.
+	 */
+	@NonNull
+	public AbstractAction getShowStagingAction() {
+		if(showStagingAction == null) {
+			showStagingAction = new ShowStagingAction();
+			showStagingAction.setEnabled(repository != null);
+			allActions.add(showStagingAction);
+		}
+
+		return showStagingAction;
+	}
+	
+	
+	/**
 	 * @return The show history action.
 	 */
 	@NonNull
@@ -438,6 +459,10 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		
 		if(openRepositoryAction != null) {
 			openRepositoryAction.setEnabled(true);
+		}
+		
+		if(showStagingAction != null) {
+			showStagingAction.setEnabled(true);
 		}
 
 		if(isRepoOpen) {

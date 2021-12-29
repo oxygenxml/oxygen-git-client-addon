@@ -32,24 +32,24 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 * The Git menu.
 	 */
 	private final JMenu gitMenu;
-	
+
 	/**
 	 * Used to generate the disabled icons for menu actions.
 	 */
 	private final JButton iconFactory;
-	
+
 	/**
 	 * The git actions manager.
 	 */
 	private GitActionsManager gitActionsManager;
-	
+
 	/**
 	 * The pull menu item.
 	 */
 	private JMenu pullMenuItem;
-	
-	
-	
+
+
+
 	/**
 	 * Hidden constructor.
 	 */
@@ -57,8 +57,8 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		gitMenu = OxygenUIComponentsFactory.createMenu(TRANSLATOR.getTranslation(Tags.GIT));
 		iconFactory = new Button("");
 	}
-	
-	
+
+
 	/**
 	 * Helper class for singleton pattern.
 	 * 
@@ -66,24 +66,24 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 *
 	 */
 	private static class SingletonHelper {
-		
+
 		/**
 		 * The unique instance of Git menu bae.
 		 */
 		static final GitActionsMenuBar INSTANCE = new GitActionsMenuBar();
-		
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @return The singleton instance.
 	 */
 	public static GitActionsMenuBar getInstance() {
 		return SingletonHelper.INSTANCE;
 	}
-	
-	
+
+
 	/**
 	 * Populate menu with actions from git actions manager. 
 	 * <br><br>
@@ -92,13 +92,13 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 * @param gitActionsManager The manager for git actions.
 	 */
 	public void populateMenu(final GitActionsManager gitActionsManager) {
-		
+
 		if(this.gitActionsManager != null) {
 			this.gitActionsManager.removeRefreshable(this);
 		}
-		
+
 		gitMenu.removeAll();
-		
+
 		gitActionsManager.addRefreshable(this);
 		this.gitActionsManager = gitActionsManager;
 
@@ -107,9 +107,9 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 				gitActionsManager.getCloneRepositoryAction());
 		cloneRepositoryMenuItem.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
 		cloneRepositoryMenuItem
-				.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON)));
+		.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON)));
 		gitMenu.add(cloneRepositoryMenuItem);
-		
+
 		// Add open repository action.
 		gitMenu.add(gitActionsManager.getOpenRepositoryAction());
 
@@ -132,11 +132,18 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 				gitActionsManager.getPullRebaseAction()));
 		pullMenuItem.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() 
 				|| gitActionsManager.getPullRebaseAction().isEnabled());
-	
+
 		gitMenu.add(pullMenuItem);
 
-		// Add show branches item
+		// Add show staging item
 		gitMenu.addSeparator();
+		final JMenuItem showStagingMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getShowStagingAction());
+		showStagingMenuItem.setIcon(Icons.getIcon(ro.sync.ui.Icons.GIT_PLUGIN_ICON_MENU));
+		showStagingMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(ro.sync.ui.Icons.GIT_PLUGIN_ICON_MENU)));
+		gitMenu.add(showStagingMenuItem);
+
+		// Add show branches item
 		final JMenuItem showBranchesMenuItem = OxygenUIComponentsFactory.createMenuItem(
 				gitActionsManager.getShowBranchesAction());
 		showBranchesMenuItem.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
@@ -185,7 +192,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
 	}
 
-	
+
 	/**
 	 * Add git menu after "Tools" menu.
 	 */
@@ -199,8 +206,8 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		}
 
 	}
-	
-    
+
+
 	/**
 	 * Used to generate a disable icon for given icon as argument.
 	 * 
@@ -213,15 +220,15 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		return iconFactory.getDisabledIcon();
 	}
 
-	
+
 	/**
 	 * @param isVisible <code>true</code> if the menu should be visible.
 	 */
 	public void setVisible(boolean isVisible) {
 		gitMenu.setVisible(isVisible);
 	}
-	
-	
+
+
 	/**
 	 * @return <code>true</code> if the menu is visible.
 	 */
@@ -245,5 +252,5 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	public GitActionsManager getGitActionsManager() {
 		return gitActionsManager;
 	}
-	
+
 }
