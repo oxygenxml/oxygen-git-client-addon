@@ -23,6 +23,7 @@ import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog.RemoteBranchItem;
@@ -99,15 +100,15 @@ public class RemoteVisualTests extends GitTestBase {
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
       refreshSupport.call();
       flushAWT();
       
-      SplitMenuButton remoteButton = toolbarPanel.getRemoteButton();
+      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
       
-      JMenuItem manageRemoteItem =  remoteButton.getItem(0);
+      gitActionsManager.refresh();
       
-      SwingUtilities.invokeLater(() -> manageRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
+    		  .actionPerformed(null));
       
       flushAWT();
       
@@ -153,7 +154,8 @@ public class RemoteVisualTests extends GitTestBase {
       
       // Test if the remotes has been saved after confirmation.
       
-      SwingUtilities.invokeLater(() -> manageRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
+    		  .actionPerformed(null));
       
       flushAWT();
       
@@ -202,7 +204,8 @@ public class RemoteVisualTests extends GitTestBase {
       
       // Test if the remotes has been saved after confirmation.
       
-      SwingUtilities.invokeLater(() -> manageRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
+    		  .actionPerformed(null));
       
       flushAWT();
       
@@ -244,7 +247,8 @@ public class RemoteVisualTests extends GitTestBase {
       
       // Test if the remotes has been saved after confirmation.
       
-      SwingUtilities.invokeLater(() -> manageRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
+    		  .actionPerformed(null));
       
       flushAWT();
       
@@ -288,7 +292,8 @@ public class RemoteVisualTests extends GitTestBase {
       
       // Test if the remotes has not been saved after the user cancel dialog.
       
-      SwingUtilities.invokeLater(() -> manageRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
+    		  .actionPerformed(null));
       
       flushAWT();
       
@@ -334,15 +339,14 @@ public class RemoteVisualTests extends GitTestBase {
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
       refreshSupport.call();
       flushAWT();
       
-      SplitMenuButton remoteButton = toolbarPanel.getRemoteButton();
+      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
       
-      JMenuItem manageRemoteItem =  remoteButton.getItem(0);
-      
-      SwingUtilities.invokeLater(() -> manageRemoteItem.getAction().actionPerformed(null));
+      gitActionsManager.refresh();
+      SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
+    		  .actionPerformed(null));
       
       flushAWT();
      
@@ -447,15 +451,14 @@ public class RemoteVisualTests extends GitTestBase {
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
       refreshSupport.call();
       flushAWT();
       
-      SplitMenuButton remoteButton = toolbarPanel.getRemoteButton();
+      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
       
-      JMenuItem trackRemoteItem =  remoteButton.getItem(1);
+      gitActionsManager.refresh();
       
-      SwingUtilities.invokeLater(() -> trackRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getTrackRemoteBranchAction().actionPerformed(null));
       
       flushAWT();
       
@@ -481,7 +484,8 @@ public class RemoteVisualTests extends GitTestBase {
       
       
       // Test if the config file is updated after user confirmation.
-      SwingUtilities.invokeLater(() -> trackRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getTrackRemoteBranchAction()
+    		  .actionPerformed(null));
       flushAWT();
       trackRemoteDialog[0] = (CurrentBranchRemotesDialog) findDialog(Tags.CONFIGURE_REMOTE_FOR_BRANCH);
       assertNotNull(trackRemoteDialog);
@@ -541,15 +545,15 @@ public class RemoteVisualTests extends GitTestBase {
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
       refreshSupport.call();
       flushAWT();
       
-      SplitMenuButton remoteButton = toolbarPanel.getRemoteButton();
+      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
       
-      JMenuItem manageRemoteItem =  remoteButton.getItem(2);
+      gitActionsManager.refresh();
       
-      SwingUtilities.invokeLater(() -> manageRemoteItem.getAction().actionPerformed(null));
+      SwingUtilities.invokeLater(() -> gitActionsManager.getEditConfigAction()
+    		  .actionPerformed(null));
       
       flushAWT();
     

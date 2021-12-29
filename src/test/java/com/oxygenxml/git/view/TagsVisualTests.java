@@ -17,6 +17,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
@@ -128,16 +129,15 @@ public class TagsVisualTests extends GitTestBase {
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
+      flushAWT();
       refreshSupport.call();
       flushAWT();
       
-      ToolbarButton showTagsButton = toolbarPanel.getShowTagsButton();
-      // Test the "Show Tags" button tooltip text
-      assertEquals(Tags.SHOW_TAGS, showTagsButton.getToolTipText());
+      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
       
-      // Click the showTags Button and verify if the dialog is correct generated
-      showTagsButton.doClick();
+      gitActionsManager.refresh();
+      
+      gitActionsManager.getShowTagsAction().actionPerformed(null);
       sleep(50);
       flushAWT();
       

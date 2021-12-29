@@ -255,13 +255,11 @@ public class ToolbarPanelTest extends GitTestBase {
     GitController gitCtrl = new GitController(GitAccess.getInstance());
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
     ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
+    toolbar.getGitActionsManager().refresh();
     assertFalse(toolbar.getPullMenuButton().isEnabled());
     assertFalse(toolbar.getPushButton().isEnabled());
     assertFalse(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
-    assertFalse(toolbar.getRemoteButton().isEnabled());
-    assertFalse(toolbar.getSubmoduleSelectButton().isEnabled());
-    assertFalse(toolbar.getShowTagsButton().isEnabled());
     assertTrue(toolbar.getSettingsMenuButton().isEnabled());
 
     //Creates the remote repository.
@@ -272,14 +270,11 @@ public class ToolbarPanelTest extends GitTestBase {
     Repository localRepository = gitAccess.getRepository();
     bindLocalToRemote(localRepository, remoteRepository);
     refreshSupport.call();
-    toolbar.refresh();
+    toolbar.getGitActionsManager().refresh();
     assertTrue(toolbar.getPullMenuButton().isEnabled());
     assertTrue(toolbar.getPushButton().isEnabled());
     assertTrue(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
-    assertFalse(toolbar.getSubmoduleSelectButton().isEnabled());
-    assertFalse(toolbar.getShowTagsButton().isEnabled());
-    assertTrue(toolbar.getRemoteButton().isEnabled());
     assertTrue(toolbar.getSettingsMenuButton().isEnabled());
   }
   
