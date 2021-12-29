@@ -48,14 +48,14 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author alex_jitianu
  */
 public class PanelRefresh implements GitRefreshSupport {
-  /**
-   * Refresh events are executed after this delay. Milliseconds.
-   */
-  public static final int EXECUTION_DELAY = 500;
-  /**
-   * Logger for logging.
-   */
-  private static Logger logger = Logger.getLogger(PanelRefresh.class);
+	/**
+	 * Refresh events are executed after this delay. Milliseconds.
+	 */
+	public static final int EXECUTION_DELAY = 500;
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(PanelRefresh.class);
 
 	/**
 	 * The staging panel.
@@ -88,341 +88,341 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Branch management panel.
 	 */
-  private BranchManagementPanel branchesPanel;
-  /**
-   * History panel.
-   */
-  private HistoryPanel historyPanel;
+	private BranchManagementPanel branchesPanel;
+	/**
+	 * History panel.
+	 */
+	private HistoryPanel historyPanel;
 	/**
 	 * Refresh task.
 	 */
 	private Runnable refreshRunnable = () -> {
-	  logger.debug("Start refresh on thread.");
+		logger.debug("Start refresh on thread.");
 
-	  boolean isAfterRestart = lastOpenedProject == null; 
-	  // No point in refreshing if we've just changed the repository.
-	  boolean repoChanged = loadRepositoryFromOxygenProject();
-	  if (!repoChanged || isAfterRestart) {
-	    try {
-	      Repository repository = gitAccess.getRepository();
-	      if (repository != null) {
-	        if (stagingPanel != null) {
-	          stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
-	          GitStatus status = GitAccess.getInstance().getStatus();
-	          updateFiles(
-	              stagingPanel.getUnstagedChangesPanel(), 
-	              status.getUnstagedFiles());
-	          updateFiles(
-	              stagingPanel.getStagedChangesPanel(), 
-	              status.getStagedFiles());
+		boolean isAfterRestart = lastOpenedProject == null; 
+		// No point in refreshing if we've just changed the repository.
+		boolean repoChanged = loadRepositoryFromOxygenProject();
+		if (!repoChanged || isAfterRestart) {
+			try {
+				Repository repository = gitAccess.getRepository();
+				if (repository != null) {
+					if (stagingPanel != null) {
+						stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
+						GitStatus status = GitAccess.getInstance().getStatus();
+						updateFiles(
+								stagingPanel.getUnstagedChangesPanel(), 
+								status.getUnstagedFiles());
+						updateFiles(
+								stagingPanel.getStagedChangesPanel(), 
+								status.getStagedFiles());
 
-	          RepositoryStatusInfo rstatus = fetch();
-	          updateCounters(rstatus);
-	          
+						RepositoryStatusInfo rstatus = fetch();
+						updateCounters(rstatus);
 
-	          if (OptionsManager.getInstance().isNotifyAboutNewRemoteCommits()) {
-	            // Make the check more frequently.
-	            watcher.checkRemoteRepository(false);
-	          }
-	        }
-	        if(branchesPanel != null && branchesPanel.isShowing()) {
-	          branchesPanel.refreshBranches();
-	        }
-	        if (historyPanel != null && historyPanel.isShowing()) {
-	          historyPanel.refresh();
-	        }
-	        
-	        // EXM-47079 Rewrite the fetch property with wildcards.
-	        BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
-	      }
-	    } catch (NoRepositorySelected | IOException e) {
-	      logger.debug(e, e);
-	    }
-	  }
 
-	  logger.debug("End refresh on thread.");
+						if (OptionsManager.getInstance().isNotifyAboutNewRemoteCommits()) {
+							// Make the check more frequently.
+							watcher.checkRemoteRepository(false);
+						}
+					}
+					if(branchesPanel != null && branchesPanel.isShowing()) {
+						branchesPanel.refreshBranches();
+					}
+					if (historyPanel != null && historyPanel.isShowing()) {
+						historyPanel.refresh();
+					}
+
+					// EXM-47079 Rewrite the fetch property with wildcards.
+					BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
+				}
+			} catch (NoRepositorySelected | IOException e) {
+				logger.debug(e, e);
+			}
+		}
+
+		logger.debug("End refresh on thread.");
 	};
-  
+
 	/**
 	 * Constructor.
 	 * 
 	 * @param watcher repository change watcher.
 	 */
-  public PanelRefresh(RemoteRepositoryChangeWatcher watcher) {
-    this.watcher = watcher;
-  }
+	public PanelRefresh(RemoteRepositoryChangeWatcher watcher) {
+		this.watcher = watcher;
+	}
 
-  /**
-   * @see com.oxygenxml.git.utils.GitRefreshSupport.call()
-   */
-  @Override
-  public void call() {
-    if (refreshFuture != null && !refreshFuture.isDone()) {
-      logger.debug("cancel refresh task");
-      refreshFuture.cancel(true);
-    }
+	/**
+	 * @see com.oxygenxml.git.utils.GitRefreshSupport.call()
+	 */
+	@Override
+	public void call() {
+		if (refreshFuture != null && !refreshFuture.isDone()) {
+			logger.debug("cancel refresh task");
+			refreshFuture.cancel(true);
+		}
 
-    refreshFuture = refreshExecutor.schedule(refreshRunnable, getScheduleDelay());
-  }
+		refreshFuture = refreshExecutor.schedule(refreshRunnable, getScheduleDelay());
+	}
 
-  /**
-   * @return The coalescing event delay, in milliseconds.
-   */
-  protected int getScheduleDelay() {
-    return EXECUTION_DELAY;
-  }
+	/**
+	 * @return The coalescing event delay, in milliseconds.
+	 */
+	protected int getScheduleDelay() {
+		return EXECUTION_DELAY;
+	}
 
-  /**
-   * Checks the current loaded project and:
-   * 
-   * 1. load it if it contains a Git project and the Oxygen > Git preferences allow it.
-   * 2. create a new Git repo if the project doesn't contains a Git project and the user agrees.
-   * 
-   * @return <code>true</code> if the repository changed.
-   */
-  private boolean loadRepositoryFromOxygenProject() {
-    boolean repoChanged = false;
-    if (stagingPanel != null && stagingPanel.hasFocus()) {
-      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
-      // Can be null from tests.
-      if (pluginWS.getUtilAccess() != null) {
-        String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
-        if (projectDir != null && !projectDir.equals(lastOpenedProject)) {
-          String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
-          File projectFile = new File(projectDir, projectName); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
-          File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
-          if (detectedRepo == null) {
-            repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
-          } else {
-            repoChanged = tryToSwitchToRepo(detectedRepo);
-          }
-        }
-        lastOpenedProject = projectDir;
-      }
-    }
-    return repoChanged;
-  }
+	/**
+	 * Checks the current loaded project and:
+	 * 
+	 * 1. load it if it contains a Git project and the Oxygen > Git preferences allow it.
+	 * 2. create a new Git repo if the project doesn't contains a Git project and the user agrees.
+	 * 
+	 * @return <code>true</code> if the repository changed.
+	 */
+	private boolean loadRepositoryFromOxygenProject() {
+		boolean repoChanged = false;
+		if (stagingPanel != null && stagingPanel.hasFocus()) {
+			PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+			// Can be null from tests.
+			if (pluginWS.getUtilAccess() != null) {
+				String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
+				if (projectDir != null && !projectDir.equals(lastOpenedProject)) {
+					String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
+					File projectFile = new File(projectDir, projectName); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
+					File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
+					if (detectedRepo == null) {
+						repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
+					} else {
+						repoChanged = tryToSwitchToRepo(detectedRepo);
+					}
+				}
+				lastOpenedProject = projectDir;
+			}
+		}
+		return repoChanged;
+	}
 
-  /**
-   * Try to switch to repo, if the user will agree.
-   * 
-   * @param repoDir Repository directory.
-   * 
-   * @return <code>true</code> if repo changed.
-   */
-  private boolean tryToSwitchToRepo(File repoDir) {
-    boolean repoChanged = false;
-    try {
-      File currentRepo = null;
-      if (gitAccess.isRepoInitialized()) {
-        currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
-      }
-      if (currentRepo == null || !same(currentRepo, repoDir)) {
-        JComboBox<String> wcComboBox = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
-        if (wcComboBox.isPopupVisible()) {
-          wcComboBox.setPopupVisible(false);
-        }
-        
-        WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
-        String projectDirPath = getCanonicalPath(repoDir);
-        if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
-          repoChanged = switchToProjectRepoIfUserAgrees(projectDirPath);
-        } else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
-          GitAccess.getInstance().setRepositoryAsync(projectDirPath);
-          repoChanged = true;
-        }
-      }
-    } catch (NoRepositorySelected e) {
-      logger.warn(e, e);
-    }
-    return repoChanged;
-  }
+	/**
+	 * Try to switch to repo, if the user will agree.
+	 * 
+	 * @param repoDir Repository directory.
+	 * 
+	 * @return <code>true</code> if repo changed.
+	 */
+	private boolean tryToSwitchToRepo(File repoDir) {
+		boolean repoChanged = false;
+		try {
+			File currentRepo = null;
+			if (gitAccess.isRepoInitialized()) {
+				currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
+			}
+			if (currentRepo == null || !same(currentRepo, repoDir)) {
+				JComboBox<String> wcComboBox = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
+				if (wcComboBox.isPopupVisible()) {
+					wcComboBox.setPopupVisible(false);
+				}
 
-  /**
-   * Get canonical path.
-   * 
-   * @param file A file. 
-   * 
-   * @return The canonical version of the file.
-   */
-  private String getCanonicalPath(File file) {
-    String repoPath;
-    try {
-      repoPath = file.getCanonicalPath();
-    } catch (IOException e) {
-      logger.debug(e, e);
-      repoPath = file.getAbsolutePath();
-    }
-    return repoPath;
-  }
+				WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
+				String projectDirPath = getCanonicalPath(repoDir);
+				if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
+					repoChanged = switchToProjectRepoIfUserAgrees(projectDirPath);
+				} else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
+					GitAccess.getInstance().setRepositoryAsync(projectDirPath);
+					repoChanged = true;
+				}
+			}
+		} catch (NoRepositorySelected e) {
+			logger.warn(e, e);
+		}
+		return repoChanged;
+	}
 
-  /**
-   * Checks if the two files are equal.
-   * 
-   * @param first The first file.
-   * @param second The second file.
-   * 
-   * @return <code>true</code> if the files have the same paths.
-   */
-  private boolean same(File first, File second) {
-    boolean same = false;
-    
-    try {
-      first = first.getCanonicalFile();
-      second = second.getCanonicalFile();
-          
-      same = first.equals(second); 
-    } catch (IOException e) {
-      logger.error(e, e);
-    }
-    
-    return same;
-  }
+	/**
+	 * Get canonical path.
+	 * 
+	 * @param file A file. 
+	 * 
+	 * @return The canonical version of the file.
+	 */
+	private String getCanonicalPath(File file) {
+		String repoPath;
+		try {
+			repoPath = file.getCanonicalPath();
+		} catch (IOException e) {
+			logger.debug(e, e);
+			repoPath = file.getAbsolutePath();
+		}
+		return repoPath;
+	}
 
-  /**
-   * Switch to the given repository if the user agrees.
-   * 
-   * @param projectDir  The project directory.
-   * 
-   * @return <code>true</code> if repository changed.
-   */
-  private boolean switchToProjectRepoIfUserAgrees(String projectDir) {
-    boolean repoChanged = false;
-    PluginWorkspace pluginWS =
-        PluginWorkspaceProvider.getPluginWorkspace();
-    int response = pluginWS.showConfirmDialog(
-        TRANSLATOR.getTranslation(Tags.CHANGE_WORKING_COPY),
-        MessageFormat.format(
-            TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
-            projectDir),
-        new String[] {
-            "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
-            "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "
-        },
-        new int[] { 0, 1 });
-    if (response == 0) {
-      GitAccess.getInstance().setRepositoryAsync(projectDir);
-      repoChanged = true;
-    }
-    
-    return repoChanged;
-  }
+	/**
+	 * Checks if the two files are equal.
+	 * 
+	 * @param first The first file.
+	 * @param second The second file.
+	 * 
+	 * @return <code>true</code> if the files have the same paths.
+	 */
+	private boolean same(File first, File second) {
+		boolean same = false;
 
-  /**
-   * Create a new repository if the user agrees.
-   * 
-   * @param projectDir   Project directory.
-   * @param projectName  Project name.
-   * 
-   * @return <code>true</code> if repository changed.
-   */
-  private boolean createNewRepoIfUserAgrees(String projectDir, String projectName) {
-    boolean repoChanged = false;
-    // Fast check to see if this is actually not a Git repository.
-    if (!OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
-      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
-      int response = pluginWS.showConfirmDialog(
-          TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-          MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
-          new String[] {
-              "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
-              "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "
-          },
-          new int[] { 0, 1 });
-      if (response == 0) {
-        try {
-          gitAccess.createNewRepository(projectDir);
-          repoChanged = true;
-        } catch (IllegalStateException | GitAPIException e) {
-          logger.debug(e,  e);
-          pluginWS.showErrorMessage("Failed to create a new repository.", e);
-        }
-      }
+		try {
+			first = first.getCanonicalFile();
+			second = second.getCanonicalFile();
 
-      // Don't ask the user again.
-      OptionsManager.getInstance().saveProjectTestedForGit(projectDir);
-    }
+			same = first.equals(second); 
+		} catch (IOException e) {
+			logger.error(e, e);
+		}
 
-    return repoChanged;
-  }
+		return same;
+	}
+
+	/**
+	 * Switch to the given repository if the user agrees.
+	 * 
+	 * @param projectDir  The project directory.
+	 * 
+	 * @return <code>true</code> if repository changed.
+	 */
+	private boolean switchToProjectRepoIfUserAgrees(String projectDir) {
+		boolean repoChanged = false;
+		PluginWorkspace pluginWS =
+				PluginWorkspaceProvider.getPluginWorkspace();
+		int response = pluginWS.showConfirmDialog(
+				TRANSLATOR.getTranslation(Tags.CHANGE_WORKING_COPY),
+				MessageFormat.format(
+						TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
+						projectDir),
+				new String[] {
+						"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+						"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "
+				},
+				new int[] { 0, 1 });
+		if (response == 0) {
+			GitAccess.getInstance().setRepositoryAsync(projectDir);
+			repoChanged = true;
+		}
+
+		return repoChanged;
+	}
+
+	/**
+	 * Create a new repository if the user agrees.
+	 * 
+	 * @param projectDir   Project directory.
+	 * @param projectName  Project name.
+	 * 
+	 * @return <code>true</code> if repository changed.
+	 */
+	private boolean createNewRepoIfUserAgrees(String projectDir, String projectName) {
+		boolean repoChanged = false;
+		// Fast check to see if this is actually not a Git repository.
+		if (!OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
+			PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+			int response = pluginWS.showConfirmDialog(
+					TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+					MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
+					new String[] {
+							"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+							"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "
+					},
+					new int[] { 0, 1 });
+			if (response == 0) {
+				try {
+					gitAccess.createNewRepository(projectDir);
+					repoChanged = true;
+				} catch (IllegalStateException | GitAPIException e) {
+					logger.debug(e,  e);
+					pluginWS.showErrorMessage("Failed to create a new repository.", e);
+				}
+			}
+
+			// Don't ask the user again.
+			OptionsManager.getInstance().saveProjectTestedForGit(projectDir);
+		}
+
+		return repoChanged;
+	}
 
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
 	 * 
 	 * @param status The current status.
 	 */
-  private void updateCounters(RepositoryStatusInfo status) {
-    stagingPanel.getCommitPanel().setRepoStatus(status);
-    
-    if (stagingPanel.getToolbarPanel() != null) {
-      stagingPanel.getToolbarPanel().refresh();
-    }
-  }
+	private void updateCounters(RepositoryStatusInfo status) {
+		stagingPanel.getCommitPanel().setRepoStatus(status);
+
+		if (stagingPanel.getToolbarPanel() != null) {
+			stagingPanel.getToolbarPanel().getGitActionsManager().refresh();
+		}
+	}
 
 	/**
 	 * Fetch the latest changes from the remote repository.
 	 * 
 	 * @return Repository status.
 	 */
-  private RepositoryStatusInfo fetch() {
-    // Connect to the remote.
-    RepositoryStatusInfo statusInfo = new RepositoryStatusInfo(RepositoryStatus.AVAILABLE);
-    try {
-      GitAccess.getInstance().fetch();
-    } catch (RepositoryUnavailableException e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
-    } catch (SSHPassphraseRequiredException e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
-      
-      String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-      if (sshPassphrase != null && !sshPassphrase.isEmpty()) {
-        // If the passphrase is null or empty, it is already treated by
-        // com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider.get(URIish, CredentialItem...)
-        
-        String message =  TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
-                + " "
-                + TRANSLATOR.getTranslation(Tags.PLEASE_TRY_AGAIN);
-        String passphrase = new PassphraseDialog(message).getPassphrase();
-        if(passphrase != null) {
-          return fetch();
-        }
-      }
-    } catch (PrivateRepositoryException e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
-      
-      LoginDialog loginDlg = new LoginDialog(
-          GitAccess.getInstance().getHostName(), 
-          TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
-      if (loginDlg.getCredentials() != null) {
-        return fetch();
-      }
-    } catch (Exception e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
-      logger.error(e, e);
-    }
-    return statusInfo;
-  }
+	private RepositoryStatusInfo fetch() {
+		// Connect to the remote.
+		RepositoryStatusInfo statusInfo = new RepositoryStatusInfo(RepositoryStatus.AVAILABLE);
+		try {
+			GitAccess.getInstance().fetch();
+		} catch (RepositoryUnavailableException e) {
+			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
+		} catch (SSHPassphraseRequiredException e) {
+			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
 
-  /**
-   * Compute status extra info.
-   * 
-   * @param e Exception.
-   * 
-   * @return The extra info about the current repo status.
-   */
-  private String computeStatusExtraInfo(Throwable e) {
-    String remoteURLFromConfig = null;
-    try {
-      remoteURLFromConfig = gitAccess.getRemoteURLFromConfig();
-    } catch (NoRepositorySelected ex) {
-      logger.debug(ex, ex);
-    }
-    String extraInfo = e.getMessage();
-    if (remoteURLFromConfig != null && !extraInfo.contains(remoteURLFromConfig)) {
-      extraInfo += "\n" + TRANSLATOR.getTranslation(Tags.REMOTE_REPO_URL) + " " + remoteURLFromConfig;
-    }
-    return extraInfo;
-  }
+			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+			if (sshPassphrase != null && !sshPassphrase.isEmpty()) {
+				// If the passphrase is null or empty, it is already treated by
+				// com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider.get(URIish, CredentialItem...)
+
+				String message =  TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
+						+ " "
+						+ TRANSLATOR.getTranslation(Tags.PLEASE_TRY_AGAIN);
+				String passphrase = new PassphraseDialog(message).getPassphrase();
+				if(passphrase != null) {
+					return fetch();
+				}
+			}
+		} catch (PrivateRepositoryException e) {
+			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
+
+			LoginDialog loginDlg = new LoginDialog(
+					GitAccess.getInstance().getHostName(), 
+					TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
+			if (loginDlg.getCredentials() != null) {
+				return fetch();
+			}
+		} catch (Exception e) {
+			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
+			logger.error(e, e);
+		}
+		return statusInfo;
+	}
+
+	/**
+	 * Compute status extra info.
+	 * 
+	 * @param e Exception.
+	 * 
+	 * @return The extra info about the current repo status.
+	 */
+	private String computeStatusExtraInfo(Throwable e) {
+		String remoteURLFromConfig = null;
+		try {
+			remoteURLFromConfig = gitAccess.getRemoteURLFromConfig();
+		} catch (NoRepositorySelected ex) {
+			logger.debug(ex, ex);
+		}
+		String extraInfo = e.getMessage();
+		if (remoteURLFromConfig != null && !extraInfo.contains(remoteURLFromConfig)) {
+			extraInfo += "\n" + TRANSLATOR.getTranslation(Tags.REMOTE_REPO_URL) + " " + remoteURLFromConfig;
+		}
+		return extraInfo;
+	}
 
 	/**
 	 * Updates the files in the model. 
@@ -431,28 +431,28 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @param newfiles The new files to be presented in the panel.
 	 */
 	private void updateFiles(ChangesPanel panelToUpdate, final List<FileStatus> newfiles) {
-	  // The current files presented in the panel.
-	  List<FileStatus> filesInModel = panelToUpdate.getFilesStatuses();
-	  
-	  if (logger.isDebugEnabled()) {
-	    logger.debug("New files      " + newfiles);
-	    logger.debug("Files in model " + filesInModel);
-	  }
-	  
-	  // Quick change detection.
-	  boolean changeDetected = newfiles.size() != filesInModel.size();
-	  if (!changeDetected) {
-	    // Same size. Sort and compare files.
-	    Collections.sort(newfiles, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
-	    List<FileStatus> sortedModel = new ArrayList<>(filesInModel.size());
-	    Collections.sort(sortedModel, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
-	    
-	    changeDetected = !newfiles.equals(sortedModel);
-	  }
+		// The current files presented in the panel.
+		List<FileStatus> filesInModel = panelToUpdate.getFilesStatuses();
 
-	  if (changeDetected) {
-	    SwingUtilities.invokeLater(() -> panelToUpdate.update(newfiles));
-	  }
+		if (logger.isDebugEnabled()) {
+			logger.debug("New files      " + newfiles);
+			logger.debug("Files in model " + filesInModel);
+		}
+
+		// Quick change detection.
+		boolean changeDetected = newfiles.size() != filesInModel.size();
+		if (!changeDetected) {
+			// Same size. Sort and compare files.
+			Collections.sort(newfiles, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
+			List<FileStatus> sortedModel = new ArrayList<>(filesInModel.size());
+			Collections.sort(sortedModel, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
+
+			changeDetected = !newfiles.equals(sortedModel);
+		}
+
+		if (changeDetected) {
+			SwingUtilities.invokeLater(() -> panelToUpdate.update(newfiles));
+		}
 	}
 
 	/**
@@ -460,44 +460,44 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * 
 	 * @param stagingPanel Staging panel.
 	 */
-  public void setStagingPanel(StagingPanel stagingPanel) {
+	public void setStagingPanel(StagingPanel stagingPanel) {
 		this.stagingPanel = stagingPanel;
 	}
-  
-  /**
-   * Links the refresh support with branch manager view.
-   * 
-   * @param branchesPanel The branch manager panel.
-   */
-  public void setBranchPanel(BranchManagementPanel branchesPanel) {
-    this.branchesPanel = branchesPanel;
-  }
-  
-  /**
-   * Links the refresh support with teh history view.
-   * 
-   * @param historyPanel The history panel.
-   */
-  public void setHistoryPanel(HistoryPanel historyPanel) {
-    this.historyPanel = historyPanel;
-  }
 
-  /**
-   * Attempts to shutdown any running refresh tasks.
-   */
-  public void shutdown() {
-    if (refreshFuture != null) {
-      // Just in case the task isn't running yet.
-      refreshFuture.cancel(false);
-    }
-    refreshExecutor.shutdown();
-  }
-  
-  /**
-   * @return The last scheduled task for refresing the Git status.
-   */
-  public ScheduledFuture<?> getScheduledTaskForTests() { // NOSONAR
-    return refreshFuture;
-  }
+	/**
+	 * Links the refresh support with branch manager view.
+	 * 
+	 * @param branchesPanel The branch manager panel.
+	 */
+	public void setBranchPanel(BranchManagementPanel branchesPanel) {
+		this.branchesPanel = branchesPanel;
+	}
+
+	/**
+	 * Links the refresh support with teh history view.
+	 * 
+	 * @param historyPanel The history panel.
+	 */
+	public void setHistoryPanel(HistoryPanel historyPanel) {
+		this.historyPanel = historyPanel;
+	}
+
+	/**
+	 * Attempts to shutdown any running refresh tasks.
+	 */
+	public void shutdown() {
+		if (refreshFuture != null) {
+			// Just in case the task isn't running yet.
+			refreshFuture.cancel(false);
+		}
+		refreshExecutor.shutdown();
+	}
+
+	/**
+	 * @return The last scheduled task for refresing the Git status.
+	 */
+	public ScheduledFuture<?> getScheduledTaskForTests() { // NOSONAR
+		return refreshFuture;
+	}
 
 }
