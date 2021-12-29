@@ -221,12 +221,11 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
    * Constructor.
    * 
    * @param gitController     Git controller.
+   * @param gitActionsManager The git actions manager.
    * @param refreshSupport    The refresh support.
-   * @param historyController History controller.
-   * @param branchManagementViewPresenter Branch management view presenter.
    */
   public ToolbarPanel(
-	  GitController gitController,
+	  GitController     gitController,
 	  GitActionsManager gitActionsManager,
       GitRefreshSupport refreshSupport) {
 	  
@@ -252,9 +251,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   /**
    * Sets the panel layout and creates all the buttons with their functionality
    * making them visible
-   *
-   * @param historyController History controller.
-   * @param branchManagementViewPresenter Branches presenter.
+   * 
    */
   public void createGUI() {
     gitToolbar = new JToolBar();

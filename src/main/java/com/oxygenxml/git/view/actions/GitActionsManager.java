@@ -293,7 +293,6 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getShowStagingAction() {
 		if(showStagingAction == null) {
 			showStagingAction = new ShowStagingAction();
-			showStagingAction.setEnabled(repository != null);
 			allActions.add(showStagingAction);
 		}
 

@@ -189,7 +189,6 @@ public class StagingPanel extends JPanel {
 	 * Create the GUI.
 	 * 
 	 * @param historyController History related interaction.
-	 * @param branchManagementViewPresenter The branches presenter.
 	 */
 	private void createGUI(HistoryController historyController) {
 		this.setLayout(new GridBagLayout());
