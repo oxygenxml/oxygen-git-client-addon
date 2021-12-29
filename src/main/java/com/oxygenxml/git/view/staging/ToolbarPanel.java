@@ -52,29 +52,18 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.actions.GitActionsManager;
-import com.oxygenxml.git.view.actions.internal.EditConfigFileAction;
-import com.oxygenxml.git.view.actions.internal.ListStashesAction;
-import com.oxygenxml.git.view.actions.internal.ManageRemoteRepositoriesAction;
 import com.oxygenxml.git.view.actions.internal.PullAction;
-import com.oxygenxml.git.view.actions.internal.SetRemoteAction;
-import com.oxygenxml.git.view.actions.internal.ShowTagsAction;
-import com.oxygenxml.git.view.actions.internal.StashChangesAction;
-import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
-import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
-import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
-import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.refresh.IRefreshable;
 import com.oxygenxml.git.view.stash.StashUtil;
-import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -152,19 +141,9 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   private JToolBar gitToolbar;
 
   /**
-   * Used to execute the push and pull commands
-   */
-  private final GitController gitController;
-
-  /**
    * Button for push
    */
   private ToolbarButton pushButton;
-  
-  /**
-   * Button for remote.
-   */
-  private SplitMenuButton remotesButton;
 
   /**
    * Button for stash
@@ -182,29 +161,14 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   private SplitMenuButton settingsMenuButton;
 
   /**
-   * Button for selecting the submodules
-   */
-  private ToolbarButton submoduleSelectButton;
-
-  /**
    * Button for history
    */
   private ToolbarButton historyButton;
 
   /**
-   * Button for cloning a new repository
-   */
-  private ToolbarButton cloneRepositoryButton;
-
-  /**
    * Counter for how many pushes the local copy is ahead of the base
    */
   private int pushesAhead = 0;
-	
-	 /**
-   * Button for showing tags
-   */
-  private ToolbarButton showTagsButton;
 
   /**
    * Counter for how many stahses has the repository.
@@ -267,8 +231,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
       GitRefreshSupport refreshSupport) {
 	  
 	this.gitActionsManager = gitActionsManager;
-    this.refreshSupport = refreshSupport;
-    this.gitController = gitController;
+    this.refreshSupport    = refreshSupport;
     
     gitActionsManager.addRefreshable(this);
     createGUI();
@@ -308,14 +271,10 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(0, 0, 0, 0);
 
-    addCloneRepositoryButton();
     addPushAndPullButtons();
     addBranchSelectButton();
     addStashButton();
-    addSubmoduleSelectButton();
     addHistoryButton();
-    addTagsShowButton();
-    addRemotesButton();
     addSettingsButton();
     
     this.add(gitToolbar, gbc);
@@ -350,12 +309,14 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     pullMenuButton.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() || 
     		gitActionsManager.getPullRebaseAction().isEnabled());
     
+    branchSelectButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
+    
     stashButton.setEnabled(gitActionsManager.getListStashesAction().isEnabled() || 
     		gitActionsManager.getStashChangesAction().isEnabled());
     
     historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
     
-    submoduleSelectButton.setEnabled(gitActionsManager.getSubmoduleAction().isEnabled());
+   
     
     updateBranches();
 
@@ -465,22 +426,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   }
 
 
-
-  // ==========  CLONE REPOSITORY  ==========
-
-  /**
-   * Add the "Clone repository" button.
-   */
-  private void addCloneRepositoryButton() {
-    cloneRepositoryButton = new ToolbarButton(gitActionsManager.getCloneRepositoryAction(), false);
-    cloneRepositoryButton.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
-    cloneRepositoryButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
-    setDefaultToolbarButtonWidth(cloneRepositoryButton);
-
-    gitToolbar.add(cloneRepositoryButton);
-  }
-
-
   /**
    * Sets a custom width on the given button
    *
@@ -503,13 +448,10 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   public void updateButtonState(boolean enabled) {
     pushButton.setEnabled(enabled);
     pullMenuButton.setEnabled(enabled);
-    cloneRepositoryButton.setEnabled(enabled);
-    submoduleSelectButton.setEnabled(enabled);
     branchSelectButton.setEnabled(enabled);
-    historyButton.setEnabled(enabled);
-    showTagsButton.setEnabled(enabled);
-    settingsMenuButton.setEnabled(enabled);
     stashButton.setEnabled(enabled);
+    historyButton.setEnabled(enabled);
+    settingsMenuButton.setEnabled(enabled);
   }
 
 
@@ -1445,31 +1387,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
 
 
-  // ========== SUBMODULES ==========
-
-  /**
-   * Adds to the tool bar a button for selecting submodules. When clicked, a new
-   * dialog appears that shows all the submodules for the current repository and
-   * allows the user to select one of them
-   */
-  private void addSubmoduleSelectButton() {
-    submoduleSelectButton = new ToolbarButton(gitActionsManager.getSubmoduleAction(), false);
-    submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
-    submoduleSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
-    setDefaultToolbarButtonWidth(submoduleSelectButton);
-    gitToolbar.add(submoduleSelectButton);
-  }
-
-
-  /**
-   * @return the submodule button.
-   */
-  public ToolbarButton getSubmoduleSelectButton() {
-    return submoduleSelectButton;
-  }
-
-
-
   // ========== HISTORY ==========
 
   /**
@@ -1486,86 +1403,8 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     gitToolbar.add(historyButton);
 
   }
-
-
-
-  // ========== TAGS ==========
-
-  /**
-   * Add the "Show Tags" button
-   */
-  private void addTagsShowButton() {
-    showTagsButton = new ToolbarButton(gitActionsManager.getShowTagsAction(), false);
-    showTagsButton.setIcon(Icons.getIcon(Icons.TAG));
-    showTagsButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_TAGS));
-    setDefaultToolbarButtonWidth(showTagsButton);
-    showTagsButton.setEnabled(false);
-    gitToolbar.add(showTagsButton);
-  }
-
-
-  /**
-   * @return the tags button.
-   */
-  public ToolbarButton getShowTagsButton() {
-    return showTagsButton;
-  }
   
   
-  
-  // ==========  REMOTES  ==========
-  
-  /**
-   * Adds to the tool bar the remotes button.
-   */
-  private void addRemotesButton() {
-    remotesButton = createRemotesButton();
-    remotesButton.setIcon(Icons.getIcon(Icons.REMOTE));
-
-    gitToolbar.add(remotesButton);
-    remotesButton.setEnabled(false);
-  }
-
-  
-  /**
-   * Create the "Remotes" button.
-   * 
-   * @return the "Remotes" button.
-   */
-  private SplitMenuButton createRemotesButton() {
-    SplitMenuButton remoteButton = new SplitMenuButton( // NOSONAR (java:S110)
-            null,
-            Icons.getIcon(Icons.REMOTE),
-            false,
-            false,
-            true,
-            false) { 
-
-      @Override
-      public JToolTip createToolTip() {
-        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-      }
-
-    };
-    
-    remoteButton.setToolTipText(TRANSLATOR.getTranslation(Tags.REMOTE_BUTTON_TOOLTIP));
-    
-    remoteButton.addActionToMenu(gitActionsManager.getManageRemoteRepositoriesAction(), false);
-    remoteButton.addActionToMenu(gitActionsManager.getTrackRemoteBranchAction(), false);
-    remoteButton.addActionToMenu(gitActionsManager.getEditConfigAction(), false);
-    
-    return remoteButton;
-  }
-  
-   
-  
-  /**
-   * @return The remote button.
-   */
-  public SplitMenuButton getRemoteButton() {
-    return remotesButton;
-  }
-
 
   // ========== SETTINGS ==========
 
@@ -1585,6 +1424,8 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   public SplitMenuButton getSettingsMenuButton() {
     return settingsMenuButton;
   }
+  
+  
 	
   /**
    * @return The current Git Actions Manager.
