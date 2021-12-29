@@ -1,8 +1,5 @@
 package com.oxygenxml.git.view.actions;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JMenu;
@@ -130,6 +127,9 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 				gitActionsManager.getPullMergeAction()));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
 				gitActionsManager.getPullRebaseAction()));
+		pullMenuItem.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() 
+				|| gitActionsManager.getPullRebaseAction().isEnabled());
+	
 		gitMenu.add(pullMenuItem);
 
 		// Add show branches item
@@ -231,7 +231,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	public void refresh() {
 		if(gitActionsManager != null) {
 			pullMenuItem.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() 
-					|| gitActionsManager.getPullMergeAction().isEnabled());
+					|| gitActionsManager.getPullRebaseAction().isEnabled());
 		}
 	}
 

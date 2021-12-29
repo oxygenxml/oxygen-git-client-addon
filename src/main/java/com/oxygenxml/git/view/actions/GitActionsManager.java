@@ -147,6 +147,11 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * List with refreshables associate with this class.
 	 */
 	private final List<IRefreshable>             refreshables;
+	
+	/**
+	 * The current repository.
+	 */
+	private Repository                           repository = null;
 
 
 	/**
@@ -166,6 +171,11 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		this.branchManagementViewPresenter = branchManagementViewPresenter;
 		this.allActions                    = new ArrayList<>();  
 		this.refreshables                  = new ArrayList<>(); 
+		try {
+			this.repository                = gitController.getGitAccess().getRepository();
+		} catch (NoRepositorySelected e) {
+			LOGGER.debug(e, e);
+		}
 
 		gitController.addGitListener(new GitEventAdapter() {
 			@Override
@@ -210,6 +220,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getPushAction() {
 		if(pushAction == null) {
 			pushAction = new PushAction(gitController);
+			pushAction.setEnabled(repository != null);
 			allActions.add(pushAction);
 		}
 
@@ -225,6 +236,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		if(pullMergeAction == null) {
 			pullMergeAction = new PullAction(gitController, 
 					TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF);
+			pullMergeAction.setEnabled(repository != null);
 			allActions.add(pullMergeAction);
 		}
 
@@ -240,6 +252,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		if(pullRebaseAction == null) {
 			pullRebaseAction = new PullAction(gitController, 
 					TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE);
+			pullRebaseAction.setEnabled(repository != null);
 			allActions.add(pullRebaseAction);
 		}
 
@@ -254,6 +267,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getShowHistoryAction() {
 		if(showHistoryAction == null) {
 			showHistoryAction = new ShowHistoryAction(historyController);
+			showHistoryAction.setEnabled(repository != null);
 			allActions.add(showHistoryAction);
 		}
 
@@ -268,6 +282,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getShowBranchesAction() {
 		if(showBranchesAction == null) {
 			showBranchesAction = new ShowBranchesAction(branchManagementViewPresenter);
+			showBranchesAction.setEnabled(repository != null);
 			allActions.add(showBranchesAction);
 		}
 
@@ -282,6 +297,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getShowTagsAction() {
 		if(showTagsAction == null) {
 			showTagsAction = new ShowTagsAction();
+			showTagsAction.setEnabled(repository != null);
 			allActions.add(showTagsAction);
 		}
 
@@ -296,6 +312,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getStashChangesAction() {
 		if(stashChangesAction == null) {
 			stashChangesAction = new StashChangesAction();
+			stashChangesAction.setEnabled(repository != null);
 			allActions.add(stashChangesAction);
 		}
 
@@ -310,6 +327,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getListStashesAction() {
 		if(listStashesAction == null) {
 			listStashesAction = new ListStashesAction();
+			listStashesAction.setEnabled(repository != null);
 			allActions.add(listStashesAction);
 		}
 
@@ -324,6 +342,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getEditConfigAction() {
 		if(editConfigFileAction == null) {
 			editConfigFileAction = new EditConfigFileAction();
+			editConfigFileAction.setEnabled(repository != null);
 			allActions.add(editConfigFileAction);
 		}
 
@@ -338,6 +357,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getManageRemoteRepositoriesAction() {
 		if(manageRemoteRepositoriesAction == null) {
 			manageRemoteRepositoriesAction = new ManageRemoteRepositoriesAction();
+			manageRemoteRepositoriesAction.setEnabled(repository != null);
 			allActions.add(manageRemoteRepositoriesAction);
 		}
 
@@ -352,6 +372,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getTrackRemoteBranchAction() {
 		if(trackRemoteBranchAction == null) {
 			trackRemoteBranchAction = new SetRemoteAction();
+			trackRemoteBranchAction.setEnabled(repository != null);
 			allActions.add(trackRemoteBranchAction);
 		}
 
@@ -366,6 +387,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getSubmoduleAction() {
 		if(submoduleAction == null) {
 			submoduleAction = new SubmodulesAction();
+			submoduleAction.setEnabled(repository != null && hasRepositorySubmodules());
 			allActions.add(submoduleAction);
 		}
 
@@ -378,15 +400,15 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 */
 	@Override
 	public void refresh() {
-		Repository repo = null;
+		repository = null;
 
 		try {
-			repo = gitController.getGitAccess().getRepository();
+			repository = gitController.getGitAccess().getRepository();
 		} catch (NoRepositorySelected e) {
 			LOGGER.debug(e, e);
 		}
 
-		final boolean isRepoOpen = repo != null;
+		final boolean isRepoOpen = repository != null;
 
 		allActions.forEach(action -> action.setEnabled(isRepoOpen));
 
@@ -475,7 +497,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 
 	@Override
 	public void updateAll() {
-		refreshables.forEach(refreshable -> refreshable.refresh());
+		refreshables.forEach(IRefreshable::refresh);
 	}
 
 }
