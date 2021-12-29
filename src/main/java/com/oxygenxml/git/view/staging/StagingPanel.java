@@ -123,6 +123,12 @@ public class StagingPanel extends JPanel {
 	 */
 	private final GitController gitController;
 	
+	/**
+	 * The git actions manager.
+	 */
+	private final GitActionsManager gitActionsManager;
+	
+	
   /**
    * Constructor.
    * 
@@ -139,7 +145,8 @@ public class StagingPanel extends JPanel {
 		this.refreshSupport = refreshSupport;
 		this.gitController = gitCtrl;
 		
-		createGUI(historyController, branchManagementViewPresenter);
+		this.gitActionsManager = new GitActionsManager(gitCtrl, historyController, branchManagementViewPresenter);
+		createGUI(historyController);
 		
 		gitCtrl.addGitListener(new GitEventListener() {
 		  @Override
@@ -174,10 +181,8 @@ public class StagingPanel extends JPanel {
    * 
    * @return the toolbar.
    */
-  protected ToolbarPanel createToolbar(
-      HistoryController historyController,
-      BranchManagementViewPresenter branchManagementViewPresenter) {
-    return new ToolbarPanel(gitController, refreshSupport, historyController, branchManagementViewPresenter);
+  protected ToolbarPanel createToolbar(GitActionsManager gitActionsManager) {
+    return new ToolbarPanel(gitController, gitActionsManager, refreshSupport);
   }
 
 	/**
@@ -186,9 +191,7 @@ public class StagingPanel extends JPanel {
 	 * @param historyController History related interaction.
 	 * @param branchManagementViewPresenter The branches presenter.
 	 */
-	private void createGUI(
-	    HistoryController historyController,
-	    BranchManagementViewPresenter branchManagementViewPresenter) {
+	private void createGUI(HistoryController historyController) {
 		this.setLayout(new GridBagLayout());
 
 		// Creates the panels objects that will be in the staging panel
@@ -196,10 +199,8 @@ public class StagingPanel extends JPanel {
 		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
 		commitPanel = new CommitAndStatusPanel(gitController);
-		GitActionsManager gitA = new GitActionsManager(gitController, historyController, branchManagementViewPresenter);
-		GitActionsMenuBar.getInstance().populateMenu(gitA);
-		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
-		toolbarPanel.setGitActionsManager(gitA);
+		GitActionsMenuBar.getInstance().populateMenu(gitActionsManager);
+		toolbarPanel = createToolbar(gitActionsManager);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
 		
 		// adds the unstaged and the staged panels to a split pane
@@ -325,9 +326,8 @@ public class StagingPanel extends JPanel {
             Collection<String> affectedFiles = Collections.singletonList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
             FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
             SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
-						if(toolbarPanel != null) {
-							toolbarPanel.refreshStashButton();
-							toolbarPanel.refreshTagsButton();
+						if(gitActionsManager != null) {
+							gitActionsManager.refresh();
 						}
           }
         } catch (NoRepositorySelected e) {
@@ -494,11 +494,9 @@ public class StagingPanel extends JPanel {
 	      unstagedChangesPanel.update(status.getUnstagedFiles());
 	      stagedChangesPanel.update(status.getStagedFiles());
 
+	      gitActionsManager.refresh();
 	      
-	      if (toolbarPanel != null) {
-	        toolbarPanel.updateButtonState(true);
-	        toolbarPanel.refresh();
-	      }
+	     
 	    }
 
 	    /**

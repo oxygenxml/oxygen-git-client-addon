@@ -39,7 +39,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	/**
 	 * Used to generate the disabled icons for menu actions.
 	 */
-	private final JButton buttonsFactoryIcon;
+	private final JButton iconFactory;
 	
 	/**
 	 * The git actions manager.
@@ -58,7 +58,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 */
 	private GitActionsMenuBar() {
 		gitMenu = OxygenUIComponentsFactory.createMenu(TRANSLATOR.getTranslation(Tags.GIT));
-		buttonsFactoryIcon = new Button("");
+		iconFactory = new Button("");
 	}
 	
 	
@@ -162,13 +162,13 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		gitMenu.add(submodulesMenuItem);
 
 		// Add stash actions
-		gitMenu.addSeparator();
-		gitMenu.add(gitActionsManager.getStashChangesAction());
-		final JMenuItem listStashesMenuItem = OxygenUIComponentsFactory.createMenuItem(
-				gitActionsManager.getListStashesAction());
-		listStashesMenuItem.setIcon(Icons.getIcon(Icons.STASH_ICON));
-		listStashesMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.STASH_ICON)));
-		gitMenu.add(listStashesMenuItem);
+		gitMenu.addSeparator();	
+		final JMenuItem stashChangesMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getStashChangesAction());
+		stashChangesMenuItem.setIcon(Icons.getIcon(Icons.STASH_ICON));
+		stashChangesMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.STASH_ICON)));
+		gitMenu.add(stashChangesMenuItem);
+		gitMenu.add(gitActionsManager.getListStashesAction());
 
 		// Add remote actions
 		gitMenu.addSeparator();
@@ -206,8 +206,8 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 * @return The disabled icon for given icon.
 	 */
 	private Icon getDisabledIcon(Icon icon) {
-		buttonsFactoryIcon.setIcon(icon);
-		return buttonsFactoryIcon.getDisabledIcon();
+		iconFactory.setIcon(icon);
+		return iconFactory.getDisabledIcon();
 	}
 
 	
@@ -233,7 +233,14 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 			pullMenuItem.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() 
 					|| gitActionsManager.getPullMergeAction().isEnabled());
 		}
-		
+	}
+
+
+	/**
+	 * @return The current Git Actions Manager.
+	 */
+	public GitActionsManager getGitActionsManager() {
+		return gitActionsManager;
 	}
 	
 }

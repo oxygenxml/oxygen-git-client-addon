@@ -47,7 +47,7 @@ import com.oxygenxml.git.view.tags.GitTagsManager;
  *
  */
 public class GitActionsManager implements IRefresher, IRefreshable {
-	
+
 	/**
 	 * Clone new repository action.
 	 */
@@ -57,12 +57,12 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * Push action.
 	 */
 	private AbstractAction pushAction                     = null;
-	
+
 	/**
 	 * Pull merge action.
 	 */
 	private AbstractAction pullMergeAction                = null;
-	
+
 	/**
 	 * Pull rebase action.
 	 */
@@ -82,7 +82,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * Action to show tags.
 	 */
 	private AbstractAction showTagsAction                 = null;
-	
+
 	/**
 	 * Action for submodule.
 	 */
@@ -132,7 +132,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * Logger for logging.
 	 */
 	private static final Logger                  LOGGER = Logger.getLogger(GitActionsManager.class);
-	
+
 	/**
 	 * The translator for translations.
 	 */
@@ -160,21 +160,26 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 			GitController gitController, 
 			HistoryController historyController,
 			BranchManagementViewPresenter branchManagementViewPresenter) {
+
 		this.gitController                 = gitController;
 		this.historyController             = historyController;
 		this.branchManagementViewPresenter = branchManagementViewPresenter;
 		this.allActions                    = new ArrayList<>();  
 		this.refreshables                  = new ArrayList<>(); 
+
 		gitController.addGitListener(new GitEventAdapter() {
 			@Override
 			public void operationSuccessfullyEnded(GitEventInfo info) {
 				GitOperation operation = info.getGitOperation();
-				if (operation == GitOperation.ABORT_REBASE 
+				if (operation == GitOperation.OPEN_WORKING_COPY) {
+					if(submoduleAction != null) {
+						submoduleAction.setEnabled(gitController.getGitAccess()
+								.getSubmoduleAccess().getSubmodules().isEmpty());
+					}
+				} else if (operation == GitOperation.ABORT_REBASE 
 						|| operation == GitOperation.CONTINUE_REBASE 
 						|| operation == GitOperation.COMMIT
 						|| operation == GitOperation.DISCARD
-						|| operation == GitOperation.DELETE_BRANCH
-						|| operation == GitOperation.CREATE_BRANCH
 						|| operation == GitOperation.CHECKOUT
 						|| operation == GitOperation.CHECKOUT_COMMIT) {
 					refresh();
@@ -183,7 +188,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		});
 	}
 
-	
+
 	/**
 	 * @return The clone repository action.
 	 */
@@ -196,7 +201,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 
 		return cloneRepositoryAction;
 	}
-	
+
 
 	/**
 	 * @return The push action.
@@ -210,29 +215,31 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 
 		return pushAction;
 	}
-	
-	
+
+
 	/**
 	 * @return The pull merge action.
 	 */
 	@NonNull
 	public AbstractAction getPullMergeAction() {
 		if(pullMergeAction == null) {
-			pullMergeAction = new PullAction(gitController, TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF);
+			pullMergeAction = new PullAction(gitController, 
+					TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF);
 			allActions.add(pullMergeAction);
 		}
 
 		return pullMergeAction;
 	}
-	
-	
+
+
 	/**
 	 * @return The pull merge action.
 	 */
 	@NonNull
 	public AbstractAction getPullRebaseAction() {
 		if(pullRebaseAction == null) {
-			pullRebaseAction = new PullAction(gitController, TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE);
+			pullRebaseAction = new PullAction(gitController, 
+					TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE);
 			allActions.add(pullRebaseAction);
 		}
 
@@ -351,7 +358,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		return trackRemoteBranchAction;
 	}
 
-	
+
 	/**
 	 * @return The submodule action.
 	 */
@@ -372,7 +379,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	@Override
 	public void refresh() {
 		Repository repo = null;
-		
+
 		try {
 			repo = gitController.getGitAccess().getRepository();
 		} catch (NoRepositorySelected e) {
@@ -382,20 +389,20 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		final boolean isRepoOpen = repo != null;
 
 		allActions.forEach(action -> action.setEnabled(isRepoOpen));
-		
+
 		if(cloneRepositoryAction != null) {
 			cloneRepositoryAction.setEnabled(true);
 		}
-		
+
 		if(isRepoOpen) {
 			updateActionsStatus();
 		}
 
 		updateAll();
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Update the actions status when repository is open.
 	 */
@@ -409,27 +416,27 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 				showTagsAction.setEnabled(false);
 			}
 		}
-		
+
 		if(submoduleAction != null) {
 			submoduleAction.setEnabled(!gitController.getGitAccess().getSubmoduleAccess().getSubmodules().isEmpty());
 		}
-		
+
 		if(stashChangesAction != null) {
 			List<FileStatus> unstagedFiles = gitController.getGitAccess().getUnstagedFiles();
-		    boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
-			     
+			boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
+
 			if(!existsLocalFiles) {
-			    List<FileStatus> stagedFiles = gitController.getGitAccess().getStagedFiles();
-			    existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
-			 }
-			
+				List<FileStatus> stagedFiles = gitController.getGitAccess().getStagedFiles();
+				existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
+			}
+
 			stashChangesAction.setEnabled(existsLocalFiles);	    
 		}
-		
+
 		if(listStashesAction != null) {
 			Collection<RevCommit> stashes =  gitController.getGitAccess().listStashes();
-		    int noOfStashes = stashes == null ? 0 : stashes.size();
-		    listStashesAction.setEnabled(noOfStashes > 0);
+			int noOfStashes = stashes == null ? 0 : stashes.size();
+			listStashesAction.setEnabled(noOfStashes > 0);
 		}
 	}
 
@@ -462,5 +469,5 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public void updateAll() {
 		refreshables.forEach(refreshable -> refreshable.refresh());
 	}
-	
+
 }

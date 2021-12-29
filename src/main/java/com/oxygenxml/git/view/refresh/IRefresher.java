@@ -4,7 +4,9 @@ import java.util.List;
 
 
 /**
- * Notify the refreshables.
+ * Manage refreshables and notify them. 
+ *
+ * @see IRefreshable
  * 
  * @author Alex_Smarandache
  *

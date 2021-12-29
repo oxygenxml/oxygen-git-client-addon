@@ -72,6 +72,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.refresh.IRefreshable;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -87,7 +88,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  * @author Beniamin Savu
  *
  */
-public class ToolbarPanel extends JPanel {
+public class ToolbarPanel extends JPanel implements IRefreshable {
 
   /**
    * The git access.
@@ -231,16 +232,6 @@ public class ToolbarPanel extends JPanel {
   private SplitMenuButton branchSelectButton;
 
   /**
-   * Stash changes.
-   */
-  private AbstractAction stashChangesAction;
-
-  /**
-   * List stashes.
-   */
-  private AbstractAction listStashesAction;
-
-  /**
    * List of branches.
    */
   private final List<String> branches = new ArrayList<>();
@@ -255,19 +246,14 @@ public class ToolbarPanel extends JPanel {
    */
   private boolean isRepoSelected;
   
-  private GitActionsManager gitActionsManager;
+  /**
+   * The git actions manager.
+   */
+  private final GitActionsManager gitActionsManager;
 
 
 
-  public GitActionsManager getGitActionsManager() {
-	return gitActionsManager;
-}
-
-public void setGitActionsManager(GitActionsManager gitActionsManager) {
-	this.gitActionsManager = gitActionsManager;
-}
-
-/**
+ /**
    * Constructor.
    * 
    * @param gitController     Git controller.
@@ -276,30 +262,24 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    * @param branchManagementViewPresenter Branch management view presenter.
    */
   public ToolbarPanel(
-      GitController gitController, 
-      GitRefreshSupport refreshSupport,
-      HistoryController historyController,
-      BranchManagementViewPresenter branchManagementViewPresenter) {
-    this.gitController = gitController;
+	  GitController gitController,
+	  GitActionsManager gitActionsManager,
+      GitRefreshSupport refreshSupport) {
+	  
+	this.gitActionsManager = gitActionsManager;
     this.refreshSupport = refreshSupport;
-
-    createGUI(historyController, branchManagementViewPresenter);
+    this.gitController = gitController;
+    
+    gitActionsManager.addRefreshable(this);
+    createGUI();
     
     gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
-        if (operation == GitOperation.OPEN_WORKING_COPY) {
-          // Repository changed. Update the toolbar buttons.
-          submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
-        } else if (operation == GitOperation.ABORT_REBASE 
-            || operation == GitOperation.CONTINUE_REBASE 
-            || operation == GitOperation.COMMIT
-            || operation == GitOperation.DISCARD
-            || operation == GitOperation.DELETE_BRANCH
-            || operation == GitOperation.CREATE_BRANCH
-            || operation == GitOperation.CHECKOUT
-            || operation == GitOperation.CHECKOUT_COMMIT) {
+        if (operation == GitOperation.DELETE_BRANCH ||
+            operation == GitOperation.CREATE_BRANCH
+            ) {
           refresh();
         }
       }
@@ -313,9 +293,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    * @param historyController History controller.
    * @param branchManagementViewPresenter Branches presenter.
    */
-  public void createGUI(
-          HistoryController historyController,
-          BranchManagementViewPresenter branchManagementViewPresenter) {
+  public void createGUI() {
     gitToolbar = new JToolBar();
     gitToolbar.setOpaque(false);
     gitToolbar.setFloatable(false);
@@ -332,10 +310,10 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
 
     addCloneRepositoryButton();
     addPushAndPullButtons();
-    addBranchSelectButton(branchManagementViewPresenter);
+    addBranchSelectButton();
     addStashButton();
     addSubmoduleSelectButton();
-    addHistoryButton(historyController);
+    addHistoryButton();
     addTagsShowButton();
     addRemotesButton();
     addSettingsButton();
@@ -349,11 +327,9 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    * Updates the presented information, like the Pull-behind, Pushes-ahead
    * and branch status.
    */
+  @Override
   public void refresh() {
 
-	  if(gitActionsManager != null) {
-		  gitActionsManager.refresh();
-	  }
     this.pullsBehind = GIT_ACCESS.getPullsBehind();
     try {
       this.pushesAhead = GIT_ACCESS.getPushesAhead();
@@ -371,13 +347,16 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     
     isRepoSelected = repo != null;
 
-    pushButton.setEnabled(isRepoSelected);
-    pullMenuButton.setEnabled(isRepoSelected);
-    historyButton.setEnabled(isRepoSelected);
-    remotesButton.setEnabled(isRepoSelected);
+    pullMenuButton.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() || 
+    		gitActionsManager.getPullRebaseAction().isEnabled());
     
-    refreshStashButton();
-    refreshTagsButton();
+    stashButton.setEnabled(gitActionsManager.getListStashesAction().isEnabled() || 
+    		gitActionsManager.getStashChangesAction().isEnabled());
+    
+    historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
+    
+    submoduleSelectButton.setEnabled(gitActionsManager.getSubmoduleAction().isEnabled());
+    
     updateBranches();
 
     SwingUtilities.invokeLater(() -> {
@@ -493,14 +472,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    * Add the "Clone repository" button.
    */
   private void addCloneRepositoryButton() {
-    Action cloneRepositoryAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        new CloneRepositoryDialog();
-      }
-    };
-
-    cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
+    cloneRepositoryButton = new ToolbarButton(gitActionsManager.getCloneRepositoryAction(), false);
     cloneRepositoryButton.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
     cloneRepositoryButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
     setDefaultToolbarButtonWidth(cloneRepositoryButton);
@@ -532,7 +504,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     pushButton.setEnabled(enabled);
     pullMenuButton.setEnabled(enabled);
     cloneRepositoryButton.setEnabled(enabled);
-    submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
+    submoduleSelectButton.setEnabled(enabled);
     branchSelectButton.setEnabled(enabled);
     historyButton.setEnabled(enabled);
     showTagsButton.setEnabled(enabled);
@@ -574,7 +546,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    * @return the "Push" button.
    */
   private ToolbarButton createPushButton() {
-    return new ToolbarButton(createPushAction(), false) { // NOSONAR (java:S110)
+    return new ToolbarButton(gitActionsManager.getPushAction(), false) { // NOSONAR (java:S110)
 
       @Override
       protected void paintComponent(Graphics g) {
@@ -964,17 +936,15 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     };
 
     // Pull (merge)
-    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(new PullAction(gitController, TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF));
+    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(
+    		gitActionsManager.getPullMergeAction());
     pullMergeMenuItem.addActionListener(radioMenuItemActionListener);
     splitMenuButton.add(pullMergeMenuItem);
     pullActionsGroup.add(pullMergeMenuItem);
 
     // Pull (rebase)
-    PullAction pullRebaseAction = new PullAction(
-    		gitController,
-            TRANSLATOR.getTranslation(Tags.PULL_REBASE),
-            PullType.REBASE);
-    JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(pullRebaseAction);
+    JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(
+    		gitActionsManager.getPullRebaseAction());
     pullRebaseMenuItem.addActionListener(radioMenuItemActionListener);
     splitMenuButton.add(pullRebaseMenuItem);
     pullActionsGroup.add(pullRebaseMenuItem);
@@ -989,37 +959,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     }
   }
 
-
-  /**
-   * Create the "Push" action.
-   *
-   * @return the "Push" action
-   */
-  private Action createPushAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try { 
-          if (GitAccess.getInstance().getRepository() != null) {
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Push Button Clicked");
-            }
-
-            gitController.push();
-            if (pullsBehind == 0) {
-              pushesAhead = 0;
-            }
-          }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1, e1);
-          }
-        }
-      }
-    };
-  }
-
-
+  
 
   // ========== BRANCHES ==========
 
@@ -1030,21 +970,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    *
    * @param branchManagementViewPresenter Branches presenter.
    */
-  private void addBranchSelectButton(BranchManagementViewPresenter branchManagementViewPresenter) {
-    Action branchSelectAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          if (GitAccess.getInstance().getRepository() != null) {
-            branchManagementViewPresenter.showGitBranchManager();
-          }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1, e1);
-          }
-        }
-      }
-    };
+  private void addBranchSelectButton() {
 
     branchSelectButton = new SplitMenuButton( // NOSONAR (java:S110)
             null,
@@ -1090,7 +1016,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     branchSelectButton.setMaximumSize(d);
 
     branchSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
-    branchSelectButton.setAction(branchSelectAction);
+    branchSelectButton.setAction(gitActionsManager.getShowBranchesAction());
     
     branchSelectButton.setEnabled(false);
     
@@ -1501,50 +1427,12 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
 
     stashLocalButton.setToolTipText(TRANSLATOR.getTranslation(Tags.STASH));
 
-    addStashActionsToMenu(stashLocalButton);
+    stashLocalButton.addActionToMenu(gitActionsManager.getStashChangesAction(), false);
+    stashLocalButton.addActionToMenu(gitActionsManager.getListStashesAction(),  false);
     
     stashLocalButton.setEnabled(false);
 
     return stashLocalButton;
-  }
-
-
-  /**
-   * Add the stash actions to the Stash menu.
-   *
-   * @param splitMenuButton The menu button to add to.
-   */
-  private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
-    splitMenuButton.addActionToMenu(new StashChangesAction(), false);
-    splitMenuButton.addActionToMenu(new ListStashesAction(), false);
-  }
-
-
-  /**
-   * Refresh the status for stash button.
-   */
-  public void refreshStashButton() {
-   /* Collection<RevCommit> stashes = GIT_ACCESS.listStashes();
-    noOfStashes = stashes == null ? 0 : stashes.size();
-
-    List<FileStatus> unstagedFiles = GIT_ACCESS.getUnstagedFiles();
-    boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
-    if(!existsLocalFiles) {
-      List<FileStatus> stagedFiles = GIT_ACCESS.getStagedFiles();
-      existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
-    }
-    stashChangesAction.setEnabled(existsLocalFiles);
-
-    boolean existsStashes = noOfStashes > 0;
-    listStashesAction.setEnabled(existsStashes);
-  
-    stashButton.setEnabled(existsLocalFiles || existsStashes);
-    if(isRepoSelected) {
-      stashButton.setEnabled(existsLocalFiles || existsStashes);
-    } else {
-      stashButton.setEnabled(false);
-    }*/
-    
   }
 
 
@@ -1565,35 +1453,11 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    * allows the user to select one of them
    */
   private void addSubmoduleSelectButton() {
-    Action branchSelectAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          if (GitAccess.getInstance().getRepository() != null) {
-            new SubmoduleSelectDialog();
-          }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1, e1);
-          }
-        }
-      }
-    };
-    submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
+    submoduleSelectButton = new ToolbarButton(gitActionsManager.getSubmoduleAction(), false);
     submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
     submoduleSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
     setDefaultToolbarButtonWidth(submoduleSelectButton);
     gitToolbar.add(submoduleSelectButton);
-
-    submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
-  }
-
-
-  /**
-   * @return <code>true</code> if we have submodules.
-   */
-  boolean gitRepoHasSubmodules() {
-    return !GitAccess.getInstance().getSubmoduleAccess().getSubmodules().isEmpty();
   }
 
 
@@ -1611,15 +1475,9 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
   /**
    * @param historyController History interface.
    */
-  private void addHistoryButton(HistoryController historyController) {
-    Action historyAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        historyController.showRepositoryHistory();
-      }
-    };
-
-    historyButton = new ToolbarButton(historyAction, false);
+  private void addHistoryButton() {
+    
+    historyButton = new ToolbarButton(gitActionsManager.getShowHistoryAction(), false);
     historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
     historyButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
     setDefaultToolbarButtonWidth(historyButton);
@@ -1637,7 +1495,7 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
    * Add the "Show Tags" button
    */
   private void addTagsShowButton() {
-    showTagsButton = new ToolbarButton(new ShowTagsAction(), false);
+    showTagsButton = new ToolbarButton(gitActionsManager.getShowTagsAction(), false);
     showTagsButton.setIcon(Icons.getIcon(Icons.TAG));
     showTagsButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_TAGS));
     setDefaultToolbarButtonWidth(showTagsButton);
@@ -1645,21 +1503,6 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     gitToolbar.add(showTagsButton);
   }
 
-
-  /**
-   * Refresh the button for showing tags
-   */
-  public void refreshTagsButton() {
-    int noOfTags = 0;
-    if(isRepoSelected) {
-      try {
-        noOfTags = GitTagsManager.getNoOfTags();
-      } catch (GitAPIException e) {
-        LOGGER.debug(e,e);
-      }
-    }
-    getShowTagsButton().setEnabled(noOfTags > 0 && isRepoSelected);
-  }
 
   /**
    * @return the tags button.
@@ -1707,9 +1550,9 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     
     remoteButton.setToolTipText(TRANSLATOR.getTranslation(Tags.REMOTE_BUTTON_TOOLTIP));
     
-    remoteButton.addActionToMenu(new ManageRemoteRepositoriesAction(), false);
-    remoteButton.addActionToMenu(new SetRemoteAction(), false);
-    remoteButton.addActionToMenu(new EditConfigFileAction(), false);
+    remoteButton.addActionToMenu(gitActionsManager.getManageRemoteRepositoriesAction(), false);
+    remoteButton.addActionToMenu(gitActionsManager.getTrackRemoteBranchAction(), false);
+    remoteButton.addActionToMenu(gitActionsManager.getEditConfigAction(), false);
     
     return remoteButton;
   }
@@ -1743,6 +1586,12 @@ public void setGitActionsManager(GitActionsManager gitActionsManager) {
     return settingsMenuButton;
   }
 	
+  /**
+   * @return The current Git Actions Manager.
+   */
+  public GitActionsManager getGitActionsManager() {
+	return gitActionsManager;
+  }
 
 
 }
