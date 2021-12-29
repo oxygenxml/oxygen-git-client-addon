@@ -1708,6 +1708,11 @@ public class Tags {
    */
   public static final String PULL= "Pull";
   
+  /**
+   * Open repository.
+   */
+  public static final String OPEN_REPOSITORY = "Open_Repository";
+  
   
 }
 

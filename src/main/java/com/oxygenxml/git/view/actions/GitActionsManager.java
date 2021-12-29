@@ -21,6 +21,7 @@ import com.oxygenxml.git.view.actions.internal.CloneRepositoryAction;
 import com.oxygenxml.git.view.actions.internal.EditConfigFileAction;
 import com.oxygenxml.git.view.actions.internal.ListStashesAction;
 import com.oxygenxml.git.view.actions.internal.ManageRemoteRepositoriesAction;
+import com.oxygenxml.git.view.actions.internal.OpenRepositoryAction;
 import com.oxygenxml.git.view.actions.internal.PullAction;
 import com.oxygenxml.git.view.actions.internal.PushAction;
 import com.oxygenxml.git.view.actions.internal.SetRemoteAction;
@@ -52,6 +53,11 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * Clone new repository action.
 	 */
 	private AbstractAction cloneRepositoryAction          = null;
+	
+	/**
+	 * Open repository action.
+	 */
+	private AbstractAction openRepositoryAction           = null;
 
 	/**
 	 * Push action.
@@ -212,7 +218,21 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		return cloneRepositoryAction;
 	}
 
+	
+	/**
+	 * @return The open repository action.
+	 */
+	@NonNull
+	public AbstractAction getOpenRepositoryAction() {
+		if(openRepositoryAction == null) {
+			openRepositoryAction = new OpenRepositoryAction(gitController);
+			allActions.add(openRepositoryAction);
+		}
 
+		return openRepositoryAction;
+	}
+
+	
 	/**
 	 * @return The push action.
 	 */
@@ -414,6 +434,10 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 
 		if(cloneRepositoryAction != null) {
 			cloneRepositoryAction.setEnabled(true);
+		}
+		
+		if(openRepositoryAction != null) {
+			openRepositoryAction.setEnabled(true);
 		}
 
 		if(isRepoOpen) {

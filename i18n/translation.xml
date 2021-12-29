@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Open_Repository">
+        <comment>Open repository.</comment>
+        <val lang="en_US">Open repository</val>
+        <val lang="de_DE">Open repository</val>
+        <val lang="fr_FR">Open repository</val>
+        <val lang="ja_JP">Open repository</val>
+        <val lang="nl_NL">Open repository</val>
+        <val lang="zh_CN">Open repository</val>
+    </key>
     <key value="Pull">
         <comment>Pull.</comment>
         <val lang="en_US">Pull</val>

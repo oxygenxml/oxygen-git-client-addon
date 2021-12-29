@@ -109,6 +109,9 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		cloneRepositoryMenuItem
 				.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON)));
 		gitMenu.add(cloneRepositoryMenuItem);
+		
+		// Add open repository action.
+		gitMenu.add(gitActionsManager.getOpenRepositoryAction());
 
 		// Add push menu item
 		final JMenuItem pushMenuItem = OxygenUIComponentsFactory.createMenuItem(

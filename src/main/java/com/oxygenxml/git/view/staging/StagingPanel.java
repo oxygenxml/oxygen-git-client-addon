@@ -52,7 +52,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 
 /**
  * Main panel containing all the other panels. It also creates them
