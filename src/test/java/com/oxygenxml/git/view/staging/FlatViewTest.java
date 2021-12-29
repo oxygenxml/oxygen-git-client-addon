@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 
+import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.api.errors.NoMessageException;
@@ -19,6 +20,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
@@ -238,28 +240,37 @@ public class FlatViewTest extends FlatViewTestBase {
    */
   @Test
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
+	// TODO - review this with Alex  
+	final boolean hasSubmodules[] = new boolean[1]; 
+	hasSubmodules[0] = false;
+	  
+	final GitActionsManager gitActionsManager = new GitActionsManager(
+			(GitController)stagingPanel.getGitController(), null, null) {
+    	
+    	@Override
+    	protected boolean hasRepositorySubmodules() {
+    		return hasSubmodules[0];
+    	}
+	};
+	
+	final AbstractAction submoduleActions = gitActionsManager.getSubmoduleAction();
+	
+	gitActionsManager.refresh();
+	
     // ================= No submodules ====================
-    stagingPanel.setToolbarPanelFromTests(
-        new ToolbarPanel((GitController) stagingPanel.getGitController(), refreshSupport, null, null));
     Future<?> pull2 = ((GitController) stagingPanel.getGitController()).pull();
     pull2.get();
-    
-    assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
+    gitActionsManager.refresh();
+    assertFalse(submoduleActions.isEnabled());
     
     // ================= Set submodule ====================
-    stagingPanel.setToolbarPanelFromTests(
-        new ToolbarPanel((GitController) stagingPanel.getGitController(), refreshSupport, null, null) {
-      @Override
-      boolean gitRepoHasSubmodules() {
-        return true;
-      }
-    });
     Future<?> pull = ((GitController) stagingPanel.getGitController()).pull();
+    hasSubmodules[0] = true;
     pull.get();
+    gitActionsManager.refresh();
     flushAWT();
     
-    
-    assertTrue(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
+    assertTrue(submoduleActions.isEnabled());
   }
 
   /**

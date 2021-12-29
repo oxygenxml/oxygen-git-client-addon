@@ -418,7 +418,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		}
 
 		if(submoduleAction != null) {
-			submoduleAction.setEnabled(!gitController.getGitAccess().getSubmoduleAccess().getSubmodules().isEmpty());
+			submoduleAction.setEnabled(hasRepositorySubmodules());
 		}
 
 		if(stashChangesAction != null) {
@@ -440,7 +440,15 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		}
 	}
 
-
+	
+	/**
+	 * @return <code>true</code> if the repository has submodules.
+	 */
+    protected boolean hasRepositorySubmodules() {
+    	return !gitController.getGitAccess().getSubmoduleAccess().getSubmodules().isEmpty();
+    }
+    
+    
 	@Override
 	public void addRefreshable(IRefreshable refreshable) {
 		refreshables.add(refreshable);
