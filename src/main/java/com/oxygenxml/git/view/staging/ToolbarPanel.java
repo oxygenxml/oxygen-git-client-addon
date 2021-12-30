@@ -17,7 +17,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
-import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -144,6 +143,11 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
    * Button for push
    */
   private ToolbarButton pushButton;
+  
+  /**
+   * Button for show branches.
+   */
+  private ToolbarButton showBranchesButton;
 
   /**
    * Button for stash
@@ -214,6 +218,11 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
    * The git actions manager.
    */
   private final GitActionsManager gitActionsManager;
+  
+  /**
+   * Used to show buttons in WEST not CENTER when branches widget is not visible.
+   */
+  private JPanel emptyPanel; 
 
 
 
@@ -248,6 +257,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     });
   }
 
+  
   /**
    * Sets the panel layout and creates all the buttons with their functionality
    * making them visible
@@ -261,20 +271,29 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
-    gbc.gridy = 1;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridy = 0;
+    gbc.fill = GridBagConstraints.NONE;
     gbc.weighty = 0;
-    gbc.weightx = 1;
+    gbc.weightx = 0;
     gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(0, 0, 0, 0);
 
     addPushAndPullButtons();
-    addBranchSelectButton();
+    addShowBranchesButton();
     addStashButton();
     addHistoryButton();
     addSettingsButton();
-    
     this.add(gitToolbar, gbc);
+    
+    emptyPanel = new JPanel();
+    gbc.weightx = 1;
+    gbc.gridx++;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    this.add(emptyPanel, gbc);
+    
+    createBranchSelectButton();
+    gbc.gridx++;
+    this.add(branchSelectButton, gbc);
 
   }
 
@@ -306,14 +325,12 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     pullMenuButton.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() || 
     		gitActionsManager.getPullRebaseAction().isEnabled());
     
-    branchSelectButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
-    
     stashButton.setEnabled(gitActionsManager.getListStashesAction().isEnabled() || 
     		gitActionsManager.getStashChangesAction().isEnabled());
     
-    historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
+    branchSelectButton.setVisible(gitActionsManager.getShowHistoryAction().isEnabled());
     
-   
+    emptyPanel.setVisible(!branchSelectButton.isVisible());
     
     updateBranches();
 
@@ -349,6 +366,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     } else {
       detachedHeadId = null;
       String branchTooltip = null;
+      
       if (currentBranchName != null && !currentBranchName.isEmpty()) {
         String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
         boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
@@ -406,19 +424,25 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
         SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
 
         branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
+        
+        SwingUtilities.invokeLater(() -> branchSelectButton.setText(currentBranchName));
       }
+      
       String branchTooltipFinal = branchTooltip;
+     
       if(selectedBranchIndex >= 0) {
         // Although the pop-up actions have tooltip, on createBranchMenuItem(), at this point 
         // we can have push-ahead and pull-behind information for the active branch.
-        SwingUtilities.invokeLater(() -> branchSelectButton.getItem(selectedBranchIndex).setToolTipText(branchTooltipFinal));
+        SwingUtilities.invokeLater(() -> branchSelectButton.setToolTipText(branchTooltipFinal));
       }
 
     }
 
     if(selectedBranchIndex >= 0) {
       SwingUtilities.invokeLater(() -> branchSelectButton.getItem(selectedBranchIndex).setSelected(true));
+      
     }
+    
 
   }
 
@@ -445,7 +469,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   public void updateButtonState(boolean enabled) {
     pushButton.setEnabled(enabled);
     pullMenuButton.setEnabled(enabled);
-    branchSelectButton.setEnabled(enabled);
+    showBranchesButton.setEnabled(enabled);
     stashButton.setEnabled(enabled);
     historyButton.setEnabled(enabled);
     settingsMenuButton.setEnabled(enabled);
@@ -474,8 +498,10 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
     gitToolbar.add(pushButton);
     gitToolbar.add(pullMenuButton);
-    pushButton.setEnabled(false);
-    pullMenuButton.setEnabled(false);
+    
+    pullMenuButton.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() 
+    		|| gitActionsManager.getPullRebaseAction().isEnabled());
+    
   }
   
   
@@ -875,14 +901,14 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     };
 
     // Pull (merge)
-    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(
+    final JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(
     		gitActionsManager.getPullMergeAction());
     pullMergeMenuItem.addActionListener(radioMenuItemActionListener);
     splitMenuButton.add(pullMergeMenuItem);
     pullActionsGroup.add(pullMergeMenuItem);
 
     // Pull (rebase)
-    JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(
+    final JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(
     		gitActionsManager.getPullRebaseAction());
     pullRebaseMenuItem.addActionListener(radioMenuItemActionListener);
     splitMenuButton.add(pullRebaseMenuItem);
@@ -901,6 +927,28 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   
 
   // ========== BRANCHES ==========
+  
+  /**
+   * Add show branches button to toolbar.
+   */
+  private void addShowBranchesButton() {
+    
+    showBranchesButton = new ToolbarButton(gitActionsManager.getShowBranchesAction(), false);
+    showBranchesButton.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
+    
+    setDefaultToolbarButtonWidth(showBranchesButton);
+    
+    final Dimension d = showBranchesButton.getPreferredSize();
+    showBranchesButton.setPreferredSize(d);
+    showBranchesButton.setMinimumSize(d);
+    showBranchesButton.setMaximumSize(d);
+
+    showBranchesButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
+    
+    gitToolbar.add(showBranchesButton);
+
+  }
+  
 
   /**
    * Adds to the tool bar a button for selecting branches. When clicked, a new
@@ -909,14 +957,14 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
    *
    * @param branchManagementViewPresenter Branches presenter.
    */
-  private void addBranchSelectButton() {
+  private void createBranchSelectButton() {
 
     branchSelectButton = new SplitMenuButton( // NOSONAR (java:S110)
             null,
-            Icons.getIcon(Icons.GIT_BRANCH_ICON),
+            null,
+            true,
             false,
-            false,
-            false,
+            true,
             false) {
 
       @Override
@@ -949,18 +997,16 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
     };
 
-    Dimension d = branchSelectButton.getPreferredSize();
+    Dimension d = pushButton.getPreferredSize();
     branchSelectButton.setPreferredSize(d);
     branchSelectButton.setMinimumSize(d);
     branchSelectButton.setMaximumSize(d);
 
-    branchSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
-    branchSelectButton.setAction(gitActionsManager.getShowBranchesAction());
+    branchSelectButton.setText(GIT_ACCESS.getBranchInfo().getBranchName());
+      
+    branchSelectButton.setVisible(gitActionsManager.getShowHistoryAction().isEnabled());
+    emptyPanel.setVisible(!branchSelectButton.isVisible());
     
-    branchSelectButton.setEnabled(false);
-    
-
-    gitToolbar.add(branchSelectButton);
   }
 
 
@@ -1126,7 +1172,9 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
     String commitsBehindMessage = "";
     String commitsAheadMessage = "";
+    
     if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
+      
       if (pullsBehind == 0) {
         commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
       } else if (pullsBehind == 1) {
@@ -1134,6 +1182,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
       } else {
         commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
       }
+      
       branchTooltip += commitsBehindMessage + "<br>";
 
       if (pushesAhead == 0) {
@@ -1143,8 +1192,10 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
       } else {
         commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
       }
+      
       branchTooltip += commitsAheadMessage;
     }
+    
     return branchTooltip;
   }
 
@@ -1369,7 +1420,8 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     stashLocalButton.addActionToMenu(gitActionsManager.getStashChangesAction(), false);
     stashLocalButton.addActionToMenu(gitActionsManager.getListStashesAction(),  false);
     
-    stashLocalButton.setEnabled(false);
+    stashLocalButton.setEnabled(gitActionsManager.getStashChangesAction().isEnabled() 
+    		|| gitActionsManager.getListStashesAction().isEnabled());
 
     return stashLocalButton;
   }
@@ -1395,7 +1447,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
     historyButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
     setDefaultToolbarButtonWidth(historyButton);
-    historyButton.setEnabled(false);
 
     gitToolbar.add(historyButton);
 
@@ -1422,8 +1473,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     return settingsMenuButton;
   }
   
-  
-	
   /**
    * @return The current Git Actions Manager.
    */
