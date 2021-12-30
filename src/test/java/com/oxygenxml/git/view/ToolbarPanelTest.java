@@ -260,7 +260,6 @@ public class ToolbarPanelTest extends GitTestBase {
     assertFalse(toolbar.getPushButton().isEnabled());
     assertFalse(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
-    assertTrue(toolbar.getSettingsMenuButton().isEnabled());
 
     //Creates the remote repository.
     createRepository(REMOTE_REPO);
@@ -275,7 +274,6 @@ public class ToolbarPanelTest extends GitTestBase {
     assertTrue(toolbar.getPushButton().isEnabled());
     assertTrue(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
-    assertTrue(toolbar.getSettingsMenuButton().isEnabled());
   }
   
   

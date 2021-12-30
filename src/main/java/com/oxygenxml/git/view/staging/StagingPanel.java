@@ -184,7 +184,7 @@ public class StagingPanel extends JPanel {
    * @return the toolbar.
    */
   protected ToolbarPanel createToolbar(GitActionsManager gitActionsManager) {
-    return new ToolbarPanel(gitController, gitActionsManager, refreshSupport);
+    return new ToolbarPanel(gitController, gitActionsManager);
   }
 
 	/**

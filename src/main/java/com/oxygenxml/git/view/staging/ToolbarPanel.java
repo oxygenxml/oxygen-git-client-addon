@@ -190,11 +190,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   private static final Translator TRANSLATOR = Translator.getInstance();
 
   /**
-   * Main panel refresh
-   */
-  private final GitRefreshSupport refreshSupport;
-
-  /**
    * Branch selection button.
    */
   private SplitMenuButton branchSelectButton;
@@ -231,15 +226,11 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
    * 
    * @param gitController     Git controller.
    * @param gitActionsManager The git actions manager.
-   * @param refreshSupport    The refresh support.
+   * 
    */
-  public ToolbarPanel(
-	  GitController     gitController,
-	  GitActionsManager gitActionsManager,
-      GitRefreshSupport refreshSupport) {
+  public ToolbarPanel(final GitController gitController, final GitActionsManager gitActionsManager) {
 	  
 	this.gitActionsManager = gitActionsManager;
-    this.refreshSupport    = refreshSupport;
     
     gitActionsManager.addRefreshable(this);
     createGUI();
@@ -282,7 +273,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     addShowBranchesButton();
     addStashButton();
     addHistoryButton();
-    addSettingsButton();
     this.add(gitToolbar, gbc);
     
     emptyPanel = new JPanel();
@@ -425,7 +415,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
         branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
         
-        SwingUtilities.invokeLater(() -> branchSelectButton.setText(currentBranchName));
+        SwingUtilities.invokeLater(() -> branchSelectButton.setText(TextFormatUtil.toHTML("<b>" + currentBranchName + "</b>")));
       }
       
       String branchTooltipFinal = branchTooltip;
@@ -1002,11 +992,13 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     branchSelectButton.setMinimumSize(d);
     branchSelectButton.setMaximumSize(d);
 
-    branchSelectButton.setText(GIT_ACCESS.getBranchInfo().getBranchName());
-      
+    final String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
+    if(currentBranchName != null) {
+    	branchSelectButton.setText(TextFormatUtil.toHTML("<b>" + currentBranchName + "</b>"));
+    }
+    
     branchSelectButton.setVisible(gitActionsManager.getShowBranchesAction().isEnabled());
     emptyPanel.setVisible(!branchSelectButton.isVisible());
-    
   }
 
 
@@ -1454,24 +1446,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   
   
 
-  // ========== SETTINGS ==========
-
-  /**
-   * Add the settings button.
-   */
-  private void addSettingsButton() {
-    settingsMenuButton = SettingsMenuBuilder.build(refreshSupport);
-
-    gitToolbar.add(settingsMenuButton);
-  }
-
-
-  /**
-   * @return the setting button.
-   */
-  public SplitMenuButton getSettingsMenuButton() {
-    return settingsMenuButton;
-  }
   
   /**
    * @return The current Git Actions Manager.

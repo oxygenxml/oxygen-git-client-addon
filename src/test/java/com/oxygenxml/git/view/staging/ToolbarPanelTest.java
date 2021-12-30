@@ -18,7 +18,7 @@ public class ToolbarPanelTest extends TestCase {
   public void testNoOfSkippedCommitsInPushPullToolbars() throws Exception {
 	final GitController gitController = new GitController(null);
     final ToolbarPanel toolbarPanel = new ToolbarPanel(gitController, 
-    		new GitActionsManager(gitController, null, null, null), null);
+    		new GitActionsManager(gitController, null, null, null));
     assertEquals(0, toolbarPanel.getNoOfSkippedCommits(5));
     assertEquals(1, toolbarPanel.getNoOfSkippedCommits(6));
     assertEquals(2, toolbarPanel.getNoOfSkippedCommits(7));

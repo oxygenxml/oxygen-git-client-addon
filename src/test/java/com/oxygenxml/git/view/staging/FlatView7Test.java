@@ -46,8 +46,9 @@ public class FlatView7Test extends FlatViewTestBase {
 		stagingPanel.setToolbarPanelFromTests(
 				new ToolbarPanel(
 						(GitController) stagingPanel.getGitController(),
-						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null, null),
-						refreshSupport));
+						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null, null)
+				)
+		);
 
 		// Create repositories
 		String localTestRepository = "target/test-resources/test_EXM_45599_local";
@@ -280,23 +281,16 @@ public class FlatView7Test extends FlatViewTestBase {
 				);      
 	}
 
-	/**
+	/*
 	 * <p><b>Description:</b> list the Settings menu actions.</p>
 	 * <p><b>Bug ID:</b> EXM-46442</p>
 	 *
 	 * @author sorin_carbunaru
 	 *
 	 * @throws Exception
-	 */
+	
 	@Test
 	public void testSettingsMenu() throws Exception {
-		// Set toolbar panel
-		stagingPanel.setToolbarPanelFromTests(
-				new ToolbarPanel(
-						(GitController) stagingPanel.getGitController(),
-						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null, null),
-						refreshSupport));
-
 		ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
 		SplitMenuButton settingsMenuButton = toolbarPanel.getSettingsMenuButton();
 		Component[] menuComponents = settingsMenuButton.getMenuComponents();
@@ -305,5 +299,6 @@ public class FlatView7Test extends FlatViewTestBase {
 		assertTrue(menuComponents[1] instanceof Separator);
 		assertTrue(menuComponents[2].toString().contains("Preferences"));
 	}
+	 */
 
 }
