@@ -328,7 +328,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     stashButton.setEnabled(gitActionsManager.getListStashesAction().isEnabled() || 
     		gitActionsManager.getStashChangesAction().isEnabled());
     
-    branchSelectButton.setVisible(gitActionsManager.getShowHistoryAction().isEnabled());
+    branchSelectButton.setVisible(repo != null);
     
     emptyPanel.setVisible(!branchSelectButton.isVisible());
     
@@ -1004,7 +1004,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
     branchSelectButton.setText(GIT_ACCESS.getBranchInfo().getBranchName());
       
-    branchSelectButton.setVisible(gitActionsManager.getShowHistoryAction().isEnabled());
+    branchSelectButton.setVisible(gitActionsManager.getShowBranchesAction().isEnabled());
     emptyPanel.setVisible(!branchSelectButton.isVisible());
     
   }
