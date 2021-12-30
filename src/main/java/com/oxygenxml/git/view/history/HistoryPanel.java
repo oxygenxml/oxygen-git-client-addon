@@ -78,6 +78,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
+import com.oxygenxml.git.view.refresh.IRefreshable;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -95,7 +96,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 /**
  * Presents the commits for a given resource.
  */
-public class HistoryPanel extends JPanel {
+public class HistoryPanel extends JPanel implements IRefreshable {
   /**
    * Logger for logging.
    */
@@ -706,6 +707,7 @@ public class HistoryPanel extends JPanel {
   /**
    * Refresh.
    */
+  @Override
   public void refresh() {
     GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
   }

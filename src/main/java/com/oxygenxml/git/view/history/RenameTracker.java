@@ -39,6 +39,7 @@ public class RenameTracker {
 				currentPath = currentDiff.getOldPath();
 				currentDiff = null;
 			}
+			
 			return true;
 		}
 
@@ -79,7 +80,7 @@ public class RenameTracker {
 	/**
 	 * A map that contains the RevCommit and the value as the key is the path followed at that moment.
 	 */
-	private Map<RevCommit, String> filePathOnCommitMap = new LinkedHashMap<>();
+	private final Map<RevCommit, String> filePathOnCommitMap = new LinkedHashMap<>();
 	
 	/**
 	 * The initial path.

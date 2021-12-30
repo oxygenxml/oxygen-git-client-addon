@@ -25,7 +25,9 @@ public class HistoryTableAffectedFilesModel extends FilesTableModel {
    * @param presentedFile The new String path of presented file.
    */
   public void setFilePathPresenter(FileHistoryPresenter presentedFile) {
-    this.fileHistoryPresenter = presentedFile;
+    
+	this.fileHistoryPresenter = presentedFile;
+    
     Comparator<FileStatus> comparator = (f1, f2) -> {
         int comparationResult = 0;
         String searchedFile = fileHistoryPresenter.getFilePath();

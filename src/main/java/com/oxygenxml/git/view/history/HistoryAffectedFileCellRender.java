@@ -75,11 +75,13 @@ public class HistoryAffectedFileCellRender extends StagingResourcesTableCellRend
 			if(filePresenter != null && filePresenter.isCurrentPathPresented(currentFilePath)) {
 				tableCellRendererComponent.setForeground(
 						PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
-								UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
+								UIUtil.NOT_SEARCHED_FILES_COLOR_GRAPHITE_THEME : 
+									UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME);
 			} else {
 				tableCellRendererComponent.setForeground(
 						PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme() ?
-								UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
+								UIUtil.SEARCHED_FILES_COLOR_GRAPHITE_THEME : 
+									UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME);
 			}
 		}
 	}

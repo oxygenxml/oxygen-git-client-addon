@@ -21,37 +21,37 @@ public class CommitCharacteristics {
 	/**
 	 * The commit message.
 	 */
-	private String commitMessage;
+	private final String commitMessage;
 
 	/**
 	 * The commit date.
 	 */
-	private Date date;
+	private final Date date;
 
 	/**
 	 * The commit author with its email.
 	 */
-	private String author;
+	private final String author;
 
 	/**
 	 * The abbreviated commitId.
 	 */
-	private String commitAbbreviatedId;
+	private final String commitAbbreviatedId;
 
 	/**
 	 * The long version of the commitId.
 	 */
-	private String commitId;
+	private final String commitId;
 
 	/**
 	 * The committer name.
 	 */
-	private String committer;
+	private final String committer;
 
 	/**
 	 * The abbreviated commitId of the parent.
 	 */
-	private List<String> parentCommitId;
+	private final List<String> parentCommitId;
 	
 	/**
 	 * The plot for current commit. 
@@ -108,26 +108,46 @@ public class CommitCharacteristics {
 
 	}
 
+	
+	/**
+	 * @return The message of commit.
+	 */
 	public String getCommitMessage() {
 		return commitMessage;
 	}
 
+	
+	/**
+	 * @return The commit date.
+	 */
 	public Date getDate() {
 		return date;
 	}
 
+	
+	/**
+	 * @return The commit's author.
+	 */
 	public String getAuthor() {
 		return author;
 	}
 
+	
+	/**
+	 * @return The abbreviated commit id.
+	 */
 	public String getCommitAbbreviatedId() {
 		return commitAbbreviatedId;
 	}
 
+	/**
+	 * @return The commit id.
+	 */
 	public String getCommitId() {
 		return commitId;
 	}
 
+	
 	/**
 	 * Getter for committer name.
 	 * 
@@ -136,10 +156,15 @@ public class CommitCharacteristics {
 	public String getCommitter() {
 		return committer;
 	}
+	
 
+	/**
+	 * @return List with parents id.
+	 */
 	public List<String> getParentCommitId() {
 		return parentCommitId;
 	}
+	
 	
 	/**
 	 * Get the correspondent CommitCharacterstics element index from history table.
@@ -149,15 +174,19 @@ public class CommitCharacteristics {
 	 * 
 	 * @return the specific element index in the table. Returns <code>-1</code> if no match.
 	 */
-	public static int getCommitTableIndex(List<CommitCharacteristics> commits, String commitId) {	
+	public static int getCommitTableIndex(List<CommitCharacteristics> commits, String commitId) {
+		int toReturn = -1;
 		for (int i = 0 ; i < commits.size(); i++) {
 			if (commits.get(i).getCommitAbbreviatedId().equals(commitId)) {
-				return i;
+				toReturn = i;
+				break;
 			}
 		}
-		return -1;
+		
+		return toReturn;
 	}
 
+	
 	/**
 	 *
 	 * @return The plot commit.

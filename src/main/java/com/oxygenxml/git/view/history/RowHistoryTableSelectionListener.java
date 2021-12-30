@@ -156,23 +156,23 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	/**
 	 * Table for Commit History.
 	 */
-	private JTable historyTable;
+	private final JTable historyTable;
 	/**
 	 * Panel for commit description (author, date, etc.).
 	 */
-	private JEditorPane commitDescriptionPane;
+	private final JEditorPane commitDescriptionPane;
 	/**
 	 * Coalescing listener for updating commit related data.
 	 */
-	private ActionListener descriptionUpdateListener = new TableTimerListener();
+	private final ActionListener descriptionUpdateListener = new TableTimerListener();
 	/**
 	 * Coalescing support for updating commit related data.
 	 */
-	private Timer descriptionUpdateTimer;
+	private final Timer descriptionUpdateTimer;
 	/**
 	 * Table that presents the resources changed inside a commit.
 	 */
-    private JTable changesTable;
+    private final JTable changesTable;
     
     /**
      * The current file history presented.
