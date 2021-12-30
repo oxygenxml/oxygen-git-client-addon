@@ -159,11 +159,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
   private SplitMenuButton pullMenuButton;
 
   /**
-   * Settings button.
-   */
-  private SplitMenuButton settingsMenuButton;
-
-  /**
    * Button for history
    */
   private ToolbarButton historyButton;
@@ -463,7 +458,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     showBranchesButton.setEnabled(enabled);
     stashButton.setEnabled(enabled);
     historyButton.setEnabled(enabled);
-    settingsMenuButton.setEnabled(enabled);
   }
 
 
