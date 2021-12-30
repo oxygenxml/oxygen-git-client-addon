@@ -40,6 +40,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -57,6 +58,7 @@ import org.eclipse.jgit.util.StringUtils;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -623,7 +625,7 @@ public class HistoryPanel extends JPanel {
     if (font != null) {
       editorPane.setFont(font);
     }
-    editorPane.setBorder(null);
+    editorPane.setBorder(new EmptyBorder(0, UIConstants.LEFT_BORDER_SPACE, 0, 0));
     editorPane.setContentType("text/html");
     editorPane.setEditable(false);
 
