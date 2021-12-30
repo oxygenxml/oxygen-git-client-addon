@@ -42,6 +42,7 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
+import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
@@ -208,9 +209,11 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		// Warning about detached HEAD.
 		warningAboutDeteachedHEAD = new JLabel();
 		gbc.insets = new Insets(0, LEFT_INDENT, 0, 0);
-		warningAboutDeteachedHEAD.setText(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.DETACHED_HEAD_WARNING_MESSAGE)));
+		warningAboutDeteachedHEAD.setText(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(
+				Tags.DETACHED_HEAD_WARNING_MESSAGE)));
 		warningAboutDeteachedHEAD.setIcon(Icons.getIcon(Icons.SMALL_WARNING_ICON));
-		warningAboutDeteachedHEAD.setDisabledIcon(Icons.getIcon(Icons.SMALL_WARNING_ICON));
+		warningAboutDeteachedHEAD.setDisabledIcon(
+				new Button(Icons.getIcon(Icons.SMALL_WARNING_ICON)).getDisabledIcon());
 		gbc.insets = new Insets(
 				0,
 				LEFT_INDENT,
