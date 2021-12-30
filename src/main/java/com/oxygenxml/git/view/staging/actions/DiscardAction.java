@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.staging;
+package com.oxygenxml.git.view.staging.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -21,6 +21,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
+import com.oxygenxml.git.view.staging.ChangesPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

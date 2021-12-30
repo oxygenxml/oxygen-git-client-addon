@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.history;
+package com.oxygenxml.git.view;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

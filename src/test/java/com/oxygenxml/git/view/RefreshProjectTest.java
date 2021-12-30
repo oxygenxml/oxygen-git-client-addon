@@ -21,7 +21,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.staging.DiscardAction;
+import com.oxygenxml.git.view.staging.actions.DiscardAction;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

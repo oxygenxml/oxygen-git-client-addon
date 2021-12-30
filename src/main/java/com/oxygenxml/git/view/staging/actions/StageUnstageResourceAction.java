@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.staging;
+package com.oxygenxml.git.view.staging.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;

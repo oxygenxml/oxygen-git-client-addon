@@ -23,6 +23,10 @@ import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
+import com.oxygenxml.git.view.staging.actions.DiscardAction;
+import com.oxygenxml.git.view.staging.actions.OpenAction;
+import com.oxygenxml.git.view.staging.actions.ShowBlameForUnstagedResourceAction;
+import com.oxygenxml.git.view.staging.actions.StageUnstageResourceAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

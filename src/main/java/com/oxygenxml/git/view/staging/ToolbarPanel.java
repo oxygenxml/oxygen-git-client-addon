@@ -60,7 +60,6 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
-import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.refresh.IRefreshable;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -986,8 +985,8 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
       }
 
     };
-
-    Dimension d = pushButton.getPreferredSize();
+    
+    final Dimension d = pushButton.getPreferredSize();
     branchSelectButton.setPreferredSize(d);
     branchSelectButton.setMinimumSize(d);
     branchSelectButton.setMaximumSize(d);
