@@ -47,6 +47,11 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 * The pull menu item.
 	 */
 	private JMenu pullMenuItem;
+	
+	/**
+	 * Settings menu. Used in tests
+	 */
+	private JMenu settingsMenu;
 
 
 
@@ -192,16 +197,16 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
 		// Add settings actions
 		gitMenu.addSeparator();
-		final JMenu settingsMenuItem = OxygenUIComponentsFactory.createMenu(
+		settingsMenu = OxygenUIComponentsFactory.createMenu(
 				TRANSLATOR.getTranslation(Tags.SETTINGS));
-		settingsMenuItem.setIcon(Icons.getIcon(Icons.SETTINGS));
-		settingsMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.SETTINGS)));
-		settingsMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
+		settingsMenu.setIcon(Icons.getIcon(Icons.SETTINGS));
+		settingsMenu.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.SETTINGS)));
+		settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(
 				gitActionsManager.getResetAllCredentialsAction()));
-		settingsMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
+		settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(
 				gitActionsManager.getOpenPreferencesAction()));
 
-		gitMenu.add(settingsMenuItem);
+		gitMenu.add(settingsMenu);
 	}
 
 
@@ -263,6 +268,16 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 */
 	public GitActionsManager getGitActionsManager() {
 		return gitActionsManager;
+	}
+	
+	
+	/**
+	 * !!! Used for tests. !!!
+	 * 
+	 * @return The settings menu.
+	 */
+	public JMenu getSettingsMenu() {
+		return settingsMenu;
 	}
 
 }

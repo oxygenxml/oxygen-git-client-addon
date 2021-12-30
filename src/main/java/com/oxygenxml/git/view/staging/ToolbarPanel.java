@@ -269,9 +269,10 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     gbc.insets = new Insets(0, 0, 0, 0);
 
     addPushAndPullButtons();
-    addShowBranchesButton();
     addStashButton();
     addHistoryButton();
+    addShowBranchesButton();
+    
     this.add(gitToolbar, gbc);
     
     emptyPanel = new JPanel();
@@ -414,7 +415,8 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
 
         branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
         
-        SwingUtilities.invokeLater(() -> branchSelectButton.setText(TextFormatUtil.toHTML("<b>" + currentBranchName + "</b>")));
+        SwingUtilities.invokeLater(() -> branchSelectButton.setText(
+        		TextFormatUtil.toHTML("<b>" + currentBranchName + "</b>")));
       }
       
       String branchTooltipFinal = branchTooltip;
@@ -924,8 +926,6 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     
     showBranchesButton = new ToolbarButton(gitActionsManager.getShowBranchesAction(), false);
     showBranchesButton.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
-    
-    setDefaultToolbarButtonWidth(showBranchesButton);
     
     final Dimension d = showBranchesButton.getPreferredSize();
     showBranchesButton.setPreferredSize(d);

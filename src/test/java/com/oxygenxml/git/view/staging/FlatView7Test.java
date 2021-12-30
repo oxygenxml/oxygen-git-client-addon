@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.staging;
 
 import java.awt.Component;
 
+import javax.swing.JMenu;
 import javax.swing.JPopupMenu.Separator;
 
 import org.eclipse.jgit.api.Git;
@@ -10,7 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.actions.GitActionsManager;
+import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
@@ -280,6 +283,7 @@ public class FlatView7Test extends FlatViewTestBase {
 				actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
 				);      
 	}
+	
 
 	/*
 	 * <p><b>Description:</b> list the Settings menu actions.</p>
@@ -288,17 +292,14 @@ public class FlatView7Test extends FlatViewTestBase {
 	 * @author sorin_carbunaru
 	 *
 	 * @throws Exception
-	
+	 */
 	@Test
 	public void testSettingsMenu() throws Exception {
-		ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
-		SplitMenuButton settingsMenuButton = toolbarPanel.getSettingsMenuButton();
-		Component[] menuComponents = settingsMenuButton.getMenuComponents();
-		assertEquals(3, menuComponents.length);
-		assertTrue(menuComponents[0].toString().contains("Reset_all_credentials"));
-		assertTrue(menuComponents[1] instanceof Separator);
-		assertTrue(menuComponents[2].toString().contains("Preferences"));
+		final JMenu settingsMenu = GitActionsMenuBar.getInstance().getSettingsMenu();
+		assertEquals(2, settingsMenu.getItemCount());
+		assertEquals(Tags.RESET_ALL_CREDENTIALS, settingsMenu.getItem(0).getText());
+		assertEquals(Tags.PREFERENCES, settingsMenu.getItem(1).getText());
 	}
-	 */
+	
 
 }
