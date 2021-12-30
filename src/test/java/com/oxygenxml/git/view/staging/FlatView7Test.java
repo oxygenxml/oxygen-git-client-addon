@@ -46,7 +46,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		stagingPanel.setToolbarPanelFromTests(
 				new ToolbarPanel(
 						(GitController) stagingPanel.getGitController(),
-						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null),
+						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null, null),
 						refreshSupport));
 
 		// Create repositories
@@ -294,7 +294,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		stagingPanel.setToolbarPanelFromTests(
 				new ToolbarPanel(
 						(GitController) stagingPanel.getGitController(),
-						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null),
+						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null, null),
 						refreshSupport));
 
 		ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();

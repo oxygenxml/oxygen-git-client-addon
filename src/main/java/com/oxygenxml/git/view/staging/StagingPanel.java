@@ -145,7 +145,9 @@ public class StagingPanel extends JPanel {
 		this.refreshSupport = refreshSupport;
 		this.gitController = gitCtrl;
 		
-		this.gitActionsManager = new GitActionsManager(gitCtrl, historyController, branchManagementViewPresenter);
+		this.gitActionsManager = new GitActionsManager(gitCtrl, 
+				historyController, branchManagementViewPresenter, refreshSupport);
+		
 		createGUI(historyController);
 		
 		gitCtrl.addGitListener(new GitEventListener() {

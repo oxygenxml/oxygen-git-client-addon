@@ -21,9 +21,11 @@ import com.oxygenxml.git.view.actions.internal.CloneRepositoryAction;
 import com.oxygenxml.git.view.actions.internal.EditConfigFileAction;
 import com.oxygenxml.git.view.actions.internal.ListStashesAction;
 import com.oxygenxml.git.view.actions.internal.ManageRemoteRepositoriesAction;
+import com.oxygenxml.git.view.actions.internal.OpenPreferencesAction;
 import com.oxygenxml.git.view.actions.internal.OpenRepositoryAction;
 import com.oxygenxml.git.view.actions.internal.PullAction;
 import com.oxygenxml.git.view.actions.internal.PushAction;
+import com.oxygenxml.git.view.actions.internal.ResetAllCredentialsAction;
 import com.oxygenxml.git.view.actions.internal.SetRemoteAction;
 import com.oxygenxml.git.view.actions.internal.ShowBranchesAction;
 import com.oxygenxml.git.view.actions.internal.ShowHistoryAction;
@@ -37,6 +39,7 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.HistoryController;
+import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.refresh.IRefreshable;
 import com.oxygenxml.git.view.refresh.IRefresher;
 import com.oxygenxml.git.view.tags.GitTagsManager;
@@ -124,6 +127,16 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * Action to track remote branch.
 	 */
 	private AbstractAction trackRemoteBranchAction        = null;
+	
+	/**
+	 * Action to open preferences page for Git Plugin.
+	 */
+	private AbstractAction openPreferencesAction          = null;
+	
+	/**
+	 * Action to reset all credentials.
+	 */
+	private AbstractAction resetAllCredentialsAction      = null;
 
 	/**
 	 * The Git Controller.
@@ -139,6 +152,11 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 *  Branch management view presenter.
 	 */
 	private final BranchManagementViewPresenter  branchManagementViewPresenter;
+	
+	/**
+	 *  Refresh support. Needed by some actions.
+	 */
+	private final GitRefreshSupport              refreshSupport;
 
 	/**
 	 * Logger for logging.
@@ -174,15 +192,18 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	 * @param branchManagementViewPresenter Branch management view presenter.
 	 */
 	public GitActionsManager(
-			GitController gitController, 
-			HistoryController historyController,
-			BranchManagementViewPresenter branchManagementViewPresenter) {
+			final GitController                 gitController, 
+			final HistoryController             historyController,
+			final BranchManagementViewPresenter branchManagementViewPresenter,
+			final GitRefreshSupport             refreshSupport) {
 
 		this.gitController                 = gitController;
 		this.historyController             = historyController;
 		this.branchManagementViewPresenter = branchManagementViewPresenter;
+		this.refreshSupport                = refreshSupport;
 		this.allActions                    = new ArrayList<>();  
 		this.refreshables                  = new ArrayList<>(); 
+		
 		try {
 			this.repository                = gitController.getGitAccess().getRepository();
 		} catch (NoRepositorySelected e) {
@@ -436,6 +457,34 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 
 
 	/**
+	 * @return The open git client preferences page action.
+	 */
+	@NonNull
+	public AbstractAction getOpenPreferencesAction() {
+		if(openPreferencesAction == null) {
+			openPreferencesAction = new OpenPreferencesAction();
+			allActions.add(openPreferencesAction);
+		}
+
+		return openPreferencesAction;
+	}
+	
+	
+	/**
+	 * @return The reset all credentials action.
+	 */
+	@NonNull
+	public AbstractAction getResetAllCredentialsAction() {
+		if(resetAllCredentialsAction == null) {
+			resetAllCredentialsAction = new ResetAllCredentialsAction(refreshSupport);
+			allActions.add(resetAllCredentialsAction);
+		}
+
+		return resetAllCredentialsAction;
+	}
+	
+	
+	/**
 	 * Refresh actions after a git operation that could affect the action.
 	 */
 	@Override
@@ -462,6 +511,14 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		
 		if(showStagingAction != null) {
 			showStagingAction.setEnabled(true);
+		}
+		
+		if(openPreferencesAction != null) {
+			openPreferencesAction.setEnabled(true);
+		}
+		
+		if(resetAllCredentialsAction != null) {
+			resetAllCredentialsAction.setEnabled(true);
 		}
 
 		if(isRepoOpen) {

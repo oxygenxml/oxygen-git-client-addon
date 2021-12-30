@@ -1718,6 +1718,11 @@ public class Tags {
    */
   public static final String SHOW_STAGING = "Show_Staging";
   
+  /**
+   * Settings.
+   */
+  public static final String SETTINGS = "Settings";
+  
   
 }
 

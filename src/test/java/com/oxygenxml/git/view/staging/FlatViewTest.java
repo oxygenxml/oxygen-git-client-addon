@@ -245,7 +245,7 @@ public class FlatViewTest extends FlatViewTestBase {
 	hasSubmodules[0] = false;
 	  
 	final GitActionsManager gitActionsManager = new GitActionsManager(
-			(GitController)stagingPanel.getGitController(), null, null) {
+			(GitController)stagingPanel.getGitController(), null, null, null) {
     	
     	@Override
     	protected boolean hasRepositorySubmodules() {

@@ -123,7 +123,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
 		// Add pull options
 		pullMenuItem = OxygenUIComponentsFactory.createMenu(
-				TRANSLATOR.getTranslation("Pull"));
+				TRANSLATOR.getTranslation(Tags.PULL));
 		pullMenuItem.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
 		pullMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.GIT_PULL_ICON)));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
@@ -190,6 +190,18 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		gitMenu.add(gitActionsManager.getTrackRemoteBranchAction());
 		gitMenu.add(gitActionsManager.getEditConfigAction());
 
+		// Add settings actions
+		gitMenu.addSeparator();
+		final JMenu settingsMenuItem = OxygenUIComponentsFactory.createMenu(
+				TRANSLATOR.getTranslation(Tags.SETTINGS));
+		settingsMenuItem.setIcon(Icons.getIcon(Icons.SETTINGS));
+		settingsMenuItem.setDisabledIcon(getDisabledIcon(Icons.getIcon(Icons.SETTINGS)));
+		settingsMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getResetAllCredentialsAction()));
+		settingsMenuItem.add(OxygenUIComponentsFactory.createMenuItem(
+				gitActionsManager.getOpenPreferencesAction()));
+
+		gitMenu.add(settingsMenuItem);
 	}
 
 

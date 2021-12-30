@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+     <key value="Settings">
+        <comment>Show staging.</comment>
+        <val lang="en_US">Settings</val>
+        <val lang="de_DE">Settings</val>
+        <val lang="fr_FR">Settings</val>
+        <val lang="ja_JP">Settings</val>
+        <val lang="nl_NL">Settings</val>
+        <val lang="zh_CN">Settings</val>
+    </key>
      <key value="Show_Staging">
         <comment>Show staging.</comment>
         <val lang="en_US">Show staging</val>
