@@ -306,12 +306,18 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     }
     
     isRepoSelected = repo != null;
+    
+    pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
 
     pullMenuButton.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() || 
     		gitActionsManager.getPullRebaseAction().isEnabled());
     
     stashButton.setEnabled(gitActionsManager.getListStashesAction().isEnabled() || 
     		gitActionsManager.getStashChangesAction().isEnabled());
+    
+    historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
+    
+    showBranchesButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
     
     branchSelectButton.setVisible(repo != null);
     
