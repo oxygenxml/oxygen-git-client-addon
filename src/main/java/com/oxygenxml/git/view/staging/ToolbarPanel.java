@@ -307,6 +307,10 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
     
     isRepoSelected = repo != null;
     
+    /* for @pushButton, @historyButton, @showBranchesButton ---> 
+     * it is necessary to refresh, even if it has a single action, 
+     * because there are other code sequences that directly change their state by calling the setEnabled(false) method
+     */
     pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
 
     pullMenuButton.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() || 
