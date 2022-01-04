@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -37,6 +38,7 @@ public class ManageRemoteRepositoriesAction extends AbstractAction {
 	 */
 	public ManageRemoteRepositoriesAction() {
 		super(TRANSLATOR.getTranslation(Tags.REMOTES_DIALOG_TITLE) +  "...");
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.REMOTE));
 	}
 
 

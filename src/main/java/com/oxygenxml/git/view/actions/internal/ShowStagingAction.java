@@ -2,8 +2,7 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -30,6 +29,7 @@ public class ShowStagingAction extends AlwaysEnabledAction {
 	 */
 	public ShowStagingAction() {
 		super(TRANSLATOR.getTranslation(Tags.SHOW_STAGING));
+		this.putValue(SMALL_ICON, Icons.getIcon(ro.sync.ui.Icons.GIT_PLUGIN_ICON_MENU));
 	}
 
 	

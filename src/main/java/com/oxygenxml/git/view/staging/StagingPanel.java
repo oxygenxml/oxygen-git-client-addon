@@ -62,31 +62,31 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
  */
 public class StagingPanel extends JPanel {
 
-  /**
-   * Divider size.
-   */
-  private static final int DIVIDER_SIZE = 10;
+	/**
+	 * Divider size.
+	 */
+	private static final int DIVIDER_SIZE = 10;
 
-  /**
-   * Left and right component inset.
-   */
-  private static final int HORIZONTAL_INSET = 5;
+	/**
+	 * Left and right component inset.
+	 */
+	private static final int HORIZONTAL_INSET = 5;
 
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = Logger.getLogger(StagingPanel.class);
+	/**
+	 * Logger for logging.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(StagingPanel.class);
 
-  /**
-   * <code>true</code> if focus gained.
-   */
+	/**
+	 * <code>true</code> if focus gained.
+	 */
 	boolean focusGained = false;
-	
+
 	/**
 	 * The tool bar panel used for the push and pull
 	 */
 	private ToolbarPanel toolbarPanel;
-	
+
 
 	/**
 	 * The working copy panel used for selecting and adding a working copy
@@ -102,7 +102,7 @@ public class StagingPanel extends JPanel {
 	 * The staging area
 	 */
 	private ChangesPanel stagedChangesPanel;
-	
+
 	/**
 	 * Conflict buttons panel (continue rebase, abort rebase, abort merge, etc).
 	 */
@@ -122,68 +122,68 @@ public class StagingPanel extends JPanel {
 	 * Git controller.
 	 */
 	private final GitController gitController;
-	
+
 	/**
 	 * The git actions manager.
 	 */
 	private final GitActionsManager gitActionsManager;
-	
-	
-  /**
-   * Constructor.
-   * 
-   * @param refreshSupport   Refresh support.        
-   * @param gitCtrl  Git controller.
-   * @param historyController History related interaction.
-   */
-  public StagingPanel(
-      GitRefreshSupport refreshSupport, 
-      GitController gitCtrl, 
-      HistoryController historyController,
-      GitActionsManager gitActionsManager) {
+
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param refreshSupport   Refresh support.        
+	 * @param gitCtrl  Git controller.
+	 * @param historyController History related interaction.
+	 */
+	public StagingPanel(
+			GitRefreshSupport refreshSupport, 
+			GitController gitCtrl, 
+			HistoryController historyController,
+			GitActionsManager gitActionsManager) {
 		this.refreshSupport = refreshSupport;
 		this.gitController = gitCtrl;
-		
-		this.gitActionsManager = gitActionsManager; 
-		
-		createGUI(historyController);
-		
-		gitCtrl.addGitListener(new GitEventListener() {
-		  @Override
-		  public void operationSuccessfullyEnded(GitEventInfo info) {
-		    if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
-		      handlePushPullEvent((PushPullEvent) info, false);
-		    }
-		  }
-		  @Override
-		  public void operationFailed(GitEventInfo info, Throwable t) {
-		    if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
-		      handlePushPullEvent((PushPullEvent) info, false);
-		    }
-		  }
 
-		  @Override
-		  public void operationAboutToStart(GitEventInfo info) {
-		    if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
-		      handlePushPullEvent((PushPullEvent) info, true);
-		    }
-      }
-    });
+		this.gitActionsManager = gitActionsManager; 
+
+		createGUI(historyController);
+
+		gitCtrl.addGitListener(new GitEventListener() {
+			@Override
+			public void operationSuccessfullyEnded(GitEventInfo info) {
+				if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+					handlePushPullEvent((PushPullEvent) info, false);
+				}
+			}
+			@Override
+			public void operationFailed(GitEventInfo info, Throwable t) {
+				if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+					handlePushPullEvent((PushPullEvent) info, false);
+				}
+			}
+
+			@Override
+			public void operationAboutToStart(GitEventInfo info) {
+				if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+					handlePushPullEvent((PushPullEvent) info, true);
+				}
+			}
+		});
 	}
-  
-  /**
-   * Create toolbar. <br><br>
-   * 
-   * Not created from 99% of the test cases.
-   * 
-   * @param historyController History controller.
-   * @param branchManagementViewPresenter Branch management interface.
-   * 
-   * @return the toolbar.
-   */
-  protected ToolbarPanel createToolbar(GitActionsManager gitActionsManager) {
-    return new ToolbarPanel(gitController, gitActionsManager);
-  }
+
+	/**
+	 * Create toolbar. <br><br>
+	 * 
+	 * Not created from 99% of the test cases.
+	 * 
+	 * @param historyController History controller.
+	 * @param branchManagementViewPresenter Branch management interface.
+	 * 
+	 * @return the toolbar.
+	 */
+	protected ToolbarPanel createToolbar(GitActionsManager gitActionsManager) {
+		return new ToolbarPanel(gitController, gitActionsManager);
+	}
 
 	/**
 	 * Create the GUI.
@@ -198,10 +198,9 @@ public class StagingPanel extends JPanel {
 		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
 		commitPanel = new CommitAndStatusPanel(gitController);
-		GitActionsMenuBar.getInstance().populateMenu(gitActionsManager);
 		toolbarPanel = createToolbar(gitActionsManager);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
-		
+
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
@@ -215,143 +214,143 @@ public class StagingPanel extends JPanel {
 		// adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
 		if (toolbarPanel != null) {
-		  addToolbarPanel(gbc);
+			addToolbarPanel(gbc);
 		}
 		addWorkingCopySelectionPanel(gbc);
-		
+
 		addConflictButtonsPanel(gbc);
 		addSplitPanel(gbc, splitPane);
 
 		// creates the actual GUI for each panel
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
-	    
+
 		addRefreshF5();
-		
+
 		// Listens on the save event in the Oxygen editor and updates the unstaged resources area
 		PluginWorkspaceProvider.getPluginWorkspace().addEditorChangeListener(
-		    new WSEditorChangeListener() {
-		      @Override
-		      public void editorOpened(final URL editorLocation) {
-		        addEditorSaveHook(editorLocation);
-		      }
-		    },
-		    PluginWorkspace.MAIN_EDITING_AREA);
+				new WSEditorChangeListener() {
+					@Override
+					public void editorOpened(final URL editorLocation) {
+						addEditorSaveHook(editorLocation);
+					}
+				},
+				PluginWorkspace.MAIN_EDITING_AREA);
 
 		// Detect focus transitions between the view and the outside.
 		installFocusListener(this, createFocusListener());
 	}
 
 
-  /**
+	/**
 	 * @return The focus listener.
 	 */
-  private FocusAdapter createFocusListener() {
-    return new FocusAdapter() {
+	private FocusAdapter createFocusListener() {
+		return new FocusAdapter() {
 			boolean inTheView = false;
 
 			@Override
 			public void focusGained(final FocusEvent e) {
-			  if (!e.isTemporary()) {
-			    focusGained = true;
-			    if (!inTheView) {
-			      // EXM-40880: Invoke later so that the focus event gets processed.
-			      SwingUtilities.invokeLater(refreshSupport::call);
-			    }
-			    inTheView = true;
-			  }
+				if (!e.isTemporary()) {
+					focusGained = true;
+					if (!inTheView) {
+						// EXM-40880: Invoke later so that the focus event gets processed.
+						SwingUtilities.invokeLater(refreshSupport::call);
+					}
+					inTheView = true;
+				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent e) {
-			  if (!e.isTemporary()) {
-			    focusGained = false;
-			    // The focus might still be somewhere in the view.
-			    Component opposite = e.getOppositeComponent();
-          if (opposite != null) {
-			      Window windowAncestor = SwingUtilities.getWindowAncestor(opposite);
-			      if (windowAncestor != null) {
-			        boolean contains = windowAncestor.toString().contains("MainFrame");
+				if (!e.isTemporary()) {
+					focusGained = false;
+					// The focus might still be somewhere in the view.
+					Component opposite = e.getOppositeComponent();
+					if (opposite != null) {
+						Window windowAncestor = SwingUtilities.getWindowAncestor(opposite);
+						if (windowAncestor != null) {
+							boolean contains = windowAncestor.toString().contains("MainFrame");
 							inTheView = !contains || SwingUtilities.isDescendingFrom(opposite, StagingPanel.this);
-			      }
-			    } else {
-			      inTheView = true;
-			    }
-			  }
+						}
+					} else {
+						inTheView = true;
+					}
+				}
 			}
 		};
-  }
-	
-  /**
-   * Adds a hook to refresh the models if the editor is part of the Git working copy.
-   * 
-   * @param editorLocation Editor to check.
-   */
-  private void addEditorSaveHook(final URL editorLocation) {
-    WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
-    if (editorAccess != null) {
-      editorAccess.addEditorListener(new WSEditorListener() {
-        @Override
-        public void editorSaved(int operationType) {
-          GitOperationScheduler.getInstance().schedule(() -> treatEditorSavedEvent(editorLocation));
-        }
-      });
-    }
-  }
-	
-  /**
-   * Treat editor saved event.
-   * 
-   * @param editorLocation Editor URL.
-   */
-  private void treatEditorSavedEvent(final URL editorLocation) {
-    File locateFile = null;
-    if ("file".equals(editorLocation.getProtocol())) {
-      locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
-      if (locateFile != null) {
-        String fileInWorkPath = locateFile.toString();
-        fileInWorkPath = FileUtil.rewriteSeparator(fileInWorkPath);
+	}
 
-        try {
-          String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-          selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
+	/**
+	 * Adds a hook to refresh the models if the editor is part of the Git working copy.
+	 * 
+	 * @param editorLocation Editor to check.
+	 */
+	private void addEditorSaveHook(final URL editorLocation) {
+		WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+		if (editorAccess != null) {
+			editorAccess.addEditorListener(new WSEditorListener() {
+				@Override
+				public void editorSaved(int operationType) {
+					GitOperationScheduler.getInstance().schedule(() -> treatEditorSavedEvent(editorLocation));
+				}
+			});
+		}
+	}
 
-          if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Notify " + fileInWorkPath);
-              LOGGER.debug("WC " + selectedRepositoryPath);
-            }
+	/**
+	 * Treat editor saved event.
+	 * 
+	 * @param editorLocation Editor URL.
+	 */
+	private void treatEditorSavedEvent(final URL editorLocation) {
+		File locateFile = null;
+		if ("file".equals(editorLocation.getProtocol())) {
+			locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
+			if (locateFile != null) {
+				String fileInWorkPath = locateFile.toString();
+				fileInWorkPath = FileUtil.rewriteSeparator(fileInWorkPath);
 
-            Collection<String> affectedFiles = Collections.singletonList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
-            FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
-            SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
+				try {
+					String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+					selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
+
+					if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+						if (LOGGER.isDebugEnabled()) {
+							LOGGER.debug("Notify " + fileInWorkPath);
+							LOGGER.debug("WC " + selectedRepositoryPath);
+						}
+
+						Collection<String> affectedFiles = Collections.singletonList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
+						FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
+						SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
 						if(gitActionsManager != null) {
 							gitActionsManager.refresh();
 						}
-          }
-        } catch (NoRepositorySelected e) {
-          LOGGER.debug(e, e);
-        }
-      }
-    }
-  }
+					}
+				} catch (NoRepositorySelected e) {
+					LOGGER.debug(e, e);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Add rebase panel.
 	 * 
 	 * @param gbc Constraints.
 	 */
-  private void addConflictButtonsPanel(GridBagConstraints gbc) {
-    gbc.gridx = 0;
+	private void addConflictButtonsPanel(GridBagConstraints gbc) {
+		gbc.gridx = 0;
 		gbc.gridy ++;
 		gbc.insets = new Insets(10, 2, 10, 0); // NOSONAR
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.weightx = 1;
-    gbc.weighty = 0;
-    gbc.gridwidth = 2;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		gbc.gridwidth = 2;
 		add(conflictButtonsPanel, gbc);
-  }
+	}
 
 	/**
 	 * Adds the refresh call on the F5 keyboard button
@@ -360,7 +359,7 @@ public class StagingPanel extends JPanel {
 		Action action = new AbstractAction() {
 
 			@Override
-      public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				refreshSupport.call();
 			}
 		};
@@ -416,8 +415,8 @@ public class StagingPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addToolbarPanel(GridBagConstraints gbc) {
-	  gbc.gridx = 0;
-	  gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
@@ -433,19 +432,19 @@ public class StagingPanel extends JPanel {
 	 * @param gbc The constraints used for this component
 	 */
 	private void addWorkingCopySelectionPanel(GridBagConstraints gbc) {
-	  gbc.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING,
-        UIConstants.COMPONENT_LEFT_PADDING + HORIZONTAL_INSET,
-        UIConstants.COMPONENT_BOTTOM_PADDING,
-        UIConstants.COMPONENT_RIGHT_PADDING);
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.gridx = 0;
-    gbc.gridy++;
-    gbc.weightx = 0;
-    gbc.weighty = 0;
-    gbc.gridwidth = 1;
-    this.add(new JLabel(Translator.getInstance().getTranslation(Tags.WORKING_COPY_LABEL)), gbc);
+		gbc.insets = new Insets(
+				UIConstants.COMPONENT_TOP_PADDING,
+				UIConstants.COMPONENT_LEFT_PADDING + HORIZONTAL_INSET,
+				UIConstants.COMPONENT_BOTTOM_PADDING,
+				UIConstants.COMPONENT_RIGHT_PADDING);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 0;
+		gbc.gridy++;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		gbc.gridwidth = 1;
+		this.add(new JLabel(Translator.getInstance().getTranslation(Tags.WORKING_COPY_LABEL)), gbc);
 
 		gbc.insets = new Insets(0, 0, 0, HORIZONTAL_INSET);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -463,128 +462,128 @@ public class StagingPanel extends JPanel {
 	 * @param started <code>true</code> if the task just started. <code>false</code> if it ended.
 	 */
 	public void handlePushPullEvent(PushPullEvent pushPullEvent, boolean started) {
-	  SwingUtilities.invokeLater(new Runnable() {
-	    @Override
-	    public void run() {
-	      if (started) {
-	        treatPushPullStarted(pushPullEvent);
-	      } else {
-	        treatPushPullFinished(pushPullEvent);
-	        if (pushPullEvent.hasConficts()) {
-	          conflictButtonsPanel.setVisible(true);
-	        }
-	      }
-	    }
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if (started) {
+					treatPushPullStarted(pushPullEvent);
+				} else {
+					treatPushPullFinished(pushPullEvent);
+					if (pushPullEvent.hasConficts()) {
+						conflictButtonsPanel.setVisible(true);
+					}
+				}
+			}
 
-	    /**
-	     * Push/pull finished. Treat the event.
-	     * 
-	     * @param pushPullEvent The event.
-	     */
-	    private void treatPushPullFinished(PushPullEvent pushPullEvent) {
-	      commitPanel.setStatusMessage(pushPullEvent.getMessage());
-	      commitPanel.reset();
-	      commitPanel.toggleCommitButtonAndUpdateMessageArea(false);
-	      workingCopySelectionPanel.getBrowseButton().setEnabled(true);
-	      workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
+			/**
+			 * Push/pull finished. Treat the event.
+			 * 
+			 * @param pushPullEvent The event.
+			 */
+			private void treatPushPullFinished(PushPullEvent pushPullEvent) {
+				commitPanel.setStatusMessage(pushPullEvent.getMessage());
+				commitPanel.reset();
+				commitPanel.toggleCommitButtonAndUpdateMessageArea(false);
+				workingCopySelectionPanel.getBrowseButton().setEnabled(true);
+				workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
 
-	      // Update models.
-	      GitStatus status = GitAccess.getInstance().getStatus();
-	      unstagedChangesPanel.update(status.getUnstagedFiles());
-	      stagedChangesPanel.update(status.getStagedFiles());
+				// Update models.
+				GitStatus status = GitAccess.getInstance().getStatus();
+				unstagedChangesPanel.update(status.getUnstagedFiles());
+				stagedChangesPanel.update(status.getStagedFiles());
 
-	      gitActionsManager.refresh();
-	      
-	     
-	    }
+				gitActionsManager.refresh();
 
-	    /**
-	     * Push/pull started. Treat the event.
-	     * 
-	     * @param pushPullEvent The event.
-	     */
-	    private void treatPushPullStarted(PushPullEvent pushPullEvent) {
-	      commitPanel.setStatusMessage(pushPullEvent.getMessage());
-	      commitPanel.reset();
-	      workingCopySelectionPanel.getBrowseButton().setEnabled(false);
-	      workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
 
-	      if (toolbarPanel != null) {
-	        toolbarPanel.updateButtonState(false);
-	      }
+			}
 
-	      commitPanel.getCommitButton().setEnabled(false);
-	    }
-	  });
+			/**
+			 * Push/pull started. Treat the event.
+			 * 
+			 * @param pushPullEvent The event.
+			 */
+			private void treatPushPullStarted(PushPullEvent pushPullEvent) {
+				commitPanel.setStatusMessage(pushPullEvent.getMessage());
+				commitPanel.reset();
+				workingCopySelectionPanel.getBrowseButton().setEnabled(false);
+				workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
+
+				if (toolbarPanel != null) {
+					toolbarPanel.updateButtonState(false);
+				}
+
+				commitPanel.getCommitButton().setEnabled(false);
+			}
+		});
 	}
 
 	/**
 	 * @return <code>true</code> if panel has focus.
 	 */
 	@Override
-  public boolean hasFocus() {
+	public boolean hasFocus() {
 		return focusGained;
 	}
-	
+
 	/**
-   * @return the Git controller.
-   */
-  public GitControllerBase getGitController() {
-    return gitController;
-  }
-  
-  /**
-   * Update rebase panel visibility based on repo state.
-   */
-  public void updateConflictButtonsPanelBasedOnRepoState() {
-    conflictButtonsPanel.updateBasedOnRepoState();
-  }
-  
+	 * @return the Git controller.
+	 */
+	public GitControllerBase getGitController() {
+		return gitController;
+	}
 
-  /**
-   * @return the unstaged resources panel.
-   */
-  public ChangesPanel getUnstagedChangesPanel() {
-    return unstagedChangesPanel;
-  }
+	/**
+	 * Update rebase panel visibility based on repo state.
+	 */
+	public void updateConflictButtonsPanelBasedOnRepoState() {
+		conflictButtonsPanel.updateBasedOnRepoState();
+	}
 
-  /**
-   * @return The staged resources panel.
-   */
-  public ChangesPanel getStagedChangesPanel() {
-    return stagedChangesPanel;
-  }
 
-  /**
-   * @return The commit panel.
-   */
-  public CommitAndStatusPanel getCommitPanel() {
-    return commitPanel;
-  }
+	/**
+	 * @return the unstaged resources panel.
+	 */
+	public ChangesPanel getUnstagedChangesPanel() {
+		return unstagedChangesPanel;
+	}
 
-  /**
-   * @return  The tool bar panel used for the push and pull
-   */
-  public ToolbarPanel getToolbarPanel() {
-    return toolbarPanel;
-  }
-  
-  void setToolbarPanelFromTests(ToolbarPanel toolbarPanel) {
-    this.toolbarPanel = toolbarPanel;
-  }
-  
-  public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
-    return workingCopySelectionPanel;
-  }
-  
-  
-  /**
-   * !!!!!!! FOR TESTS !!!!!!
-   * 
-   * @return The conflict buttons panel.
-   */
-  public ConflictButtonsPanel getConflictButtonsPanel() {
-    return conflictButtonsPanel;
-  }
-  
+	/**
+	 * @return The staged resources panel.
+	 */
+	public ChangesPanel getStagedChangesPanel() {
+		return stagedChangesPanel;
+	}
+
+	/**
+	 * @return The commit panel.
+	 */
+	public CommitAndStatusPanel getCommitPanel() {
+		return commitPanel;
+	}
+
+	/**
+	 * @return  The tool bar panel used for the push and pull
+	 */
+	public ToolbarPanel getToolbarPanel() {
+		return toolbarPanel;
+	}
+
+	void setToolbarPanelFromTests(ToolbarPanel toolbarPanel) {
+		this.toolbarPanel = toolbarPanel;
+	}
+
+	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
+		return workingCopySelectionPanel;
+	}
+
+
+	/**
+	 * !!!!!!! FOR TESTS !!!!!!
+	 * 
+	 * @return The conflict buttons panel.
+	 */
+	public ConflictButtonsPanel getConflictButtonsPanel() {
+		return conflictButtonsPanel;
+	}
+
 }

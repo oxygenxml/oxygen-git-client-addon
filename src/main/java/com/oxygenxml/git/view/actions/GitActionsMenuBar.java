@@ -4,6 +4,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import org.eclipse.jgit.annotations.NonNull;
+
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -19,24 +21,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  */
 public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
-	 /**
-   * Helper class for singleton pattern.
-   * 
-   * @author alex_smarandache
-   */
-  private static class SingletonHelper {
+	/**
+	 * The translator for translations.
+	 */
+	private static final Translator TRANSLATOR = Translator.getInstance();
 
-    /**
-     * The unique instance of Git menu bae.
-     */
-    static final GitActionsMenuBar INSTANCE = new GitActionsMenuBar();
-  }
-  
-  /**
-   * The translator for translations.
-   */
-  private static final Translator TRANSLATOR = Translator.getInstance();
-  
 	/**
 	 * The Git menu.
 	 */
@@ -45,57 +34,35 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	/**
 	 * The git actions manager.
 	 */
-	private GitActionsManager gitActionsManager;
+	private final GitActionsManager actionsManager;
 
 	/**
 	 * The pull menu item.
 	 */
 	private JMenu pullMenuItem;
-	
+
 	/**
 	 * Settings menu. Used in tests
 	 */
 	private JMenu settingsMenu;
 
+
 	/**
 	 * Private constructor to avoid instantiation.
 	 */
-	private GitActionsMenuBar() {
-	}
-
-	/**
-	 * @return The singleton instance.
-	 */
-	public static GitActionsMenuBar getInstance() {
-		return SingletonHelper.INSTANCE;
-	}
-
-	/**
-	 * Populate menu with actions from git actions manager. 
-	 * <br><br>
-	 * This method will remove any previous component from this menu.
-	 * 
-	 * @param actionsManager The manager for git actions.
-	 */
-	public void populateMenu(final GitActionsManager actionsManager) {
+	public GitActionsMenuBar(@NonNull final GitActionsManager gitActionsManager) {
+		this.actionsManager = gitActionsManager;
 
 		actionsManager.addRefreshable(this);
-		this.gitActionsManager = actionsManager;
 
 		// Add clone repository item
-		final JMenuItem cloneRepositoryMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getCloneRepositoryAction());
-		cloneRepositoryMenuItem.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
-		gitMenu.add(cloneRepositoryMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getCloneRepositoryAction()));
 
 		// Add open repository action.
 		gitMenu.add(actionsManager.getOpenRepositoryAction());
 
 		// Add push menu item
-		final JMenuItem pushMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getPushAction());
-		actionsManager.getPushAction().setEnabled(false);
-		pushMenuItem.setIcon(Icons.getIcon(Icons.GIT_PUSH_ICON));
-		
-		gitMenu.add(pushMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPushAction()));
 
 		// Add pull options
 		pullMenuItem = OxygenUIComponentsFactory.createMenu(TRANSLATOR.getTranslation(Tags.PULL));
@@ -103,49 +70,33 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullMergeAction()));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullRebaseAction()));
 		pullMenuItem.setEnabled(
-		    actionsManager.getPullMergeAction().isEnabled()|| actionsManager.getPullRebaseAction().isEnabled());
-
+				actionsManager.getPullMergeAction().isEnabled()|| actionsManager.getPullRebaseAction().isEnabled());
 		gitMenu.add(pullMenuItem);
 
 		// Add show staging item
 		gitMenu.addSeparator();
-		final JMenuItem showStagingMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getShowStagingAction());
-		showStagingMenuItem.setIcon(Icons.getIcon(ro.sync.ui.Icons.GIT_PLUGIN_ICON_MENU));
-		gitMenu.add(showStagingMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getShowStagingAction()));
 
 		// Add show branches item
-		final JMenuItem showBranchesMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getShowBranchesAction());
-		showBranchesMenuItem.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
-		gitMenu.add(showBranchesMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getShowBranchesAction()));
 
 		// Add show tags item
-		final JMenuItem showTagsMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getShowTagsAction());
-		showTagsMenuItem.setIcon(Icons.getIcon(Icons.TAG));
-		gitMenu.add(showTagsMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getShowTagsAction()));
 
 		// Add show history item
-		final JMenuItem showHistoryMenuItem = OxygenUIComponentsFactory.createMenuItem(
-				actionsManager.getShowHistoryAction());
-		showHistoryMenuItem.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-		gitMenu.add(showHistoryMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getShowHistoryAction()));
 
 		// Add submodules item
-		final JMenuItem submodulesMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getSubmoduleAction());
-		submodulesMenuItem.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
-		gitMenu.add(submodulesMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getSubmoduleAction()));
 
 		// Add stash actions
 		gitMenu.addSeparator();	
-		final JMenuItem stashChangesMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getStashChangesAction());
-		stashChangesMenuItem.setIcon(Icons.getIcon(Icons.STASH_ICON));
-		gitMenu.add(stashChangesMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getStashChangesAction()));
 		gitMenu.add(actionsManager.getListStashesAction());
 
 		// Add remote actions
 		gitMenu.addSeparator();
-		final JMenuItem manageRemoteMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getManageRemoteRepositoriesAction());
-		manageRemoteMenuItem.setIcon(Icons.getIcon(Icons.REMOTE));
-		gitMenu.add(manageRemoteMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getManageRemoteRepositoriesAction()));
 		gitMenu.add(actionsManager.getTrackRemoteBranchAction());
 		gitMenu.add(actionsManager.getEditConfigAction());
 
@@ -175,10 +126,15 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
 	@Override
 	public void refresh() {
-		if(gitActionsManager != null) {
-			pullMenuItem.setEnabled(gitActionsManager.getPullMergeAction().isEnabled() 
-					|| gitActionsManager.getPullRebaseAction().isEnabled());
-		}
+		pullMenuItem.setEnabled(actionsManager.getPullMergeAction().isEnabled() 
+				|| actionsManager.getPullRebaseAction().isEnabled());
+	}
+
+	/**
+	 * @return The git actions manager.
+	 */
+	public GitActionsManager getGitActionsManager() {
+		return actionsManager;
 	}
 
 	/**

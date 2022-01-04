@@ -10,17 +10,29 @@ package com.oxygenxml.git.view.actions.internal;
 import javax.swing.AbstractAction;
 
 /**
- * TODO comentat 
+ * Abstract action which is always enabled.
+ * 
+ * @author alex_smarandache
+ *
  */
 public abstract class AlwaysEnabledAction extends AbstractAction {
   
+  /**
+   * Constructor.
+   *	
+   * @param name The action name.
+   */
   protected AlwaysEnabledAction(String name) {
     super(name);
   }
   
   
+  /**
+   * This method will do nothing.
+   */
   @Override
   public void setEnabled(boolean newValue) {
     super.setEnabled(true);
   }
+  
 }

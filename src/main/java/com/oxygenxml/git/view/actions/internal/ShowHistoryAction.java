@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.HistoryController;
@@ -30,6 +31,7 @@ public class ShowHistoryAction extends AbstractAction {
 	public ShowHistoryAction(HistoryController historyController) {
 		super(Translator.getInstance().getTranslation(Tags.SHOW_HISTORY));
 		this.historyController = historyController;
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.GIT_HISTORY));
 	}
 	
 

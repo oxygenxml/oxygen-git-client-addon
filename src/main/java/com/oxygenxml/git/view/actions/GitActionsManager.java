@@ -362,7 +362,6 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getShowTagsAction() {
 		if(showTagsAction == null) {
 			showTagsAction = new ShowTagsAction();
-			showTagsAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.TAG));
 			showTagsAction.setEnabled(repository != null);
 			allActions.add(showTagsAction);
 		}

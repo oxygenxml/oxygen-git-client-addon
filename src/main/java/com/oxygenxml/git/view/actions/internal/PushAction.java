@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -45,6 +46,7 @@ public class PushAction extends AbstractAction {
 	public PushAction(final GitController gitController) {
 		super(TRANSLATOR.getTranslation(Tags.PUSH));
 		this.gitController = gitController;
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.GIT_PUSH_ICON));
 	}
 
 

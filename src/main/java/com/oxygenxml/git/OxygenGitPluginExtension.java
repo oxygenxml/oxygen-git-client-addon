@@ -39,7 +39,7 @@ import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.view.actions.GitActionsManager;
-import com.oxygenxml.git.view.actions.adrian.GitMenuBar;
+import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
@@ -190,11 +190,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 		gitController = new GitController(GitAccess.getInstance());
 		
-//		pluginWS.addMenuBarCustomizer(GitActionsMenuBar.getInstance());
 		
-		 GitActionsManager gitActionsManager = new GitActionsManager(gitController, this, this, gitRefreshSupport);
+		final GitActionsManager gitActionsManager = new GitActionsManager(gitController, 
+				this, this, gitRefreshSupport);
 		
-		pluginWS.addMenuBarCustomizer(new GitMenuBar(gitActionsManager));
+		pluginWS.addMenuBarCustomizer(new GitActionsMenuBar(gitActionsManager));
 		
 		try {
 			// Uncomment this to start with fresh options. For testing purposes
@@ -311,7 +311,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * 
 	 * @param viewInfo View information.
 	 */
-	private void customizeGitStagingView(ViewInfo viewInfo, GitActionsManager gitActionsManager) {
+	private void customizeGitStagingView(final ViewInfo viewInfo, final GitActionsManager gitActionsManager) {
 		boolean shouldRecreateStagingPanel = stagingPanel == null;
 		if (shouldRecreateStagingPanel) {
 			stagingPanel = new StagingPanel(

@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
@@ -25,6 +26,7 @@ public class SubmodulesAction extends AbstractAction {
 	 */
 	public SubmodulesAction() {
 		super(TRANSLATOR.getTranslation(Tags.SUBMODULE));
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
 	}
 	
 

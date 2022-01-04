@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.stash.StashUtil;
@@ -20,7 +21,6 @@ public class StashChangesAction extends AbstractAction {
 	 * The translator for translations.
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
-
 	
 	
 	/**
@@ -28,6 +28,7 @@ public class StashChangesAction extends AbstractAction {
 	 */
 	public StashChangesAction() {
 		super(TRANSLATOR.getTranslation(Tags.STASH_CHANGES) + "...");
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.STASH_ICON));
 	}
 	
 	

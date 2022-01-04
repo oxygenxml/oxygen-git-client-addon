@@ -5,6 +5,7 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -40,6 +41,7 @@ public class OpenRepositoryAction extends AlwaysEnabledAction {
 	public OpenRepositoryAction(GitController gitController) {
 		super(TRANSLATOR.getTranslation(Tags.OPEN_REPOSITORY) + "...");
 		this.gitController = gitController;
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.FILE_CHOOSER_ICON));
 	}
 
 	

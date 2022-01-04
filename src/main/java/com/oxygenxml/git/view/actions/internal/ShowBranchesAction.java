@@ -7,6 +7,7 @@ import javax.swing.AbstractAction;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -47,6 +48,7 @@ public class ShowBranchesAction extends AbstractAction {
 	public ShowBranchesAction(final BranchManagementViewPresenter branchManagementViewPresenter) {
 		super(TRANSLATOR.getTranslation(Tags.SHOW_BRANCHES));
 		this.branchManagementViewPresenter = branchManagementViewPresenter;
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.GIT_BRANCH_ICON));
 	}
 
 

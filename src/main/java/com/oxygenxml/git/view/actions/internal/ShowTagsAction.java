@@ -7,6 +7,7 @@ import javax.swing.AbstractAction;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -34,6 +35,7 @@ public class ShowTagsAction extends AbstractAction {
 	 */
 	public ShowTagsAction() {
 		super(TRANSLATOR.getTranslation(Tags.SHOW_TAGS) + "...");
+		this.putValue(SMALL_ICON, Icons.getIcon(Icons.TAG));
 	}
 	
 	
