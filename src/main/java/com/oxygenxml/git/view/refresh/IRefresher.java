@@ -20,14 +20,12 @@ public interface IRefresher {
 	 */
 	public void addRefreshable(IRefreshable refreshable);
 	
-	
 	/**
 	 * Remove the given refreshable.
 	 * 
 	 * @param refreshable The refreshable to remove.
 	 */
 	public void removeRefreshable(IRefreshable refreshable);
-	
 	
 	/**
 	 * Remove the refreshable that has the given index.
@@ -36,12 +34,10 @@ public interface IRefresher {
 	 */
 	public void removeRefreshable(int indexToRemove);
 	
-	
 	/**
 	 * @return The list with refreshables associate with this refresher.
 	 */
 	public List<IRefreshable> getRefreshables();
-	
 	
 	/**
 	 * Update all refreshers.

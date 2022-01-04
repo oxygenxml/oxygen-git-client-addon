@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.NonNull;
@@ -12,6 +13,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -56,97 +58,97 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	/**
 	 * Clone new repository action.
 	 */
-	private AbstractAction cloneRepositoryAction          = null;
+	private CloneRepositoryAction cloneRepositoryAction;
 	
 	/**
 	 * Open repository action.
 	 */
-	private AbstractAction openRepositoryAction           = null;
+	private OpenRepositoryAction openRepositoryAction;
 
 	/**
 	 * Push action.
 	 */
-	private AbstractAction pushAction                     = null;
+	private AbstractAction pushAction;
 
 	/**
 	 * Pull merge action.
 	 */
-	private AbstractAction pullMergeAction                = null;
+	private AbstractAction pullMergeAction;
 
 	/**
 	 * Pull rebase action.
 	 */
-	private AbstractAction pullRebaseAction               = null;
+	private AbstractAction pullRebaseAction;
 	
 	/**
 	 * Action to show git staging.
 	 */
-	private AbstractAction showStagingAction              = null;
+	private ShowStagingAction showStagingAction;
 
 	/**
 	 * Action to show branches.
 	 */
-	private AbstractAction showBranchesAction             = null;
+	private AbstractAction showBranchesAction;
 
 	/**
 	 * Action to show history.
 	 */
-	private AbstractAction showHistoryAction              = null;
+	private AbstractAction showHistoryAction;
 
 	/**
 	 * Action to show tags.
 	 */
-	private AbstractAction showTagsAction                 = null;
+	private AbstractAction showTagsAction;
 
 	/**
 	 * Action for submodule.
 	 */
-	private AbstractAction submoduleAction                = null;
+	private AbstractAction submoduleAction;
 
 	/**
 	 * Action to stash changes.
 	 */
-	private AbstractAction stashChangesAction             = null;
+	private AbstractAction stashChangesAction;
 
 	/**
 	 * Action to list stahses.
 	 */
-	private AbstractAction listStashesAction              = null; 
+	private AbstractAction listStashesAction; 
 
 	/**
 	 * Action for edit config file.
 	 */
-	private AbstractAction editConfigFileAction           = null;
+	private AbstractAction editConfigFileAction;
 
 	/**
 	 * Action to manage the remote repositories.
 	 */
-	private AbstractAction manageRemoteRepositoriesAction = null; 
+	private AbstractAction manageRemoteRepositoriesAction; 
 
 	/**
 	 * Action to track remote branch.
 	 */
-	private AbstractAction trackRemoteBranchAction        = null;
+	private AbstractAction trackRemoteBranchAction;
 	
 	/**
 	 * Action to open preferences page for Git Plugin.
 	 */
-	private AbstractAction openPreferencesAction          = null;
+	private OpenPreferencesAction openPreferencesAction;
 	
 	/**
 	 * Action to reset all credentials.
 	 */
-	private AbstractAction resetAllCredentialsAction      = null;
+	private ResetAllCredentialsAction resetAllCredentialsAction;
 
 	/**
 	 * The Git Controller.
 	 */
-	private final GitController                  gitController;    
+	private final GitController gitController;    
 
 	/**
 	 * The history controller.
 	 */
-	private final HistoryController              historyController;
+	private final HistoryController historyController;
 
 	/**
 	 *  Branch management view presenter.
@@ -156,33 +158,32 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	/**
 	 *  Refresh support. Needed by some actions.
 	 */
-	private final GitRefreshSupport              refreshSupport;
+	private final GitRefreshSupport refreshSupport;
 
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger                  LOGGER = Logger.getLogger(GitActionsManager.class);
+	private static final Logger LOGGER = Logger.getLogger(GitActionsManager.class);
 
 	/**
 	 * The translator for translations.
 	 */
-	private static final Translator              TRANSLATOR = Translator.getInstance();
+	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
 	 * All actions.
 	 */
-	private final List<AbstractAction>           allActions;
+	private final List<AbstractAction> allActions;
 
 	/**
 	 * List with refreshables associate with this class.
 	 */
-	private final List<IRefreshable>             refreshables;
+	private final List<IRefreshable> refreshables;
 	
 	/**
 	 * The current repository.
 	 */
-	private Repository                           repository = null;
-
+	private Repository repository;
 
 	/**
 	 * Constructor.
@@ -224,7 +225,9 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 						|| operation == GitOperation.COMMIT
 						|| operation == GitOperation.DISCARD
 						|| operation == GitOperation.CHECKOUT
-						|| operation == GitOperation.CHECKOUT_COMMIT) {
+						|| operation == GitOperation.CHECKOUT_COMMIT
+						|| operation == GitOperation.CREATE_TAG
+						|| operation == GitOperation.DELETE_TAG) {
 					refresh();
 				}
 			}
@@ -239,6 +242,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getCloneRepositoryAction() {
 		if(cloneRepositoryAction == null) {
 			cloneRepositoryAction = new CloneRepositoryAction();
+			cloneRepositoryAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
 			allActions.add(cloneRepositoryAction);
 		}
 
@@ -358,6 +362,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	public AbstractAction getShowTagsAction() {
 		if(showTagsAction == null) {
 			showTagsAction = new ShowTagsAction();
+			showTagsAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.TAG));
 			showTagsAction.setEnabled(repository != null);
 			allActions.add(showTagsAction);
 		}
@@ -500,26 +505,6 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		final boolean isRepoOpen = repository != null;
 
 		allActions.forEach(action -> action.setEnabled(isRepoOpen));
-
-		if(cloneRepositoryAction != null) {
-			cloneRepositoryAction.setEnabled(true);
-		}
-		
-		if(openRepositoryAction != null) {
-			openRepositoryAction.setEnabled(true);
-		}
-		
-		if(showStagingAction != null) {
-			showStagingAction.setEnabled(true);
-		}
-		
-		if(openPreferencesAction != null) {
-			openPreferencesAction.setEnabled(true);
-		}
-		
-		if(resetAllCredentialsAction != null) {
-			resetAllCredentialsAction.setEnabled(true);
-		}
 
 		if(isRepoOpen) {
 			updateActionsStatus();

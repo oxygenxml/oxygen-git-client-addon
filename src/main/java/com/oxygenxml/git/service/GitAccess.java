@@ -2577,7 +2577,7 @@ public class GitAccess {
  * @throws IOException
  */
 	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, IOException {
-	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_COMMIT));
+	  fireOperationAboutToStart(new GitEventInfo(GitOperation.CREATE_TAG));
 	  try {
 	    RevWalk walk = new RevWalk(getRepository());
 	    RevCommit id = walk.parseCommit(getRepository().resolve(commitId));
@@ -2587,10 +2587,10 @@ public class GitAccess {
         .setObjectId(id)
         .setForceUpdate(true)
         .call();
-      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_COMMIT));
+      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CREATE_TAG));
     } catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {
       LOGGER.error(e, e);
-      fireOperationFailed(new GitEventInfo(GitOperation.TAG_COMMIT), e);
+      fireOperationFailed(new GitEventInfo(GitOperation.CREATE_TAG), e);
       throw e;
     }
 	}
@@ -2636,16 +2636,16 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void deleteTag(String name) throws GitAPIException  {
-		fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_DELETE));
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.DELETE_TAG));
 		try {
 			getGit()
 			.tagDelete()
 			.setTags(name)
 			.call();
-			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_DELETE));
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.DELETE_TAG));
 		} catch (GitAPIException e) {
 			LOGGER.error(e, e);
-			fireOperationFailed(new GitEventInfo(GitOperation.TAG_DELETE), e);
+			fireOperationFailed(new GitEventInfo(GitOperation.DELETE_TAG), e);
 			throw e;
 		}
 	}

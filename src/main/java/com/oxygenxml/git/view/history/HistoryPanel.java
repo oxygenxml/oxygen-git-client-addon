@@ -322,8 +322,8 @@ public class HistoryPanel extends JPanel implements IRefreshable {
           case ABORT_REBASE:
           case CONTINUE_REBASE:
           case REVERT_COMMIT:
-          case TAG_COMMIT:
-          case TAG_DELETE:
+          case CREATE_TAG:
+          case DELETE_TAG:
           case CHECKOUT_COMMIT:
             refresh();
             break;

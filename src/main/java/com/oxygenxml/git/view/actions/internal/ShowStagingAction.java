@@ -17,7 +17,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Alex_Smarandache
  *
  */
-public class ShowStagingAction extends AbstractAction {
+public class ShowStagingAction extends AlwaysEnabledAction {
 	
 	/**
 	 * The translator for translations.

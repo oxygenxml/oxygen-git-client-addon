@@ -135,18 +135,16 @@ public class StagingPanel extends JPanel {
    * @param refreshSupport   Refresh support.        
    * @param gitCtrl  Git controller.
    * @param historyController History related interaction.
-   * @param branchManagementViewPresenter Branch management view presenter.
    */
   public StagingPanel(
       GitRefreshSupport refreshSupport, 
       GitController gitCtrl, 
       HistoryController historyController,
-      BranchManagementViewPresenter branchManagementViewPresenter) {
+      GitActionsManager gitActionsManager) {
 		this.refreshSupport = refreshSupport;
 		this.gitController = gitCtrl;
 		
-		this.gitActionsManager = new GitActionsManager(gitCtrl, 
-				historyController, branchManagementViewPresenter, refreshSupport);
+		this.gitActionsManager = gitActionsManager; 
 		
 		createGUI(historyController);
 		

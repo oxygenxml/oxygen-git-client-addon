@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -18,7 +16,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author alex_smarandache
  *
  */
-public class ResetAllCredentialsAction extends AbstractAction {
+public class ResetAllCredentialsAction extends AlwaysEnabledAction {
 
 	/**
 	 * The translator for translations.
@@ -30,7 +28,6 @@ public class ResetAllCredentialsAction extends AbstractAction {
 	 */
 	private final GitRefreshSupport refreshSupport;
 
-
 	/**
 	 * Constructor.
 	 * 
@@ -40,7 +37,6 @@ public class ResetAllCredentialsAction extends AbstractAction {
 		super(TRANSLATOR.getTranslation(Tags.RESET_ALL_CREDENTIALS));
 		this.refreshSupport = refreshSupport;
 	}
-
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

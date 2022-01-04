@@ -234,8 +234,7 @@ public class ToolbarPanel extends JPanel implements IRefreshable {
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
         if (operation == GitOperation.DELETE_BRANCH ||
-            operation == GitOperation.CREATE_BRANCH
-            ) {
+            operation == GitOperation.CREATE_BRANCH) {
           refresh();
         }
       }

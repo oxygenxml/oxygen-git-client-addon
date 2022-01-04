@@ -19,7 +19,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Alex_Smarandache
  *
  */
-public class OpenRepositoryAction extends AbstractAction {
+public class OpenRepositoryAction extends AlwaysEnabledAction {
 	
 	/**
 	 * The translator for translations.

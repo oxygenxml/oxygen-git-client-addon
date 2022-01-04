@@ -95,11 +95,11 @@ public enum GitOperation {
   /**
    * Tag a commit operation
    */
-  TAG_COMMIT,
+  CREATE_TAG,
   /**
    * Delete a tag operation
    */
-  TAG_DELETE,
+  DELETE_TAG,
   /**
    * Checkout commit.
    */
