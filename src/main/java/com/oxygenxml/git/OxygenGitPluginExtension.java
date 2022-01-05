@@ -103,7 +103,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
 	 * Manages Push/Pull actions.
 	 */
-	private GitController gitController;
+	private GitController gitController = new GitController();
 
 	/**
 	 * Window listener used to call the refresh command when the Oxygen window is activated
@@ -188,11 +188,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  pluginWorkspaceAccess = pluginWS;
 	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
-		gitController = new GitController(GitAccess.getInstance());
 		
-		
-		final GitActionsManager gitActionsManager = new GitActionsManager(gitController, 
-				this, this, gitRefreshSupport);
+		RemoteRepositoryChangeWatcher watcher = RemoteRepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, gitController);
+    gitRefreshSupport = new PanelRefresh(watcher);
+		final GitActionsManager gitActionsManager = new GitActionsManager(gitController, this, this, gitRefreshSupport);
 		
 		pluginWS.addMenuBarCustomizer(new GitActionsMenuBar(gitActionsManager));
 		
@@ -263,9 +262,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			pluginWorkspaceAccess.showErrorMessage(t.getMessage());
 			logger.fatal(t, t);
 		}
-
-		RemoteRepositoryChangeWatcher watcher = RemoteRepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, gitController);
-		gitRefreshSupport = new PanelRefresh(watcher);
 
 		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
 		utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));

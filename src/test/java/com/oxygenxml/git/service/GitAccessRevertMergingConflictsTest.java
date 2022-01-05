@@ -138,7 +138,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
 
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
 
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();

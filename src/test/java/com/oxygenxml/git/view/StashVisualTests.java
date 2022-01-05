@@ -105,7 +105,7 @@ public class StashVisualTests extends GitTestBase {
    
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
@@ -239,14 +239,14 @@ public class StashVisualTests extends GitTestBase {
    
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
+      toolbarPanel.updateButtonsStates();
       refreshSupport.call();
       flushAWT();
       
@@ -357,14 +357,14 @@ public class StashVisualTests extends GitTestBase {
    
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
+      toolbarPanel.updateButtonsStates();
       refreshSupport.call();
       flushAWT();
       
@@ -460,14 +460,14 @@ public class StashVisualTests extends GitTestBase {
   public void testListStashApplyAndPopAction() throws Exception {
     // Init UI
     JFrame frame = new JFrame();
-    GitController gitCtrl = new GitController(GitAccess.getInstance());
+    GitController gitCtrl = new GitController();
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
     ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
     frame.getContentPane().add(stagingPanel);
     frame.pack();
     frame.setVisible(true);
     flushAWT();
-    toolbarPanel.refresh();
+    toolbarPanel.updateButtonsStates();
     refreshSupport.call();
     flushAWT();
     
@@ -637,14 +637,14 @@ public class StashVisualTests extends GitTestBase {
    
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
+      toolbarPanel.updateButtonsStates();
       refreshSupport.call();
       flushAWT();
       
@@ -822,14 +822,14 @@ public class StashVisualTests extends GitTestBase {
    
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.refresh();
+      toolbarPanel.updateButtonsStates();
       refreshSupport.call();
       flushAWT();
       

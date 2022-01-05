@@ -107,7 +107,13 @@ public class PanelRefresh implements GitRefreshSupport {
 				Repository repository = gitAccess.getRepository();
 				if (repository != null) {
 					if (stagingPanel != null) {
-						stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
+					  // refresh the states of the actions
+					  stagingPanel.getGitActionsManager().refreshActionsStates();
+					  
+					  // refresh the buttons
+					  stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
+						stagingPanel.updateToolbarsButtonsStates();
+						
 						GitStatus status = GitAccess.getInstance().getStatus();
 						updateFiles(
 								stagingPanel.getUnstagedChangesPanel(), 
@@ -129,7 +135,7 @@ public class PanelRefresh implements GitRefreshSupport {
 						branchesPanel.refreshBranches();
 					}
 					if (historyPanel != null && historyPanel.isShowing()) {
-						historyPanel.refresh();
+						historyPanel.scheduleRefreshHistory();
 					}
 
 					// EXM-47079 Rewrite the fetch property with wildcards.
@@ -353,10 +359,6 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private void updateCounters(RepositoryStatusInfo status) {
 		stagingPanel.getCommitPanel().setRepoStatus(status);
-
-		if (stagingPanel.getToolbarPanel() != null) {
-			stagingPanel.getToolbarPanel().getGitActionsManager().refresh();
-		}
 	}
 
 	/**

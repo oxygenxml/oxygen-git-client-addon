@@ -87,7 +87,7 @@ public class BranchMergingTest extends GitTestBase {
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
     
     //------------- Checkout the other branch in the tree: LOCAL_BRANCH_NAME1 -------------
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -175,7 +175,7 @@ public class BranchMergingTest extends GitTestBase {
     
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
 
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -296,7 +296,7 @@ public class BranchMergingTest extends GitTestBase {
       gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
       
       // Try to merge the secondary branch into the default one - CHECKOUT CONFLICT
-      GitControllerBase mock = new GitController(GitAccess.getInstance());
+      GitControllerBase mock = new GitController();
       BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
       branchManagementPanel.refreshBranches();
       flushAWT();

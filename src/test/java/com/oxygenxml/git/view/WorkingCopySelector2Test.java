@@ -100,7 +100,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
     JFrame frame = new JFrame();
     try {
       WorkingCopySelectionPanel wcPanel = 
-          new WorkingCopySelectionPanel(new GitController(GitAccess.getInstance()), true);
+          new WorkingCopySelectionPanel(new GitController(), true);
       frame.getContentPane().add(wcPanel);
       frame.pack();
       // Showing the WC panel also initializes the combo

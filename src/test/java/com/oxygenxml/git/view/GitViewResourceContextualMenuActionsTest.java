@@ -27,7 +27,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
   /**
    * Git controller.
    */
-  private GitControllerBase gitCtrl = new GitController(GitAccess.getInstance());
+  private GitControllerBase gitCtrl = new GitController();
   
   /**
    * <p><b>Description:</b> test the enabling state of the actions

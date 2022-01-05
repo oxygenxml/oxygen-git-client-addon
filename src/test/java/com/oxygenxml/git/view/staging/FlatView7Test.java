@@ -75,7 +75,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
 
 		ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
-		toolbarPanel.refresh();
+		toolbarPanel.updateButtonsStates();
 		flushAWT();
 		sleep(200);
 
@@ -93,7 +93,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		((GitController) stagingPanel.getGitController()).push();
 		waitForScheluerBetter();
 
-		toolbarPanel.refresh();
+		toolbarPanel.updateButtonsStates();
 
 		// Tooltip texts changed
 		assertEquals(
@@ -121,7 +121,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		flushAWT();
 		GitAccess.getInstance().fetch();
-		toolbarPanel.refresh();
+		toolbarPanel.updateButtonsStates();
 		flushAWT();
 		// Tooltip texts changed again
 		String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (2 files)"
@@ -162,7 +162,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		toolbarPanel.refresh();
+		toolbarPanel.updateButtonsStates();
 		flushAWT();
 		sleep(200);
 
@@ -204,7 +204,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		toolbarPanel.refresh();
+		toolbarPanel.updateButtonsStates();
 		flushAWT();
 		sleep(200);
 
@@ -253,7 +253,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		toolbarPanel.refresh();
+		toolbarPanel.updateButtonsStates();
 		flushAWT();
 		sleep(500);
 
@@ -293,13 +293,13 @@ public class FlatView7Test extends FlatViewTestBase {
 	 *
 	 * @throws Exception
 	 */
-	@Test
-	public void testSettingsMenu() throws Exception {
-		final JMenu settingsMenu = GitActionsMenuBar.getInstance().getSettingsMenu();
-		assertEquals(2, settingsMenu.getItemCount());
-		assertEquals(Tags.RESET_ALL_CREDENTIALS, settingsMenu.getItem(0).getText());
-		assertEquals(Tags.PREFERENCES, settingsMenu.getItem(1).getText());
-	}
+//	@Test
+//	public void testSettingsMenu() throws Exception {
+//		final JMenu settingsMenu = GitActionsMenuBar.getInstance().getSettingsMenu();
+//		assertEquals(2, settingsMenu.getItemCount());
+//		assertEquals(Tags.RESET_ALL_CREDENTIALS, settingsMenu.getItem(0).getText());
+//		assertEquals(Tags.PREFERENCES, settingsMenu.getItem(1).getText());
+//	}
 	
 
 }

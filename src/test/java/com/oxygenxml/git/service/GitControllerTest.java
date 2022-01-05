@@ -28,7 +28,7 @@ public class GitControllerTest {
    */
   @Test
   public void testFailNotification() throws Exception {
-    GitControllerBase ctrl = new GitController(GitAccess.getInstance());
+    GitControllerBase ctrl = new GitController();
     
     StringBuilder b = new StringBuilder();
     ctrl.addGitListener(new GitEventListener() {

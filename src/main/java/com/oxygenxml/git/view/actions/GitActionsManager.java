@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.actions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -13,6 +14,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.google.common.collect.Sets;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -42,8 +44,6 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
-import com.oxygenxml.git.view.refresh.IRefreshable;
-import com.oxygenxml.git.view.refresh.IRefresher;
 import com.oxygenxml.git.view.tags.GitTagsManager;
 
 
@@ -53,7 +53,30 @@ import com.oxygenxml.git.view.tags.GitTagsManager;
  * @author Alex_Smarandache
  *
  */
-public class GitActionsManager implements IRefresher, IRefreshable {
+public class GitActionsManager  {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = Logger.getLogger(GitActionsManager.class);
+
+  /**
+   * The translator for translations.
+   */
+  private static final Translator TRANSLATOR = Translator.getInstance();
+  
+  /**
+   * Actions that needs to be refreshed.
+   */
+  private static final Set<GitOperation> REFRESH_AWARE_ACTIONS = Sets.newHashSet(
+      GitOperation.ABORT_REBASE, 
+      GitOperation.CONTINUE_REBASE, 
+      GitOperation.COMMIT,
+      GitOperation.DISCARD,
+      GitOperation.CHECKOUT,
+      GitOperation.CHECKOUT_COMMIT,
+      GitOperation.CREATE_TAG,
+      GitOperation.DELETE_TAG);
 
 	/**
 	 * Clone new repository action.
@@ -161,25 +184,10 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	private final GitRefreshSupport refreshSupport;
 
 	/**
-	 * Logger for logging.
-	 */
-	private static final Logger LOGGER = Logger.getLogger(GitActionsManager.class);
-
-	/**
-	 * The translator for translations.
-	 */
-	private static final Translator TRANSLATOR = Translator.getInstance();
-
-	/**
 	 * All actions.
 	 */
-	private final List<AbstractAction> allActions;
+	private final List<AbstractAction> allActions = new ArrayList<>();
 
-	/**
-	 * List with refreshables associate with this class.
-	 */
-	private final List<IRefreshable> refreshables;
-	
 	/**
 	 * The current repository.
 	 */
@@ -202,8 +210,6 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		this.historyController             = historyController;
 		this.branchManagementViewPresenter = branchManagementViewPresenter;
 		this.refreshSupport                = refreshSupport;
-		this.allActions                    = new ArrayList<>();  
-		this.refreshables                  = new ArrayList<>(); 
 		
 		try {
 			this.repository                = gitController.getGitAccess().getRepository();
@@ -220,15 +226,8 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 						submoduleAction.setEnabled(gitController.getGitAccess()
 								.getSubmoduleAccess().getSubmodules().isEmpty());
 					}
-				} else if (operation == GitOperation.ABORT_REBASE 
-						|| operation == GitOperation.CONTINUE_REBASE 
-						|| operation == GitOperation.COMMIT
-						|| operation == GitOperation.DISCARD
-						|| operation == GitOperation.CHECKOUT
-						|| operation == GitOperation.CHECKOUT_COMMIT
-						|| operation == GitOperation.CREATE_TAG
-						|| operation == GitOperation.DELETE_TAG) {
-					refresh();
+				} else if (REFRESH_AWARE_ACTIONS.contains(operation)) {
+				  refreshActionsStates();
 				}
 			}
 		});
@@ -491,8 +490,7 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	/**
 	 * Refresh actions after a git operation that could affect the action.
 	 */
-	@Override
-	public void refresh() {
+	public void refreshActionsStates() {
 		repository = null;
 
 		try {
@@ -508,8 +506,6 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 		if(isRepoOpen) {
 			updateActionsStatus();
 		}
-
-		updateAll();
 
 	}
 
@@ -555,38 +551,8 @@ public class GitActionsManager implements IRefresher, IRefreshable {
 	/**
 	 * @return <code>true</code> if the repository has submodules.
 	 */
-    protected boolean hasRepositorySubmodules() {
-    	return !gitController.getGitAccess().getSubmoduleAccess().getSubmodules().isEmpty();
-    }
+	protected boolean hasRepositorySubmodules() {
+	  return !gitController.getGitAccess().getSubmoduleAccess().getSubmodules().isEmpty();
+	}
     
-    
-	@Override
-	public void addRefreshable(IRefreshable refreshable) {
-		refreshables.add(refreshable);
-	}
-
-
-	@Override
-	public void removeRefreshable(IRefreshable refreshable) {
-		refreshables.remove(refreshable);
-	}
-
-
-	@Override
-	public void removeRefreshable(int indexToRemove) {
-		refreshables.remove(indexToRemove);
-	}
-
-
-	@Override
-	public List<IRefreshable> getRefreshables() {
-		return refreshables;
-	}
-
-
-	@Override
-	public void updateAll() {
-		refreshables.forEach(IRefreshable::refresh);
-	}
-
 }

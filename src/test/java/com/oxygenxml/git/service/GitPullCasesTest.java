@@ -174,7 +174,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
-    GitController pc = new GitController(GitAccess.getInstance()) {
+    GitController pc = new GitController() {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -497,7 +497,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
     final List<String> messages = new ArrayList<>();
-    GitController pc = new GitController(GitAccess.getInstance()) {
+    GitController pc = new GitController() {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -558,7 +558,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
     final List<String> messages = new ArrayList<>();
-    GitController pc = new GitController(GitAccess.getInstance()) {
+    GitController pc = new GitController() {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -721,7 +721,7 @@ public class GitPullCasesTest extends GitTestBase {
     }).when(PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(Mockito.any(), Mockito.any());
     
     //Try to pull
-    GitController gitController = new GitController(GitAccess.getInstance());
+    GitController gitController = new GitController();
     Future<?> pull = gitController.pull(PullType.MERGE_FF);
     pull.get();
     

@@ -122,7 +122,7 @@ public class TagsVisualTests extends GitTestBase {
    
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);

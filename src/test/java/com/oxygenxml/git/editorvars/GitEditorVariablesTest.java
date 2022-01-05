@@ -20,7 +20,7 @@ import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
  */
 public class GitEditorVariablesTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/EditorVariablesTest";
-  private EditorVariablesResolver editorVariablesResolver = new GitEditorVariablesResolver(new GitController(GitAccess.getInstance()));
+  private EditorVariablesResolver editorVariablesResolver = new GitEditorVariablesResolver(new GitController());
 
   @Override
   @Before

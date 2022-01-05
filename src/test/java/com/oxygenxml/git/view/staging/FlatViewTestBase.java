@@ -51,7 +51,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
 
     stagingPanel = new StagingPanel(
         refreshSupport,
-        new GitController(GitAccess.getInstance()) {
+        new GitController() {
           @Override
           protected void showPullSuccessfulWithConflicts(PullResponse response) {
             // Nothing to do.

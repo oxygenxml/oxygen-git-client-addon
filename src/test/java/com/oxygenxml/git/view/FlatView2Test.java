@@ -418,7 +418,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertTrue(rebasePanel.isShowing());
 
     Semaphore s = new Semaphore(0);
-    GitController ppc = new GitController(GitAccess.getInstance()) {
+    GitController ppc = new GitController() {
       @Override
       protected void showRebaseInProgressDialog() {
         s.release();

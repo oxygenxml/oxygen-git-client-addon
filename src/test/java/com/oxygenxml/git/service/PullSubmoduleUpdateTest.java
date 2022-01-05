@@ -43,7 +43,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     
     bindLocalToRemote(db2, remote);
     
-    GitController ctrl = new GitController(GitAccess.getInstance());
+    GitController ctrl = new GitController();
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
     
@@ -154,7 +154,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
     bindLocalToRemote(db2, remote2);
     
-    GitController ctrl = new GitController(GitAccess.getInstance());
+    GitController ctrl = new GitController();
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
     
@@ -245,7 +245,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     
     bindLocalToRemote(db2, remote);
     
-    GitController ctrl = new GitController(GitAccess.getInstance());
+    GitController ctrl = new GitController();
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
     

@@ -78,7 +78,6 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
-import com.oxygenxml.git.view.refresh.IRefreshable;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -96,7 +95,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 /**
  * Presents the commits for a given resource.
  */
-public class HistoryPanel extends JPanel implements IRefreshable {
+public class HistoryPanel extends JPanel {
   /**
    * Logger for logging.
    */
@@ -310,7 +309,7 @@ public class HistoryPanel extends JPanel implements IRefreshable {
             break;
           case PULL:
           case PUSH:
-            refresh();
+            scheduleRefreshHistory();
             break;
           case CREATE_BRANCH:
           case CHECKOUT:
@@ -325,7 +324,7 @@ public class HistoryPanel extends JPanel implements IRefreshable {
           case CREATE_TAG:
           case DELETE_TAG:
           case CHECKOUT_COMMIT:
-            refresh();
+            scheduleRefreshHistory();
             break;
           default:
             break;
@@ -386,7 +385,7 @@ public class HistoryPanel extends JPanel implements IRefreshable {
 				currentStrategy = strategy;
 				button.setText(strategy.toString());
 				optionsStorage.setOption(OptionTags.HISTORY_STRATEGY, strategy.toString());
-				refresh();
+				scheduleRefreshHistory();
 			}
 			
 		   };
@@ -422,7 +421,7 @@ public class HistoryPanel extends JPanel implements IRefreshable {
           selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
 
           if (isShowing() && fileInWorkPath.startsWith(selectedRepositoryPath)) {
-            refresh();
+            scheduleRefreshHistory();
           }
         } catch (NoRepositorySelected e) {
           LOGGER.debug(e, e);
@@ -658,7 +657,7 @@ public class HistoryPanel extends JPanel implements IRefreshable {
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        refresh();
+        scheduleRefreshHistory();
       }
     };
     
@@ -705,10 +704,9 @@ public class HistoryPanel extends JPanel implements IRefreshable {
 
   
   /**
-   * Refresh.
+   * Schedules commit history to show for the active file.
    */
-  @Override
-  public void refresh() {
+  public void scheduleRefreshHistory() {
     GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
   }
   

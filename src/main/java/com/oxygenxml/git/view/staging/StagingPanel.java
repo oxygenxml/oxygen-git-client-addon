@@ -87,7 +87,6 @@ public class StagingPanel extends JPanel {
 	 */
 	private ToolbarPanel toolbarPanel;
 
-
 	/**
 	 * The working copy panel used for selecting and adding a working copy
 	 */
@@ -360,7 +359,7 @@ public class StagingPanel extends JPanel {
 						FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
 						SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
 						if(gitActionsManager != null) {
-							gitActionsManager.refresh();
+							gitActionsManager.refreshActionsStates();
 						}
 					}
 				} catch (NoRepositorySelected e) {
@@ -530,9 +529,7 @@ public class StagingPanel extends JPanel {
 				
 				branchSelectionPanel.refresh();
 
-				gitActionsManager.refresh();
-
-
+				gitActionsManager.refreshActionsStates();
 			}
 
 			/**
@@ -548,7 +545,7 @@ public class StagingPanel extends JPanel {
 				branchSelectionPanel.getBranchNamesCombo().setEnabled(false);
 
 				if (toolbarPanel != null) {
-					toolbarPanel.updateButtonState(false);
+					toolbarPanel.setButtonsEnabledState(false);
 				}
 
 				commitPanel.getCommitButton().setEnabled(false);
@@ -577,7 +574,6 @@ public class StagingPanel extends JPanel {
 	public void updateConflictButtonsPanelBasedOnRepoState() {
 		conflictButtonsPanel.updateBasedOnRepoState();
 	}
-
 
 	/**
 	 * @return the unstaged resources panel.
@@ -614,6 +610,10 @@ public class StagingPanel extends JPanel {
 	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
 		return workingCopySelectionPanel;
 	}
+	
+	public void updateToolbarsButtonsStates() {
+	  toolbarPanel.updateButtonsStates();
+	}
 
 	 public BranchSelectionPanel getBranchesPanel() {
 		    return branchSelectionPanel;
@@ -627,5 +627,12 @@ public class StagingPanel extends JPanel {
 	public ConflictButtonsPanel getConflictButtonsPanel() {
 		return conflictButtonsPanel;
 	}
+	
+	/**
+	 * @return The manager responsible with git action.
+	 */
+	public GitActionsManager getGitActionsManager() {
+    return gitActionsManager;
+  }
 
 }

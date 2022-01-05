@@ -261,7 +261,7 @@ public class GitCheckoutConflictTest extends TestCase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     sleep(500);
@@ -338,7 +338,7 @@ public class GitCheckoutConflictTest extends TestCase {
     StagingPanel stagingPanel = new StagingPanel(refreshSupport, gitController, null, null);
     sleep(300);
     SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-    stagingPanel.getToolbarPanel().refresh();
+    stagingPanel.getToolbarPanel().updateButtonsStates();
     sleep(300);
     SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
     sleep(500);
@@ -402,7 +402,7 @@ public class GitCheckoutConflictTest extends TestCase {
     StagingPanel stagingPanel = new StagingPanel(refreshSupport, gitController, null, null);
     sleep(300);
     SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-    stagingPanel.getToolbarPanel().refresh();
+    stagingPanel.getToolbarPanel().updateButtonsStates();
     sleep(300);
     SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
     sleep(500);
@@ -445,7 +445,7 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     sleep(1000);
@@ -509,7 +509,7 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
-    GitControllerBase gitCtrl = new GitController(GitAccess.getInstance());
+    GitControllerBase gitCtrl = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     sleep(1000);
@@ -518,7 +518,7 @@ public class GitCheckoutConflictTest extends TestCase {
     StagingPanel stagingPanel = new StagingPanel(refreshSupport, (GitController)gitCtrl, null, null);
     sleep(300);
     SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-    stagingPanel.getToolbarPanel().refresh();
+    stagingPanel.getToolbarPanel().updateButtonsStates();
     sleep(300);
     SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
     sleep(500);

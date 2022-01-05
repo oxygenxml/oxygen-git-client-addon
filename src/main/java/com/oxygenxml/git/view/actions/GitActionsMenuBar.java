@@ -9,7 +9,6 @@ import org.eclipse.jgit.annotations.NonNull;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.refresh.IRefreshable;
 
 import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
@@ -19,7 +18,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  * 
  * @author Alex_Smarandache
  */
-public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
+public class GitActionsMenuBar implements MenuBarCustomizer {
 
 	/**
 	 * The translator for translations.
@@ -46,14 +45,11 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 	 */
 	private JMenu settingsMenu;
 
-
 	/**
 	 * Private constructor to avoid instantiation.
 	 */
 	public GitActionsMenuBar(@NonNull final GitActionsManager gitActionsManager) {
 		this.actionsManager = gitActionsManager;
-
-		actionsManager.addRefreshable(this);
 
 		// Add clone repository item
 		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getCloneRepositoryAction()));
@@ -69,8 +65,6 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		pullMenuItem.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullMergeAction()));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullRebaseAction()));
-		pullMenuItem.setEnabled(
-				actionsManager.getPullMergeAction().isEnabled()|| actionsManager.getPullRebaseAction().isEnabled());
 		gitMenu.add(pullMenuItem);
 
 		// Add show staging item
@@ -91,8 +85,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
 		// Add stash actions
 		gitMenu.addSeparator();	
-		final JMenuItem stashChangesMenuItem = OxygenUIComponentsFactory.createMenuItem(
-				actionsManager.getStashChangesAction());
+		JMenuItem stashChangesMenuItem = OxygenUIComponentsFactory.createMenuItem(actionsManager.getStashChangesAction());
 		stashChangesMenuItem.setIcon(Icons.getIcon(Icons.STASH_ICON));
 		gitMenu.add(stashChangesMenuItem);
 		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getListStashesAction()));
@@ -127,19 +120,13 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 		}
 	}
 
-	@Override
-	public void refresh() {
-		pullMenuItem.setEnabled(actionsManager.getPullMergeAction().isEnabled() 
-				|| actionsManager.getPullRebaseAction().isEnabled());
-	}
-
 	/**
 	 * @return The git actions manager.
 	 */
 	public GitActionsManager getGitActionsManager() {
 		return actionsManager;
 	}
-
+	
 	/**
 	 * !!! Used for tests. !!!
 	 * 

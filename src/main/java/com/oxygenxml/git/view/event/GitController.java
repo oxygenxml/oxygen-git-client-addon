@@ -52,6 +52,13 @@ public class GitController extends GitControllerBase {
    * Translator for i18n.
    */
   private Translator translator = Translator.getInstance();
+  
+  /**
+   * Creates the GIT controller using the default GitAccess instance
+   */
+  public GitController() {
+    this(GitAccess.getInstance());
+  }
 
   /**
    * Public constructor

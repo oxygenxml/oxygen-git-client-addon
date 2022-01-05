@@ -89,7 +89,7 @@ public class ToolbarPanelTest extends GitTestBase {
     JFrame frame = new JFrame();
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       JComboBox<String> wcCombo = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
       String wcPath = new File(LOCAL_REPO).getAbsolutePath();
@@ -114,10 +114,10 @@ public class ToolbarPanelTest extends GitTestBase {
       flushAWT();
       
       // Try to switch to another branch
-      stagingPanel.getToolbarPanel().refresh();
+      stagingPanel.getToolbarPanel().updateButtonsStates();
       flushAWT();
       SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-      stagingPanel.getToolbarPanel().refresh();
+      stagingPanel.getToolbarPanel().updateButtonsStates();
       sleep(300);
       
       
@@ -185,7 +185,7 @@ public class ToolbarPanelTest extends GitTestBase {
     JFrame frame = new JFrame();
     try {
       // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      GitController gitCtrl = new GitController();
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
       JComboBox<String> wcCombo = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
       String wcPath = new File(LOCAL_REPO).getAbsolutePath();
@@ -194,7 +194,7 @@ public class ToolbarPanelTest extends GitTestBase {
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
-      stagingPanel.getToolbarPanel().refresh();
+      stagingPanel.getToolbarPanel().updateButtonsStates();
       refreshSupport.call();
       flushAWT();
       
@@ -212,7 +212,7 @@ public class ToolbarPanelTest extends GitTestBase {
       
       // Try to switch to another branch
       SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-      stagingPanel.getToolbarPanel().refresh();
+      stagingPanel.getToolbarPanel().updateButtonsStates();
       sleep(300);
       
       JPopupMenu branchesPopup = branchesButton.getPopupMenu();
@@ -252,10 +252,9 @@ public class ToolbarPanelTest extends GitTestBase {
    */
   public void testButtonsWhenNoRepo() throws Exception {
     gitAccess.cleanUp();
-    GitController gitCtrl = new GitController(GitAccess.getInstance());
+    GitController gitCtrl = new GitController();
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
     ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
-    toolbar.getGitActionsManager().refresh();
     assertFalse(toolbar.getPullMenuButton().isEnabled());
     assertFalse(toolbar.getPushButton().isEnabled());
     assertFalse(toolbar.getBranchSelectButton().isEnabled());
@@ -269,7 +268,6 @@ public class ToolbarPanelTest extends GitTestBase {
     Repository localRepository = gitAccess.getRepository();
     bindLocalToRemote(localRepository, remoteRepository);
     refreshSupport.call();
-    toolbar.getGitActionsManager().refresh();
     assertTrue(toolbar.getPullMenuButton().isEnabled());
     assertTrue(toolbar.getPushButton().isEnabled());
     assertTrue(toolbar.getBranchSelectButton().isEnabled());

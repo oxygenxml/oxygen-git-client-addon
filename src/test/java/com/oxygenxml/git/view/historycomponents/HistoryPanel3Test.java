@@ -51,8 +51,8 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       }
       
       @Override
-      public void refresh() {
-        super.refresh();
+      public void scheduleRefreshHistory() {
+        super.scheduleRefreshHistory();
         noOfRefreshes++;
       }
     };

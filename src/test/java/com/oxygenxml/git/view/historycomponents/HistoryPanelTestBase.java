@@ -50,7 +50,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
 
   protected void setUpHistoryPanel() {
     // Initialize history panel.
-    historyPanel = new HistoryPanel(new GitController(GitAccess.getInstance())) {
+    historyPanel = new HistoryPanel(new GitController()) {
       @Override
       protected int getUpdateDelay() {
         // From tests we want the update to execute immediately.
