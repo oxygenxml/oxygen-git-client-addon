@@ -28,7 +28,6 @@ public class StashChangesAction extends AbstractAction {
 	 */
 	public StashChangesAction() {
 		super(TRANSLATOR.getTranslation(Tags.STASH_CHANGES) + "...");
-		this.putValue(SMALL_ICON, Icons.getIcon(Icons.STASH_ICON));
 	}
 	
 	

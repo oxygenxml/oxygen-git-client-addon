@@ -91,14 +91,17 @@ public class GitActionsMenuBar implements MenuBarCustomizer, IRefreshable {
 
 		// Add stash actions
 		gitMenu.addSeparator();	
-		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getStashChangesAction()));
-		gitMenu.add(actionsManager.getListStashesAction());
+		final JMenuItem stashChangesMenuItem = OxygenUIComponentsFactory.createMenuItem(
+				actionsManager.getStashChangesAction());
+		stashChangesMenuItem.setIcon(Icons.getIcon(Icons.STASH_ICON));
+		gitMenu.add(stashChangesMenuItem);
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getListStashesAction()));
 
 		// Add remote actions
 		gitMenu.addSeparator();
 		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getManageRemoteRepositoriesAction()));
-		gitMenu.add(actionsManager.getTrackRemoteBranchAction());
-		gitMenu.add(actionsManager.getEditConfigAction());
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getTrackRemoteBranchAction()));
+		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getEditConfigAction()));
 
 		// Add settings actions
 		gitMenu.addSeparator();
