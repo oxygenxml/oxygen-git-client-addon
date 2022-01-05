@@ -47,6 +47,7 @@ import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
  * This is a panel with a combo box to select the current branch for repo.
@@ -103,7 +104,7 @@ public class BranchSelectionPanel extends JPanel {
    * @param gitController Git Controller.
    * @param isLabeled     <code>true</code> if the panel has a label attached.
    */
-  public BranchSelectionPanel(GitController gitController, boolean isLabeled) {
+  public BranchSelectionPanel(final GitController gitController, final boolean isLabeled) {
     this.isLabeled = isLabeled;
     
     createGUI();
@@ -153,15 +154,15 @@ public class BranchSelectionPanel extends JPanel {
    * 
    * @param event The event to treat.
    */
-  private void treatBranchSelectedEvent(ItemEvent event) {
-    String branchName = (String) event.getItem();
-    BranchInfo currentBranchInfo = GIT_ACCESS.getBranchInfo();
-    String currentBranchName = currentBranchInfo.getBranchName();
+  private void treatBranchSelectedEvent(final ItemEvent event) {
+    final String branchName = (String) event.getItem();
+    final BranchInfo currentBranchInfo = GIT_ACCESS.getBranchInfo();
+    final String currentBranchName = currentBranchInfo.getBranchName();
     if (branchName.equals(currentBranchName)) {
       return;
     }
     
-    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+    final RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
       SwingUtilities.invokeLater(() -> {
         BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(branchName);
@@ -242,8 +243,8 @@ public class BranchSelectionPanel extends JPanel {
 
     branchNamesCombo.setEnabled(repo != null);
     
-    BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
-    String currentBranchName = branchInfo.getBranchName();
+    final BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
+    final String currentBranchName = branchInfo.getBranchName();
     if (branchInfo.isDetached()) {
       detachedHeadId = currentBranchName;
       
@@ -334,7 +335,7 @@ public class BranchSelectionPanel extends JPanel {
    * 
    * @param branches A list with the branches to be added.
    */
-  private void addBranchesToCombo(List<String> branches) {
+  private void addBranchesToCombo(final List<String> branches) {
     inhibitBranchSelectionListener = true;
     branches.forEach(branchNamesCombo::addItem);
     inhibitBranchSelectionListener = false;
@@ -343,7 +344,7 @@ public class BranchSelectionPanel extends JPanel {
       branchNamesCombo.addItem(detachedHeadId);
     }
     
-    String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
+    final String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
     branchNamesCombo.setSelectedItem(currentBranchName);
   }
   
@@ -352,7 +353,7 @@ public class BranchSelectionPanel extends JPanel {
    * Updates the local branches in the combo popup.
    */
   private void updateBranchesPopup() {
-    boolean isVisible = isComboPopupShowing;
+    final boolean isVisible = isComboPopupShowing;
     branchNamesCombo.hidePopup();
 
     branchNamesCombo.removeAllItems();
@@ -387,8 +388,8 @@ public class BranchSelectionPanel extends JPanel {
    * @param oldBranchInfo Old branch info.
    * @param newBranchName New branch name.
    */
-  private void tryCheckingOutBranch(BranchInfo oldBranchInfo, String newBranchName) {
-    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+  private void tryCheckingOutBranch(final BranchInfo oldBranchInfo, final String newBranchName) {
+    final RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if (oldBranchInfo.isDetached() && !RepoUtil.isRepoRebasing(repoState)) {
       detachedHeadId = null;
       branchNamesCombo.removeItem(oldBranchInfo.getBranchName());
@@ -413,8 +414,8 @@ public class BranchSelectionPanel extends JPanel {
    * Restore current branch selection in branches menu.
    */
   private void restoreCurrentBranchSelectionInMenu() {
-    String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
-    int itemCount = branchNamesCombo.getItemCount();
+    final String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
+    final int itemCount = branchNamesCombo.getItemCount();
     for (int i = 0; i < itemCount; i++) {
       String branch = branchNamesCombo.getItemAt(i);
       if (branch.equals(currentBranchName)) {

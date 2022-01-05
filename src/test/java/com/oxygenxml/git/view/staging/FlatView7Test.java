@@ -293,13 +293,14 @@ public class FlatView7Test extends FlatViewTestBase {
 	 *
 	 * @throws Exception
 	 */
-//	@Test
-//	public void testSettingsMenu() throws Exception {
-//		final JMenu settingsMenu = GitActionsMenuBar.getInstance().getSettingsMenu();
-//		assertEquals(2, settingsMenu.getItemCount());
-//		assertEquals(Tags.RESET_ALL_CREDENTIALS, settingsMenu.getItem(0).getText());
-//		assertEquals(Tags.PREFERENCES, settingsMenu.getItem(1).getText());
-//	}
+	@Test
+	public void testSettingsMenu() throws Exception {
+		final JMenu settingsMenu = new GitActionsMenuBar(
+				new GitActionsManager(new GitController(), null, null, null)).getSettingsMenu();
+		assertEquals(2, settingsMenu.getItemCount());
+		assertEquals(Tags.RESET_ALL_CREDENTIALS, settingsMenu.getItem(0).getText());
+		assertEquals(Tags.PREFERENCES, settingsMenu.getItem(1).getText());
+	}
 	
 
 }
