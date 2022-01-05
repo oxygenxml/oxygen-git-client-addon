@@ -128,6 +128,10 @@ public class StagingPanel extends JPanel {
 	 */
 	private final GitActionsManager gitActionsManager;
 
+	/**
+	 * The branch selection panel.
+	 */
+	private BranchSelectionPanel branchSelectionPanel;
 
 	/**
 	 * Constructor.
@@ -197,6 +201,7 @@ public class StagingPanel extends JPanel {
 		unstagedChangesPanel = new ChangesPanel(gitController, historyController, false);
 		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
+		branchSelectionPanel = new BranchSelectionPanel(gitController, false);
 		commitPanel = new CommitAndStatusPanel(gitController);
 		toolbarPanel = createToolbar(gitActionsManager);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
@@ -217,7 +222,7 @@ public class StagingPanel extends JPanel {
 			addToolbarPanel(gbc);
 		}
 		addWorkingCopySelectionPanel(gbc);
-
+		addBranchesCombo(gbc);
 		addConflictButtonsPanel(gbc);
 		addSplitPanel(gbc, splitPane);
 
@@ -280,6 +285,36 @@ public class StagingPanel extends JPanel {
 			}
 		};
 	}
+
+	/**
+	 * Add branches combo.
+	 * 
+	 * @param gbc Grid bag constraints.
+	 */
+	private void addBranchesCombo(GridBagConstraints gbc) {
+	  gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_PADDING + HORIZONTAL_INSET,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.gridx = 0;
+    gbc.gridy++;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.gridwidth = 1;
+    this.add(new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH) + ":"), gbc);
+
+    gbc.insets = new Insets(0, 0, 0, HORIZONTAL_INSET);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridx++;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    this.add(branchSelectionPanel, gbc);
+    
+  }
 
 	/**
 	 * Adds a hook to refresh the models if the editor is part of the Git working copy.
@@ -486,11 +521,14 @@ public class StagingPanel extends JPanel {
 				commitPanel.toggleCommitButtonAndUpdateMessageArea(false);
 				workingCopySelectionPanel.getBrowseButton().setEnabled(true);
 				workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
+				branchSelectionPanel.getBranchNamesCombo().setEnabled(true);
 
 				// Update models.
 				GitStatus status = GitAccess.getInstance().getStatus();
 				unstagedChangesPanel.update(status.getUnstagedFiles());
 				stagedChangesPanel.update(status.getStagedFiles());
+				
+				branchSelectionPanel.refresh();
 
 				gitActionsManager.refresh();
 
@@ -507,6 +545,7 @@ public class StagingPanel extends JPanel {
 				commitPanel.reset();
 				workingCopySelectionPanel.getBrowseButton().setEnabled(false);
 				workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
+				branchSelectionPanel.getBranchNamesCombo().setEnabled(false);
 
 				if (toolbarPanel != null) {
 					toolbarPanel.updateButtonState(false);
@@ -576,6 +615,9 @@ public class StagingPanel extends JPanel {
 		return workingCopySelectionPanel;
 	}
 
+	 public BranchSelectionPanel getBranchesPanel() {
+		    return branchSelectionPanel;
+		  }
 
 	/**
 	 * !!!!!!! FOR TESTS !!!!!!
