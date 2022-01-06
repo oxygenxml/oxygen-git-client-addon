@@ -214,9 +214,9 @@ public class ToolbarPanel extends JPanel {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
-	    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.weighty = 0;
-	    gbc.weightx = 1;
+    gbc.weightx = 1;
     gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(0, 0, 0, 0);
 

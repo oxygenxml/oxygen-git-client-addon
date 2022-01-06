@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.Git;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.refresh.PanelRefresh;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -70,6 +71,7 @@ public class StatusCache {
   public synchronized void resetCache() {
     logger.debug("Reset cahche", new Exception());
     cache = null;
+    
   }
 
   /**
@@ -77,13 +79,14 @@ public class StatusCache {
    * the repository are edited.
    * 
    * @param pluginWorkspace Workspace access.
+   * @param gitRefreshSupport Plugin's refresh support.
    */
-  public void installEditorsHook(PluginWorkspace pluginWorkspace) {
+  public void installEditorsHook(PluginWorkspace pluginWorkspace, PanelRefresh gitRefreshSupport) {
     pluginWorkspace.addEditorChangeListener(
         new WSEditorChangeListener() {
           @Override
           public void editorOpened(final URL editorLocation) {
-            addEditorSaveHook(pluginWorkspace.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA));
+            addEditorSaveHook(pluginWorkspace.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA), gitRefreshSupport);
           }
         },
         PluginWorkspace.MAIN_EDITING_AREA);
@@ -93,14 +96,16 @@ public class StatusCache {
    * Adds a hook to refresh the models if the editor is part of the Git working copy.
    * 
    * @param editorLocation Editor to check.
+   * @param gitRefreshSupport Plugin's refresh support.
    */
-  private void addEditorSaveHook(WSEditor editorAccess) {
+  private void addEditorSaveHook(WSEditor editorAccess, PanelRefresh gitRefreshSupport) {
     if (editorAccess != null) {
       editorAccess.addEditorListener(new WSEditorListener() {
         @Override
         public void editorSaved(int operationType) {
           if (RepoUtil.isFileFromRepository(editorAccess.getEditorLocation())) {
             resetCache();
+            gitRefreshSupport.call();
           }
         }
       });

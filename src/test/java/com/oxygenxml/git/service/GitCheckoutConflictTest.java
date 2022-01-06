@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
@@ -38,21 +39,20 @@ import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
-import com.oxygenxml.git.view.staging.StagingPanel;
+import com.oxygenxml.git.view.staging.BranchSelectionPanel;
 
-import junit.framework.TestCase;
+import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
-import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 /**
  * Test cases for checkout conflicts.
  */
-public class GitCheckoutConflictTest extends TestCase {
+public class GitCheckoutConflictTest extends JFCTestCase {
   
   /**
    * i18n
@@ -334,17 +334,14 @@ public class GitCheckoutConflictTest extends TestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    // Simulate branch checkout from Git Staging
-    StagingPanel stagingPanel = new StagingPanel(refreshSupport, gitController, null, null);
-    sleep(300);
-    SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-    stagingPanel.getToolbarPanel().updateButtonsStates();
-    sleep(300);
-    SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
-    sleep(500);
+    BranchSelectionPanel branchPanel = new BranchSelectionPanel(gitController, false);
+    branchPanel.refresh();
+    
+    JComboBox<String> branchesCombo = branchPanel.getBranchNamesCombo();
+    SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
+    flushAWT();
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
-    
     assertEquals("Branch_switch_when_repo_in_conflict_error_msg", errMsg[0]);
   }
   
@@ -398,17 +395,15 @@ public class GitCheckoutConflictTest extends TestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    // Simulate branch checkout from Git Staging
-    StagingPanel stagingPanel = new StagingPanel(refreshSupport, gitController, null, null);
-    sleep(300);
-    SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-    stagingPanel.getToolbarPanel().updateButtonsStates();
-    sleep(300);
-    SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
-    sleep(500);
+    BranchSelectionPanel branchPanel = new BranchSelectionPanel(gitController, false);
+    branchPanel.refresh();
+    flushAWT();
+    
+    JComboBox<String> branchesCombo = branchPanel.getBranchNamesCombo();
+    SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
+    flushAWT();
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
-    
     assertEquals("Branch_switch_when_repo_in_conflict_error_msg", errMsg[0]);
   }
   
@@ -512,16 +507,16 @@ public class GitCheckoutConflictTest extends TestCase {
     GitControllerBase gitCtrl = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
-    sleep(1000);
+    flushAWT();
    
-    // Simulate branch checkout from Git Staging
-    StagingPanel stagingPanel = new StagingPanel(refreshSupport, (GitController)gitCtrl, null, null);
-    sleep(300);
-    SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-    stagingPanel.getToolbarPanel().updateButtonsStates();
-    sleep(300);
-    SwingUtilities.invokeLater(() -> branchesButton.getItem(1).doClick());
-    sleep(500);
+    
+    BranchSelectionPanel branchPanel = new BranchSelectionPanel((GitController) gitCtrl, false);
+    branchPanel.refresh();
+    flushAWT();
+    
+    JComboBox<String> branchesCombo = branchPanel.getBranchNamesCombo();
+    SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
+    flushAWT();
     
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
     

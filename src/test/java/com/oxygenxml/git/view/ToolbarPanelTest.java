@@ -6,8 +6,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
@@ -18,12 +16,11 @@ import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
-
-import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
  * Toolbar panel tests.
@@ -90,7 +87,8 @@ public class ToolbarPanelTest extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       JComboBox<String> wcCombo = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
       String wcPath = new File(LOCAL_REPO).getAbsolutePath();
       wcCombo.addItem(wcPath);
@@ -114,37 +112,21 @@ public class ToolbarPanelTest extends GitTestBase {
       flushAWT();
       
       // Try to switch to another branch
-      stagingPanel.getToolbarPanel().updateButtonsStates();
-      flushAWT();
-      SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-      stagingPanel.getToolbarPanel().updateButtonsStates();
-      sleep(300);
+      JComboBox<String> branchesCombo = stagingPanel.getBranchesPanel().getBranchNamesCombo();
+      String currentBranch = (String) branchesCombo.getSelectedItem();
+      assertEquals("main", currentBranch);
+
+      // select the "Local Branch" (aka the broken one)
+      branchesCombo.setSelectedIndex(0);
       
-      
-      JPopupMenu branchesPopup = branchesButton.getPopupMenu();
-      
-      assertEquals("main", branchesButton.getItem(getSelectedBranchIndex(branchesButton)).getText());
-      
-      branchesPopup.setVisible(true);
-      
-      SwingUtilities.invokeLater(() -> branchesButton.getItem(0).doClick());
-     
-      final JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
-      
-      JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
+      // wait for swith dialog to appear  
+      JDialog switchBranchDialog = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
+      JButton yesButton = TestUtil.findButton(switchBranchDialog, translator.getTranslation(Tags.MOVE_CHANGES));
       yesButton.doClick();
-      
       flushAWT();
       
-      branchesPopup.setVisible(false);
-      flushAWT();
-      
-      // The switch should have failed, and the selected branch shouldn't have changed
-      branchesPopup.setVisible(true);
-      flushAWT();
-      
-      assertEquals("main", branchesButton.getItem(getSelectedBranchIndex(branchesButton)).getText());
-      
+      String currentBranchAfterSwitchFailed = (String) branchesCombo.getSelectedItem();
+      assertEquals("main", currentBranchAfterSwitchFailed);
     } finally {
       frame.setVisible(false);
       frame.dispose();
@@ -186,7 +168,8 @@ public class ToolbarPanelTest extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       JComboBox<String> wcCombo = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
       String wcPath = new File(LOCAL_REPO).getAbsolutePath();
       wcCombo.addItem(wcPath);
@@ -194,7 +177,6 @@ public class ToolbarPanelTest extends GitTestBase {
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
-      stagingPanel.getToolbarPanel().updateButtonsStates();
       refreshSupport.call();
       flushAWT();
       
@@ -211,21 +193,15 @@ public class ToolbarPanelTest extends GitTestBase {
       flushAWT();
       
       // Try to switch to another branch
-      SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
-      stagingPanel.getToolbarPanel().updateButtonsStates();
-      sleep(300);
+      JComboBox<String> branchesCombo = stagingPanel.getBranchesPanel().getBranchNamesCombo();
+      String currentBranch = (String) branchesCombo.getSelectedItem();
+      assertEquals("main", currentBranch);
       
-      JPopupMenu branchesPopup = branchesButton.getPopupMenu();
-      
-      assertEquals("main", branchesButton.getItem(getSelectedBranchIndex(branchesButton)).getText());
-      
-      branchesPopup.setVisible(true);
-      
-      SwingUtilities.invokeLater(() -> branchesButton.getItem(0).doClick());
+      // select other branch
+      branchesCombo.setSelectedIndex(0);
      
-      final JDialog focusedWindow = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
-      
-      JButton stashButton = TestUtil.findButton(focusedWindow, Tags.STASH_CHANGES);
+      JDialog switchBranchDialog = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
+      JButton stashButton = TestUtil.findButton(switchBranchDialog, Tags.STASH_CHANGES);
       stashButton.doClick();
       flushAWT();
       StashChangesDialog stashChangesDialog = (StashChangesDialog) findDialog(Tags.STASH_CHANGES);
@@ -253,11 +229,13 @@ public class ToolbarPanelTest extends GitTestBase {
   public void testButtonsWhenNoRepo() throws Exception {
     gitAccess.cleanUp();
     GitController gitCtrl = new GitController();
-    stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+    GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+    stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
+    refreshSupport.call();
+    
     ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
     assertFalse(toolbar.getPullMenuButton().isEnabled());
     assertFalse(toolbar.getPushButton().isEnabled());
-    assertFalse(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
 
     //Creates the remote repository.
@@ -270,25 +248,7 @@ public class ToolbarPanelTest extends GitTestBase {
     refreshSupport.call();
     assertTrue(toolbar.getPullMenuButton().isEnabled());
     assertTrue(toolbar.getPushButton().isEnabled());
-    assertTrue(toolbar.getBranchSelectButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
-  }
-  
-  
-  /**
-   * @param branchesButton the branches button.
-   * 
-   * @return the index of searched branch or -1 if is not found.
-   */ 
-  private int getSelectedBranchIndex(SplitMenuButton branchesButton) {
-    int index = -1;
-    for(int i = 0; i < branchesButton.getItemCount(); i++) {
-      if(branchesButton.getItem(i).isSelected()) {
-        index = i;
-        break;
-      }
-    }
-    return index;
   }
   
 }

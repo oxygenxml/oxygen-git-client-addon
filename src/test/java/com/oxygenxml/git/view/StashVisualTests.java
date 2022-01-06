@@ -27,6 +27,7 @@ import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
@@ -106,19 +107,23 @@ public class StashVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
+      refreshSupport.setStagingPanel(stagingPanel);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      toolbarPanel.getGitActionsManager().refresh();
       refreshSupport.call();
       flushAWT();
       
       SplitMenuButton stashButton = toolbarPanel.getStashButton();
       // Test the "Stash" button tooltip text
       assertEquals(Tags.STASH, stashButton.getToolTipText());
+      
+      refreshSupport.call();
+      flushAWT();
       
       // Test if the button is disabled if none actions are possible.
       assertFalse(stashButton.isEnabled());
@@ -140,8 +145,7 @@ public class StashVisualTests extends GitTestBase {
       doStashButton.doClick();
       refreshSupport.call();
       flushAWT();
-      toolbarPanel.getGitActionsManager().refresh();
-      flushAWT();
+      
       assertFalse(stashChangesItem.isEnabled());
       
       // Test if the stash were created.
@@ -170,7 +174,6 @@ public class StashVisualTests extends GitTestBase {
       doStashButton.doClick();
       refreshSupport.call();
       flushAWT();
-      toolbarPanel.getGitActionsManager().refresh();
       stashes = new ArrayList<>(gitAccess.listStashes());
       assertEquals(2, stashes.size());
       assertEquals("Some custom text by user.", stashes.get(0).getFullMessage());
@@ -189,8 +192,6 @@ public class StashVisualTests extends GitTestBase {
       assertNotNull(cancelStashButton);
       cancelStashButton.doClick();
       refreshSupport.call();
-      flushAWT();
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       assertTrue(stashChangesItem.isEnabled());
       
@@ -240,7 +241,8 @@ public class StashVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
@@ -358,7 +360,8 @@ public class StashVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
@@ -461,7 +464,8 @@ public class StashVisualTests extends GitTestBase {
     // Init UI
     JFrame frame = new JFrame();
     GitController gitCtrl = new GitController();
-    stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+    GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+    stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
     ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
     frame.getContentPane().add(stagingPanel);
     frame.pack();
@@ -495,7 +499,6 @@ public class StashVisualTests extends GitTestBase {
       SplitMenuButton stashButton = toolbarPanel.getStashButton();
       
       makeLocalChange("some_modification");
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       
       JMenuItem[] stashChangesItem = new JMenuItem[1];
@@ -513,7 +516,6 @@ public class StashVisualTests extends GitTestBase {
       assertNotNull(doStashButton);
       doStashButton.doClick();
       refreshSupport.call();
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       
       assertEquals("local content", getFileContent(LOCAL_REPO + "/local.txt"));
@@ -567,7 +569,6 @@ public class StashVisualTests extends GitTestBase {
       assertNotNull(doStashButton);
       doStashButton.doClick();
       refreshSupport.call();
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       
       assertEquals("local content", getFileContent(LOCAL_REPO + "/local.txt"));
@@ -638,7 +639,8 @@ public class StashVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
@@ -692,7 +694,6 @@ public class StashVisualTests extends GitTestBase {
       gitAccess.add(new FileStatus(GitChangeType.ADD, path + fileWithLongPathName));
       path = path.substring((LOCAL_REPO + "/").length());
       
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       JMenuItem[] stashChangesItem = new JMenuItem[1];
       stashChangesItem[0] = stashButton.getItem(0);
@@ -709,11 +710,9 @@ public class StashVisualTests extends GitTestBase {
       assertNotNull(doStashButton);
       doStashButton.doClick();
       refreshSupport.call();
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       
       makeLocalChange("another_modification");
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       
       stashChangesItem[0] = stashButton.getItem(0);
@@ -729,7 +728,6 @@ public class StashVisualTests extends GitTestBase {
       assertNotNull(doStashButton);
       doStashButton.doClick();
       refreshSupport.call();
-      toolbarPanel.getGitActionsManager().refresh();
       flushAWT();
       
       JMenuItem[] listStashesItem =  new JMenuItem[1];
@@ -823,7 +821,8 @@ public class StashVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
       frame.getContentPane().add(stagingPanel);
       frame.pack();
@@ -885,7 +884,6 @@ public class StashVisualTests extends GitTestBase {
     setFileContent(file, text);
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     refreshSupport.call();
-    stagingPanel.getToolbarPanel().getGitActionsManager().refresh();
     flushAWT();    
   }
 
@@ -927,7 +925,6 @@ public class StashVisualTests extends GitTestBase {
       doStashButton.doClick();
       refreshSupport.call();
       flushAWT();
-      toolbarPanel.getGitActionsManager().refresh();
     }
   }
   

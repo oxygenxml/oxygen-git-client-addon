@@ -1,9 +1,7 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.Component;
-
+import javax.swing.JComboBox;
 import javax.swing.JMenu;
-import javax.swing.JPopupMenu.Separator;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -16,8 +14,6 @@ import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
-
-import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
  * Test cases.
@@ -49,9 +45,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		stagingPanel.setToolbarPanelFromTests(
 				new ToolbarPanel(
 						(GitController) stagingPanel.getGitController(),
-						new GitActionsManager((GitController) stagingPanel.getGitController(), null, null, null)
-				)
-		);
+						gitActionsManager));
 
 		// Create repositories
 		String localTestRepository = "target/test-resources/test_EXM_45599_local";
@@ -66,18 +60,24 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		pushOneFileToRemote(localTestRepository, "init.txt", "hello");
 		flushAWT();
-
+		
+		BranchSelectionPanel branchesPanel = stagingPanel.getBranchesPanel();
+		branchesPanel.refresh();
+		flushAWT();
+		
 		// Create local branch
 		Git git = GitAccess.getInstance().getGit();
 		git.branchCreate().setName("new_branch").call();
 		GitAccess.getInstance().setBranch("new_branch");
 
-		SplitMenuButton branchesButton = stagingPanel.getToolbarPanel().getBranchSelectButton();
+    JComboBox<String> branchesButton = branchesPanel.getBranchNamesCombo();
+		
 
 		ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
-		toolbarPanel.updateButtonsStates();
-		flushAWT();
-		sleep(200);
+		branchesPanel.refresh();
+    flushAWT();
+    refreshSupport.call();
+    flushAWT();
 
 		assertEquals(
 				"<html>Cannot_pull<br>No_remote_branch.</html>",
@@ -86,14 +86,17 @@ public class FlatView7Test extends FlatViewTestBase {
 				"<html>Push_to_create_and_track_remote_branch</html>",
 				toolbarPanel.getPushButton().getToolTipText());
 		assertEquals(
-				"<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br><br>Branch_manager_button_tool_tip</html>",
+				"<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
 				branchesButton.getToolTipText());
 
 		// Push to create the remote branch
 		((GitController) stagingPanel.getGitController()).push();
 		waitForScheluerBetter();
 
-		toolbarPanel.updateButtonsStates();
+		branchesPanel.refresh();
+		flushAWT();
+		refreshSupport.call();
+		flushAWT();
 
 		// Tooltip texts changed
 		assertEquals(
@@ -104,7 +107,7 @@ public class FlatView7Test extends FlatViewTestBase {
 				toolbarPanel.getPushButton().getToolTipText());
 		assertEquals(
 				"<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>origin/new_branch</b>.<br>"
-						+ "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push<br><br>Branch_manager_button_tool_tip</html>",
+						+ "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
 						branchesButton.getToolTipText());
 
 		GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME);
@@ -121,7 +124,10 @@ public class FlatView7Test extends FlatViewTestBase {
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		flushAWT();
 		GitAccess.getInstance().fetch();
-		toolbarPanel.updateButtonsStates();
+		branchesPanel.refresh();
+		refreshSupport.call();
+		
+		
 		flushAWT();
 		// Tooltip texts changed again
 		String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (2 files)"
@@ -149,7 +155,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		assertEquals(
 				"<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
-						+ "One_commit_behind<br>One_commit_ahead<br><br>Branch_manager_button_tool_tip</html>",
+						+ "One_commit_behind<br>One_commit_ahead</html>",
 						branchesButton.getToolTipText());
 
 		// Commit a new change locally
@@ -162,9 +168,10 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		toolbarPanel.updateButtonsStates();
+		branchesPanel.refresh();
 		flushAWT();
-		sleep(200);
+    refreshSupport.call();
+    flushAWT();
 
 		expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
@@ -185,7 +192,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		assertEquals(
 				"<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
-						+ "Commits_behind<br>Commits_ahead<br><br>Branch_manager_button_tool_tip</html>",
+						+ "Commits_behind<br>Commits_ahead</html>",
 						branchesButton.getToolTipText());
 
 		// Commit a new change locally
@@ -204,9 +211,10 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		toolbarPanel.updateButtonsStates();
+		branchesPanel.refresh();
 		flushAWT();
-		sleep(200);
+    refreshSupport.call();
+		flushAWT();
 
 		expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000...<br>&#x25AA; Date, Hour "
@@ -253,9 +261,10 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		toolbarPanel.updateButtonsStates();
-		flushAWT();
-		sleep(500);
+		branchesPanel.refresh();
+    flushAWT();
+    refreshSupport.call();
+    flushAWT();
 
 		expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFile45w.txt<br>&#x25AA; Date, Hour "
@@ -285,7 +294,7 @@ public class FlatView7Test extends FlatViewTestBase {
 	}
 	
 
-	/*
+	/**
 	 * <p><b>Description:</b> list the Settings menu actions.</p>
 	 * <p><b>Bug ID:</b> EXM-46442</p>
 	 *

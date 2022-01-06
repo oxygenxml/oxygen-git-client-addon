@@ -6,7 +6,6 @@ import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -30,12 +29,10 @@ import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog.RemoteBranchIte
 import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
 import com.oxygenxml.git.view.remotes.RemotesTableModel;
 import com.oxygenxml.git.view.staging.StagingPanel;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.util.ColorTheme;
 
 /**
@@ -94,18 +91,14 @@ public class RemoteVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
-      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
       refreshSupport.call();
       flushAWT();
-      
-      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
-      
-      gitActionsManager.refresh();
       
       SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
     		  .actionPerformed(null));
@@ -333,8 +326,8 @@ public class RemoteVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
-      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
@@ -342,9 +335,6 @@ public class RemoteVisualTests extends GitTestBase {
       refreshSupport.call();
       flushAWT();
       
-      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
-      
-      gitActionsManager.refresh();
       SwingUtilities.invokeLater(() -> gitActionsManager.getManageRemoteRepositoriesAction()
     		  .actionPerformed(null));
       
@@ -445,18 +435,14 @@ public class RemoteVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
-      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
       refreshSupport.call();
       flushAWT();
-      
-      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
-      
-      gitActionsManager.refresh();
       
       SwingUtilities.invokeLater(() -> gitActionsManager.getTrackRemoteBranchAction().actionPerformed(null));
       
@@ -539,18 +525,14 @@ public class RemoteVisualTests extends GitTestBase {
     try {
       // Init UI
       GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
-      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
       refreshSupport.call();
       flushAWT();
-      
-      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
-      
-      gitActionsManager.refresh();
       
       SwingUtilities.invokeLater(() -> gitActionsManager.getEditConfigAction()
     		  .actionPerformed(null));

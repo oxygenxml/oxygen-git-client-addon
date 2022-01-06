@@ -2891,4 +2891,27 @@ public class GitAccess {
 	  return branchList;
 	}
 
+	
+	 /**
+   * @return <code>true</code> if are any files modified (staged or unstaged).
+   */
+  public boolean hasFilesChanged() {
+    List<FileStatus> unstagedFiles = getUnstagedFiles();
+    boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
+
+    if(!existsLocalFiles) {
+      List<FileStatus> stagedFiles = getStagedFiles();
+      existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
+    }
+    return existsLocalFiles;
+  }
+  
+  /**
+   * @return <code>true</code> if repository has stashes.
+   */
+  public boolean hasStashes() {
+    Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
+    return stashes != null && !stashes.isEmpty();
+  }
+	
 }

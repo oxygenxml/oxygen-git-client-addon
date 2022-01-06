@@ -42,6 +42,8 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * Staging/Unstaging panel.
    */
   protected StagingPanel stagingPanel;
+  
+  protected GitActionsManager gitActionsManager;
 
   
   @Override
@@ -49,16 +51,15 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     super.setUp();
 
 
-    stagingPanel = new StagingPanel(
-        refreshSupport,
-        new GitController() {
-          @Override
-          protected void showPullSuccessfulWithConflicts(PullResponse response) {
-            // Nothing to do.
-          }
-        },
-        null, 
-        null) {
+    GitController gitController = new GitController() {
+      @Override
+      protected void showPullSuccessfulWithConflicts(PullResponse response) {
+        // Nothing to do.
+      }
+    };
+    
+    gitActionsManager = new GitActionsManager(gitController, null, null, refreshSupport);
+    stagingPanel = new StagingPanel(refreshSupport, gitController, null, gitActionsManager) {
       
       @Override
       protected ToolbarPanel createToolbar(GitActionsManager gitActionsManager) {

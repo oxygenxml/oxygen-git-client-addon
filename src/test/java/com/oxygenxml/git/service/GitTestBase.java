@@ -601,7 +601,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     OptionsManager.getInstance().loadOptions(wsOptions);
     
-    gitAccess.getStatusCache().installEditorsHook(pluginWSMock);
+    gitAccess.getStatusCache().installEditorsHook(pluginWSMock, refreshSupport);
   }
   
   /**

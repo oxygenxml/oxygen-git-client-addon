@@ -1,24 +1,22 @@
 package com.oxygenxml.git.view.actions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.google.common.collect.Sets;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.actions.internal.CloneRepositoryAction;
@@ -200,19 +198,16 @@ public class GitActionsManager  {
 	 * @param historyController History controller.
 	 * @param branchManagementViewPresenter Branch management view presenter.
 	 */
-	public GitActionsManager(
-			final GitController                 gitController, 
-			final HistoryController             historyController,
-			final BranchManagementViewPresenter branchManagementViewPresenter,
-			final GitRefreshSupport             refreshSupport) {
-
-		this.gitController                 = gitController;
-		this.historyController             = historyController;
+	public GitActionsManager(GitController gitController, HistoryController historyController,
+			BranchManagementViewPresenter branchManagementViewPresenter, GitRefreshSupport refreshSupport) {
+	  
+		this.gitController = gitController;
+		this.historyController = historyController;
 		this.branchManagementViewPresenter = branchManagementViewPresenter;
-		this.refreshSupport                = refreshSupport;
+		this.refreshSupport = refreshSupport;
 		
 		try {
-			this.repository                = gitController.getGitAccess().getRepository();
+			this.repository = gitController.getGitAccess().getRepository();
 		} catch (NoRepositorySelected e) {
 			LOGGER.debug(e, e);
 		}
@@ -270,7 +265,7 @@ public class GitActionsManager  {
 	public AbstractAction getPushAction() {
 		if(pushAction == null) {
 			pushAction = new PushAction(gitController);
-			pushAction.setEnabled(repository != null);
+			pushAction.setEnabled(hasRepository());
 			allActions.add(pushAction);
 		}
 
@@ -286,7 +281,7 @@ public class GitActionsManager  {
 		if(pullMergeAction == null) {
 			pullMergeAction = new PullAction(gitController, 
 					TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF);
-			pullMergeAction.setEnabled(repository != null);
+			pullMergeAction.setEnabled(hasRepository());
 			allActions.add(pullMergeAction);
 		}
 
@@ -302,7 +297,7 @@ public class GitActionsManager  {
 		if(pullRebaseAction == null) {
 			pullRebaseAction = new PullAction(gitController, 
 					TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE);
-			pullRebaseAction.setEnabled(repository != null);
+			pullRebaseAction.setEnabled(hasRepository());
 			allActions.add(pullRebaseAction);
 		}
 
@@ -331,7 +326,7 @@ public class GitActionsManager  {
 	public AbstractAction getShowHistoryAction() {
 		if(showHistoryAction == null) {
 			showHistoryAction = new ShowHistoryAction(historyController);
-			showHistoryAction.setEnabled(repository != null);
+			showHistoryAction.setEnabled(hasRepository());
 			allActions.add(showHistoryAction);
 		}
 
@@ -346,7 +341,7 @@ public class GitActionsManager  {
 	public AbstractAction getShowBranchesAction() {
 		if(showBranchesAction == null) {
 			showBranchesAction = new ShowBranchesAction(branchManagementViewPresenter);
-			showBranchesAction.setEnabled(repository != null);
+			showBranchesAction.setEnabled(hasRepository());
 			allActions.add(showBranchesAction);
 		}
 
@@ -361,7 +356,7 @@ public class GitActionsManager  {
 	public AbstractAction getShowTagsAction() {
 		if(showTagsAction == null) {
 			showTagsAction = new ShowTagsAction();
-			showTagsAction.setEnabled(repository != null);
+			showTagsAction.setEnabled(hasRepository());
 			allActions.add(showTagsAction);
 		}
 
@@ -376,7 +371,11 @@ public class GitActionsManager  {
 	public AbstractAction getStashChangesAction() {
 		if(stashChangesAction == null) {
 			stashChangesAction = new StashChangesAction();
-			stashChangesAction.setEnabled(repository != null);
+			
+			// TODO vedem daca facem si aici verificarea de hasFilesChanged()
+			boolean hasRepo = hasRepository();
+			stashChangesAction.setEnabled(hasRepo);
+			
 			allActions.add(stashChangesAction);
 		}
 
@@ -391,7 +390,7 @@ public class GitActionsManager  {
 	public AbstractAction getListStashesAction() {
 		if(listStashesAction == null) {
 			listStashesAction = new ListStashesAction();
-			listStashesAction.setEnabled(repository != null);
+			listStashesAction.setEnabled(hasRepository());
 			allActions.add(listStashesAction);
 		}
 
@@ -406,7 +405,7 @@ public class GitActionsManager  {
 	public AbstractAction getEditConfigAction() {
 		if(editConfigFileAction == null) {
 			editConfigFileAction = new EditConfigFileAction();
-			editConfigFileAction.setEnabled(repository != null);
+			editConfigFileAction.setEnabled(hasRepository());
 			allActions.add(editConfigFileAction);
 		}
 
@@ -421,7 +420,7 @@ public class GitActionsManager  {
 	public AbstractAction getManageRemoteRepositoriesAction() {
 		if(manageRemoteRepositoriesAction == null) {
 			manageRemoteRepositoriesAction = new ManageRemoteRepositoriesAction();
-			manageRemoteRepositoriesAction.setEnabled(repository != null);
+			manageRemoteRepositoriesAction.setEnabled(hasRepository());
 			allActions.add(manageRemoteRepositoriesAction);
 		}
 
@@ -436,7 +435,7 @@ public class GitActionsManager  {
 	public AbstractAction getTrackRemoteBranchAction() {
 		if(trackRemoteBranchAction == null) {
 			trackRemoteBranchAction = new SetRemoteAction();
-			trackRemoteBranchAction.setEnabled(repository != null);
+			trackRemoteBranchAction.setEnabled(hasRepository());
 			allActions.add(trackRemoteBranchAction);
 		}
 
@@ -451,7 +450,7 @@ public class GitActionsManager  {
 	public AbstractAction getSubmoduleAction() {
 		if(submoduleAction == null) {
 			submoduleAction = new SubmodulesAction();
-			submoduleAction.setEnabled(repository != null && hasRepositorySubmodules());
+			submoduleAction.setEnabled(hasRepository() && hasRepositorySubmodules());
 			allActions.add(submoduleAction);
 		}
 
@@ -499,15 +498,29 @@ public class GitActionsManager  {
 			LOGGER.debug(e, e);
 		}
 
-		final boolean isRepoOpen = repository != null;
-
-		allActions.forEach(action -> action.setEnabled(isRepoOpen));
-
-		if(isRepoOpen) {
-			updateActionsStatus();
-		}
+		final boolean isRepoOpen = hasRepository();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        allActions.forEach(action -> action.setEnabled(isRepoOpen));
+        if(isRepoOpen) {
+          updateActionsStatus();
+        }
+      }
+    });
 
 	}
+
+
+	/**
+	 * Checks if a repository exists. 
+	 * Protected for tests.
+	 * 
+	 * @return <code>true</code> if a repository exists.
+	 */
+  protected boolean hasRepository() {
+    return repository != null;
+  }
 
 
 	/**
@@ -525,29 +538,19 @@ public class GitActionsManager  {
 		}
 
 		if(submoduleAction != null) {
-			submoduleAction.setEnabled(hasRepositorySubmodules());
+			boolean hasRepositorySubmodules = hasRepositorySubmodules();
+      submoduleAction.setEnabled(hasRepositorySubmodules);
 		}
 
 		if(stashChangesAction != null) {
-			List<FileStatus> unstagedFiles = gitController.getGitAccess().getUnstagedFiles();
-			boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
-
-			if(!existsLocalFiles) {
-				List<FileStatus> stagedFiles = gitController.getGitAccess().getStagedFiles();
-				existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
-			}
-
-			stashChangesAction.setEnabled(existsLocalFiles);	    
+			stashChangesAction.setEnabled(gitController.getGitAccess().hasFilesChanged());	    
 		}
 
 		if(listStashesAction != null) {
-			Collection<RevCommit> stashes =  gitController.getGitAccess().listStashes();
-			int noOfStashes = stashes == null ? 0 : stashes.size();
-			listStashesAction.setEnabled(noOfStashes > 0);
+			listStashesAction.setEnabled(gitController.getGitAccess().hasStashes());
 		}
 	}
 
-	
 	/**
 	 * @return <code>true</code> if the repository has submodules.
 	 */

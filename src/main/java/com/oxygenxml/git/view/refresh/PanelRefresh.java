@@ -167,7 +167,6 @@ public class PanelRefresh implements GitRefreshSupport {
 			logger.debug("cancel refresh task");
 			refreshFuture.cancel(true);
 		}
-
 		refreshFuture = refreshExecutor.schedule(refreshRunnable, getScheduleDelay());
 	}
 

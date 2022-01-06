@@ -22,7 +22,6 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.StagingPanel;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.tags.CreateTagDialog;
 import com.oxygenxml.git.view.tags.GitTag;
 import com.oxygenxml.git.view.tags.TagDetailsDialog;
@@ -30,7 +29,6 @@ import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.tags.TagsTableModel;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
  * Class for testing Visual Git Tags
@@ -122,20 +120,15 @@ public class TagsVisualTests extends GitTestBase {
    
     try {
       // Init UI
-      GitController gitCtrl = new GitController();
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
-      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+      GitController gitCtrl = new GitController();     
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       frame.getContentPane().add(stagingPanel);
       frame.pack();
       frame.setVisible(true);
       flushAWT();
-      flushAWT();
       refreshSupport.call();
       flushAWT();
-      
-      GitActionsManager gitActionsManager = toolbarPanel.getGitActionsManager();
-      
-      gitActionsManager.refresh();
       
       gitActionsManager.getShowTagsAction().actionPerformed(null);
       sleep(50);

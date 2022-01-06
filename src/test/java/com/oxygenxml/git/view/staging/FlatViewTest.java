@@ -240,36 +240,45 @@ public class FlatViewTest extends FlatViewTestBase {
    */
   @Test
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
-	// TODO - review this with Alex  
-	final boolean hasSubmodules[] = new boolean[1]; 
-	hasSubmodules[0] = false;
-	  
-	final GitActionsManager gitActionsManager = new GitActionsManager(
-			(GitController)stagingPanel.getGitController(), null, null, null) {
-    	
-    	@Override
-    	protected boolean hasRepositorySubmodules() {
-    		return hasSubmodules[0];
-    	}
-	};
-	
-	final AbstractAction submoduleActions = gitActionsManager.getSubmoduleAction();
-	
-	gitActionsManager.refresh();
-	
-    // ================= No submodules ====================
-    Future<?> pull2 = ((GitController) stagingPanel.getGitController()).pull();
-    pull2.get();
-    gitActionsManager.refresh();
-    assertFalse(submoduleActions.isEnabled());
+
+    // TODO - review this with Alex  
+    final boolean hasSubmodules[] = new boolean[1]; 
+    hasSubmodules[0] = false;
     
+    
+    GitController gitController = (GitController)stagingPanel.getGitController();
+    final GitActionsManager gitActionsManager = new GitActionsManager(
+        gitController, null, null, null) {
+
+      @Override
+      protected boolean hasRepositorySubmodules() {
+        return hasSubmodules[0];
+      }
+      
+      @Override
+      protected boolean hasRepository() {
+        return true;
+      }
+    };
+
+    final AbstractAction submoduleActions = gitActionsManager.getSubmoduleAction();
+
+    gitActionsManager.refreshActionsStates();
+
+    // ================= No submodules ====================
+    Future<?> pull2 = gitController.pull();
+    pull2.get();
+    gitActionsManager.refreshActionsStates();
+    assertFalse(submoduleActions.isEnabled());
+
     // ================= Set submodule ====================
-    Future<?> pull = ((GitController) stagingPanel.getGitController()).pull();
+    Future<?> pull = gitController.pull();
     hasSubmodules[0] = true;
     pull.get();
-    gitActionsManager.refresh();
     flushAWT();
-    
+    gitActionsManager.refreshActionsStates();
+    flushAWT();
+
     assertTrue(submoduleActions.isEnabled());
   }
 
