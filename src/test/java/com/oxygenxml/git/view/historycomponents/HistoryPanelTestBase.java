@@ -37,7 +37,7 @@ import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
  * @author alex_jitianu
  */
 @Ignore
-public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
+public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
 
   protected HistoryPanel historyPanel;
 
