@@ -14,6 +14,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -612,12 +613,13 @@ public class StagingPanel extends JPanel {
 	}
 	
 	public void updateToolbarsButtonsStates() {
-	  toolbarPanel.updateButtonsStates();
+	  // null from tests
+    Optional.ofNullable(toolbarPanel).ifPresent(ToolbarPanel::updateButtonsStates);
 	}
 
-	 public BranchSelectionPanel getBranchesPanel() {
-		    return branchSelectionPanel;
-		  }
+	public BranchSelectionPanel getBranchesPanel() {
+	  return branchSelectionPanel;
+	}
 
 	/**
 	 * !!!!!!! FOR TESTS !!!!!!
