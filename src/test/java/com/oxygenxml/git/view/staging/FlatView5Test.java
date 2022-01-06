@@ -59,7 +59,6 @@ public class FlatView5Test extends FlatViewTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testAmendCommitThatWasNotPushed_editCommitMessage() throws Exception {
     String localTestRepository = "target/test-resources/testAmendCommitThatWasNotPushed_editCommitMessage_local";
     String remoteTestRepository = "target/test-resources/testAmendCommitThatWasNotPushed_editCommitMessage_remote";
@@ -140,7 +139,6 @@ public class FlatView5Test extends FlatViewTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testAmendCommitThatWasPushed_editCommitMesage() throws Exception {
     // Create repositories
     String localTestRepository = "target/test-resources/testAmendCommitThatWasPushed_2_local";

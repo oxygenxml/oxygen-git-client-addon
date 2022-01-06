@@ -103,20 +103,20 @@ public class RevCommitUtil {
           RevCommit commit = rw.parseCommit(head);
           RevCommit oldCommit = commit.getParentCount() > 0 ? rw.parseCommit(commit.getParent(0)) : null;
           RevCommit[] parents = commit.getParents();
-          
+
           for (RevCommit parent : parents) {
             rw.parseBody(parent);
           }
-          
+
           TreeWalk treewalk = new TreeWalk(rw.getObjectReader());
-            treewalk.setRecursive(true);
-            treewalk.setFilter(TreeFilter.ANY_DIFF);
-            
-            changedFiles = FileStatusUtil.compute(repository, treewalk, commit, oldCommit, TreeFilter.ALL);
-            
-            if(parents.length > 2) {
-              addUntrackedFiles(changedFiles, repository, rw, commit);
-            }          
+          treewalk.setRecursive(true);
+          treewalk.setFilter(TreeFilter.ANY_DIFF);
+
+          changedFiles = FileStatusUtil.compute(repository, treewalk, commit, oldCommit, TreeFilter.ALL);
+
+          if(parents.length > 2) {
+            addUntrackedFiles(changedFiles, repository, rw, commit);
+          }          
         }
       } else {
         changedFiles = GitAccess.getInstance().getUnstagedFiles();

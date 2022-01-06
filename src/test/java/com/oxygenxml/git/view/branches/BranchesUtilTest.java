@@ -9,9 +9,9 @@ import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -21,7 +21,7 @@ import junit.framework.TestCase;
  * Test cases.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({BranchesUtil.class})
+@PowerMockIgnore({"javax.management.*", "javax.script.*"})
 public class BranchesUtilTest extends TestCase {
   
   /**
@@ -32,7 +32,7 @@ public class BranchesUtilTest extends TestCase {
    * 
    * @throws IOException If it fails.
    */
-  @Test
+  @PrepareForTest({BranchesUtil.class})
   public void testFetchFixup() throws IOException {
     Optional<String> newValue = BranchesUtil.fixupFetch("+refs/heads/hot:refs/remotes/origin/hot");
     assertTrue(newValue.isPresent());
@@ -107,6 +107,7 @@ public class BranchesUtilTest extends TestCase {
    *
    * @throws Exception
    */
+  @PrepareForTest({BranchesUtil.class})
   public void testBranchAlreadyExists() throws Exception {
     Method getLocalBranchesMethod = PowerMockito.method(BranchesUtil.class, "getLocalBranches");
     PowerMockito.stub(getLocalBranchesMethod).toReturn(Arrays.asList("my_branch"));

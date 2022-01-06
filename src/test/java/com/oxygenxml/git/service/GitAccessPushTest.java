@@ -18,8 +18,6 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -36,7 +34,6 @@ public class GitAccessPushTest extends GitTestBase {
 	private GitAccess gitAccess;
 
 	@Override
-  @Before
 	public void setUp() throws Exception {
 	  super.setUp();
 	  
@@ -167,23 +164,29 @@ public class GitAccessPushTest extends GitTestBase {
 
 
 	@Override
-  @After
 	public void tearDown() throws Exception {
+	  super.tearDown();
+	  
 		gitAccess.closeRepo();
+		flushAWT();
 		firstLocalRepo.close();
+		flushAWT();
 		remoteRepo.close();
+		flushAWT();
 		secondLocalRepo.close();
-		File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITPRY);
+		flushAWT();
 		try {
+		  File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITPRY);
 			FileUtils.deleteDirectory(dirToDelete);
+			flushAWT();
 			dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
 			FileUtils.deleteDirectory(dirToDelete);
+			flushAWT();
 			dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITPRY);
 			FileUtils.deleteDirectory(dirToDelete);
+			flushAWT();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		super.tearDown();
 	}
 }

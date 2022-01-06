@@ -27,8 +27,7 @@ import com.oxygenxml.git.view.history.HistoryController;
 * Base for the test classes related to the actions performed
 * on the staged/unstaged resources seen in the flat view.
 */
-@Ignore
-public class FlatViewTestBase extends GitTestBase { // NOSONAR
+public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
   /**
    * Logger for logging.
    */

@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -36,6 +37,7 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PluginWorkspaceProvider.class})
+@PowerMockIgnore({"javax.management.*", "javax.script.*"})
 public class FileHelperTest {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/FileHelperTest/local";

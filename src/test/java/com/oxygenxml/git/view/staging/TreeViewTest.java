@@ -14,7 +14,6 @@ import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -34,7 +33,6 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 public class TreeViewTest extends FlatViewTestBase {
   
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
@@ -102,7 +100,6 @@ public class TreeViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageUnstage_NewFile() throws Exception {
     /**
      * Local repository location.
@@ -148,7 +145,6 @@ public class TreeViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageUnstage_NewMultipleFiles() throws Exception {
     /**
      * Local repository location.
@@ -207,7 +203,6 @@ public class TreeViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageUnstage_NewFile_2() throws Exception {
     /**
      * Local repository location.
@@ -257,7 +252,6 @@ public class TreeViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testConflict_resolveUsingMine() throws Exception {
     /**
      * Local repository location.
@@ -340,7 +334,6 @@ public class TreeViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testConflict_resolveUsingTheirsAndRestartMerge() throws Exception {
     /**
      * Local repository location.
@@ -429,7 +422,6 @@ public class TreeViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testSaveRemoteURL() throws Exception {
 
     /**
@@ -473,7 +465,6 @@ public class TreeViewTest extends FlatViewTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testStageUnstage_Folder() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_Folder_local";
     String remoteTestRepository = "target/test-resources/testStageUnstage_Folder_remote";
@@ -512,7 +503,6 @@ public class TreeViewTest extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
-  @Test
   public void testFailedCommit() throws Exception {
     String localTestRepository = "target/test-resources/treeMode_testFailedCommit";
     
@@ -536,19 +526,12 @@ public class TreeViewTest extends FlatViewTestBase {
   
   
   /**
-   * <p>
-   * <b>Description:</b> Tests the Stage button enabling.
-   * </p>
-   * 
-   * <p>
-   * <b>Bug ID:</b> EXM-48559
-   * </p>
+   * <p><b>Description:</b> Tests the Stage button enabling.</p>
+   * <p><b>Bug ID:</b> EXM-48559</p>
    *
    * @author Alex_Smarandache
-   * 
    * @throws Exception
    */
-  @Test  
   public void testStageButtonEnabled() throws Exception {
     String localTestRepository = "target/test-resources/testStageButtonVisibility_local";
     String remoteTestRepository = "target/test-resources/testStageButtonVisibility_remote";
@@ -596,7 +579,6 @@ public class TreeViewTest extends FlatViewTestBase {
     });
     flushAWT();
     assertFalse(usButton.isEnabled());
-
   }
 }
 

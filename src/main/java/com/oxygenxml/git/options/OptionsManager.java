@@ -553,8 +553,16 @@ public class OptionsManager {
   public String getSshPassphrase() {
     String decryptPassphrase = null;
     if (OxygenGitPlugin.getInstance() != null) {
-      decryptPassphrase = PluginWorkspaceProvider.getPluginWorkspace()
-          .getUtilAccess().decrypt(getOptions().getPassphrase());
+      PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+      if (pluginWorkspace != null) {
+        UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
+        if (utilAccess != null) {
+          String passphrase = getOptions().getPassphrase();
+          if (passphrase != null) {
+            decryptPassphrase = utilAccess.decrypt(passphrase);
+          }
+        }
+      }
     }
     if (decryptPassphrase == null) {
       decryptPassphrase = "";

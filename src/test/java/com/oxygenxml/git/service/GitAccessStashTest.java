@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -33,6 +34,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
 
+import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -47,7 +49,8 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(FileStatusDialog.class)
-public class GitAccessStashTest {
+@PowerMockIgnore({"javax.management.*", "javax.script.*"})
+public class GitAccessStashTest extends TestCase {
 
   /**
    * The local repository.
@@ -58,7 +61,6 @@ public class GitAccessStashTest {
    * The GitAccess instance.
    */
   private GitAccess gitAccess;
-
   
   /**
    * Initialise the git, repository and first local commit.
@@ -66,8 +68,8 @@ public class GitAccessStashTest {
    * @throws IllegalStateException
    * @throws GitAPIException
    */
-  @Before
-  public void init() throws IllegalStateException, GitAPIException {
+  @Override
+  protected void setUp() throws IllegalStateException, GitAPIException {
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(LOCAL_TEST_REPOSITORY);
     File file = new File(LOCAL_TEST_REPOSITORY + "/test.txt");
@@ -86,6 +88,20 @@ public class GitAccessStashTest {
     
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+  }
+  
+  /**
+   * Used to free up test resources.
+   */
+  @Override
+  protected void tearDown() {
+    gitAccess.closeRepo();
+    File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
+    try {
+      FileUtils.deleteDirectory(dirToDelete);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
 
@@ -111,7 +127,6 @@ public class GitAccessStashTest {
    *
    * @throws Exception
    */
-  @Test
   public void testCreateMethod() throws Exception { 
     try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
@@ -136,7 +151,6 @@ public class GitAccessStashTest {
    *
    * @throws Exception
    */
-  @Test
   public void testApplyMethod() throws Exception {
     try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
@@ -153,7 +167,7 @@ public class GitAccessStashTest {
     boolean noCommitFound = false;
     try {
       gitAccess.applyStash("No exists.");
-    } catch (Exception e) {
+    } catch (Throwable e) {
       noCommitFound = true;
     }
     assertTrue(noCommitFound);
@@ -180,7 +194,6 @@ public class GitAccessStashTest {
    *
    * @throws Exception
    */
-  @Test
   public void testStashWithUncommittedChangesWithoutConflicts() throws Exception {
     try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("test");
@@ -221,7 +234,6 @@ public class GitAccessStashTest {
    *
    * @throws Exception
    */
-  @Test
   public void testStashPop() throws Exception {
     try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
@@ -258,7 +270,6 @@ public class GitAccessStashTest {
    *
    * @throws Exception
    */
-  @Test
   public void testStashWithCommittedChangesWithConflicts() throws Exception {
     try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("test");
@@ -296,7 +307,6 @@ public class GitAccessStashTest {
    *
    * @throws Exception
    */
-  @Test
   public void testStashDropAll() throws Exception {
     
     String[] texts = {"test1", "test2", "test3", "test4", 
@@ -321,20 +331,5 @@ public class GitAccessStashTest {
     assertTrue(isStashEmpty());
     
   }  
-  
-  
-  /**
-   * Used to free up test resources.
-   */
-  @After
-  public void freeResources() {
-    gitAccess.closeRepo();
-    File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
  
 }

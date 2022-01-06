@@ -59,7 +59,6 @@ import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -100,8 +99,7 @@ import ro.sync.exml.workspace.api.util.XMLUtilAccess;
  * 
  * @author alex_jitianu
  */
-@Ignore
-public class GitTestBase extends JFCTestCase { // NOSONAR
+public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * Logger for logging.
    */
@@ -416,10 +414,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   protected List<URL> toOpen = new ArrayList<>();
   
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
-    
     
     // Create the unstaged resources panel
     refreshSupport = new PanelRefresh(null) {
@@ -453,7 +449,10 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        toOpen.add((URL) invocation.getArguments()[0]);
+        Object[] arguments = invocation.getArguments();
+        if (arguments != null && arguments.length > 0) {
+          toOpen.add((URL) invocation.getArguments()[0]);
+        }
         return null;
       }
     }).when(pluginWSMock).open(Mockito.any());
@@ -686,7 +685,6 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   }
   
   @Override
-  @After
   public void tearDown() throws Exception {
     super.tearDown();
     
@@ -694,6 +692,9 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     waitForScheduler();
     
     RepositoryCache.clear();
+    
+    // wait for cache to clear
+    waitForScheduler();
     
     // Only one repository is open at a given time.
     try {
@@ -728,6 +729,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     new File("src/test/resources/Options.xml").delete();
     GitAccess.getInstance().getStatusCache().resetCache();
+    // wait more
+    waitForScheduler();
   }
 
   /**
