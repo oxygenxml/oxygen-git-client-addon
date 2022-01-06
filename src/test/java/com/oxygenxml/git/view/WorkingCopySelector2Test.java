@@ -34,7 +34,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * Test cases for working copy combo.
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*", "javax.script.*"})
+@PowerMockIgnore({"javax.swing.*", "javax.management.*", "javax.script.*"})
 public class WorkingCopySelector2Test extends JFCTestCase {
   
   /**

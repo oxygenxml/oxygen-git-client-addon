@@ -14,7 +14,6 @@ import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PushResponse;

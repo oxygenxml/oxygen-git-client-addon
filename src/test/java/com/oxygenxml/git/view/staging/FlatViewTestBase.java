@@ -11,7 +11,6 @@ import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
-import org.junit.Ignore;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
@@ -19,9 +18,7 @@ import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.actions.GitActionsManager;
-import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.history.HistoryController;
 
 /**
 * Base for the test classes related to the actions performed

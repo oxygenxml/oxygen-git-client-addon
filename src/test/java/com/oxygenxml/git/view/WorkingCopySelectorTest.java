@@ -30,7 +30,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author sorin_carbunaru
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*", "javax.script.*"})
+@PowerMockIgnore({"javax.swing.*", "javax.management.*", "javax.script.*"})
 @PrepareForTest({OptionsManager.class})
 public class WorkingCopySelectorTest extends JFCTestCase {
   

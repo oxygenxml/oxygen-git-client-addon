@@ -8,8 +8,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -23,7 +21,6 @@ import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 public class FlatView6Test extends FlatViewTestBase {
   
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
@@ -98,7 +95,6 @@ public class FlatView6Test extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageUnstage_NewFile() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_NewFile_local";
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewFile_remote";
@@ -137,7 +133,6 @@ public class FlatView6Test extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageUnstage_ModifiedFile() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_local";
     String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote";
@@ -189,19 +184,12 @@ public class FlatView6Test extends FlatViewTestBase {
 
   
   /**
-   * <p>
-   * <b>Description:</b> Tests the Stage button enabling.
-   * </p>
-   * 
-   * <p>
-   * <b>Bug ID:</b> EXM-48559
-   * </p>
+   * <p><b>Description:</b> Tests the Stage button enabling.</p>
+   * <p><b>Bug ID:</b> EXM-48559</p>
    *
    * @author Alex_Smarandache
-   * 
    * @throws Exception
    */
-  @Test  
   public void testStageButtonEnabled() throws Exception {
     String localTestRepository = "target/test-resources/testStageButtonVisibility_local";
     String remoteTestRepository = "target/test-resources/testStageButtonVisibility_remote";
@@ -256,7 +244,6 @@ public class FlatView6Test extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageUnstage_NewMultipleFiles() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_NewMultipleFiles_local";
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewMultipleFiles_remote";
@@ -302,7 +289,6 @@ public class FlatView6Test extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageUnstage_NewFile_2() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_NewFile_2_local";
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewFile_2_remote";
