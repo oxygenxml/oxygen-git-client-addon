@@ -246,6 +246,7 @@ public class ToolbarPanelTest extends GitTestBase {
     Repository localRepository = gitAccess.getRepository();
     bindLocalToRemote(localRepository, remoteRepository);
     refreshSupport.call();
+    flushAWT();
     assertTrue(toolbar.getPullMenuButton().isEnabled());
     assertTrue(toolbar.getPushButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
