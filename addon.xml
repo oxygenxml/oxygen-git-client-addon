@@ -32,7 +32,7 @@
                     <li>The History view now includes a new revision graph that helps you to understand how commits connect with one another.</li>
                     <li>Fixed an issue where the index got reset after pulling changes from the remote.</li>
                     <li>The Stash dialog box now has a column that shows the creation time for each stash.</li>
-                    <li>Performance improvements. The status of the repository was checked excesively.</li>
+                    <li>Performance improvements. The status of the repository was checked excessively.</li>
                 </ol>
             </div>
                     
