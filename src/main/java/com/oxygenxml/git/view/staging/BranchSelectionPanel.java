@@ -47,7 +47,6 @@ import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
  * This is a panel with a combo box to select the current branch for repo.
@@ -219,11 +218,22 @@ public class BranchSelectionPanel extends JPanel {
     		branchNamesCombo.getPreferredSize().height));
   }
   
+  /**
+   * Refresh on invoke later.
+   */
+  public void refresh() {
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        refreshNow();
+      }
+    });
+  }
+  
   
   /**
    * Refresh.
    */
-  public void refresh() {
+  private void refreshNow() {
     int pullsBehind = GIT_ACCESS.getPullsBehind();
     int pushesAhead = -1;
     try {
@@ -232,7 +242,8 @@ public class BranchSelectionPanel extends JPanel {
       LOGGER.debug(e, e);
     }
     
-    SwingUtilities.invokeLater(this::updateBranchesPopup);
+    // update pop up
+    updateBranchesPopup();
     
     Repository repo = null;
     try {
@@ -263,7 +274,7 @@ public class BranchSelectionPanel extends JPanel {
         branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
       }
       String branchTooltipFinal = branchTooltip;
-      SwingUtilities.invokeLater(() -> branchNamesCombo.setToolTipText(branchTooltipFinal));
+      branchNamesCombo.setToolTipText(branchTooltipFinal);
     }
   }
 
