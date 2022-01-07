@@ -231,24 +231,27 @@ public class ToolbarPanelTest extends GitTestBase {
     GitController gitCtrl = new GitController();
     GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
-    refreshSupport.call();
+    refreshSupport.setStagingPanel(stagingPanel);
+    flushAWT();
     
     ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
     assertFalse(toolbar.getPullMenuButton().isEnabled());
     assertFalse(toolbar.getPushButton().isEnabled());
     assertFalse(toolbar.getStashButton().isEnabled());
 
-    //Creates the remote repository.
-    createRepository(REMOTE_REPO);
-    Repository remoteRepository = gitAccess.getRepository();
-    //Creates the local repository.
-    createRepository(LOCAL_REPO);
-    Repository localRepository = gitAccess.getRepository();
+    //Creates repos
+    Repository remoteRepository = createRepository(REMOTE_REPO);
+    Repository localRepository = createRepository(LOCAL_REPO);
     bindLocalToRemote(localRepository, remoteRepository);
-    refreshSupport.call();
     flushAWT();
+
+    assertTrue("Pull Merge action should be enabled.", gitActionsManager.getPullMergeAction().isEnabled());
+    assertTrue("Pull Rebase action should be enabled.", gitActionsManager.getPullRebaseAction().isEnabled());
     assertTrue(toolbar.getPullMenuButton().isEnabled());
+    
+    assertTrue("Push action should be enabled.", gitActionsManager.getPushAction().isEnabled());
     assertTrue(toolbar.getPushButton().isEnabled());
+    
     assertFalse(toolbar.getStashButton().isEnabled());
   }
   

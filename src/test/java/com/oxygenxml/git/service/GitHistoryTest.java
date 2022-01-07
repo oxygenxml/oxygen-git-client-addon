@@ -144,6 +144,9 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       }
     } finally {
       GitAccess.getInstance().closeRepo();
+      flushAWT();
+      waitForScheduler();
+      flushAWT();
       
       FileUtils.deleteDirectory(wcTree);
     }
