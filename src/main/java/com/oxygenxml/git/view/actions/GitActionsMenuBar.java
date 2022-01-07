@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.actions;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.annotations.NonNull;
 
@@ -18,8 +19,8 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  * 
  * @author Alex_Smarandache
  */
-public class GitActionsMenuBar implements MenuBarCustomizer {
-
+public class GitActionsMenuBar implements MenuBarCustomizer, UpdateActionsStatesListener {
+  
 	/**
 	 * The translator for translations.
 	 */
@@ -65,6 +66,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 		pullMenuItem.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullMergeAction()));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullRebaseAction()));
+		pullMenuItem.setEnabled(isPullButtonEnabled());
 		gitMenu.add(pullMenuItem);
 
 		// Add show staging item
@@ -120,12 +122,25 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 		}
 	}
 
+	@Override
+	public void updateButtonStates() {
+	  SwingUtilities.invokeLater(() -> pullMenuItem.setEnabled(isPullButtonEnabled()));
+	}
+
 	/**
 	 * @return The git actions manager.
 	 */
 	public GitActionsManager getGitActionsManager() {
 		return actionsManager;
 	}
+	
+  /**
+   * @return <code>true</code> is the pull button is enabled. 
+   * Any of the inner actions of the button are enabled. 
+   */
+  private boolean isPullButtonEnabled() {
+    return actionsManager.getPullMergeAction().isEnabled() || actionsManager.getPullRebaseAction().isEnabled();
+  }
 	
 	/**
 	 * !!! Used for tests. !!!
