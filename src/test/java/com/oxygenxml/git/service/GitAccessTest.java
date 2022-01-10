@@ -78,16 +78,20 @@ public class GitAccessTest extends TestCase {
    * @throws Exception
    */
   public void testPushWhileInConflictState() throws Exception {
-    Git gitMock = Mockito.mock(Git.class);
-    Repository repoMock = Mockito.mock(Repository.class);
-
-    Mockito.when(repoMock.getRepositoryState()).thenReturn(RepositoryState.MERGING);
-    Mockito.when(gitMock.getRepository()).thenReturn(repoMock);
-
-    GitAccess.getInstance().setGit(gitMock);
-
-    PushResponse pushResp = push("", "");
-    assertEquals("status: REJECTED_OTHER_REASON message Resolve_conflicts_first", pushResp.toString());
+    try {
+      Git gitMock = Mockito.mock(Git.class);
+      Repository repoMock = Mockito.mock(Repository.class);
+      
+      Mockito.when(repoMock.getRepositoryState()).thenReturn(RepositoryState.MERGING);
+      Mockito.when(gitMock.getRepository()).thenReturn(repoMock);
+      
+      GitAccess.getInstance().setGit(gitMock);
+      
+      PushResponse pushResp = push("", "");
+      assertEquals("status: REJECTED_OTHER_REASON message Resolve_conflicts_first", pushResp.toString());
+    } finally {
+      GitAccess.getInstance().setGit(null);
+    }
   }
 
 
@@ -119,42 +123,39 @@ public class GitAccessTest extends TestCase {
   
   
   /**
-   * <p>
-   * <b>Description:</b> better message when trying to pull while having a
-   * conflict.
-   * </p>
-   * <p>
-   * <b>Bug ID:</b> EXM-47439
-   * </p>
-   *
+   * <p><b>Description:</b> better message when trying to pull while having a conflict.</p>
+   * <p><b>Bug ID:</b> EXM-47439</p>
    * @author sorin_carbunaru
-   *
    * @throws Exception
    */
   public void testPullWhileInConflictState() throws Exception {
-    Git gitMock = Mockito.mock(Git.class);
-    Repository repoMock = Mockito.mock(Repository.class);
-    StatusCommand statusCmdMock = Mockito.mock(StatusCommand.class);
-    Status statusMock = Mockito.mock(Status.class);
-    StoredConfig configMock = Mockito.mock(StoredConfig.class);
-
-    Mockito.when(repoMock.getRepositoryState()).thenReturn(RepositoryState.MERGING);
-    Mockito.when(repoMock.getConfig()).thenReturn(configMock);
-    Mockito.when(gitMock.getRepository()).thenReturn(repoMock);
-
-    Mockito.when(statusMock.getConflicting()).thenReturn(new HashSet<>(Arrays.asList("string1")));
-    Mockito.when(statusCmdMock.call()).thenReturn(statusMock);
-    Mockito.when(gitMock.status()).thenReturn(statusCmdMock);
-
-    GitAccess.getInstance().setGit(gitMock);
-
-    GitController gitCtrl = new GitController(GitAccess.getInstance());
-    Future<?> pullResp = gitCtrl.pull();
-    pullResp.get();
-
-    Thread.sleep(300);
-
-    assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
+    try {
+      Git gitMock = Mockito.mock(Git.class);
+      Repository repoMock = Mockito.mock(Repository.class);
+      StatusCommand statusCmdMock = Mockito.mock(StatusCommand.class);
+      Status statusMock = Mockito.mock(Status.class);
+      StoredConfig configMock = Mockito.mock(StoredConfig.class);
+      
+      Mockito.when(repoMock.getRepositoryState()).thenReturn(RepositoryState.MERGING);
+      Mockito.when(repoMock.getConfig()).thenReturn(configMock);
+      Mockito.when(gitMock.getRepository()).thenReturn(repoMock);
+      
+      Mockito.when(statusMock.getConflicting()).thenReturn(new HashSet<>(Arrays.asList("string1")));
+      Mockito.when(statusCmdMock.call()).thenReturn(statusMock);
+      Mockito.when(gitMock.status()).thenReturn(statusCmdMock);
+      
+      GitAccess.getInstance().setGit(gitMock);
+      
+      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      Future<?> pullResp = gitCtrl.pull();
+      pullResp.get();
+      
+      Thread.sleep(300);
+      
+      assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
+    } finally {
+      GitAccess.getInstance().setGit(null);
+    }
   }
 
 }
