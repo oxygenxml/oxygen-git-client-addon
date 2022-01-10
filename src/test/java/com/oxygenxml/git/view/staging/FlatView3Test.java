@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -22,7 +20,6 @@ import com.oxygenxml.git.view.staging.actions.DiscardAction;
 public class FlatView3Test extends FlatViewTestBase {
   
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
@@ -34,7 +31,6 @@ public class FlatView3Test extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testDiscard() throws Exception {
     /**
      * Local repository location.

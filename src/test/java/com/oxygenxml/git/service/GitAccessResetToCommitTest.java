@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import org.eclipse.jgit.api.ResetCommand.ResetType;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -19,16 +18,13 @@ public class GitAccessResetToCommitTest extends GitTestBase {
   private File firstFile;
   private File secondFile;
 
-  private GitAccess gitAccess;
+  private GitAccess gitAccess = GitAccess.getInstance();
 
   /**
    * Creates the local repository and commits a few files.
    */
-  @Before
   public void setUp() throws Exception {
     super.setUp();
-    
-    gitAccess = GitAccess.getInstance();
     
     // Create the local repository.
     createRepository(LOCAL_TEST_REPOSITORY);

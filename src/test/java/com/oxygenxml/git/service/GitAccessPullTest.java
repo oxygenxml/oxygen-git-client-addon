@@ -13,8 +13,6 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -33,7 +31,6 @@ public class GitAccessPullTest extends GitTestBase{
 	protected GitAccess gitAccess;
 
 	@Override
-  @Before
 	public void setUp() throws Exception {
 	  super.setUp();
 	  
@@ -167,7 +164,6 @@ public class GitAccessPullTest extends GitTestBase{
 	}
 	
 	@Override
-  @After
 	public void tearDown() throws Exception {
 	  super.tearDown();
 

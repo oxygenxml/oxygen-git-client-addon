@@ -9,7 +9,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.junit.Test;
 
-import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;

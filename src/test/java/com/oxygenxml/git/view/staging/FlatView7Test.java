@@ -5,7 +5,6 @@ import javax.swing.JMenu;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -21,7 +20,6 @@ import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 public class FlatView7Test extends FlatViewTestBase {
 
 	@Override
-	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 
@@ -302,7 +300,6 @@ public class FlatView7Test extends FlatViewTestBase {
 	 *
 	 * @throws Exception
 	 */
-	@Test
 	public void testSettingsMenu() throws Exception {
 		final JMenu settingsMenu = new GitActionsMenuBar(
 				new GitActionsManager(new GitController(), null, null, null)).getSettingsMenu();

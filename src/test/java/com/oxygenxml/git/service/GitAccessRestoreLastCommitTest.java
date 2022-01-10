@@ -1,7 +1,5 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,10 +9,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -23,15 +17,16 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
+import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
-public class GitAccessRestoreLastCommitTest {
+public class GitAccessRestoreLastCommitTest extends TestCase {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessRestoreLastCommitTest";
-	private GitAccess gitAccess;
+	private GitAccess gitAccess =  GitAccess.getInstance();
 	
 	public GitAccessRestoreLastCommitTest() {
 	  StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
@@ -63,10 +58,9 @@ public class GitAccessRestoreLastCommitTest {
     });
   }
 
-	@Before
-	public void init() throws IllegalStateException, GitAPIException {
+	@Override
+	protected void setUp() throws Exception {
 		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);
-		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 
@@ -81,8 +75,18 @@ public class GitAccessRestoreLastCommitTest {
 		gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
 		gitAccess.commit("file test added");
 	}
+	
+	@Override
+	protected void tearDown() {
+	  gitAccess.cleanUp();
+	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
+	  try {
+	    FileUtils.deleteDirectory(dirToDelete);
+	  } catch (IOException e) {
+	    e.printStackTrace();
+	  }
+	}
 
-	@Test
 	public void testRestoreLastCommit() throws IOException {
 		String actual = getFileContent();
 		
@@ -108,16 +112,5 @@ public class GitAccessRestoreLastCommitTest {
 		br.close();
 		fr.close();
 		return content;
-	}
-
-	@After
-	public void freeResources() {
-		gitAccess.closeRepo();
-		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-		try {
-			FileUtils.deleteDirectory(dirToDelete);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

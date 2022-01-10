@@ -9,21 +9,19 @@ import org.apache.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.WriterAppender;
 import org.eclipse.jgit.util.FS;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import junit.framework.TestCase;
 
 /**
  * Logging setup tests. 
  */
-public class Log4jUtilTest {
+public class Log4jUtilTest extends TestCase {
   
   private WriterAppender newAppender;
   private StringWriter writer;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
     writer = new StringWriter();
     
     newAppender = org.apache.logging.log4j.core.appender.WriterAppender.createAppender(null, null, writer, "My.appender", false, true);
@@ -33,8 +31,7 @@ public class Log4jUtilTest {
     Log4jUtil.setupLog4JLogger();
   }
   
-  @After
-  public void tearDown() throws Exception {
+  protected void tearDown() throws Exception {
     LoggerContext.getContext().getRootLogger().removeAppender(newAppender);
   }
 
@@ -43,7 +40,6 @@ public class Log4jUtilTest {
    * 
    * @throws Exception
    */
-  @Test
   public void testLogFilter() throws Exception {
 
     //=====================

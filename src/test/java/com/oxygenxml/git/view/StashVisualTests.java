@@ -19,7 +19,6 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Before;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
@@ -54,7 +53,6 @@ public class StashVisualTests extends GitTestBase {
   private StagingPanel stagingPanel;
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     

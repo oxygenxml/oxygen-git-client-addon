@@ -8,7 +8,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
@@ -31,15 +30,13 @@ public class ToolbarPanelTest extends GitTestBase {
   private final static String REMOTE_REPO = "target/test-resources/GitAccessCheckoutNewBranch/remoteRepository";
   private final static String LOCAL_BRANCH = "LocalBranch";
 
-  private GitAccess gitAccess;
+  private GitAccess gitAccess = GitAccess.getInstance();
   private StagingPanel stagingPanel;
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
-    gitAccess = GitAccess.getInstance();
 
     //Creates the remote repository.
     createRepository(REMOTE_REPO);

@@ -12,7 +12,6 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -44,14 +43,13 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
   private final static String LOCAL_BRANCH_NAME1 = "LocalBranch";
   private Repository remoteRepository;
   private Repository localRepository;
-  private GitAccess gitAccess;
+  private GitAccess gitAccess = GitAccess.getInstance();
   private String[] errMsg = new String[1];
 
   /**
    * Creates the local repository and commits a few files.
    */
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
@@ -75,8 +73,6 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
-    gitAccess = GitAccess.getInstance();
-
     // Creates the remote repository.
     createRepository(REMOTE_TEST_REPOSITORY);
     remoteRepository = gitAccess.getRepository();
@@ -231,7 +227,6 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     sleep(300);
 
     assertEquals("", errMsg[0]);
-
   }
 
 }

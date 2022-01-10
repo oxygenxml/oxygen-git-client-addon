@@ -19,10 +19,12 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 
 /**
+ * 
+ * TODO Asta nu e cumva un Branch Tooltip Cacher?
+ * 
  * A cache for branches details.
  * 
  * @author alex_smarandache
- *
  */
 public class BranchesCache {
 
@@ -54,7 +56,7 @@ public class BranchesCache {
 	 * @throws GitAPIException 
 	 */
 	public String getToolTip(boolean leaf, String path, String branchName) {
-		return !branchName.isEmpty()? nodesTooltips.computeIfAbsent(path, s -> {
+		return !branchName.isEmpty() ? nodesTooltips.computeIfAbsent(path, s -> {
 			try {
 				return ToolTipContentProvider.computeToolTipText(leaf, path, branchName);
 			} catch (GitAPIException | IOException | NoRepositorySelected e) {

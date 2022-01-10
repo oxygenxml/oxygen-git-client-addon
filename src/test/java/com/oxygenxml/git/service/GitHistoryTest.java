@@ -280,9 +280,11 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       assertEquals(
           expected, dump);
     } finally {
-      GitAccess.getInstance().closeRepo();
-      
+      GitAccess.getInstance().cleanUp();
+      waitForScheduler();
+      flushAWT();
       FileUtils.deleteDirectory(wcTree);
+      flushAWT();
     }
   }
 

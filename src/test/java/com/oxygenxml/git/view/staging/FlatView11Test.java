@@ -9,8 +9,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
@@ -28,7 +26,6 @@ public class FlatView11Test extends FlatViewTestBase {
   private static final Logger logger = LogManager.getLogger(FlatView9Test.class.getName());
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
 
@@ -42,7 +39,6 @@ public class FlatView11Test extends FlatViewTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testTruncateFilenames() throws Exception {
     // Create repositories
     String localTestRepository = "target/test-resources/testAmendCommitThatWasPushed_1_local";

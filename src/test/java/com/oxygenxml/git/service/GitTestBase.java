@@ -57,8 +57,6 @@ import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
-import org.junit.After;
-import org.junit.Before;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

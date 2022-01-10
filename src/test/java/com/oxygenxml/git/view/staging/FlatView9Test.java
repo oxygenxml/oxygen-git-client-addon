@@ -7,7 +7,6 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -34,7 +33,6 @@ public class FlatView9Test extends FlatViewTestBase {
   private static final Logger logger = LogManager.getLogger(FlatView9Test.class.getName());
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     

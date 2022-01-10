@@ -9,8 +9,6 @@ import javax.swing.JDialog;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -49,7 +47,6 @@ public class RevertCommitTest extends GitTestBase {
    * Creates the local repository and commits a few files.
    */
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
@@ -140,7 +137,6 @@ public class RevertCommitTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testRevertCommit_cannotRevertFirstVersion() throws Exception {
     // The history at this moment
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
@@ -182,7 +178,6 @@ public class RevertCommitTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testRevertCommit() throws Exception {
     // The history at this moment
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
@@ -220,7 +215,6 @@ public class RevertCommitTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testRevertCommit_warningWhenConflictGenerated() throws Exception {
     setFileContent(firstFile, "<modified content 2>");
     gitAccess.add(new FileStatus(GitChangeType.ADD, LOCAL_FILE_NAME));
