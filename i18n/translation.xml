@@ -53,15 +53,6 @@
         <val lang="nl_NL">Show branches</val>
         <val lang="zh_CN">Show branches</val>
     </key>
-     <key value="Remote_Button_Tooltip">
-        <comment>Tool tip text for remote repositories button.</comment>
-        <val lang="en_US">Configure the remote repositories where to push the commits.</val>
-        <val lang="de_DE">Configure the remote repositories where to push the commits.</val>
-        <val lang="fr_FR">Configure the remote repositories where to push the commits.</val>
-        <val lang="ja_JP">Configure the remote repositories where to push the commits.</val>
-        <val lang="nl_NL">Configure the remote repositories where to push the commits.</val>
-        <val lang="zh_CN">Configure the remote repositories where to push the commits.</val>
-        </key>
     <key value="Please_Try_Again">
         <comment>Please try again message.</comment>
         <val lang="en_US">Please try again.</val>
@@ -3074,15 +3065,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Nieuw Git-project</val>
         <val lang="zh_CN">新建 Git 项目</val>
-    </key>
-    <key value="Select_Submodule_Button_Tooltip">
-        <comment>The tooltip for the select submodule button</comment>
-        <val lang="en_US">Submodules</val>
-        <val lang="de_DE">Submodule</val>
-        <val lang="fr_FR">Sous-modules</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Submodules</val>
-        <val lang="zh_CN">子模块</val>
     </key>
     <key value="Submodule_Dialog_Submodule_Selection_Label">
         <comment>The text displayed in the dialog that appears near the combo box</comment>

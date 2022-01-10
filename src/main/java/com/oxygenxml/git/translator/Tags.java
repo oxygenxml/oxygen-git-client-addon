@@ -538,11 +538,6 @@ public class Tags {
 	public static final String CHANGE_WORKING_COPY = "Change_working_copy";
 
 	/**
-	 * The tooltip for the select submodule button
-	 */
-	public static final String SELECT_SUBMODULE_BUTTON_TOOLTIP = "Select_Submodule_Button_Tooltip";
-
-	/**
 	 * The text displayed in the dialog that appears near the combo box
 	 */
 	public static final String SUBMODULE_DIALOG_SUBMODULE_SELECTION_LABEL = "Submodule_Dialog_Submodule_Selection_Label";
@@ -1692,11 +1687,6 @@ public class Tags {
    * Tools.
    */
   public static final String TOOLS = "Tools";
-  
-  /**
-   * Tool tip text for remote repositories button.
-   */
-  public static final String REMOTE_BUTTON_TOOLTIP = "Remote_Button_Tooltip";
   
   /**
    * Show branches.

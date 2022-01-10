@@ -80,13 +80,13 @@ public class GitAccessPush2Test extends GitTestBase {
    */
   @Override
   public void tearDown() throws Exception {
+    super.tearDown();
     gitAccess.closeRepo();
     localRepo.close();
     remoteRepo.close();
+    flushAWT();
     
     deleteTestResources();
-    
-    super.tearDown();
   }
 
   /**
