@@ -688,36 +688,35 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     
     // If there is a running task, wait for it.
     waitForScheduler();
-    
     RepositoryCache.clear();
     
     // wait for cache to clear
     waitForScheduler();
     
-    // Only one repository is open at a given time.
-    try {
-      Repository currentRepo = GitAccess.getInstance().getRepository();
-      // This is the active repository. GitAccess.cleanUp will close it.
-      loadedRepos.remove(currentRepo);
-      
-      GitAccess.getInstance().cleanUp();
-      loadedRepos.add(currentRepo);
-    } catch(NoRepositorySelected ex) {}
+    GitAccess.getInstance().cleanUp();
+    waitForScheduler();
     
     for (Repository repository : loadedRepos) {
       // Remove the file system resources.
       try {
         repository.close();
+        waitForScheduler();
+        flushAWT();
         deleteRepository(repository);
+        waitForScheduler();
+        flushAWT();
       } catch (IOException e) {
         System.err.println("Unable to delete: " + repository.getWorkTree().getAbsolutePath());
         e.printStackTrace();
       }
     }
+    loadedRepos.clear();
     
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
     System.gc();
+    flushAWT();
+    flushAWT();
     
     SystemReader.setInstance(null);
     

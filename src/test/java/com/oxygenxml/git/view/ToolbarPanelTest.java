@@ -21,35 +21,18 @@ import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
 
+import ro.sync.basic.io.FileSystemUtil;
+
 /**
  * Toolbar panel tests.
  */
 public class ToolbarPanelTest extends GitTestBase {
-
-  private final static String LOCAL_REPO = "target/test-resources/GitAccessCheckoutNewBranch/localRepository";
-  private final static String REMOTE_REPO = "target/test-resources/GitAccessCheckoutNewBranch/remoteRepository";
-  private final static String LOCAL_BRANCH = "LocalBranch";
-
+  
   private GitAccess gitAccess = GitAccess.getInstance();
   private StagingPanel stagingPanel;
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    
-
-    //Creates the remote repository.
-    createRepository(REMOTE_REPO);
-    Repository remoteRepository = gitAccess.getRepository();
-
-    //Creates the local repository.
-    createRepository(LOCAL_REPO);
-    Repository localRepository = gitAccess.getRepository();
-
-    bindLocalToRemote(localRepository, remoteRepository);
-  }
   
-
+  
+  
   /**
    * <p><b>Description:</b> when trying to switch to another branch from the branches menu
    * and the checkout fails, keep the previous branch selected.</p>
@@ -60,23 +43,32 @@ public class ToolbarPanelTest extends GitTestBase {
    * @throws Exception
    */
   public void testKeepCurrentBranchSelectedWhenSwitchFails() throws Exception {
+
+    File testDir = new File(String.format("target/test-resources/ToolbarPanelTest/%s", this.getName()));
+    String local = String.format("target/test-resources/ToolbarPanelTest/%s/localRepository", this.getName());
+    String remote = String.format("target/test-resources/ToolbarPanelTest/%s/remoteRepository", this.getName());
+    String LOCAL_BRANCH = "LocalBranch";
+
+    //Creates the remote repository.
+    createRepo(remote, local);
+
     //Make the first commit for the local repository
-    File file = new File(LOCAL_REPO, "local.txt");
+    File file = new File(local, "local.txt");
     file.createNewFile();
     setFileContent(file, "local content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
 
     //Make the first commit for the remote repository and create a branch for it.
-    gitAccess.setRepositorySynchronously(REMOTE_REPO);
-    file = new File(REMOTE_REPO, "remote1.txt");
+    gitAccess.setRepositorySynchronously(remote);
+    file = new File(remote, "remote1.txt");
     file.createNewFile();
     setFileContent(file, "remote content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
     gitAccess.commit("First remote commit.");
 
     // Switch back to local repo and create local branch
-    gitAccess.setRepositorySynchronously(LOCAL_REPO);
+    gitAccess.setRepositorySynchronously(local);
     gitAccess.createBranch(LOCAL_BRANCH);
     gitAccess.fetch();
 
@@ -87,7 +79,7 @@ public class ToolbarPanelTest extends GitTestBase {
       GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       JComboBox<String> wcCombo = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
-      String wcPath = new File(LOCAL_REPO).getAbsolutePath();
+      String wcPath = new File(local).getAbsolutePath();
       wcCombo.addItem(wcPath);
       wcCombo.setSelectedItem(wcPath);
       frame.getContentPane().add(stagingPanel);
@@ -95,19 +87,19 @@ public class ToolbarPanelTest extends GitTestBase {
       frame.setVisible(true);
       refreshSupport.call();
       flushAWT();
-      
+
       // Commit a change
-      file = new File(LOCAL_REPO, "local.txt");
+      file = new File(local, "local.txt");
       setFileContent(file, "new 2");
       gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
       gitAccess.commit("First remote commit.");
       flushAWT();
-      
+
       // Create local change
       setFileContent(file, "new 3");
       refreshSupport.call();
       flushAWT();
-      
+
       // Try to switch to another branch
       JComboBox<String> branchesCombo = stagingPanel.getBranchesPanel().getBranchNamesCombo();
       String currentBranch = (String) branchesCombo.getSelectedItem();
@@ -115,19 +107,32 @@ public class ToolbarPanelTest extends GitTestBase {
 
       // select the "Local Branch" (aka the broken one)
       branchesCombo.setSelectedIndex(0);
-      
+
       // wait for swith dialog to appear  
       JDialog switchBranchDialog = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
       JButton yesButton = TestUtil.findButton(switchBranchDialog, translator.getTranslation(Tags.MOVE_CHANGES));
       yesButton.doClick();
       flushAWT();
-      
+
       String currentBranchAfterSwitchFailed = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranchAfterSwitchFailed);
     } finally {
       frame.setVisible(false);
       frame.dispose();
+      FileSystemUtil.deleteRecursivelly(testDir);
     }
+  }
+
+
+  private void createRepo(String remote, String local) throws Exception {
+    createRepository(remote);
+    Repository remoteRepository = gitAccess.getRepository();
+
+    //Creates the local repository.
+    createRepository(local);
+    Repository localRepository = gitAccess.getRepository();
+
+    bindLocalToRemote(localRepository, remoteRepository);
   }
   
   
@@ -141,23 +146,33 @@ public class ToolbarPanelTest extends GitTestBase {
    * @throws Exception
    */
   public void testCanStashChangesIfSwitchBranchFailsBecauseUncommitedFiles() throws Exception {
+    
+    File testDir = new File(String.format("target/test-resources/ToolbarPanelTest/%s", this.getName()));
+    String local = String.format("target/test-resources/ToolbarPanelTest/%s/localRepository", this.getName());
+    String remote = String.format("target/test-resources/ToolbarPanelTest/%s/remoteRepository", this.getName());
+    String LOCAL_BRANCH = "LocalBranch";
+    
+    //Creates the remote repository.
+    createRepo(remote, local);
+    
     //Make the first commit for the local repository
-    File file = new File(LOCAL_REPO, "local.txt");
+    File file = new File(local, "local.txt");
     file.createNewFile();
+    
     setFileContent(file, "local content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
 
     //Make the first commit for the remote repository and create a branch for it.
-    gitAccess.setRepositorySynchronously(REMOTE_REPO);
-    file = new File(REMOTE_REPO, "remote1.txt");
+    gitAccess.setRepositorySynchronously(remote);
+    file = new File(remote, "remote1.txt");
     file.createNewFile();
     setFileContent(file, "remote content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
     gitAccess.commit("First remote commit.");
 
     // Switch back to local repo and create local branch
-    gitAccess.setRepositorySynchronously(LOCAL_REPO);
+    gitAccess.setRepositorySynchronously(local);
     gitAccess.createBranch(LOCAL_BRANCH);
     gitAccess.fetch();
 
@@ -168,7 +183,7 @@ public class ToolbarPanelTest extends GitTestBase {
       GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       JComboBox<String> wcCombo = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
-      String wcPath = new File(LOCAL_REPO).getAbsolutePath();
+      String wcPath = new File(local).getAbsolutePath();
       wcCombo.addItem(wcPath);
       wcCombo.setSelectedItem(wcPath);
       frame.getContentPane().add(stagingPanel);
@@ -178,7 +193,7 @@ public class ToolbarPanelTest extends GitTestBase {
       flushAWT();
       
       // Commit a change
-      file = new File(LOCAL_REPO, "local.txt");
+      file = new File(local, "local.txt");
       setFileContent(file, "new 2");
       gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
       gitAccess.commit("First remote commit.");
@@ -210,6 +225,7 @@ public class ToolbarPanelTest extends GitTestBase {
     } finally {
       frame.setVisible(false);
       frame.dispose();
+      FileSystemUtil.deleteRecursivelly(testDir);
     }
   }
   
@@ -224,32 +240,46 @@ public class ToolbarPanelTest extends GitTestBase {
    * @throws Exception
    */
   public void testButtonsWhenNoRepo() throws Exception {
-    gitAccess.cleanUp();
-    GitController gitCtrl = new GitController();
-    GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
-    stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
-    refreshSupport.setStagingPanel(stagingPanel);
-    flushAWT();
     
-    ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
-    assertFalse(toolbar.getPullMenuButton().isEnabled());
-    assertFalse(toolbar.getPushButton().isEnabled());
-    assertFalse(toolbar.getStashButton().isEnabled());
+    File testDir = new File(String.format("target/test-resources/ToolbarPanelTest/%s", this.getName()));
+    
+    try {
+      GitController gitCtrl = new GitController();
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
+      refreshSupport.setStagingPanel(stagingPanel);
+      
+//      Repository repository = gitAccess.getRepository();
+//      System.err.println("repository: " + repository);
 
-    //Creates repos
-    Repository remoteRepository = createRepository(REMOTE_REPO);
-    Repository localRepository = createRepository(LOCAL_REPO);
-    bindLocalToRemote(localRepository, remoteRepository);
-    flushAWT();
+      ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
+      assertFalse("No repo, the button should be disabled.", toolbar.getPullMenuButton().isEnabled());
+      assertFalse(toolbar.getPushButton().isEnabled());
+      assertFalse(toolbar.getStashButton().isEnabled());
 
-    assertTrue("Pull Merge action should be enabled.", gitActionsManager.getPullMergeAction().isEnabled());
-    assertTrue("Pull Rebase action should be enabled.", gitActionsManager.getPullRebaseAction().isEnabled());
-    assertTrue(toolbar.getPullMenuButton().isEnabled());
-    
-    assertTrue("Push action should be enabled.", gitActionsManager.getPushAction().isEnabled());
-    assertTrue(toolbar.getPushButton().isEnabled());
-    
-    assertFalse(toolbar.getStashButton().isEnabled());
+      //Creates repos
+      String local = String.format("target/test-resources/ToolbarPanelTest/%s/localRepository", this.getName());
+      String remote = String.format("target/test-resources/ToolbarPanelTest/%s/remoteRepository", this.getName());
+
+      //Creates the remote repository.
+      createRepo(remote, local);
+
+      Repository remoteRepository = createRepository(remote);
+      Repository localRepository = createRepository(local);
+      bindLocalToRemote(localRepository, remoteRepository);
+      flushAWT();
+
+      assertTrue("Pull Merge action should be enabled.", gitActionsManager.getPullMergeAction().isEnabled());
+      assertTrue("Pull Rebase action should be enabled.", gitActionsManager.getPullRebaseAction().isEnabled());
+      assertTrue(toolbar.getPullMenuButton().isEnabled());
+
+      assertTrue("Push action should be enabled.", gitActionsManager.getPushAction().isEnabled());
+      assertTrue(toolbar.getPushButton().isEnabled());
+
+      assertFalse(toolbar.getStashButton().isEnabled());
+    } finally {
+      FileSystemUtil.deleteRecursivelly(testDir);
+    }
   }
   
 }

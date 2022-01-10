@@ -222,11 +222,7 @@ public class BranchSelectionPanel extends JPanel {
    * Refresh on invoke later.
    */
   public void refresh() {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        refreshNow();
-      }
-    });
+    refreshNow();
   }
   
   
