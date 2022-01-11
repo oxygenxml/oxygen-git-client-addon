@@ -16,7 +16,6 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.jidesoft.swing.JideToggleButton;
@@ -38,7 +37,6 @@ public class FlatView8Test extends FlatViewTestBase {
   private static final Logger logger = LogManager.getLogger(FlatView8Test.class.getName());
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     

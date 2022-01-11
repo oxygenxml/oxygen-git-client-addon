@@ -6,7 +6,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
+import java.util.function.Supplier;
 
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
@@ -31,6 +34,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
+import com.oxygenxml.git.view.actions.UpdateActionsStatesListener;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.LoginDialog;
@@ -93,6 +97,13 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * History panel.
 	 */
 	private HistoryPanel historyPanel;
+	
+	/**
+	 * Supplies a listener that will be used to notify when different 
+	 * actions and buttons states should be updated (enabled or disabled) 
+	 */
+	private Supplier<UpdateActionsStatesListener> updateActionsStatesListenerSupplier = null;
+	
 	/**
 	 * Refresh task.
 	 */
@@ -109,6 +120,12 @@ public class PanelRefresh implements GitRefreshSupport {
 					if (stagingPanel != null) {
 					  // refresh the states of the actions
 					  stagingPanel.getGitActionsManager().refreshActionsStates();
+					  
+					  // call the listener; can be null from tests
+					  Optional.ofNullable(updateActionsStatesListenerSupplier)
+  					  .filter(t -> Objects.nonNull(t.get()))
+  					  .map(Supplier<UpdateActionsStatesListener>::get)
+  					  .ifPresent(UpdateActionsStatesListener::updateButtonStates);
 					  
 					  // refresh the buttons
 					  stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
@@ -155,9 +172,21 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @param watcher repository change watcher.
 	 */
 	public PanelRefresh(RemoteRepositoryChangeWatcher watcher) {
-		this.watcher = watcher;
+	  this(watcher, null);
 	}
-
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param watcher repository change watcher.
+	 * @param updateActionsStatesListenerSupplier Supplies a listener that will be used to notify when different 
+   * actions and buttons states should be updated (enabled or disabled) 
+	 */
+	public PanelRefresh(RemoteRepositoryChangeWatcher watcher, Supplier<UpdateActionsStatesListener> updateActionsStatesListenerSupplier) {
+		this.watcher = watcher;
+		this.updateActionsStatesListenerSupplier = updateActionsStatesListenerSupplier;
+	}
+	
 	/**
 	 * @see com.oxygenxml.git.utils.GitRefreshSupport.call()
 	 */

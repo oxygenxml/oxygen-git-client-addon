@@ -1,9 +1,5 @@
 package com.oxygenxml.git.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,9 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -27,6 +20,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
+import junit.framework.TestCase;
 import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -38,20 +32,18 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PluginWorkspaceProvider.class})
 @PowerMockIgnore({"javax.management.*", "javax.script.*"})
-public class FileHelperTest {
+public class FileHelperTest extends TestCase {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/FileHelperTest/local";
 
-	private StandalonePluginWorkspace pluginWorkspace;
 
 	/**
 	 * Initialize pluginWorkspace.
 	 *
 	 * @throws IOException
 	 */
-	@Before
-	public void initializePluginWorkspace() throws IOException {
-		pluginWorkspace = Mockito.mock(StandalonePluginWorkspace.class);
+	protected void setUp() throws Exception {
+	  StandalonePluginWorkspace pluginWorkspace = Mockito.mock(StandalonePluginWorkspace.class);
 		UtilAccess utilAccess = Mockito.mock(UtilAccess.class);
 		Mockito.when(pluginWorkspace.getUtilAccess()).thenReturn(utilAccess);
 		Mockito.when(utilAccess.createReader(Mockito.any(URL.class), Mockito.any(String.class)))
@@ -61,13 +53,21 @@ public class FileHelperTest {
     		});
 		PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
 	}
+	
+	protected void tearDown() {
+	  try {
+	    File dir = new File(LOCAL_TEST_REPOSITPRY);
+	    FileUtils.deleteDirectory(dir);
+	  } catch (IOException e) {
+	    e.printStackTrace();
+	  }
+	}
 
 	/**
 	 * Tests the com.oxygenxml.git.utils.FileUtil.containsConflictMarkers(
 	 * final List<FileStatus> allSelectedResources, final File workingCopy) API
 	 *
 	 */
-	@Test
 	public void testConflictMarkersDetector() {
 
 		FileStatus file1 = new FileStatus(GitChangeType.CONFLICT, "file1.txt");
@@ -89,7 +89,6 @@ public class FileHelperTest {
 		assertFalse(FileUtil.containsConflictMarkers(files, workingCopy));
 	}
 
-	@Test
 	public void testIsNotGitRepositoery() throws IOException{
 		File file = new File(LOCAL_TEST_REPOSITPRY);
 		
@@ -101,7 +100,6 @@ public class FileHelperTest {
 		assertEquals(expected, actual);
 	}
 	
-	@Test
 	public void testIsGitRepositoery() throws IOException{
 		File repositoryDirectory = new File(LOCAL_TEST_REPOSITPRY);
 		repositoryDirectory.mkdirs();
@@ -119,7 +117,6 @@ public class FileHelperTest {
 	 * 
 	 * @throws IOException
 	 */
-	@Test
   public void testGetCommonDirectory() throws IOException {
 	  Set<File> files = new HashSet<>();
 	  File firstFile = new File("/home/user1/tmp/coverage/test");
@@ -131,16 +128,5 @@ public class FileHelperTest {
 	  files.remove(firstFile);
 	  files.add(new File("/notHome/user1/tmp/coverage/test"));
 	  assertEquals(new File("/").getCanonicalPath(), FileUtil.getCommonDir(files).getCanonicalPath());
-	}
-	
-	@After
-	public void freeResources() {
-		
-		try {
-			File dir = new File(LOCAL_TEST_REPOSITPRY);
-			FileUtils.deleteDirectory(dir);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

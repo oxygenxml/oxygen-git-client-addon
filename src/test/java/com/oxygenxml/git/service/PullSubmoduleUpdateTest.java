@@ -30,36 +30,41 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
    */
   @Test
   public void testUpdate() throws Exception {
-    Repository submoduleRepo = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
-    String fileName = "file.txt";
-    TestUtil.commitOneFile(submoduleRepo, fileName, "version 1");
-    
-    // Committing a file in the remote makes required initializations.
-    Repository remote = createRepository("target/test-resources/PullSubmodule_main_remote");
-    TestUtil.commitOneFile(remote, "base.txt", "base");
-    setupSubmodule(remote, submoduleRepo, "sub");
-    
-    Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
-    
-    bindLocalToRemote(db2, remote);
-    
-    GitController ctrl = new GitController();
-    GitAccess.getInstance().setGit(new Git(db2));
-    ctrl.pull().get();
-    
-    String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
-    assertEquals("The submodules must be initialized and updated", "version 1", content);
-    
-    // Move the submodule target forward.
-    TestUtil.commitOneFile(submoduleRepo, fileName, "version 2");
-    // Change the submodule to the last commit from target.
-    updateSubmoduleToBranchHead(remote, "sub");
-    
-    // Pull again.
-    GitAccess.getInstance().setGit(new Git(db2));
-    ctrl.pull().get();
-    content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
-    assertEquals("The submodules must be initialized and updated", "version 2", content);
+    try {
+
+      Repository submoduleRepo = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
+      String fileName = "file.txt";
+      TestUtil.commitOneFile(submoduleRepo, fileName, "version 1");
+
+      // Committing a file in the remote makes required initializations.
+      Repository remote = createRepository("target/test-resources/PullSubmodule_main_remote");
+      TestUtil.commitOneFile(remote, "base.txt", "base");
+      setupSubmodule(remote, submoduleRepo, "sub");
+
+      Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
+
+      bindLocalToRemote(db2, remote);
+
+      GitController ctrl = new GitController();
+      GitAccess.getInstance().setGit(new Git(db2));
+      ctrl.pull().get();
+
+      String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+      assertEquals("The submodules must be initialized and updated", "version 1", content);
+
+      // Move the submodule target forward.
+      TestUtil.commitOneFile(submoduleRepo, fileName, "version 2");
+      // Change the submodule to the last commit from target.
+      updateSubmoduleToBranchHead(remote, "sub");
+
+      // Pull again.
+      GitAccess.getInstance().setGit(new Git(db2));
+      ctrl.pull().get();
+      content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+      assertEquals("The submodules must be initialized and updated", "version 2", content);
+    } finally {
+      GitAccess.getInstance().setGit(null);
+    }
   }
   
   /**
@@ -92,6 +97,11 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     
     OptionsManager.getInstance().setUpdateSubmodulesOnPull(true);
   }
+  
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+  }
 
   /**
    * 
@@ -123,50 +133,56 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
    *
    * @throws Exception If it fails.
    */
-  @Test
   public void testUpdateRecursively() throws Exception {
-    Repository submoduleRepoLvl1 = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
-    String fileName = "file.txt";
-    TestUtil.commitOneFile(submoduleRepoLvl1, fileName, "version 1");
     
-    // Committing a file in the remote makes required initializations.
-    Repository submoduleRepoLvl2 = createRepository("target/test-resources/PullSubmodule_main_remote");
-    TestUtil.commitOneFile(submoduleRepoLvl2, "base.txt", "base");
-    setupSubmodule(submoduleRepoLvl2, submoduleRepoLvl1, "sub");
-    
-    // Committing a file in the remote makes required initializations.
-    Repository remote2 = createRepository("target/test-resources/PullSubmodule_main_remote_2");
-    TestUtil.commitOneFile(remote2, "main.txt", "main");
-    setupSubmodule(remote2, submoduleRepoLvl2, "main");
-    
-    // Assert submodules.
-    assertEquals(
-        "The submodules must be initialized and updated", 
-        "base", 
-        TestUtil.read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
-    
-    assertEquals(
-        "The submodules must be initialized and updated", 
-        "version 1", 
-        TestUtil.read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
-    
-    // Main entry point.
-    Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
-    bindLocalToRemote(db2, remote2);
-    
-    GitController ctrl = new GitController();
-    GitAccess.getInstance().setGit(new Git(db2));
-    ctrl.pull().get();
-    
-    assertEquals(
-        "The submodules must be initialized and updated", 
-        "base", 
-        TestUtil.read(new File(db2.getWorkTree(), "main/base.txt").toURI().toURL()));
-    
-    assertEquals(
-        "The submodules must be initialized and updated", 
-        "version 1", 
-        TestUtil.read(new File(db2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+    try {
+
+
+      Repository submoduleRepoLvl1 = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
+      String fileName = "file.txt";
+      TestUtil.commitOneFile(submoduleRepoLvl1, fileName, "version 1");
+
+      // Committing a file in the remote makes required initializations.
+      Repository submoduleRepoLvl2 = createRepository("target/test-resources/PullSubmodule_main_remote");
+      TestUtil.commitOneFile(submoduleRepoLvl2, "base.txt", "base");
+      setupSubmodule(submoduleRepoLvl2, submoduleRepoLvl1, "sub");
+
+      // Committing a file in the remote makes required initializations.
+      Repository remote2 = createRepository("target/test-resources/PullSubmodule_main_remote_2");
+      TestUtil.commitOneFile(remote2, "main.txt", "main");
+      setupSubmodule(remote2, submoduleRepoLvl2, "main");
+
+      // Assert submodules.
+      assertEquals(
+          "The submodules must be initialized and updated", 
+          "base", 
+          TestUtil.read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
+
+      assertEquals(
+          "The submodules must be initialized and updated", 
+          "version 1", 
+          TestUtil.read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+
+      // Main entry point.
+      Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
+      bindLocalToRemote(db2, remote2);
+
+      GitController ctrl = new GitController();
+      GitAccess.getInstance().setGit(new Git(db2));
+      ctrl.pull().get();
+
+      assertEquals(
+          "The submodules must be initialized and updated", 
+          "base", 
+          TestUtil.read(new File(db2.getWorkTree(), "main/base.txt").toURI().toURL()));
+
+      assertEquals(
+          "The submodules must be initialized and updated", 
+          "version 1", 
+          TestUtil.read(new File(db2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+    } finally {
+      GitAccess.getInstance().setGit(null);
+    }
   }
 
   /**
@@ -230,38 +246,42 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
    *
    * @throws Exception If it fails.
    */
-  @Test
   public void testDoNotUpdate() throws Exception {
-    Repository submoduleRepo = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
-    String fileName = "file.txt";
-    TestUtil.commitOneFile(submoduleRepo, fileName, "version 1");
     
-    // Committing a file in the remote makes required initializations.
-    Repository remote = createRepository("target/test-resources/PullSubmodule_main_remote");
-    TestUtil.commitOneFile(remote, "base.txt", "base");
-    setupSubmodule(remote, submoduleRepo, "sub");
-    
-    Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
-    
-    bindLocalToRemote(db2, remote);
-    
-    GitController ctrl = new GitController();
-    GitAccess.getInstance().setGit(new Git(db2));
-    ctrl.pull().get();
-    
-    String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
-    assertEquals("The submodules must be initialized and updated", "version 1", content);
-    
-    // Move the submodule target forward.
-    TestUtil.commitOneFile(submoduleRepo, fileName, "version 2");
-    // Change the submodule to the last commit from target.
-    updateSubmoduleToBranchHead(remote, "sub");
-    
-    OptionsManager.getInstance().setUpdateSubmodulesOnPull(false);
-    // Pull again.
-    GitAccess.getInstance().setGit(new Git(db2));
-    ctrl.pull().get();
-    content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
-    assertEquals("The submodules must no be initialized and updated automatically", "version 1", content);
+    try {
+      Repository submoduleRepo = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
+      String fileName = "file.txt";
+      TestUtil.commitOneFile(submoduleRepo, fileName, "version 1");
+      
+      // Committing a file in the remote makes required initializations.
+      Repository remote = createRepository("target/test-resources/PullSubmodule_main_remote");
+      TestUtil.commitOneFile(remote, "base.txt", "base");
+      setupSubmodule(remote, submoduleRepo, "sub");
+      
+      Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
+      
+      bindLocalToRemote(db2, remote);
+      
+      GitController ctrl = new GitController();
+      GitAccess.getInstance().setGit(new Git(db2));
+      ctrl.pull().get();
+      
+      String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+      assertEquals("The submodules must be initialized and updated", "version 1", content);
+      
+      // Move the submodule target forward.
+      TestUtil.commitOneFile(submoduleRepo, fileName, "version 2");
+      // Change the submodule to the last commit from target.
+      updateSubmoduleToBranchHead(remote, "sub");
+      
+      OptionsManager.getInstance().setUpdateSubmodulesOnPull(false);
+      // Pull again.
+      GitAccess.getInstance().setGit(new Git(db2));
+      ctrl.pull().get();
+      content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+      assertEquals("The submodules must no be initialized and updated automatically", "version 1", content);
+    } finally {
+      GitAccess.getInstance().setGit(null);
+    }
   }
 }

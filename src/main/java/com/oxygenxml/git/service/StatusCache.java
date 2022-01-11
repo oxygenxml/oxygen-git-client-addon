@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import org.eclipse.jgit.api.Git;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -105,7 +107,8 @@ public class StatusCache {
         public void editorSaved(int operationType) {
           if (RepoUtil.isFileFromRepository(editorAccess.getEditorLocation())) {
             resetCache();
-            gitRefreshSupport.call();
+            // can be null in tests
+            Optional.ofNullable(gitRefreshSupport).ifPresent(GitRefreshSupport::call);
           }
         }
       });

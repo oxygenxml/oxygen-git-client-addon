@@ -10,8 +10,6 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -45,7 +43,6 @@ public class BranchMergingTest extends GitTestBase {
   String[] errMsg = new String[1];
   
   @Override
-  @Before
   public void setUp() throws Exception {
     
     super.setUp();
@@ -71,7 +68,6 @@ public class BranchMergingTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testBranchMerging() throws Exception{
     File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
     file.createNewFile();
@@ -155,7 +151,6 @@ public class BranchMergingTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testBranchMergingWithConflict() throws Exception {
     JDialog conflictMergeDialog = null;
     try {
@@ -258,7 +253,6 @@ public class BranchMergingTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testFailingBranchMerging() throws Exception {
     JDialog mergeFailDialog = null;
 
@@ -381,7 +375,6 @@ public class BranchMergingTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testBranchMergingWithoutResolvingConflict() throws Exception { 
     
     JDialog conflictMergeDialog = null;

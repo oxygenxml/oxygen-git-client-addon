@@ -12,8 +12,6 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -28,7 +26,6 @@ import com.oxygenxml.git.view.event.GitController;
  * Test cases for the actions that can be done on a branch.
  * 
  * @author Bogdan Draghici
- *
  */
 public class BranchActionsTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/localRepository";
@@ -40,16 +37,14 @@ public class BranchActionsTest extends GitTestBase {
   private final static String LOCAL_BRANCH_COPY_NAME = "LocalBranchCopy";
   private final static String REMOTE_BRANCH_NAME1_COPY = "RemoteBranchCopy";
   private final static String REMOTE_BRANCH_NAME2_COPY = "RemoteBranch2Copy";
-  private GitAccess gitAccess;
+  private GitAccess gitAccess = GitAccess.getInstance();
   private Repository remoteRepository;
   private Repository localRepository;
   
   @Override
-  @Before
   public void setUp() throws Exception {
     
     super.setUp();
-    gitAccess = GitAccess.getInstance();
     
     //Creates the remote repository.
     createRepository(REMOTE_TEST_REPOSITORY);
@@ -61,12 +56,12 @@ public class BranchActionsTest extends GitTestBase {
     
     bindLocalToRemote(localRepository , remoteRepository);
   }
+  
   /**
    * Tests the action of checkout of a local branch.
    * 
    * @throws Exception
    */
-  @Test
   public void testCheckoutLocalBranchAction() throws Exception{
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
@@ -129,7 +124,6 @@ public class BranchActionsTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testCreateLocalBranchAction() throws Exception{
     boolean initialIsCheckoutNewBranch = OptionsManager.getInstance().isCheckoutNewlyCreatedLocalBranch();
     try {
@@ -214,7 +208,6 @@ public class BranchActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testCreateLocalBranchAction_dontCheckout() throws Exception{
     boolean initialIsCheckoutNewBranch = OptionsManager.getInstance().isCheckoutNewlyCreatedLocalBranch();
     try {
@@ -296,7 +289,6 @@ public class BranchActionsTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testDeleteLocalBranchAction() throws Exception{
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
@@ -362,7 +354,6 @@ public class BranchActionsTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testCheckoutRemoteBranchAction() throws Exception{
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
     
@@ -489,7 +480,6 @@ public class BranchActionsTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  @Test
   public void testContextualMenuActionsOnCurrentBranch() throws Exception{
     
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");

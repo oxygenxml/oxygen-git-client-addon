@@ -1,7 +1,5 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,34 +8,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-public class GitAccessUnstageFilesTest {
+import junit.framework.TestCase;
+
+public class GitAccessUnstageFilesTest extends TestCase {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessUnstageFilesTest";
-	private GitAccess gitAccess;
+	private static final File testDIr = new File(LOCAL_TEST_REPOSITPRY);
+	private GitAccess gitAccess = GitAccess.getInstance();
 
-	@Before
-	public void init() throws IllegalStateException, GitAPIException {
-		gitAccess = GitAccess.getInstance();
+	public void setUp() throws Exception {
+	  testDIr.mkdirs();
+		File file = new File(testDIr, "test.txt");
+		file.createNewFile();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
-		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
 		gitAccess.commit("file test added");
 	}
+	
+	 public void tearDown() throws Exception {
+	    gitAccess.cleanUp();
+	    FileUtils.deleteDirectory(testDIr);
+	  }
 
-	@Test
 	public void testGetUnstagedFilesForModifyFiles() {
 		try {
 			PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
@@ -53,7 +49,6 @@ public class GitAccessUnstageFilesTest {
 		assertEquals(actual.toString(), expected.toString());
 	}
 
-	@Test
 	public void testGetUnstagedFilesForAddedFiles() {
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/add.txt");
 		try {
@@ -68,7 +63,6 @@ public class GitAccessUnstageFilesTest {
 		assertEquals(actual, expected);
 	}
 
-	@Test
 	public void testGetUnstagedFilesForDeletedFiles() {
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.delete();
@@ -77,17 +71,6 @@ public class GitAccessUnstageFilesTest {
 		List<FileStatus> expected = new ArrayList<>();
 		expected.add(new FileStatus(GitChangeType.MISSING, "test.txt"));
 		assertEquals(actual, expected);
-	}
-
-	@After
-	public void freeResources() {
-		gitAccess.closeRepo();
-		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-		try {
-			FileUtils.deleteDirectory(dirToDelete);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

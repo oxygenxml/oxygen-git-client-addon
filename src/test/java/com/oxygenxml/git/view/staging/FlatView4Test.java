@@ -6,8 +6,6 @@ import java.util.Arrays;
 import javax.swing.JButton;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -21,7 +19,6 @@ import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 public class FlatView4Test extends FlatViewTestBase {
   
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
@@ -63,7 +60,6 @@ public class FlatView4Test extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
-  @Test
   public void testStageFileWithModifiedLetterCase() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_NewFile_localX";
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewFile_remoteX";

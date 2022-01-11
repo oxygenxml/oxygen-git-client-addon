@@ -144,6 +144,9 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       }
     } finally {
       GitAccess.getInstance().closeRepo();
+      flushAWT();
+      waitForScheduler();
+      flushAWT();
       
       FileUtils.deleteDirectory(wcTree);
     }
@@ -277,9 +280,11 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       assertEquals(
           expected, dump);
     } finally {
-      GitAccess.getInstance().closeRepo();
-      
+      GitAccess.getInstance().cleanUp();
+      waitForScheduler();
+      flushAWT();
       FileUtils.deleteDirectory(wcTree);
+      flushAWT();
     }
   }
 

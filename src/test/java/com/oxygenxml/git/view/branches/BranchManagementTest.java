@@ -11,7 +11,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -43,7 +42,6 @@ public class BranchManagementTest extends GitTestBase{
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
   
   @Override
-  @Before
   public void setUp() throws Exception {
     
     super.setUp();
@@ -85,7 +83,6 @@ public class BranchManagementTest extends GitTestBase{
    *
    * @throws Exception
    */
-  @Test
   public void testBranchesTreeStructure() throws Exception {
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
@@ -143,7 +140,6 @@ public class BranchManagementTest extends GitTestBase{
    *
    * @throws Exception
    */
-  @Test
   public void testBranchesTreeStructureLocalBranchesOnly() throws Exception {
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
@@ -183,7 +179,6 @@ public class BranchManagementTest extends GitTestBase{
    *
    * @throws Exception
    */
-  @Test
   public void testBranchesTreeStructureRemoteBranchesOnly() throws Exception{
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
     
@@ -229,7 +224,6 @@ public class BranchManagementTest extends GitTestBase{
    *
    * @throws Exception
    */
-  @Test
   public void testBranchesTreeStructureRemoteMainOnly() throws Exception {
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
     File file = new File(REMOTE_TEST_REPOSITORY + "remote.txt");

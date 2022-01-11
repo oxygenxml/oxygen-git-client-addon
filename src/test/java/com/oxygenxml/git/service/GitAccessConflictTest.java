@@ -1,10 +1,5 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,8 +19,6 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -39,13 +32,14 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
 
+import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
-public class GitAccessConflictTest {
+public class GitAccessConflictTest extends TestCase {
   PanelRefresh refreshSupport = new PanelRefresh(null) {
     @Override
     protected int getScheduleDelay() {
@@ -98,8 +92,7 @@ public class GitAccessConflictTest {
         updateSubmodules);
   }
   
-  @Before
-  public void init() throws Exception {
+  public void setUp() throws Exception {
 
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
@@ -211,8 +204,7 @@ public class GitAccessConflictTest {
     errMsg[0] = "";
   }
   
-  @After
-  public void freeResources() {
+  protected void tearDown() {
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
     System.gc();

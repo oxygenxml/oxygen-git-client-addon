@@ -1,10 +1,5 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -15,15 +10,13 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
 
+import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.ColorTheme;
@@ -36,22 +29,22 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  * @author gabriel_nedianu
  *
  */
-public class GitAccesTagsTest {
+public class GitAccesTagsTest extends TestCase {
 
   /**
    * The local repository.
    */
-  private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GItAccessStagedFilesTest";
+  private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccesTagsTest";
   
   /**
    * The local repository.
    */
-  private final static String REPOSITORY_TEST_CLONE = "target/test-resources/GItAccessStagedFiles-clone";
+  private final static String REPOSITORY_TEST_CLONE = "target/test-resources/GitAccesTagsTest-clone";
   
   /**
    * The GitAccess instance.
    */
-  private GitAccess gitAccess;
+  private GitAccess gitAccess = GitAccess.getInstance();
 
   
   /**
@@ -59,9 +52,7 @@ public class GitAccesTagsTest {
    * 
    * @throws Exception 
    */
-  @Before
-  public void init() throws Exception {
-    gitAccess = GitAccess.getInstance();
+  protected void setUp() throws Exception {
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
     Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
@@ -72,7 +63,19 @@ public class GitAccesTagsTest {
     File wcTree = new File(LOCAL_TEST_REPOSITORY);
     RepoGenerationScript.generateRepository(script, wcTree);
   }
-
+  
+  @Override
+  protected void tearDown() throws Exception {
+    gitAccess.cleanUp();
+    File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
+    File dirToDelete2 = new File(REPOSITORY_TEST_CLONE);
+    try {
+      FileUtils.deleteDirectory(dirToDelete);
+      FileUtils.deleteDirectory(dirToDelete2);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
   
   /**
    * <p><b>Description:</b> Tests case when a commit has multiple tags associated with it </p>
@@ -83,7 +86,6 @@ public class GitAccesTagsTest {
    * 
    * @throws Exception
    */
-  @Test
   public void testMultipleTagsOnACommit() throws Exception {
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     
@@ -112,7 +114,6 @@ public class GitAccesTagsTest {
    * @author gabriel_nedianu 
    * @throws Exception
    */
-  @Test
   public void testCreateAndExistsMethods() throws Exception {
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     
@@ -144,7 +145,6 @@ public class GitAccesTagsTest {
    * @throws IOException 
    * @throws GitAPIException 
    */
-  @Test
   public void testDeleteMethod() throws GitAPIException, IOException, NoRepositorySelected {
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     
@@ -171,7 +171,6 @@ public class GitAccesTagsTest {
    * @throws GitAPIException 
    * @throws RevisionSyntaxException 
    */
-  @Test
   public void testPush() throws GitAPIException, NoRepositorySelected, RevisionSyntaxException, IOException {
     File file = new File(REPOSITORY_TEST_CLONE);
     URL url = gitAccess.getRepository().getDirectory().toURI().toURL();
@@ -185,23 +184,6 @@ public class GitAccesTagsTest {
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     assertTrue(gitAccess.existsTag("Tag"));
 
-  }
-
-  
-  /**
-   * Used to free up test resources.
-   */
-  @After
-  public void freeResources() {
-    gitAccess.closeRepo();
-    File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
-    File dirToDelete2 = new File(REPOSITORY_TEST_CLONE);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-      FileUtils.deleteDirectory(dirToDelete2);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
  
 }

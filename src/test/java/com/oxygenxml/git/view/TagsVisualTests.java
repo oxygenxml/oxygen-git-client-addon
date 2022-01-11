@@ -10,7 +10,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
@@ -52,7 +51,6 @@ public class TagsVisualTests extends GitTestBase {
   private StagingPanel stagingPanel;
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     

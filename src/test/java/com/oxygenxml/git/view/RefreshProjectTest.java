@@ -35,6 +35,8 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectController;
  */
 public class RefreshProjectTest extends TestCase {
   
+  GitAccess oldInstance = GitAccess.getInstance();
+  
   PanelRefresh refreshSupport = new PanelRefresh(null) {
     @Override
     protected int getScheduleDelay() {
@@ -47,8 +49,6 @@ public class RefreshProjectTest extends TestCase {
   
   @Override
   protected void setUp() throws Exception {
-    super.setUp();
-    
     refreshedFolder = null;
     
     StandalonePluginWorkspace pluginWorkspace = Mockito.mock(StandalonePluginWorkspace.class);
@@ -76,6 +76,7 @@ public class RefreshProjectTest extends TestCase {
     }).when(projectCtrlMock).refreshFolders(Mockito.any());
     
   }
+  
   /**
    * Local repo path.
    */
@@ -86,8 +87,6 @@ public class RefreshProjectTest extends TestCase {
    * 
    * @throws Exception
    */
-  
-  @Test
   public void testRefreshProjectOnDiscard_1() throws Exception {
     File repoDir = new File(localTestRepoPath);
     repoDir.mkdirs();
@@ -126,8 +125,6 @@ public class RefreshProjectTest extends TestCase {
    * 
    * @throws Exception
    */
-  
-  @Test
   public void testRefreshProjectOnDiscard_2() throws Exception {
     File repoDir = new File(localTestRepoPath);
     repoDir.mkdirs();
@@ -174,7 +171,6 @@ public class RefreshProjectTest extends TestCase {
    */
   
   @PrepareForTest({ GitAccess.class})
-  @Test
   public void testRefreshProjectOnDiscard_3() throws Exception {
     File repoDir = new File(localTestRepoPath);
     repoDir.mkdirs();

@@ -155,6 +155,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * Branch management panel.
 	 */
 	private BranchManagementPanel branchManagementPanel;
+	
+	/**
+	 * The menu bar that contributes the Git actions
+	 */
+	private GitActionsMenuBar menuBar;
 
 	/**
 	 * Customize the menus and add some Git actions.
@@ -185,15 +190,17 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 */
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
-	  pluginWorkspaceAccess = pluginWS;
+	  this.pluginWorkspaceAccess = pluginWS;
 	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 		
-		RemoteRepositoryChangeWatcher watcher = RemoteRepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, gitController);
-    gitRefreshSupport = new PanelRefresh(watcher);
+    gitRefreshSupport = new PanelRefresh(
+        RemoteRepositoryChangeWatcher.createWatcher(pluginWS, gitController),
+        () -> menuBar);
+    
 		final GitActionsManager gitActionsManager = new GitActionsManager(gitController, this, this, gitRefreshSupport);
-		
-		pluginWS.addMenuBarCustomizer(new GitActionsMenuBar(gitActionsManager));
+		menuBar = new GitActionsMenuBar(gitActionsManager);
+    pluginWS.addMenuBarCustomizer(menuBar);
 		
 		try {
 			// Uncomment this to start with fresh options. For testing purposes

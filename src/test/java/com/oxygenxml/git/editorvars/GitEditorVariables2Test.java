@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -20,7 +19,6 @@ import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 /**
  * Git editor variables test.
  */
-@SuppressWarnings("java:S5961")
 public class GitEditorVariables2Test extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/EditorVariablesTest";
   private GitEditorVariablesResolver editorVariablesResolver;
@@ -29,7 +27,6 @@ public class GitEditorVariables2Test extends GitTestBase {
   int noOfWCCalls;
   
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     

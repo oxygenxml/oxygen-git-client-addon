@@ -683,7 +683,6 @@ public class GitAccess {
 		if (git != null) {
 		  AuthenticationInterceptor.unbind(getHostName());
 			git.close();
-			git = null;
 		}
 	}
 

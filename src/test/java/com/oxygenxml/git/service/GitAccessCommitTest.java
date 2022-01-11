@@ -1,36 +1,42 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-public class GitAccessCommitTest {
+import junit.framework.TestCase;
+
+public class GitAccessCommitTest extends TestCase {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitTest";
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 
-	@Before
-	public void init() throws IllegalStateException, GitAPIException {
-		gitAccess = GitAccess.getInstance();
+	protected void setUp() throws Exception {
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+	  gitAccess.cleanUp();
+	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
+	  try {
+	    FileUtils.deleteDirectory(dirToDelete);
+	  } catch (IOException e) {
+	    e.printStackTrace();
+	  }
 	}
 
 	@Test
@@ -74,8 +80,8 @@ public class GitAccessCommitTest {
 		List<String> expectedFileNamesPath = new ArrayList<>();
 		expectedFileNamesPath.add("test.txt");
 
-		assertEquals(actualMessage, expectedMessage);
-		assertEquals(actualFileNamesPath, expectedFileNamesPath);
+		assertEquals(expectedMessage, actualMessage);
+		assertEquals(expectedFileNamesPath.toString(), actualFileNamesPath.toString());
 	}
 
 	@Test
@@ -127,18 +133,7 @@ public class GitAccessCommitTest {
 		expectedFileNamesPath.add("test1.txt");
 		expectedFileNamesPath.add("test2.txt");
 
-		assertEquals(actualMessage, expectedMessage);
-		assertEquals(actualFileNamesPath, expectedFileNamesPath);
-	}
-
-	@After
-	public void freeResources() {
-		gitAccess.closeRepo();
-		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-		try {
-			FileUtils.deleteDirectory(dirToDelete);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		assertEquals(expectedMessage, actualMessage);
+		assertEquals(expectedFileNamesPath.toString(), actualFileNamesPath.toString());
 	}
 }

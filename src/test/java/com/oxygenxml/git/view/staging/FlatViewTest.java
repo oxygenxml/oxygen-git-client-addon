@@ -12,7 +12,6 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.jidesoft.swing.JideToggleButton;
@@ -36,7 +35,6 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 public class FlatViewTest extends FlatViewTestBase {
   
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
@@ -54,7 +52,6 @@ public class FlatViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testConflict_resolveUsingMine() throws Exception {
     String localTestRepository = "target/test-resources/testConflict_resolveUsingMine_local";
     String remoteTestRepository = "target/test-resources/testConflict_resolveUsingMine_remote";
@@ -124,7 +121,6 @@ public class FlatViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testConflict_resolveUsingTheirsAndRestartMerge() throws Exception {
     String localTestRepository = "target/test-resources/testConflict_resolveUsingTheirs_local";
     String remoteTestRepository = "target/test-resources/testConflict_resolveUsingTheirs_remote";
@@ -202,7 +198,6 @@ public class FlatViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testSaveRemoteURL() throws Exception {
     String localTestRepository = "target/test-resources/testSave_local";
     createRepository(localTestRepository);
@@ -238,7 +233,6 @@ public class FlatViewTest extends FlatViewTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
 
     // TODO - review this with Alex  
@@ -290,7 +284,6 @@ public class FlatViewTest extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
-  @Test
   public void testSwitchViewModes() throws Exception {
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     try {
@@ -381,7 +374,6 @@ public class FlatViewTest extends FlatViewTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testAutoPushWhenCommit() throws Exception {
     String localTestRepository = "target/test-resources/testAutoPushWhenCommit_local";
     String remoteTestRepository = "target/test-resources/testAutoPushWhenCommit_remote";

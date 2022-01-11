@@ -1,8 +1,7 @@
-package com.oxygenxml.git.editorvars;
+  package com.oxygenxml.git.editorvars;
 
 import java.io.File;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -23,7 +22,6 @@ public class GitEditorVariablesTest extends GitTestBase {
   private EditorVariablesResolver editorVariablesResolver = new GitEditorVariablesResolver(new GitController());
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
 

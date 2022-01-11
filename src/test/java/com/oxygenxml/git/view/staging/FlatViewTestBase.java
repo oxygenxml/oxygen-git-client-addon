@@ -10,7 +10,6 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
-import org.junit.Before;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
@@ -81,7 +80,6 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
   }
   
   @Override
-  @Before
   public void tearDown() throws Exception {
     super.tearDown();
     

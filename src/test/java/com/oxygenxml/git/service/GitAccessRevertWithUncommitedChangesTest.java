@@ -8,7 +8,6 @@ import javax.swing.JDialog;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -36,7 +35,6 @@ public class GitAccessRevertWithUncommitedChangesTest extends GitTestBase {
    * Creates the local repository and commits a few files.
    */
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
 

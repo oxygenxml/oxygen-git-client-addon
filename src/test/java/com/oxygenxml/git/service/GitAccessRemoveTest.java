@@ -1,7 +1,5 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,20 +9,19 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-public class GitAccessRemoveTest {
+import junit.framework.TestCase;
+
+public class GitAccessRemoveTest extends TestCase {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessRemoveTest";
 	private GitAccess gitAccess;
 
-	@Before
-	public void init() throws IllegalStateException, GitAPIException {
+	protected void setUp() throws IllegalStateException, GitAPIException {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
@@ -35,6 +32,16 @@ public class GitAccessRemoveTest {
 		}
 		gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
 		gitAccess.commit("file test added");
+	}
+	
+	protected void tearDown() {
+	  gitAccess.closeRepo();
+	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
+	  try {
+	    FileUtils.deleteDirectory(dirToDelete);
+	  } catch (IOException e) {
+	    e.printStackTrace();
+	  }
 	}
 
 	@Test
@@ -85,16 +92,5 @@ public class GitAccessRemoveTest {
 		List<FileStatus> expected = new ArrayList<>();
 		expected.add(new FileStatus(GitChangeType.MISSING, "test.txt"));
 		assertEquals(expected, actual);
-	}
-
-	@After
-	public void freeResources() {
-		gitAccess.closeRepo();
-		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-		try {
-			FileUtils.deleteDirectory(dirToDelete);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

@@ -7,8 +7,6 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Asserts the status of the local repository. 
@@ -18,14 +16,12 @@ public class GitStatusTest extends GitTestBase {
   protected final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitStatusTest/local";
   protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitStatusTest/local2";
   private final static String REMOTE_TEST_REPOSITORY = "target/test-resources/GitStatusTest/remote";
-  protected GitAccess gitAccess;
+  protected GitAccess gitAccess = GitAccess.getInstance();
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
     
-    gitAccess = GitAccess.getInstance();
     createRepository(LOCAL_TEST_REPOSITORY);
     createRepository(SECOND_LOCAL_TEST_REPOSITORY);
     createRepository(REMOTE_TEST_REPOSITORY);
@@ -75,7 +71,6 @@ public class GitStatusTest extends GitTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testPullsBehind_PushAhead() throws Exception {
     /**
      * Repo1 pushes something to remote.
@@ -103,7 +98,6 @@ public class GitStatusTest extends GitTestBase {
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testNoPullsBehind() throws Exception{
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
     

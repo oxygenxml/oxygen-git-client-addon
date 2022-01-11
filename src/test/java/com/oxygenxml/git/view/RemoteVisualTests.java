@@ -11,7 +11,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -48,17 +47,13 @@ public class RemoteVisualTests extends GitTestBase {
   private final static String REMOTE_REPO2 = "target/test-resources/GitAccessRemote/remoteRepository2";
   private final static String LOCAL_BRANCH = "LocalBranch";
 
-  private GitAccess gitAccess;
+  private GitAccess gitAccess = GitAccess.getInstance();
   private StagingPanel stagingPanel;
   private Repository localRepository;
 
   @Override
-  @Before
   public void setUp() throws Exception {
     super.setUp();
-    
-    gitAccess = GitAccess.getInstance();
-
     //Creates the remote repository.
     createRepository(REMOTE_REPO);
     Repository remoteRepository = gitAccess.getRepository();
