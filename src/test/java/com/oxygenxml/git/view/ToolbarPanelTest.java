@@ -54,9 +54,6 @@ public class ToolbarPanelTest extends GitTestBase {
       stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
       refreshSupport.setStagingPanel(stagingPanel);
       
-      Repository repository = gitAccess.getRepository();
-      System.err.println("repository: " + repository);
-
       ToolbarPanel toolbar = stagingPanel.getToolbarPanel();
       assertFalse("No repo, the button should be disabled.", toolbar.getPullMenuButton().isEnabled());
       assertFalse(toolbar.getPushButton().isEnabled());
