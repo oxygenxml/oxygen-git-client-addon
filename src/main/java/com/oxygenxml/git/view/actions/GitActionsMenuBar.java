@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.actions;
 
+import java.awt.event.KeyEvent;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -51,6 +53,8 @@ public class GitActionsMenuBar implements MenuBarCustomizer {
 	public GitActionsMenuBar(@NonNull final GitActionsManager gitActionsManager) {
 		this.actionsManager = gitActionsManager;
 
+		gitMenu.setMnemonic(KeyEvent.VK_G);
+		
 		// Add clone repository item
 		gitMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getCloneRepositoryAction()));
 
