@@ -7,15 +7,13 @@
 
 package com.oxygenxml.git.view.actions.internal;
 
-import javax.swing.AbstractAction;
-
 /**
  * Abstract action which is always enabled.
  * 
  * @author alex_smarandache
  *
  */
-public abstract class AlwaysEnabledAction extends AbstractAction {
+public abstract class AlwaysEnabledAction extends BaseGitAbstractAction {
   
   /**
    * Constructor.

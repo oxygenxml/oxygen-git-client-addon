@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.Icons;
@@ -19,7 +17,7 @@ import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
  * @author alex_smarandache
  *
  */
-public class ManageRemoteRepositoriesAction extends AbstractAction {
+public class ManageRemoteRepositoriesAction extends BaseGitAbstractAction {
 
 	/**
 	 * The translator for translations.

@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.Icons;
@@ -19,7 +17,7 @@ import com.oxygenxml.git.view.event.GitController;
  * @author alex_smarandache
  *
  */
-public class PushAction extends AbstractAction {
+public class PushAction extends BaseGitAbstractAction {
 
 	/**
 	 * The translator for translations.

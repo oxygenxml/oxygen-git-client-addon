@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,7 +19,7 @@ import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
  * @author alex_smarandache
  *
  */
-public class ShowBranchesAction extends AbstractAction {
+public class ShowBranchesAction extends BaseGitAbstractAction {
 
 	/**
 	 * Logger for logging.

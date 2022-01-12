@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
@@ -18,7 +16,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author alex_smarandache
  *
  */
-public class SetRemoteAction extends AbstractAction {
+public class SetRemoteAction extends BaseGitAbstractAction {
 
 	/**
 	 * The translator for the messages that are displayed in this panel

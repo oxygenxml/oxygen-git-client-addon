@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -18,7 +16,7 @@ import com.oxygenxml.git.view.event.PullType;
  * @author alex_smarandache
  *
  */
-public class PullAction extends AbstractAction {
+public class PullAction extends BaseGitAbstractAction {
 	
 	/**
 	 * Logger for logging.

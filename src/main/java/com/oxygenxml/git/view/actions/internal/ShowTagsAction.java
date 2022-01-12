@@ -3,8 +3,6 @@ package com.oxygenxml.git.view.actions.internal;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
-
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.constants.Icons;
@@ -21,7 +19,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Alex_Smarandache
  *
  */
-public class ShowTagsAction extends AbstractAction {
+public class ShowTagsAction extends BaseGitAbstractAction {
 	
 	/**
 	 * The translator for translations.

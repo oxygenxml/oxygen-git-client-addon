@@ -26,6 +26,7 @@ public class CloneRepositoryAction extends AlwaysEnabledAction {
 	public CloneRepositoryAction() {
 		super(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP) + "...");
 		this.putValue(SMALL_ICON, Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
+		
 	}
 
 	

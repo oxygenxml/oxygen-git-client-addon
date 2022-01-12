@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -15,7 +13,7 @@ import com.oxygenxml.git.view.history.HistoryController;
  * @author alex_smarandache
  *
  */
-public class ShowHistoryAction extends AbstractAction {
+public class ShowHistoryAction extends BaseGitAbstractAction {
 
 	/**
 	 * The history controller.

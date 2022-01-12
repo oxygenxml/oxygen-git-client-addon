@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import javax.swing.AbstractAction;
-
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -21,7 +19,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Alex_Smarandache
  *
  */
-public class EditConfigFileAction extends AbstractAction {
+public class EditConfigFileAction extends BaseGitAbstractAction {
 	
 	/**
 	 * The translator for translations.

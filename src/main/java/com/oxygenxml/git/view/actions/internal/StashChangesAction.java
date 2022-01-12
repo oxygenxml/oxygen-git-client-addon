@@ -2,9 +2,6 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-
-import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.stash.StashUtil;
@@ -15,7 +12,7 @@ import com.oxygenxml.git.view.stash.StashUtil;
  * @author Alex_Smarandache
  *
  */
-public class StashChangesAction extends AbstractAction {
+public class StashChangesAction extends BaseGitAbstractAction {
 	
 	/**
 	 * The translator for translations.
