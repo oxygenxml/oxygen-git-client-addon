@@ -1,9 +1,6 @@
 package com.oxygenxml.git.view.staging;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -11,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
@@ -26,7 +21,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -49,17 +43,17 @@ import com.oxygenxml.git.view.util.UIUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
- * This is a panel with a combo box to select the current branch for repo.
+ * This is a combo box to select the current branch for repo.
  * 
  * @author Alex_Smarandache
  */
-public class BranchSelectionPanel extends JPanel {
+public class BranchSelectionCombo extends JComboBox<String> {
   
   
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(BranchSelectionPanel.class);
+  private static final Logger LOGGER = Logger.getLogger(BranchSelectionCombo.class);
 
   /**
    * i18n
@@ -70,11 +64,6 @@ public class BranchSelectionPanel extends JPanel {
    * Access to the Git API.
    */
   private static final GitAccess GIT_ACCESS = GitAccess.getInstance();
-
-  /**
-   * Branch names combo.
-   */
-  private JComboBox<String> branchNamesCombo;
   
   /**
    * <code>true</code> if the combo popup is showing.
@@ -91,30 +80,23 @@ public class BranchSelectionPanel extends JPanel {
    */
   private String detachedHeadId;
   
-  /**
-   * <code>true</code> if the panel has a label attached.
-   */
-  private final boolean isLabeled;
   
   
   /**
-   * Creates the panel.
+   * Constructor.
    * 
    * @param gitController Git Controller.
    * @param isLabeled     <code>true</code> if the panel has a label attached.
    */
-  public BranchSelectionPanel(final GitController gitController, final boolean isLabeled) {
-    this.isLabeled = isLabeled;
-    
-    createGUI();
-    
-    branchNamesCombo.addItemListener(event -> {
+  public BranchSelectionCombo(final GitController gitController) {
+        
+    this.addItemListener(event -> {
       if (!inhibitBranchSelectionListener && event.getStateChange() == ItemEvent.SELECTED) {
         treatBranchSelectedEvent(event);
       }
     });
     
-    branchNamesCombo.addPopupMenuListener(new PopupMenuListener() {
+    this.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         isComboPopupShowing = true;
@@ -186,38 +168,7 @@ public class BranchSelectionPanel extends JPanel {
     }
   }
 
-  
-  /**
-   * Create the graphical user interface.
-   */
-  private void createGUI() {
-    setLayout(new GridBagLayout());
-    
-    // Branch label
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING,
-        UIConstants.COMPONENT_LEFT_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING,
-        UIConstants.COMPONENT_RIGHT_PADDING);
-    if(isLabeled) {
-      JLabel currentBranchLabel = new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH) + ":");
-      add(currentBranchLabel, gbc);
-    }
-    
-    // Branches combo
-    branchNamesCombo = new JComboBox<>();
-    gbc.gridx = isLabeled ? 1 : 0;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.weightx = 1;
-    add(branchNamesCombo, gbc);
-    
-    branchNamesCombo.setMinimumSize(new Dimension(UIUtil.DUMMY_MIN_WIDTH,
-    		branchNamesCombo.getPreferredSize().height));
-  }
-  
+ 
   /**
    * Refresh on invoke later.
    */
@@ -248,7 +199,7 @@ public class BranchSelectionPanel extends JPanel {
       LOGGER.debug(e, e);
     }
 
-    branchNamesCombo.setEnabled(repo != null);
+    this.setEnabled(repo != null);
     
     final BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     final String currentBranchName = branchInfo.getBranchName();
@@ -262,7 +213,7 @@ public class BranchSelectionPanel extends JPanel {
       }
       tooltipText = TextFormatUtil.toHTML(tooltipText);
       String finalText = tooltipText;
-      SwingUtilities.invokeLater(() -> branchNamesCombo.setToolTipText(finalText));
+      SwingUtilities.invokeLater(() -> this.setToolTipText(finalText));
     } else {
       detachedHeadId = null;
       String branchTooltip = null;
@@ -270,7 +221,7 @@ public class BranchSelectionPanel extends JPanel {
         branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
       }
       String branchTooltipFinal = branchTooltip;
-      branchNamesCombo.setToolTipText(branchTooltipFinal);
+      this.setToolTipText(branchTooltipFinal);
     }
   }
 
@@ -344,15 +295,15 @@ public class BranchSelectionPanel extends JPanel {
    */
   private void addBranchesToCombo(final List<String> branches) {
     inhibitBranchSelectionListener = true;
-    branches.forEach(branchNamesCombo::addItem);
+    branches.forEach(branch -> this.addItem(branch));
     inhibitBranchSelectionListener = false;
     
     if (detachedHeadId != null) {
-      branchNamesCombo.addItem(detachedHeadId);
+      this.addItem(detachedHeadId);
     }
     
     final String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
-    branchNamesCombo.setSelectedItem(currentBranchName);
+    this.setSelectedItem(currentBranchName);
   }
   
   
@@ -361,14 +312,14 @@ public class BranchSelectionPanel extends JPanel {
    */
   private void updateBranchesPopup() {
     final boolean isVisible = isComboPopupShowing;
-    branchNamesCombo.hidePopup();
+    this.hidePopup();
 
-    branchNamesCombo.removeAllItems();
+    this.removeAllItems();
     addBranchesToCombo(getBranches());
 
-    branchNamesCombo.revalidate();
+    this.revalidate();
     if (isVisible) {
-      branchNamesCombo.showPopup();
+      this.showPopup();
     }
   }
   
@@ -399,7 +350,7 @@ public class BranchSelectionPanel extends JPanel {
     final RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if (oldBranchInfo.isDetached() && !RepoUtil.isRepoRebasing(repoState)) {
       detachedHeadId = null;
-      branchNamesCombo.removeItem(oldBranchInfo.getBranchName());
+      this.removeItem(oldBranchInfo.getBranchName());
     }
     
     GitOperationScheduler.getInstance().schedule(() -> {
@@ -422,22 +373,14 @@ public class BranchSelectionPanel extends JPanel {
    */
   private void restoreCurrentBranchSelectionInMenu() {
     final String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
-    final int itemCount = branchNamesCombo.getItemCount();
+    final int itemCount = this.getItemCount();
     for (int i = 0; i < itemCount; i++) {
-      String branch = branchNamesCombo.getItemAt(i);
+      String branch = this.getItemAt(i);
       if (branch.equals(currentBranchName)) {
-        branchNamesCombo.setSelectedItem(branch);
+        this.setSelectedItem(branch);
         break;
       }
     }
-  }
-  
-  
-  /**
-   * @return the branches combo.
-   */
-  public JComboBox<String> getBranchNamesCombo() {
-    return branchNamesCombo;
   }
   
   
@@ -451,5 +394,11 @@ public class BranchSelectionPanel extends JPanel {
   @Override
   public JToolTip createToolTip() {
     return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+  }
+  
+  
+  @Override
+  public Dimension getMinimumSize() {
+    return new Dimension(UIUtil.DUMMY_MIN_WIDTH, getPreferredSize().height);
   }
 }

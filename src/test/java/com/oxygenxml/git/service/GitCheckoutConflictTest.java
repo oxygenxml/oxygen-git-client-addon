@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
@@ -39,7 +38,7 @@ import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
-import com.oxygenxml.git.view.staging.BranchSelectionPanel;
+import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -334,10 +333,9 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    BranchSelectionPanel branchPanel = new BranchSelectionPanel(gitController, false);
-    branchPanel.refresh();
     
-    JComboBox<String> branchesCombo = branchPanel.getBranchNamesCombo();
+    BranchSelectionCombo branchesCombo = new BranchSelectionCombo(gitController);
+    branchesCombo.refresh();
     SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
     flushAWT();
     
@@ -395,11 +393,8 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     
     // Simulate branch checkout from Git Staging
     GitController gitController = new GitController(gitAccess);
-    BranchSelectionPanel branchPanel = new BranchSelectionPanel(gitController, false);
-    branchPanel.refresh();
-    flushAWT();
-    
-    JComboBox<String> branchesCombo = branchPanel.getBranchNamesCombo();
+    BranchSelectionCombo branchesCombo = new BranchSelectionCombo(gitController);
+    branchesCombo.refresh();
     SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
     flushAWT();
     
@@ -509,12 +504,8 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     branchManagementPanel.refreshBranches();
     flushAWT();
    
-    
-    BranchSelectionPanel branchPanel = new BranchSelectionPanel((GitController) gitCtrl, false);
-    branchPanel.refresh();
-    flushAWT();
-    
-    JComboBox<String> branchesCombo = branchPanel.getBranchNamesCombo();
+    BranchSelectionCombo branchesCombo = new BranchSelectionCombo((GitController) gitCtrl);
+    branchesCombo.refresh();
     SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
     flushAWT();
     

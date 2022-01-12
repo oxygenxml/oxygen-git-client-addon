@@ -18,7 +18,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
 
 import ro.sync.basic.io.FileSystemUtil;
@@ -26,7 +25,7 @@ import ro.sync.basic.io.FileSystemUtil;
 /**
  * Toolbar panel tests.
  */
-public class BranchPanelSelectionTest extends GitTestBase {
+public class BranchSelectionComboTest extends GitTestBase {
   
   private GitAccess gitAccess = GitAccess.getInstance();
   private StagingPanel stagingPanel;
@@ -101,7 +100,7 @@ public class BranchPanelSelectionTest extends GitTestBase {
       flushAWT();
 
       // Try to switch to another branch
-      JComboBox<String> branchesCombo = stagingPanel.getBranchesPanel().getBranchNamesCombo();
+      JComboBox<String> branchesCombo = stagingPanel.getBranchesCombo();
       String currentBranch = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranch);
 
@@ -205,7 +204,7 @@ public class BranchPanelSelectionTest extends GitTestBase {
       flushAWT();
       
       // Try to switch to another branch
-      JComboBox<String> branchesCombo = stagingPanel.getBranchesPanel().getBranchNamesCombo();
+      JComboBox<String> branchesCombo = stagingPanel.getBranchesCombo();
       String currentBranch = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranch);
       

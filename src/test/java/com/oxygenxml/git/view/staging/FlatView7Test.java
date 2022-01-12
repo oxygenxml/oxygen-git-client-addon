@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.staging;
 
-import javax.swing.JComboBox;
 import javax.swing.JMenu;
 
 import org.eclipse.jgit.api.Git;
@@ -59,20 +58,18 @@ public class FlatView7Test extends FlatViewTestBase {
 		pushOneFileToRemote(localTestRepository, "init.txt", "hello");
 		flushAWT();
 		
-		BranchSelectionPanel branchesPanel = stagingPanel.getBranchesPanel();
-		branchesPanel.refresh();
+		BranchSelectionCombo branchesCombo = stagingPanel.getBranchesCombo();
+		branchesCombo.refresh();
 		flushAWT();
 		
 		// Create local branch
 		Git git = GitAccess.getInstance().getGit();
 		git.branchCreate().setName("new_branch").call();
 		GitAccess.getInstance().setBranch("new_branch");
-
-    JComboBox<String> branchesButton = branchesPanel.getBranchNamesCombo();
 		
 
 		ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
-		branchesPanel.refresh();
+		branchesCombo.refresh();
     flushAWT();
     refreshSupport.call();
     flushAWT();
@@ -85,13 +82,13 @@ public class FlatView7Test extends FlatViewTestBase {
 				toolbarPanel.getPushButton().getToolTipText());
 		assertEquals(
 				"<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
-				branchesButton.getToolTipText());
+				branchesCombo.getToolTipText());
 
 		// Push to create the remote branch
 		((GitController) stagingPanel.getGitController()).push();
 		waitForScheluerBetter();
 
-		branchesPanel.refresh();
+		branchesCombo.refresh();
 		flushAWT();
 		refreshSupport.call();
 		flushAWT();
@@ -106,7 +103,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		assertEquals(
 				"<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>origin/new_branch</b>.<br>"
 						+ "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
-						branchesButton.getToolTipText());
+						branchesCombo.getToolTipText());
 
 		GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME);
 		flushAWT();
@@ -122,7 +119,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		flushAWT();
 		GitAccess.getInstance().fetch();
-		branchesPanel.refresh();
+		branchesCombo.refresh();
 		refreshSupport.call();
 		
 		
@@ -149,12 +146,12 @@ public class FlatView7Test extends FlatViewTestBase {
 				actual
 				);  
 
-		actual = branchesButton.getToolTipText();
+		actual = branchesCombo.getToolTipText();
 
 		assertEquals(
 				"<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
 						+ "One_commit_behind<br>One_commit_ahead</html>",
-						branchesButton.getToolTipText());
+						branchesCombo.getToolTipText());
 
 		// Commit a new change locally
 		commitOneFile(localTestRepository, "anotherFile.txt", "changed");
@@ -166,7 +163,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		branchesPanel.refresh();
+		branchesCombo.refresh();
 		flushAWT();
     refreshSupport.call();
     flushAWT();
@@ -191,7 +188,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		assertEquals(
 				"<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
 						+ "Commits_behind<br>Commits_ahead</html>",
-						branchesButton.getToolTipText());
+						branchesCombo.getToolTipText());
 
 		// Commit a new change locally
 		commitOneFile(localTestRepository, "anotherFile200000000000000000000000000000000000000000000000000000000000"
@@ -209,7 +206,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		branchesPanel.refresh();
+		branchesCombo.refresh();
 		flushAWT();
     refreshSupport.call();
 		flushAWT();
@@ -259,7 +256,7 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
-		branchesPanel.refresh();
+		branchesCombo.refresh();
     flushAWT();
     refreshSupport.call();
     flushAWT();
