@@ -37,7 +37,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_1() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -84,7 +83,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_2() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -132,7 +130,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_3() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -180,7 +177,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_4() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -227,7 +223,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_5() throws Exception {
     // Create repositories
     String localTestRepository = "target/test-resources/testActionsEnabling5_local";
@@ -283,7 +278,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_6() throws Exception {
     // Create repositories
     String localTestRepository = "target/test-resources/testActionsEnabling6_local";
@@ -340,7 +334,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_7() throws Exception {
     // Create repositories
     String localTestRepository = "target/test-resources/testActionsEnabling7_local";
@@ -397,7 +390,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_8() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -447,7 +439,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_9() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -498,7 +489,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_10() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -549,7 +539,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_11() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -596,7 +585,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_12() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -644,7 +632,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_13() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -692,7 +679,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_14() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -742,7 +728,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_15() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -793,7 +778,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_16() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -844,7 +828,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_17() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -894,7 +877,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_18() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -945,7 +927,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_19() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -993,7 +974,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_20() throws Exception {
     GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
@@ -1040,7 +1020,6 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    *
    * @throws Exception
    */
-  @Test
   public void testActionsEnablingState_21() throws Exception {
     // Create repositories
     String localTestRepository = "target/test-resources/testActionsEnabling6_local";

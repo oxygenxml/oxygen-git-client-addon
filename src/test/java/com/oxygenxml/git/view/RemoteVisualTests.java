@@ -540,6 +540,7 @@ public class RemoteVisualTests extends GitTestBase {
     } finally {
       frame.setVisible(false);
       frame.dispose();
+      PluginWorkspaceProvider.setPluginWorkspace(null);
     }
   }
   

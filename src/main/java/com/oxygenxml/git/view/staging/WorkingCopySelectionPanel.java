@@ -43,6 +43,7 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.util.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -177,16 +178,19 @@ public class WorkingCopySelectionPanel extends JPanel {
 							"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
 							"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
 					int[] optionIds = new int[] { 0, 1 };
-					int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-							TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
-							TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
-							options,
-							optionIds);
-					if (result == optionIds[0]) {
-						clearHistory();
-					} else {
-						workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
-					}
+					PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+					if (pluginWorkspace != null) {
+					  int result = pluginWorkspace.showConfirmDialog(
+					      TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
+					      TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+					      options,
+					      optionIds);
+					  if (result == optionIds[0]) {
+					    clearHistory();
+					  } else {
+					    workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
+					  }
+          }
 				});
 			} else {
 				if (selectedEntry != null) {
