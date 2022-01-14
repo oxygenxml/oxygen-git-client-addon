@@ -131,7 +131,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     if (nameToPropose != null) {
       branchNameField.setText(nameToPropose);
     }
-    branchNameField.setPreferredSize(new Dimension(200, branchNameField.getPreferredSize().height));
+    branchNameField.setPreferredSize(new Dimension(300, branchNameField.getPreferredSize().height));
     branchNameField.selectAll();
     gbc.gridx ++;
     gbc.weightx = 1;
@@ -145,7 +145,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     errorMessageTextArea.setForeground(Color.RED);
     Font font = errorMessageTextArea.getFont();
     errorMessageTextArea.setFont(font.deriveFont(font.getSize() - 1.0f));
-    gbc.gridx = 1;
+    gbc.gridx = 0;
     gbc.gridy ++;
     gbc.gridwidth = 2;
     gbc.insets = new Insets(3, 0, 0, 0);
