@@ -118,7 +118,6 @@ public class BranchSelectionCombo extends JComboBox<String> {
         if (operation == GitOperation.OPEN_WORKING_COPY
             || operation == GitOperation.ABORT_REBASE 
             || operation == GitOperation.CONTINUE_REBASE
-            || operation == GitOperation.COMMIT
             || operation == GitOperation.DELETE_BRANCH
             || operation == GitOperation.CREATE_BRANCH
             || operation == GitOperation.CHECKOUT) {

@@ -35,7 +35,6 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.RevCommitUtil;
@@ -47,8 +46,6 @@ import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.actions.internal.PullAction;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitEventInfo;
-import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -185,18 +182,7 @@ public class ToolbarPanel extends JPanel {
    */
   public ToolbarPanel(GitController gitController, GitActionsManager gitActionsManager) {
     this.gitActionsManager = gitActionsManager;
-
     createGUI();
-    gitController.addGitListener(new GitEventAdapter() {
-      @Override
-      public void operationSuccessfullyEnded(GitEventInfo info) {
-        GitOperation operation = info.getGitOperation();
-        if (operation == GitOperation.DELETE_BRANCH ||
-            operation == GitOperation.CREATE_BRANCH) {
-          updateButtonsStates();
-        }
-      }
-    });
   }
 
   
