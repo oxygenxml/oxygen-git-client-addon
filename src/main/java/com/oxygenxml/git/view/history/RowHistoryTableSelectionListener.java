@@ -171,18 +171,18 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	private final Timer descriptionUpdateTimer;
 	/**
 	 * Table that presents the resources changed inside a commit.
-	 */
-    private final JTable changesTable;
+	*/
+  private final JTable changesTable;
     
-    /**
-     * The current file history presented.
-     */
-    private final FileHistoryPresenter filePresenter;
+  /**
+   * The current file history presented.
+   */
+  private final FileHistoryPresenter filePresenter;
     
-    /**
-     * The rename tracker for presented file.
-     */
-    private final RenameTracker renameTracker;
+  /**
+   * The rename tracker for presented file.
+   */
+  private final RenameTracker renameTracker;
     
     
     

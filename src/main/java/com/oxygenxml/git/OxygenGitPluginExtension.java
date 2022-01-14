@@ -242,7 +242,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 					});
 
 			// Listens on the save event in the Oxygen editor and invalidates the cache.
-			GitAccess.getInstance().getStatusCache().installEditorsHook(pluginWS, gitRefreshSupport);
+			GitAccess.getInstance().getStatusCache().installEditorsHook(pluginWS);
 			
 
 			// Present the view to the user if it is the first run of the plugin

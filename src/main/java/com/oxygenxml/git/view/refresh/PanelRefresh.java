@@ -129,7 +129,7 @@ public class PanelRefresh implements GitRefreshSupport {
 					  
 					  // refresh the buttons
 					  stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
-						stagingPanel.updateToolbarsButtonsStates();
+						SwingUtilities.invokeLater(() -> stagingPanel.updateToolbarsButtonsStates());
 						
 						GitStatus status = GitAccess.getInstance().getStatus();
 						updateFiles(

@@ -177,7 +177,9 @@ public class HistoryPanel extends JPanel {
   /**
    * Contains the options storage.
    */
-  private final WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();;
+  private final WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
+  
+  private boolean hasUncommitedChanges  = false;
 
   
 
@@ -357,7 +359,11 @@ public class HistoryPanel extends JPanel {
       editorAccess.addEditorListener(new WSEditorListener() {
         @Override
         public void editorSaved(int operationType) {
-          GitOperationScheduler.getInstance().schedule(() -> treatEditorSavedEvent(editorLocation));
+          boolean newHasUncommitedChanges = GitAccess.getInstance().getStatusCache().getStatus().hasUncommittedChanges();
+          if(hasUncommitedChanges != newHasUncommitedChanges) {
+            GitOperationScheduler.getInstance().schedule(() -> treatEditorSavedEvent(editorLocation));
+          }
+          hasUncommitedChanges = newHasUncommitedChanges;
         }
       });
     }
@@ -768,6 +774,8 @@ public class HistoryPanel extends JPanel {
         final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(
         		currentStrategy, filePath, renameTracker);
 
+        hasUncommitedChanges = GitAccess.getInstance().getStatusCache().getStatus().hasUncommittedChanges();
+        
         final Repository repo = gitAccess.getRepository();
        
         final CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,

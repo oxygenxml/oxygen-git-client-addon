@@ -349,6 +349,11 @@ public class StagingPanel extends JPanel {
 					selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
 
 					if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+					  if(gitActionsManager != null) {
+              gitActionsManager.refreshActionsStates();
+              
+            }
+					  SwingUtilities.invokeLater(() -> updateToolbarsButtonsStates());
 						if (LOGGER.isDebugEnabled()) {
 							LOGGER.debug("Notify " + fileInWorkPath);
 							LOGGER.debug("WC " + selectedRepositoryPath);
@@ -357,9 +362,7 @@ public class StagingPanel extends JPanel {
 						Collection<String> affectedFiles = Collections.singletonList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
 						FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
 						SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
-						if(gitActionsManager != null) {
-							gitActionsManager.refreshActionsStates();
-						}
+						
 					}
 				} catch (NoRepositorySelected e) {
 					LOGGER.debug(e, e);

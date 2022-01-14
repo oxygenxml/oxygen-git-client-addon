@@ -1,7 +1,6 @@
 package com.oxygenxml.git.service;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
@@ -10,8 +9,6 @@ import org.eclipse.jgit.api.Git;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.refresh.GitRefreshSupport;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -83,12 +80,12 @@ public class StatusCache {
    * @param pluginWorkspace Workspace access.
    * @param gitRefreshSupport Plugin's refresh support.
    */
-  public void installEditorsHook(PluginWorkspace pluginWorkspace, PanelRefresh gitRefreshSupport) {
+  public void installEditorsHook(PluginWorkspace pluginWorkspace) {
     pluginWorkspace.addEditorChangeListener(
         new WSEditorChangeListener() {
           @Override
           public void editorOpened(final URL editorLocation) {
-            addEditorSaveHook(pluginWorkspace.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA), gitRefreshSupport);
+            addEditorSaveHook(pluginWorkspace.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA));
           }
         },
         PluginWorkspace.MAIN_EDITING_AREA);
@@ -100,15 +97,13 @@ public class StatusCache {
    * @param editorLocation Editor to check.
    * @param gitRefreshSupport Plugin's refresh support.
    */
-  private void addEditorSaveHook(WSEditor editorAccess, PanelRefresh gitRefreshSupport) {
+  private void addEditorSaveHook(WSEditor editorAccess) {
     if (editorAccess != null) {
       editorAccess.addEditorListener(new WSEditorListener() {
         @Override
         public void editorSaved(int operationType) {
           if (RepoUtil.isFileFromRepository(editorAccess.getEditorLocation())) {
             resetCache();
-            // can be null in tests
-            Optional.ofNullable(gitRefreshSupport).ifPresent(GitRefreshSupport::call);
           }
         }
       });
