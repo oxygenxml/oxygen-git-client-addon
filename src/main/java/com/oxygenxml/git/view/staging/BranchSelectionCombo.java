@@ -120,6 +120,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
             || operation == GitOperation.CONTINUE_REBASE
             || operation == GitOperation.DELETE_BRANCH
             || operation == GitOperation.CREATE_BRANCH
+            || operation == GitOperation.CHECKOUT_COMMIT
             || operation == GitOperation.CHECKOUT) {
           refresh();
         }
