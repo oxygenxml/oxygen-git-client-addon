@@ -243,7 +243,7 @@ public class ToolbarPanel extends JPanel {
      */
     pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
     pullMenuButton.setEnabled(isPullButtonEnabled());
-    stashButton.setEnabled(isStashinActionEnabled());
+    stashButton.setEnabled(isStashButtonEnabled());
     historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
     showBranchesButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
     
@@ -347,12 +347,13 @@ public class ToolbarPanel extends JPanel {
    * Enables/Disables the buttons.
    *
    * @param enabled <code>true</code> to enable the buttons. <code>false</code> to disable them.
+   * @param force <code>true</code> to force enable/disable the buttons even actions state may differ.
    */
-  public void setButtonsEnabledState(boolean enabled) {
+  public void setButtonsEnabledState(boolean enabled, boolean force) {
     pushButton.setEnabled(enabled);
-    pullMenuButton.setEnabled(enabled);
+    pullMenuButton.setEnabled(force? enabled : isPullButtonEnabled());
     showBranchesButton.setEnabled(enabled);
-    stashButton.setEnabled(enabled);
+    stashButton.setEnabled(force ? enabled : isStashButtonEnabled());
     historyButton.setEnabled(enabled);
   }
 
@@ -908,7 +909,7 @@ public class ToolbarPanel extends JPanel {
     stashLocalButton.setToolTipText(TRANSLATOR.getTranslation(Tags.STASH));
     stashLocalButton.addActionToMenu(gitActionsManager.getStashChangesAction(), false);
     stashLocalButton.addActionToMenu(gitActionsManager.getListStashesAction(),  false);
-    stashLocalButton.setEnabled(isStashinActionEnabled());
+    stashLocalButton.setEnabled(isStashButtonEnabled());
 
     return stashLocalButton;
   }
@@ -951,7 +952,7 @@ public class ToolbarPanel extends JPanel {
    * @return <code>true</code> if the stash button is enabled.
    * Any of the inner actions of the button are enabled.
    */
-  private boolean isStashinActionEnabled() {
+  private boolean isStashButtonEnabled() {
     return gitActionsManager.getListStashesAction().isEnabled() || 
         gitActionsManager.getStashChangesAction().isEnabled();
   }

@@ -531,6 +531,11 @@ public class StagingPanel extends JPanel {
 				
 				branchSelectionCombo.refresh();
 
+				if (toolbarPanel != null) {
+					toolbarPanel.setButtonsEnabledState(true, false);
+				}
+				
+
 				gitActionsManager.refreshActionsStates();
 			}
 
@@ -547,7 +552,7 @@ public class StagingPanel extends JPanel {
 				branchSelectionCombo.setEnabled(false);
 
 				if (toolbarPanel != null) {
-					toolbarPanel.setButtonsEnabledState(false);
+					toolbarPanel.setButtonsEnabledState(false, true);
 				}
 
 				commitPanel.getCommitButton().setEnabled(false);
