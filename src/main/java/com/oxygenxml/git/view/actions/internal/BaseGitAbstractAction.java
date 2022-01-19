@@ -1,11 +1,10 @@
 package com.oxygenxml.git.view.actions.internal;
 
-import java.util.Optional;
-
 import javax.swing.AbstractAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.actions.ActionsProvider;
 
 /**
  * Base abstract action for Git. 
@@ -24,8 +23,13 @@ public abstract class BaseGitAbstractAction extends AbstractAction {
 	 */
 	public BaseGitAbstractAction(final String actionName) {
 		super(actionName);
-		StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-		Optional.ofNullable(pluginWorkspace).ifPresent(pws -> pws.getActionsProvider().registerAction("git." + actionName, this, null));
+		final StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+		if(pluginWorkspace != null) {
+		  final ActionsProvider actionsProvider = pluginWorkspace.getActionsProvider();
+		  if(actionsProvider != null) {
+		    actionsProvider.registerAction("git." + actionName, this, null);
+		  }  
+		}
 	}
 	
 }
