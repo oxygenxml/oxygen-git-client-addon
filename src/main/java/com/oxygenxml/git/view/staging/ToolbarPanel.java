@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractButton;
@@ -234,6 +235,11 @@ public class ToolbarPanel extends JPanel {
       repo = GIT_ACCESS.getRepository();
     } catch (NoRepositorySelected e) {
       LOGGER.debug(e, e);
+    }
+    
+    final Collection<RevCommit> stashes = GIT_ACCESS.listStashes();
+    if(stashes != null) {
+    	noOfStashes = stashes.size();
     }
     
     
