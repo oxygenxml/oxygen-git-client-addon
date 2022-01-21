@@ -1,10 +1,11 @@
 package com.oxygenxml.git.auth;
 
-import org.apache.log4j.Logger;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
@@ -26,7 +27,7 @@ public class AuthUtil {
   /**
    * Logger.
    */
-  private static Logger logger = Logger.getLogger(AuthUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AuthUtil.class);
   /**
    * Translator for i18n.
    */
@@ -101,9 +102,9 @@ public class AuthUtil {
       AuthExceptionMessagePresenter excMessPresenter,
       boolean retryLoginHere) {
     
-    if (logger.isDebugEnabled()) {
-      logger.debug("Handle Auth Exception: ");
-      logger.debug(ex, ex);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Handle Auth Exception: ");
+      LOGGER.debug(ex.getMessage(), ex);
     }
     
     Throwable cause = ex;
@@ -158,14 +159,14 @@ public class AuthUtil {
               + translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS));
         }
       } else {
-        logger.error(ex, ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
     } else {
       // "Unhandled" exception
       if (excMessPresenter != null) {
         excMessPresenter.presentMessage(ex.getClass().getName() + ": " + ex.getMessage());
       } else {
-        logger.error(ex, ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
     }
     

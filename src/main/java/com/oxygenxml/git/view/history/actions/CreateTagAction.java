@@ -5,10 +5,10 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -33,7 +33,7 @@ public class CreateTagAction extends AbstractAction {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(CreateTagAction.class.getName());
+  private static final Logger LOGGER =  LoggerFactory.getLogger(CreateTagAction.class.getName());
   /**
    * The ID of the commit used for tag.
    */
@@ -63,7 +63,7 @@ public class CreateTagAction extends AbstractAction {
             GitAccess.getInstance().pushTag(tagTitle);
           }
         } catch (GitAPIException | RevisionSyntaxException | NoRepositorySelected | IOException ex) {
-          LOGGER.debug(ex);
+          LOGGER.debug(ex.getMessage(), ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
       });

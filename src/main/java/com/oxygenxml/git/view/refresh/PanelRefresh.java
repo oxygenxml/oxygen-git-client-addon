@@ -14,9 +14,10 @@ import java.util.function.Supplier;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.options.OptionsManager;
@@ -59,7 +60,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(PanelRefresh.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PanelRefresh.class);
 
 	/**
 	 * The staging panel.
@@ -108,7 +109,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * Refresh task.
 	 */
 	private Runnable refreshRunnable = () -> {
-		logger.debug("Start refresh on thread.");
+		LOGGER.debug("Start refresh on thread.");
 
 		boolean isAfterRestart = lastOpenedProject == null; 
 		// No point in refreshing if we've just changed the repository.
@@ -159,11 +160,11 @@ public class PanelRefresh implements GitRefreshSupport {
 					BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
 				}
 			} catch (NoRepositorySelected | IOException e) {
-				logger.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 		}
 
-		logger.debug("End refresh on thread.");
+		LOGGER.debug("End refresh on thread.");
 	};
 
 	/**
@@ -193,7 +194,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	@Override
 	public void call() {
 		if (refreshFuture != null && !refreshFuture.isDone()) {
-			logger.debug("cancel refresh task");
+			LOGGER.debug("cancel refresh task");
 			refreshFuture.cancel(true);
 		}
 		refreshFuture = refreshExecutor.schedule(refreshRunnable, getScheduleDelay());
@@ -267,7 +268,7 @@ public class PanelRefresh implements GitRefreshSupport {
 				}
 			}
 		} catch (NoRepositorySelected e) {
-			logger.warn(e, e);
+			LOGGER.warn(e.getMessage(), e);
 		}
 		return repoChanged;
 	}
@@ -284,7 +285,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		try {
 			repoPath = file.getCanonicalPath();
 		} catch (IOException e) {
-			logger.debug(e, e);
+			LOGGER.debug(e.getMessage(), e);
 			repoPath = file.getAbsolutePath();
 		}
 		return repoPath;
@@ -307,7 +308,7 @@ public class PanelRefresh implements GitRefreshSupport {
 
 			same = first.equals(second); 
 		} catch (IOException e) {
-			logger.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 
 		return same;
@@ -368,7 +369,7 @@ public class PanelRefresh implements GitRefreshSupport {
 					gitAccess.createNewRepository(projectDir);
 					repoChanged = true;
 				} catch (IllegalStateException | GitAPIException e) {
-					logger.debug(e,  e);
+					LOGGER.debug(e.getMessage(),  e);
 					pluginWS.showErrorMessage("Failed to create a new repository.", e);
 				}
 			}
@@ -428,7 +429,7 @@ public class PanelRefresh implements GitRefreshSupport {
 			}
 		} catch (Exception e) {
 			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
-			logger.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 		return statusInfo;
 	}
@@ -445,7 +446,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		try {
 			remoteURLFromConfig = gitAccess.getRemoteURLFromConfig();
 		} catch (NoRepositorySelected ex) {
-			logger.debug(ex, ex);
+			LOGGER.debug(ex.getMessage(), ex);
 		}
 		String extraInfo = e.getMessage();
 		if (remoteURLFromConfig != null && !extraInfo.contains(remoteURLFromConfig)) {
@@ -464,9 +465,9 @@ public class PanelRefresh implements GitRefreshSupport {
 		// The current files presented in the panel.
 		List<FileStatus> filesInModel = panelToUpdate.getFilesStatuses();
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("New files      " + newfiles);
-			logger.debug("Files in model " + filesInModel);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("New files      " + newfiles);
+			LOGGER.debug("Files in model " + filesInModel);
 		}
 
 		// Quick change detection.

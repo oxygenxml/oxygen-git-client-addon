@@ -42,7 +42,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -52,6 +51,8 @@ import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Ref.Storage;
 import org.eclipse.jgit.transport.URIish;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.constants.Icons;
@@ -75,7 +76,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(CloneRepositoryDialog.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CloneRepositoryDialog.class);
 	
 	/**
 	 * The default branch marker.
@@ -147,12 +148,12 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 				get();
 				OptionsManager.getInstance().saveDestinationPath(destFile.getAbsolutePath());
 			} catch (InterruptedException e) {
-				if (logger.isDebugEnabled()) {
-				  logger.debug(e, e);
+				if (LOGGER.isDebugEnabled()) {
+				  LOGGER.debug(e.getMessage(), e);
 				}
 				Thread.currentThread().interrupt();
 			} catch (ExecutionException e) {
-			  logger.debug(e);
+			  LOGGER.debug(e.getMessage(), e);
 			  
 				progressDialog.dispose();
 
@@ -210,8 +211,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
       try {
         FileUtils.cleanDirectory(destFile);
       } catch (IOException e1) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e1, e1);
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e1.getMessage(), e1);
         }
       }
     }
@@ -300,8 +301,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	              showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
 	            } else {
 	              pluginWorkspace.showErrorMessage(e.getMessage());
-	              if (logger.isDebugEnabled())  {
-	                logger.debug(e, e);
+	              if (LOGGER.isDebugEnabled())  {
+	                LOGGER.debug(e.getMessage(), e);
 	              }
 	            }
 	          } finally {
@@ -329,8 +330,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
             }
           } catch (URISyntaxException e) {
             showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
-            if (logger.isDebugEnabled()) {
-              logger.debug(e, e);
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug(e.getMessage(), e);
             }
           }
         }

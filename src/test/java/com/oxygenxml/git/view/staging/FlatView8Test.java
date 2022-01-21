@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -17,6 +15,8 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.service.GitAccess;
@@ -34,7 +34,7 @@ public class FlatView8Test extends FlatViewTestBase {
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static final Logger logger = LogManager.getLogger(FlatView8Test.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(FlatView8Test.class.getName());
 
   @Override
   public void setUp() throws Exception {

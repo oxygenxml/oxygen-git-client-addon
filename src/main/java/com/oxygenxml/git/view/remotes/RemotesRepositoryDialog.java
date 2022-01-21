@@ -22,8 +22,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 import javax.swing.table.TableColumn;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -54,7 +54,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = LogManager.getLogger(RemotesRepositoryDialog.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RemotesRepositoryDialog.class);
 
 	/**
 	 * The translator.
@@ -95,7 +95,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		try {
 			getContentPane().add(createRemotesPanel());
 		} catch (NoRepositorySelected e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 
 		pack();
@@ -149,7 +149,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
         try {
           GitAccess.getInstance().updateConfigFile();
         } catch (NoRepositorySelected e) {
-          LOGGER.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
       }
     }
@@ -260,7 +260,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 	      try {
 	        GitAccess.getInstance().updateRemote(oldRemote, newRemote, newURL);
 	      } catch (NoRepositorySelected e1) {
-	        LOGGER.error(e1, e1);
+	        LOGGER.error(e1.getMessage(), e1);
 	      } 
 	    });
 	  }
@@ -440,7 +440,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 										try {
 											GitAccess.getInstance().removeRemote(remoteName);
 										} catch (NoRepositorySelected e1) {
-											LOGGER.error(e1, e1);
+											LOGGER.error(e1.getMessage(), e1);
 										}	
 										
 									}

@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -35,7 +36,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(GitEditorVariablesResolver.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitEditorVariablesResolver.class);
   /**
    * Editor variable name to resolved value.
    */

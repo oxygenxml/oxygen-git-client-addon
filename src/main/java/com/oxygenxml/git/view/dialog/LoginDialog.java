@@ -19,7 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.CredentialsBase;
@@ -50,7 +51,7 @@ public class LoginDialog extends OKCancelDialog {
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(LoginDialog.class); 
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoginDialog.class); 
 	/**
 	 * The host for which to enter the credentials
 	 */
@@ -100,8 +101,9 @@ public class LoginDialog extends OKCancelDialog {
 		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE),
 		    true);
 		
-		if (logger.isDebugEnabled()) {
-		  logger.debug(new Exception("LOGIN DIALOG WAS SHOWN..."));
+		if (LOGGER.isDebugEnabled()) {
+		  final Exception e = new Exception("LOGIN DIALOG WAS SHOWN...");
+		  LOGGER.debug(e.getMessage(), e);
 		}
 		
 		this.host = host;

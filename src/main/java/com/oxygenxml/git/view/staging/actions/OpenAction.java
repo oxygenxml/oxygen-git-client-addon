@@ -8,8 +8,9 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
@@ -20,7 +21,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
-import com.oxygenxml.git.view.staging.ChangesPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.editor.EditorPageConstants;
@@ -34,7 +34,7 @@ public class OpenAction extends AbstractAction {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(OpenAction.class.getName());
+  private static final Logger LOGGER =  LoggerFactory.getLogger(OpenAction.class.getName());
   
   /**
    * The translator used for the contextual menu names
@@ -70,7 +70,7 @@ public class OpenAction extends AbstractAction {
           openFile(file);
         }
       } catch (Exception ex) {
-        logger.error(ex, ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
     }
     
@@ -78,7 +78,7 @@ public class OpenAction extends AbstractAction {
       try {
         GitAccess.getInstance().setSubmodule(submodule.getFileLocation());
       } catch (IOException | GitAPIException ex) {
-        logger.error(ex, ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
     }
   }

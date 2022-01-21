@@ -40,9 +40,10 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -124,7 +125,7 @@ public class ChangesPanel extends JPanel {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(ChangesPanel.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(ChangesPanel.class);
   
   /**
    * The current view name.
@@ -266,7 +267,7 @@ public class ChangesPanel extends JPanel {
                     ex -> refresh(Collections.emptyList()));
               }
             } catch (NoRepositorySelected ex) {
-              LOGGER.debug(ex, ex);
+              LOGGER.debug(ex.getMessage(), ex);
               ChangesPanel.this.repositoryChanged(Collections.emptyList());
             }
           

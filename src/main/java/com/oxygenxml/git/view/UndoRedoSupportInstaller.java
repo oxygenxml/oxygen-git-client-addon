@@ -18,7 +18,8 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
@@ -38,7 +39,7 @@ public class UndoRedoSupportInstaller {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(UndoRedoSupportInstaller.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(UndoRedoSupportInstaller.class.getName());
 
   private static class MyCompoundEdit extends CompoundEdit {
   	boolean isUnDone = false;
@@ -111,8 +112,8 @@ public class UndoRedoSupportInstaller {
   				lastOffset = start;
   
   			} catch (BadLocationException e1) {
-  				if (logger.isDebugEnabled()) {
-  				  logger.debug(e1, e1);
+  				if (LOGGER.isDebugEnabled()) {
+  				  LOGGER.debug(e1.getMessage(), e1);
   				}
   			}
   		}

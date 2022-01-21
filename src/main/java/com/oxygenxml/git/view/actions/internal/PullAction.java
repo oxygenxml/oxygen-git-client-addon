@@ -2,7 +2,8 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -21,7 +22,7 @@ public class PullAction extends BaseGitAbstractAction {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(PullAction.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PullAction.class);
 	
 	/**
 	 * Property for pull type.
@@ -67,7 +68,7 @@ public class PullAction extends BaseGitAbstractAction {
         }
       } catch (NoRepositorySelected e1) {
         if(LOGGER.isDebugEnabled()) {
-          LOGGER.debug(e1, e1);
+          LOGGER.debug(e1.getMessage(), e1);
         }
       }
     }

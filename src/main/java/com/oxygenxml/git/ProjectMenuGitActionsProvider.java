@@ -13,7 +13,8 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
@@ -43,7 +44,7 @@ public class ProjectMenuGitActionsProvider {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(ProjectMenuGitActionsProvider.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProjectMenuGitActionsProvider.class.getName());
   /**
    * Plug-in workspace access.
    */
@@ -223,7 +224,7 @@ public class ProjectMenuGitActionsProvider {
         } catch (Exception e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Repository opening failed due to: " + e1.getMessage());
           
-          logger.error(e1, e1);
+          LOGGER.error(e1.getMessage(), e1);
         }
       }
     } finally {
@@ -267,7 +268,7 @@ public class ProjectMenuGitActionsProvider {
         } catch (IOException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Repository opening failed due to: " + e1.getMessage());
           
-          logger.error(e1, e1);
+          LOGGER.error(e1.getMessage(), e1);
         }
       }
     } finally {
@@ -320,7 +321,7 @@ public class ProjectMenuGitActionsProvider {
         try {
           selFileURL = selectedFiles[0].toURI().toURL();
         } catch (MalformedURLException e) {
-          logger.warn(e, e);
+          LOGGER.warn(e.getMessage(), e);
         }
         String ext = Files.getFileExtension(selectedFiles[0].getName());
         isNonBinaryFile = selFileURL != null 

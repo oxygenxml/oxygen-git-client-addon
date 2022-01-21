@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffConfig;
@@ -42,6 +41,8 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
@@ -67,7 +68,7 @@ public class RevCommitUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(RevCommitUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RevCommitUtil.class);
   /**
    * Index of the parent commit which contains untracked changes.
    */
@@ -122,9 +123,9 @@ public class RevCommitUtil {
         changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch(MissingObjectException exc) {
-    	LOGGER.debug(exc, exc);
+    	LOGGER.debug(exc.getMessage(), exc);
     } catch (RevisionSyntaxException | IOException | NoRepositorySelected e) {
-      LOGGER.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
 
     return changedFiles;
@@ -1033,7 +1034,7 @@ public class RevCommitUtil {
     try {
       return repo.resolve("HEAD^{commit}");
     } catch (IOException e) {
-      LOGGER.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
     return null;
   }

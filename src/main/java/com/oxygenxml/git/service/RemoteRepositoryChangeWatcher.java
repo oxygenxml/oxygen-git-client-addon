@@ -6,11 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
@@ -30,7 +31,7 @@ public class RemoteRepositoryChangeWatcher {
   /**
    * Logger used to display exceptions.
    */
-  private static Logger logger = Logger.getLogger(RemoteRepositoryChangeWatcher.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RemoteRepositoryChangeWatcher.class);
   
   /**
    * Sleeping time used to implement the coalescing.
@@ -116,8 +117,8 @@ public class RemoteRepositoryChangeWatcher {
    * @param fetch <code>true</code> to execute a fetch before making the checks.
    */
   public void checkRemoteRepository(boolean fetch) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Handle notification mode");
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Handle notification mode");
     }
 
     List<RevCommit> commitsBehind = checkForRemoteCommits(fetch);
@@ -140,7 +141,7 @@ public class RemoteRepositoryChangeWatcher {
         optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
       }
     } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
   }
   
@@ -157,7 +158,7 @@ public class RemoteRepositoryChangeWatcher {
       repository = GitAccess.getInstance().getRepository();
       optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
     } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     String workTree = repository != null ? repository.getWorkTree().getAbsolutePath() : "";
     String remoteRepoUrl = repository != null ? repository.getConfig().getString(
@@ -166,7 +167,7 @@ public class RemoteRepositoryChangeWatcher {
     try {
       branch = repository != null ? repository.getBranch() : "";
     } catch (IOException e) {
-      logger.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
     String remoteBranch = GitAccess.getInstance().getUpstreamBranchShortNameFromConfig(branch);
     
@@ -216,7 +217,7 @@ public class RemoteRepositoryChangeWatcher {
       repository = GitAccess.getInstance().getRepository();
       return !commitId.contentEquals(optionsManager.getWarnOnChangeCommitId(repository.getIdentifier()));
     } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     return false;
   }
@@ -241,7 +242,7 @@ public class RemoteRepositoryChangeWatcher {
       }
     } catch (NoRepositorySelected | IOException | SSHPassphraseRequiredException | PrivateRepositoryException
         | RepositoryUnavailableException e) {
-      logger.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     return commitsBehind;
   }

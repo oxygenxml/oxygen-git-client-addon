@@ -1,10 +1,11 @@
 package com.oxygenxml.git.auth;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.UnsupportedCredentialItem;
 import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
@@ -25,7 +26,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(ResetableUserCredentialsProvider.class); 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ResetableUserCredentialsProvider.class); 
   /**
    * Translator for i18n.
    */
@@ -90,8 +91,8 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   @Override
   public void reset(URIish uri) {
     wasReset = true;
-    if (logger.isDebugEnabled()) {
-      logger.debug("Reset credentials provider for: " + uri.toString());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Reset credentials provider for: " + uri.toString());
     }
     if (isCredentialsPreviouslyRequested && !isUserCancelledLogin) {
       LoginDialog loginDialog = new LoginDialog(host, getLoginFailureMessage());
@@ -143,8 +144,8 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   @Override
   public boolean get(URIish uri, CredentialItem... items) {
     wasReset = false;
-    if (logger.isDebugEnabled()) {
-      logger.debug("Get credential items for: " + uri.toString());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Get credential items for: " + uri.toString());
     } 
     if (!isUserCancelledLogin) {
       for (CredentialItem credentialItem : items) { // NOSONAR

@@ -38,7 +38,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.MockSystemReader;
@@ -60,6 +59,8 @@ import org.eclipse.jgit.util.SystemReader;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
@@ -101,7 +102,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(GitTestBase.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitTestBase.class);
   /**
    * i18n
    */
@@ -135,7 +136,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     });
     } catch (Throwable t) {
       if (!t.getMessage().contains("factory already defined")) {
-        logger.info(t, t);
+        LOGGER.info(t.getMessage(), t);
       }
     } 
   }
@@ -342,9 +343,9 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
         int xl = label.getLocationOnScreen().x;
         int yl = label.getLocationOnScreen().y;
         
-        logger.debug("Found: " + label.getText() + " ( " +xl + "," + yl + " ) ");
+        LOGGER.debug("Found: " + label.getText() + " ( " +xl + "," + yl + " ) ");
         
-        logger.debug("Searching for " + clazz);
+        LOGGER.debug("Searching for " + clazz);
         List<T> allComponents = new ComponentFinder(clazz).findAll(parent);
         
         int min = Integer.MAX_VALUE;
@@ -354,7 +355,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
           T c = (T) comIter.next(); 
           int xc = c.getLocationOnScreen().x;
           int yc = c.getLocationOnScreen().y;
-          logger.debug("Checking:  ( " +xl + "," + yl + " ) " + c);
+          LOGGER.debug("Checking:  ( " +xl + "," + yl + " ) " + c);
           // Favour components from the left and right.
           int distance = (int) Math.sqrt((xc - xl)*(xc - xl) + (yc - yl)*(yc - yl) * 5);
           if(distance < min){
@@ -364,7 +365,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
         }
         
         ret = closest;
-        logger.debug("The closest is: " + ret);          
+        LOGGER.debug("The closest is: " + ret);          
       }
     }
     return ret;
@@ -882,7 +883,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       if(dialogToReturn != null) {
         break;
       } else {
-        logger.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
+        LOGGER.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
         sleep(200);
       }
     }
@@ -896,7 +897,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
 //    try {
 //      s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
 //    } catch (InterruptedException e1) {
-//      logger.error(e1, e1);
+//      LOGGER.error(e1, e1);
 //    }
 //    sleep(400);
 //  }
@@ -1050,7 +1051,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       try {
         task.get(4000, TimeUnit.MILLISECONDS);
       } catch (ExecutionException | TimeoutException | InterruptedException e) {
-        logger.error("The current refresh task didn't finish.");
+        LOGGER.error("The current refresh task didn't finish.");
       }
     }
     
@@ -1061,7 +1062,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       
-      logger.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
   }
   

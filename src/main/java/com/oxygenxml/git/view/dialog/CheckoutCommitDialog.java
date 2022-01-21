@@ -22,11 +22,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -66,7 +67,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	/**
 	 *  Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(CheckoutCommitDialog.class); 
+	private static final Logger LOGGER = LoggerFactory.getLogger(CheckoutCommitDialog.class); 
 
 	/**
 	 * TextField for entering the branch name.
@@ -349,7 +350,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 				}
 			}
 		} catch (GitAPIException e) {
-			LOGGER.error(e,  e);
+			LOGGER.error(e.getMessage(),  e);
 		}
 		super.doOK();
 	}
@@ -387,7 +388,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 					titleAlreadyExists = BranchesUtil.existsLocalBranch(branchName);
 					errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH_ALREADY_EXISTS));
 				} catch (NoRepositorySelected e) {
-					LOGGER.error(e, e);
+					LOGGER.error(e.getMessage(), e);
 				}
 			}
 		} else {

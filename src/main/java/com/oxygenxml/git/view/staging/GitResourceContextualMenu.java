@@ -8,8 +8,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
@@ -42,7 +43,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(GitResourceContextualMenu.class.getName());
+	private static final Logger LOGGER =  LoggerFactory.getLogger(GitResourceContextualMenu.class.getName());
 	/**
 	 * The translator used for the contextual menu names
 	 */
@@ -292,7 +293,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
             gitCtrl.asyncAddToIndex(allSelectedResources);
           }
         } catch (Exception err) {
-          LOGGER.error(err, err);
+          LOGGER.error(err.getMessage(), err);
         }
       }
     };

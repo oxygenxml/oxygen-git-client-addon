@@ -6,7 +6,8 @@ import java.util.Set;
 
 import javax.swing.JPopupMenu;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -24,7 +25,7 @@ public class ProjectViewManager {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(ProjectViewManager.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProjectViewManager.class.getName());
   
   /**
    * Hiden constructor.
@@ -48,8 +49,8 @@ public class ProjectViewManager {
         }
       });
 		} catch (Exception e) {
-		  if (logger.isDebugEnabled()) {
-		    logger.debug(e, e);
+		  if (LOGGER.isDebugEnabled()) {
+		    LOGGER.debug(e.getMessage(), e);
 		  }
 		} 
 	}

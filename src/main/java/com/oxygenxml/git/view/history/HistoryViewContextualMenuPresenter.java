@@ -17,10 +17,11 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
@@ -67,7 +68,7 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(HistoryViewContextualMenuPresenter.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(HistoryViewContextualMenuPresenter.class);
   /**
    * Executes GIT commands (stage, unstage, discard, etc).
    */
@@ -130,7 +131,7 @@ public class HistoryViewContextualMenuPresenter {
             Optional<URL> fileURL = getFileURL(commitCharacteristic.getCommitId(), fileStatus.get());
             fileURL.ifPresent(url -> PluginWorkspaceProvider.getPluginWorkspace().open(url));
           } catch (IOException | GitAPIException | NoRepositorySelected e1) {
-            LOGGER.debug(e1, e1);
+            LOGGER.debug(e1.getMessage(), e1);
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
           }
         }
@@ -383,7 +384,7 @@ public class HistoryViewContextualMenuPresenter {
             DiffPresenter.showTwoWayDiff(((FileStatusOverDiffEntry) fileStatus));
           } catch (MalformedURLException e1) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
-            LOGGER.error(e1, e1);
+            LOGGER.error(e1.getMessage(), e1);
           }
         }
       });
@@ -426,7 +427,7 @@ public class HistoryViewContextualMenuPresenter {
         }
       } catch (IOException | NoRepositorySelected e2) {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e2.getMessage());
-        LOGGER.error(e2, e2);
+        LOGGER.error(e2.getMessage(), e2);
       }
     }
   }
@@ -457,10 +458,10 @@ public class HistoryViewContextualMenuPresenter {
           DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
         } catch (FileNotFoundException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
-          LOGGER.debug(e1, e1);
+          LOGGER.debug(e1.getMessage(), e1);
         } catch (NoRepositorySelected | IOException | GitAPIException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
-          LOGGER.error(e1, e1);
+          LOGGER.error(e1.getMessage(), e1);
         }
       }
     });
@@ -500,7 +501,7 @@ public class HistoryViewContextualMenuPresenter {
           DiffPresenter.showTwoWayDiff(commitID, filePath, parentRevCommit.name(), parentFilePath);
         } catch (MalformedURLException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
-          LOGGER.debug(e1, e1);
+          LOGGER.debug(e1.getMessage(), e1);
         }
       }
     };
@@ -634,7 +635,7 @@ public class HistoryViewContextualMenuPresenter {
           Optional<URL> fileURL = getFileURL(revisionID, fileStatus);
           fileURL.ifPresent(url -> PluginWorkspaceProvider.getPluginWorkspace().open(url));
         } catch (NoRepositorySelected | IOException e1) {
-          LOGGER.error(e1, e1);
+          LOGGER.error(e1.getMessage(), e1);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
         } 
       }

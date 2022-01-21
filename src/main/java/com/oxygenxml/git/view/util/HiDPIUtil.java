@@ -33,7 +33,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.html.HTMLEditorKit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
@@ -48,7 +49,7 @@ public class HiDPIUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(HiDPIUtil.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(HiDPIUtil.class.getName());
   
   /**
    * Constructor.
@@ -416,7 +417,7 @@ public class HiDPIUtil {
       Method isRetinaNoImplicitSupportMethod = retinaDetectorClass.getMethod("isRetinaNoImplicitSupport");
       isRetinaNoImplicitSupport = (boolean) isRetinaNoImplicitSupportMethod.invoke(retinaDetectorObj);
     } catch (Exception e) {
-     logger.debug(e, e);
+     LOGGER.debug(e.getMessage(), e);
     }
     return isRetinaNoImplicitSupport;
   }
@@ -434,7 +435,7 @@ public class HiDPIUtil {
       Method getScalingFactorMethod = retinaDetectorClass.getMethod("getScalingFactor");
       scalingFactor = (float) getScalingFactorMethod.invoke(retinaDetectorObj);
     } catch (Exception e) {
-     logger.debug(e, e);
+     LOGGER.debug(e.getMessage(), e);
     }
     return scalingFactor;
   }

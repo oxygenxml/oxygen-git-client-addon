@@ -46,7 +46,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -55,6 +54,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revplot.PlotCommit;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
@@ -99,7 +100,7 @@ public class HistoryPanel extends JPanel {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(HistoryPanel.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(HistoryPanel.class);
   /**
    * Git API access.
    */
@@ -430,7 +431,7 @@ public class HistoryPanel extends JPanel {
             scheduleRefreshHistory();
           }
         } catch (NoRepositorySelected e) {
-          LOGGER.debug(e, e);
+          LOGGER.debug(e.getMessage(), e);
         }
       }
     }
@@ -460,7 +461,7 @@ public class HistoryPanel extends JPanel {
       }
     } catch (IOException | GitAPIException e1) {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage());
-      LOGGER.error(e1, e1);
+      LOGGER.error(e1.getMessage(), e1);
     }
   }
 
@@ -571,7 +572,7 @@ public class HistoryPanel extends JPanel {
 
         jPopupMenu.show(historyTable, point.x, point.y);
       } catch (IOException | GitAPIException e) {
-        LOGGER.error(e, e);
+        LOGGER.error(e.getMessage(), e);
       }
   
     }
@@ -819,7 +820,7 @@ public class HistoryPanel extends JPanel {
         selectLocalBranchHead(commitCharacteristicsVector, repo);
 
       } catch (NoRepositorySelected | IOException e) {
-        LOGGER.debug(e, e);
+        LOGGER.debug(e.getMessage(), e);
         PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage("Unable to present history because of: " + e.getMessage());
       }
@@ -871,7 +872,7 @@ public class HistoryPanel extends JPanel {
     try {
       tagMap = gitAccess.getTagMap(repo);
     } catch (GitAPIException | IOException e) {
-      LOGGER.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
 
     return tagMap;
@@ -967,7 +968,7 @@ public class HistoryPanel extends JPanel {
       gitAccess.fetch();
     } catch (SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException e) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e, e);
+        LOGGER.debug(e.getMessage(), e);
       }
     }
   }

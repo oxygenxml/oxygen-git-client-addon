@@ -4,10 +4,11 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
@@ -27,7 +28,7 @@ public class CheckoutCommitAction extends AbstractAction {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(CheckoutCommitAction.class);
+	private static final Logger LOGGER =  LoggerFactory.getLogger(CheckoutCommitAction.class);
 
 	/**
 	 * The commit to checkout.
@@ -70,7 +71,7 @@ public class CheckoutCommitAction extends AbstractAction {
 		try {
 			hasUncommitedChanges = GitAccess.getInstance().getGit().status().call().hasUncommittedChanges();
 		} catch (NoWorkTreeException | GitAPIException e1) {
-			LOGGER.error(e1, e1);
+			LOGGER.error(e1.getMessage(), e1);
 		}
 		if(!hasUncommitedChanges) {
 			if(commit != null ) {

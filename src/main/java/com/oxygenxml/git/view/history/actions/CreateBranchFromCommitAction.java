@@ -5,10 +5,10 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -27,7 +27,7 @@ public class CreateBranchFromCommitAction extends AbstractAction {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(CreateBranchFromCommitAction.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreateBranchFromCommitAction.class.getName());
   
   /**
    * The ID of the commit used as a starting point for the new branch.
@@ -56,7 +56,7 @@ public class CreateBranchFromCommitAction extends AbstractAction {
         } catch (CheckoutConflictException ex) {
           BranchesUtil.showCannotCheckoutNewBranchMessage();
         } catch (HeadlessException | GitAPIException ex) {
-          LOGGER.debug(ex);
+          LOGGER.debug(ex.getMessage(), ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
       });

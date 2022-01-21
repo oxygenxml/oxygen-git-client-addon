@@ -35,10 +35,10 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -71,7 +71,7 @@ public class ListStashesDialog extends OKCancelDialog {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(ListStashesDialog.class.getName());
+  private static final Logger LOGGER =  LoggerFactory.getLogger(ListStashesDialog.class.getName());
   
   /**
    * The translator.
@@ -593,7 +593,7 @@ public class ListStashesDialog extends OKCancelDialog {
     		  affectedStashFilesTableModel.setFilesStatus(
     				  RevCommitUtil.getChangedFiles(stashesTableModel.getStashes().get(selectedRow).getName()));
     	  } catch (IOException | GitAPIException exc) {
-    		  LOGGER.error(exc, exc);
+    		  LOGGER.error(exc.getMessage(), exc);
     	  }
       }
     });
@@ -699,11 +699,11 @@ public class ListStashesDialog extends OKCancelDialog {
                 DiffPresenter.showTwoWayDiffOnlyGitFile(selectedFile.getFileLocation(), stashes.get(selectedRow).getId().getName());
               } catch (IOException e2) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e2.getMessage());
-                LOGGER.error(e2, e2);
+                LOGGER.error(e2.getMessage(), e2);
               }
             } catch (NoRepositorySelected | IOException | GitAPIException e1) {
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e1.getMessage());
-              LOGGER.error(e1, e1);
+              LOGGER.error(e1.getMessage(), e1);
             }
 
           }
@@ -760,7 +760,7 @@ public class ListStashesDialog extends OKCancelDialog {
                 GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
               }
             } catch (GitAPIException e1) {
-              LOGGER.error(e1, e1);
+              LOGGER.error(e1.getMessage(), e1);
             }
           }
         }

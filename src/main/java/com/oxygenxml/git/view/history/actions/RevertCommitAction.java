@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -28,7 +28,7 @@ public class RevertCommitAction extends AbstractAction {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(CreateBranchFromCommitAction.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreateBranchFromCommitAction.class.getName());
 
   /**
    * Commit characteristics.
@@ -61,7 +61,7 @@ public class RevertCommitAction extends AbstractAction {
         try {
           GitAccess.getInstance().revertCommit(commitCharacteristics.getCommitId());
         } catch (IOException | NoRepositorySelected | GitAPIException ex) {
-          LOGGER.debug(ex);
+          LOGGER.debug(ex.getMessage(), ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
       });

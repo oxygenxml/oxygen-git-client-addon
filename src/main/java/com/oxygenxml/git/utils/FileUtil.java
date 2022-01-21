@@ -16,8 +16,9 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -61,7 +62,7 @@ public class FileUtil {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(FileUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
 	
 	/**
    * Get the common ancestor for a list of directories.
@@ -220,7 +221,7 @@ public class FileUtil {
 			url = file.toURI().toURL();
 		} catch (MalformedURLException e) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 		}
 		return url;
@@ -541,7 +542,7 @@ public class FileUtil {
         }
       }
     } catch (IOException ex) {
-      LOGGER.error(ex, ex);
+      LOGGER.error(ex.getMessage(), ex);
     }
     return toReturn;
   }

@@ -18,9 +18,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -55,7 +56,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = Logger.getLogger(CommitMessageTableRenderer.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(CommitMessageTableRenderer.class);
 
   /**
    * Git repository.

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -18,6 +17,8 @@ import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.options.OptionsManager;
@@ -46,7 +47,7 @@ public class GitController extends GitControllerBase {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(GitController.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitController.class);
 
   /**
    * Translator for i18n.
@@ -139,8 +140,8 @@ public class GitController extends GitControllerBase {
    * @param message The message to show.
    */
   protected void showPullFailedBecauseOfCertainChanges(List<String> filesWithChanges, String message) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
     }
     FileStatusDialog.showWarningMessage(
         translator.getTranslation(Tags.PULL_STATUS), 
@@ -181,12 +182,12 @@ public class GitController extends GitControllerBase {
       boolean notifyFinish = true;
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       try {
-        if (logger.isDebugEnabled()) {
-          logger.debug("Preparing for push/pull command");
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Preparing for push/pull command");
         }
         event = doOperation(credentialsProvider);
       } catch (JGitInternalException e) {
-        logger.debug(e, e);
+        LOGGER.debug(e.getMessage(), e);
 
         Throwable cause = e.getCause();
         if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
@@ -278,7 +279,7 @@ public class GitController extends GitControllerBase {
         }
       } catch (Exception e) {
         event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
-        logger.error(e, e);
+        LOGGER.error(e.getMessage(), e);
       } finally {
         if (notifyFinish) {
           notifyListeners(event);
@@ -323,7 +324,7 @@ public class GitController extends GitControllerBase {
         try {
           remoteURL = gitAccess.getRemoteURLFromConfig();
         } catch (NoRepositorySelected e1) {
-          logger.error(e1, e1);
+          LOGGER.error(e1.getMessage(), e1);
         }
 
         PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
@@ -450,9 +451,9 @@ public class GitController extends GitControllerBase {
 
       RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
 
-      if (logger.isDebugEnabled()) {
-        logger.debug("Do pull. Pull type: " + pullType);
-        logger.debug("Repo state: " + repositoryState);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Do pull. Pull type: " + pullType);
+        LOGGER.debug("Repo state: " + repositoryState);
       }
 
       if(repositoryState != null) {
