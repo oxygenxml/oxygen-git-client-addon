@@ -145,7 +145,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     errorMessageTextArea.setForeground(Color.RED);
     Font font = errorMessageTextArea.getFont();
     errorMessageTextArea.setFont(font.deriveFont(font.getSize() - 1.0f));
-    gbc.gridx = 0;
+    gbc.gridx = 1;
     gbc.gridy ++;
     gbc.gridwidth = 2;
     gbc.insets = new Insets(3, 0, 0, 0);

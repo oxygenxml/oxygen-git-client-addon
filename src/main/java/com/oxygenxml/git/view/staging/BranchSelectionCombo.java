@@ -126,8 +126,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
         }
       }
     });
-    
-    refresh();
+ 
     
   }
 
