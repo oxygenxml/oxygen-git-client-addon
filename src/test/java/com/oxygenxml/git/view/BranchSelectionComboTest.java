@@ -17,6 +17,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
 
@@ -100,7 +101,8 @@ public class BranchSelectionComboTest extends GitTestBase {
       flushAWT();
 
       // Try to switch to another branch
-      JComboBox<String> branchesCombo = stagingPanel.getBranchesCombo();
+      BranchSelectionCombo branchesCombo = stagingPanel.getBranchesCombo();
+      branchesCombo.refresh();
       String currentBranch = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranch);
 
@@ -204,7 +206,9 @@ public class BranchSelectionComboTest extends GitTestBase {
       flushAWT();
       
       // Try to switch to another branch
-      JComboBox<String> branchesCombo = stagingPanel.getBranchesCombo();
+      BranchSelectionCombo branchesCombo = stagingPanel.getBranchesCombo();
+      branchesCombo.refresh();
+      flushAWT();
       String currentBranch = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranch);
       

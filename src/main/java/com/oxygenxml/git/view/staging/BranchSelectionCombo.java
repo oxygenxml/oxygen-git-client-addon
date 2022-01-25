@@ -127,6 +127,8 @@ public class BranchSelectionCombo extends JComboBox<String> {
       }
     });
     
+    refresh();
+    
   }
 
   
@@ -167,20 +169,12 @@ public class BranchSelectionCombo extends JComboBox<String> {
       tryCheckingOutBranch(currentBranchInfo, branchName);
     }
   }
-
  
-  /**
-   * Refresh on invoke later.
-   */
-  public void refresh() {
-    refreshNow();
-  }
-  
   
   /**
    * Refresh.
    */
-  private void refreshNow() {
+  public void refresh() {
     int pullsBehind = GIT_ACCESS.getPullsBehind();
     int pushesAhead = -1;
     try {
