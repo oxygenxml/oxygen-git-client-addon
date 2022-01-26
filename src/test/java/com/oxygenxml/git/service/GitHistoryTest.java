@@ -46,10 +46,11 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance()
+          .getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
       String dump = dumpHistory(commitsCharacteristics);
 
-      String expected = "[ Uncommitted changes , {date} , * , * , null , null ]\n" + 
+      String expected = "[ Uncommitted_changes , {date} , * , * , null , null ]\n" + 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
           "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
@@ -58,8 +59,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
       
-//      assertEquals(
-//          expected, dump);
+      assertEquals(expected, dump);
 
 
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, "root.txt", new RenameTracker());

@@ -1713,6 +1713,26 @@ public class Tags {
    */
   public static final String SETTINGS = "Settings";
   
+  /**
+   * Tooltip for all branches mode view in history.
+   */
+  public static final String ALL_BRANCHES_TOOLTIP = "All_Branches_Tooltip";
+  
+  /**
+   * Tooltip for all local branches mode view in history.
+   */
+  public static final String ALL_LOCAL_BRANCHES_TOOLTIP = "All_Local_Branches_Tooltip";
+  
+  /**
+   * Tooltip for current branch(local + remote) mode view in history.
+   */
+  public static final String CURRENT_BRANCH_TOOLTIP = "Current_Branch_Tooltip";
+  
+  /**
+   * Tooltip for current local branch mode view in history.
+   */
+  public static final String CURRENT_LOCAL_BRANCH_TOOLTIP = "Current_Local_Branch_Tooltip";
+  
   
 }
 

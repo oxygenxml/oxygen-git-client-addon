@@ -380,7 +380,7 @@ public class HistoryPanel extends JPanel {
   private void addPresentHistoryActions(final SplitMenuButton button) {
 	  
 	  final ButtonGroup branchActionsGroup = new ButtonGroup();
-	  final HistoryStrategy[] strategies    = HistoryStrategy.values();
+	  final HistoryStrategy[] strategies   = HistoryStrategy.values();
 	  
 	  for(HistoryStrategy strategy : strategies) {
 		   
@@ -397,6 +397,7 @@ public class HistoryPanel extends JPanel {
 		   };
 		   
 		   final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(action);
+		   menuItem.setToolTipText(strategy.getToolTipText());
 		   branchActionsGroup.add(menuItem);
 		   button.add(menuItem);
 		   if(currentStrategy.equals(strategy)) {

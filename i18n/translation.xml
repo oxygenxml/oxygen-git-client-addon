@@ -8,6 +8,54 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Current_Local_Branch_Tooltip">
+        <comment>Tooltip for current local branch mode view in history.</comment>
+        <val lang="en_US">Shows the commits only for the current local branch, including unpushed local commits.
+</val>
+        <val lang="de_DE">Shows the commits only for the current local branch, including unpushed local commits.
+</val>
+        <val lang="fr_FR">Shows the commits only for the current local branch, including unpushed local commits.
+</val>
+        <val lang="ja_JP">Shows the commits only for the current local branch, including unpushed local commits.
+</val>
+        <val lang="nl_NL">Shows the commits only for the current local branch, including unpushed local commits.
+</val>
+        <val lang="zh_CN">Shows the commits only for the current local branch, including unpushed local commits.
+</val>
+    </key>
+    <key value="Current_Branch_Tooltip">
+        <comment>Tooltip for current branch(local + remote) mode view in history.</comment>
+        <val lang="en_US">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+        <val lang="de_DE">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+        <val lang="fr_FR">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+        <val lang="ja_JP">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+        <val lang="nl_NL">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+        <val lang="zh_CN">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+    </key>
+     <key value="All_Local_Branches_Tooltip">
+        <comment>Tooltip for all local branches mode view in history.</comment>
+        <val lang="en_US">Shows the commits only for local branches, including unpushed local commits.</val>
+        <val lang="de_DE">Shows the commits only for local branches, including unpushed local commits.</val>
+        <val lang="fr_FR">Shows the commits only for local branches, including unpushed local commits.</val>
+        <val lang="ja_JP">Shows the commits only for local branches, including unpushed local commits.</val>
+        <val lang="nl_NL">Shows the commits only for local branches, including unpushed local commits.</val>
+        <val lang="zh_CN">Shows the commits only for local branches, including unpushed local commits.</val>
+    </key>
+     <key value="All_Branches_Tooltip">
+        <comment>Tooltip for all branches mode view in history.</comment>
+        <val lang="en_US">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.
+</val>
+        <val lang="de_DE">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.
+</val>
+        <val lang="fr_FR">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.
+</val>
+        <val lang="ja_JP">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.
+</val>
+        <val lang="nl_NL">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.
+</val>
+        <val lang="zh_CN">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.
+</val>
+    </key>
      <key value="Settings">
         <comment>Show staging.</comment>
         <val lang="en_US">Settings</val>

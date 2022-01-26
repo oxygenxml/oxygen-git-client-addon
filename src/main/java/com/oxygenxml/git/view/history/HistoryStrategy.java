@@ -13,31 +13,41 @@ import com.oxygenxml.git.translator.Translator;
  */
 public enum HistoryStrategy {
 
+  /**
+   * Presents the current branch, both local and remote.
+   */
+  CURRENT_BRANCH(Translator.getInstance().getTranslation(Tags.CURRENT_BRANCH), 
+      Translator.getInstance().getTranslation(Tags.CURRENT_BRANCH_TOOLTIP)),
+
+  /**
+   * Presents only the current local branch.
+   */
+  CURRENT_LOCAL_BRANCH(Translator.getInstance().getTranslation(Tags.CURRENT_LOCAL_BRANCH),
+      Translator.getInstance().getTranslation(Tags.CURRENT_LOCAL_BRANCH_TOOLTIP)),
+  
 	/**
 	 * Presents all branches, both local and remote.
 	 */
-	ALL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_BRANCHES)),
+	ALL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_BRANCHES), 
+	    Translator.getInstance().getTranslation(Tags.ALL_BRANCHES_TOOLTIP)),
 
 	/**
 	 * Presents all local branches.
 	 */
-	ALL_LOCAL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_LOCAL_BRANCHES)),
+	ALL_LOCAL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_LOCAL_BRANCHES),
+	    Translator.getInstance().getTranslation(Tags.ALL_LOCAL_BRANCHES_TOOLTIP));
 
-	/**
-	 * Presents the current branch, both local and remote.
-	 */
-	CURRENT_BRANCH(Translator.getInstance().getTranslation(Tags.CURRENT_BRANCH)),
-
-	/**
-	 * Presents only the current local branch.
-	 */
-	CURRENT_LOCAL_BRANCH(Translator.getInstance().getTranslation(Tags.CURRENT_LOCAL_BRANCH));
-
+	
 
 	/**
 	 * String value for enum.
 	 */
 	private final String stringValue;
+	
+	/**
+	 * The tool tip text for urrent strategy.
+	 */
+	private final String tooltipText;
 
 
 	/**
@@ -45,14 +55,22 @@ public enum HistoryStrategy {
 	 *
 	 * @param stringValue The string value for enum.
 	 */
-	private HistoryStrategy(final String stringValue) {
+	private HistoryStrategy(final String stringValue, final String tooltipText) {
 		this.stringValue = stringValue;
+		this.tooltipText = tooltipText;
 	}
 
 
 	@Override
 	public String toString() {
 		return this.stringValue;
+	}
+	
+	/**
+	 * @return Tool tip text that contains explanation for this strategy. 
+	 */
+	public String getToolTipText() {
+	  return tooltipText;
 	}
 
 	/**
