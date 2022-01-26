@@ -132,6 +132,11 @@ public class Icons {
    */
   public static final String UNSTAGE_ALL = "/images/UnstageAll16.png";
   
+  /**
+   * More icon for git staging toolbar.
+   */
+  public static final String GIT_STAGING_MORE = "/images/GitStagingMore16.png";
+  
   //=============== These icons are loaded from Oxygen =================
   /**
    * Tag icon.
