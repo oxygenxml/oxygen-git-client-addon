@@ -173,7 +173,8 @@ public class ToolbarPanel extends JPanel {
    * The git actions manager.
    */
   private final GitActionsManager gitActionsManager;
-
+  
+ 
  /**
    * Constructor.
    * 
@@ -213,6 +214,12 @@ public class ToolbarPanel extends JPanel {
     addShowBranchesButton();
     
     this.add(gitToolbar, gbc);
+    
+    gbc.weightx = 0;
+    gbc.anchor = GridBagConstraints.EAST;
+    gbc.gridx++;
+    this.add(createMoreActionsButton(), gbc);
+    
   }
 
 
@@ -391,6 +398,35 @@ public class ToolbarPanel extends JPanel {
     
   }
   
+  /**
+   * Create the More Actions Button.
+   */
+  private SplitMenuButton createMoreActionsButton() {
+    
+    final SplitMenuButton tempMoreActionsButton = new SplitMenuButton("", Icons.getIcon(Icons.GIT_STAGING_MORE), false, false, true, false);
+    
+    tempMoreActionsButton.add(gitActionsManager.getCloneRepositoryAction());
+    tempMoreActionsButton.add(gitActionsManager.getPushAction());
+    tempMoreActionsButton.add(gitActionsManager.getPullMergeAction());
+    tempMoreActionsButton.add(gitActionsManager.getPullRebaseAction());
+    tempMoreActionsButton.addSeparator();
+    tempMoreActionsButton.add(gitActionsManager.getShowBranchesAction());
+    tempMoreActionsButton.add(gitActionsManager.getShowTagsAction());
+    tempMoreActionsButton.add(gitActionsManager.getShowHistoryAction());
+    tempMoreActionsButton.add(gitActionsManager.getSubmoduleAction());
+    tempMoreActionsButton.addSeparator();
+    tempMoreActionsButton.add(gitActionsManager.getStashChangesAction());
+    tempMoreActionsButton.add(gitActionsManager.getListStashesAction());
+    tempMoreActionsButton.addSeparator();
+    tempMoreActionsButton.add(gitActionsManager.getManageRemoteRepositoriesAction());
+    tempMoreActionsButton.add(gitActionsManager.getTrackRemoteBranchAction());
+    tempMoreActionsButton.add(gitActionsManager.getEditConfigAction());
+    tempMoreActionsButton.addSeparator();
+    tempMoreActionsButton.add(gitActionsManager.getOpenPreferencesAction());
+    tempMoreActionsButton.add(gitActionsManager.getResetAllCredentialsAction());
+    
+    return tempMoreActionsButton;    
+  }
   
   /**
    * Create the "Push" button.
