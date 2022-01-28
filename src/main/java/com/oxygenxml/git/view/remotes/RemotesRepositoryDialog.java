@@ -353,7 +353,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		 */
 		private JButton createAddButton() {
 
-			return new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.ADD)) {
+			return new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.ADD) + "...") {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog(
@@ -384,7 +384,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		 * @return The created button.
 		 */
 		private JButton createEditButton() {
-			editButton = new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT)) {
+			editButton = new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT) + "...") {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int selectedRow = remotesTable.getSelectedRow();

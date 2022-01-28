@@ -31,6 +31,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.branches.BranchConfigurations;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -53,7 +54,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	/**
 	 * The default dialog width.
 	 */
-	private static final int DIALOG_WIDTH = 400;
+	private static final int DIALOG_WIDTH = 550;
 
 	/**
 	 * Logger for logging.
@@ -90,6 +91,12 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	 */
 	public static final int STATUS_BRANCHES_NOT_EXIST = 2;
 	
+	/**
+	 * Maximum number of characters for a remote branch item.
+	 */
+	private static final int MAXIMUM_REMOTE_ITEM_NO_OF_CHARACTERS = 60;
+	
+	
 	
 
 	/**
@@ -109,12 +116,9 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 			final ListCellRenderer<? super RemoteBranchItem> oldRender = remoteBranchItems.getRenderer();
 			remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
 
-				JLabel toReturn = (JLabel) 
+				final JLabel toReturn = (JLabel) 
 				    oldRender.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-				/**
-				 * The border for padding.
-				 */
+				
 				final Border padding = BorderFactory.createEmptyBorder(
 						0, 
 						UIConstants.COMPONENT_LEFT_PADDING, 
@@ -123,6 +127,8 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 						);
 
 				toReturn.setBorder(padding);
+				toReturn.setText(TextFormatUtil.shortenText(toReturn.getText(), MAXIMUM_REMOTE_ITEM_NO_OF_CHARACTERS, 
+				    0, "..."));
 
 				return toReturn;
 			});
@@ -167,6 +173,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 					}
 
 					setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
 
 					this.setVisible(true);
 					this.setResizable(false);
@@ -230,7 +237,8 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(Math.max(DIALOG_WIDTH, super.getPreferredSize().width), super.getPreferredSize().height);
+	  final Dimension prefferedSize = super.getPreferredSize();
+		return new Dimension(Math.max(DIALOG_WIDTH, prefferedSize.width), prefferedSize.height);
 	}
 	
 	
@@ -261,7 +269,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
 		constraints.gridx = 0;
 		constraints.gridy++;
-		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH) + ":"), constraints);
+		guiPanel.add(new JLabel(TRANSLATOR.getTranslation(Tags.REMOTE_TRACKING_BRANCH) + ":"), constraints);
 
 		constraints.weightx = 1;
 		constraints.gridx++;

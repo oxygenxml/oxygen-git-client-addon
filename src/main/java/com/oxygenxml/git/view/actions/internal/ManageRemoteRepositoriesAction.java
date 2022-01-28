@@ -35,7 +35,7 @@ public class ManageRemoteRepositoriesAction extends BaseGitAbstractAction {
 	 * Constructor.
 	 */
 	public ManageRemoteRepositoriesAction() {
-		super(TRANSLATOR.getTranslation(Tags.REMOTES_DIALOG_TITLE) +  "...");
+		super(TRANSLATOR.getTranslation(Tags.MANAGE_REMOTE_REPOSITORIES) +  "...");
 		this.putValue(SMALL_ICON, Icons.getIcon(Icons.REMOTE));
 	}
 

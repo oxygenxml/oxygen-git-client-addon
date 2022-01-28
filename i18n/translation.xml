@@ -8,6 +8,33 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Remote_Tracking_Branch">
+        <comment>Remote tracking branch.</comment>
+        <val lang="en_US">Remote-tracking branch</val>
+        <val lang="de_DE">Remote-tracking branch</val>
+        <val lang="fr_FR">Remote-tracking branch</val>
+        <val lang="ja_JP">Remote-tracking branch</val>
+        <val lang="nl_NL">Remote-tracking branch</val>
+        <val lang="zh_CN">Remote-tracking branch</val>
+    </key>
+     <key value="Remotes_Dialog_Title">
+        <comment>Title for remotes dialog.</comment>
+        <val lang="en_US">Remote repositories</val>
+        <val lang="de_DE">Remote repositories</val>
+        <val lang="fr_FR">Remote repositories</val>
+        <val lang="ja_JP">Remote repositories</val>
+        <val lang="nl_NL">Remote repositories</val>
+        <val lang="zh_CN">Remote repositories</val>
+    </key>
+    <key value="Edit_Config_File">
+        <comment>Action name to edit the config file of the current repository.</comment>
+        <val lang="en_US">Edit repository "config" file</val>
+        <val lang="de_DE">Edit repository "config" file</val>
+        <val lang="fr_FR">Edit repository "config" file</val>
+        <val lang="ja_JP">Edit repository "config" file</val>
+        <val lang="nl_NL">Edit repository "config" file</val>
+        <val lang="zh_CN">Edit repository "config" file</val>
+    </key>
     <key value="Current_Local_Branch_Tooltip">
         <comment>Tooltip for current local branch mode view in history.</comment>
         <val lang="en_US">Shows the commits only for the current local branch, including unpushed local commits.</val>
@@ -179,17 +206,8 @@
         <val lang="nl_NL">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
         <val lang="zh_CN">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
     </key>
-    <key value="Edit_Config_File">
-        <comment>Action name to edit the config file of the current repository.</comment>
-        <val lang="en_US">Edit config file</val>
-        <val lang="de_DE">Edit config file</val>
-        <val lang="fr_FR">Modifier le fichier de configuration</val>
-        <val lang="ja_JP">Edit config file</val>
-        <val lang="nl_NL">Edit config file</val>
-        <val lang="zh_CN">Edit config file</val>
-    </key>
-    <key value="Remotes_Dialog_Title">
-        <comment>Title for remotes dialog.</comment>
+    <key value="Manage_Remote_Repositories">
+        <comment>Manage remote repositories action name.</comment>
         <val lang="en_US">Manage remote repositories</val>
         <val lang="de_DE">Manage remote repositories</val>
         <val lang="fr_FR">Gérer les dépôts remote</val>

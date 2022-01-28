@@ -1733,6 +1733,15 @@ public class Tags {
    */
   public static final String CURRENT_LOCAL_BRANCH_TOOLTIP = "Current_Local_Branch_Tooltip";
   
+  /**
+   * Manage remote repositories action name.
+   */
+  public static final String MANAGE_REMOTE_REPOSITORIES = "Manage_Remote_Repositories";
+  
+  /**
+   * Remote tracking branch.
+   */
+  public static final String REMOTE_TRACKING_BRANCH = "Remote_Tracking_Branch";
   
 }
 
