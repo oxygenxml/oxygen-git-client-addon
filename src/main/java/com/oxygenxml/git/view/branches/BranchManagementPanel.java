@@ -139,7 +139,7 @@ public class BranchManagementPanel extends JPanel {
     
     this.addHierarchyListener(e ->  {
       if(isShowing()) {
-        RepoUtil.initRepoIfNeeded(true);
+        RepoUtil.initRepoIfNeeded(false);
         
         if(shouldRefresh) {
           if(forceShowBranches) {
