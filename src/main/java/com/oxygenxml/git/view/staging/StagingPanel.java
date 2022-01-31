@@ -533,7 +533,7 @@ public class StagingPanel extends JPanel {
 				branchSelectionCombo.refresh();
 
 				if (toolbarPanel != null) {
-					toolbarPanel.setButtonsEnabledState(true, false);
+					toolbarPanel.updateButtonsStates();
 				}
 				
 
