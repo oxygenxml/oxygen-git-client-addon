@@ -2913,5 +2913,21 @@ public class GitAccess {
     Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
     return stashes != null && !stashes.isEmpty();
   }
+  
+  /**
+   * @return <code>true</code> if a repository is opened.
+   */
+  public boolean isRepositoryOpened() {
+    boolean toReturn = false;
+    try {
+      toReturn = getRepository() != null;
+    } catch (NoRepositorySelected e) {
+      LOGGER.debug(e.getMessage(), e);
+    } 
+    
+    return toReturn;
+  }
+  
+  
 	
 }

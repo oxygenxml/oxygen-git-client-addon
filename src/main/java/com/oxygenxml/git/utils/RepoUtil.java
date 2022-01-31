@@ -50,6 +50,7 @@ public class RepoUtil {
    * Logger for logging.
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(RepoUtil.class);
+ 
 
   /**
    * Hidden constructor.
@@ -439,6 +440,30 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
       }
     }
     return toRet;
+  }
+  
+  /**
+   * Init repository if is needed to open this.
+   * 
+   * @param initAsync <code>true</code> if the initialization should be asynchronously 
+   * or <code>false</code> if initialization should be synchronously.
+   */
+  public static void initRepoIfNeeded(boolean initAsync) {
+    final GitAccess gitAccess = GitAccess.getInstance();
+    if(!gitAccess.isRepositoryOpened()) {
+      final String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
+      if (!repositoryPath.equals("")) {
+        if(initAsync) {
+          gitAccess.setRepositoryAsync(repositoryPath);
+        } else {
+          try {
+            gitAccess.setRepositorySynchronously(repositoryPath);
+          } catch (IOException e) {
+            LOGGER.debug(e.getMessage(), e);
+          }
+        }
+      }
+    }
   }
 
 }

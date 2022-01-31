@@ -44,6 +44,7 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -122,6 +123,16 @@ public class BranchManagementPanel extends JPanel {
    * @param ctrl Git controller.
    */
   public BranchManagementPanel(GitControllerBase ctrl) {
+    if(isShowing()) {
+      RepoUtil.initRepoIfNeeded(true);
+    }
+    
+    this.addHierarchyListener(e ->  {
+      if(isShowing()) {
+        RepoUtil.initRepoIfNeeded(true);
+      }
+    });
+    
     createGUI();
     ctrl.addGitListener(new GitEventAdapter() {
       @Override
@@ -329,6 +340,9 @@ public class BranchManagementPanel extends JPanel {
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        if(isShowing()) {
+          RepoUtil.initRepoIfNeeded(false);
+        }
         SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
       }
     };
@@ -441,4 +455,5 @@ public class BranchManagementPanel extends JPanel {
     return branchesTree;
   }
 
+  
 }

@@ -74,6 +74,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.utils.FileUtil;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -190,7 +191,18 @@ public class HistoryPanel extends JPanel {
    * @param gitCtrl Executes a set of Git commands.
    */
   public HistoryPanel(GitController gitCtrl) {
+    
     setLayout(new BorderLayout());
+    
+    if(isShowing()) {
+      RepoUtil.initRepoIfNeeded(true);
+    }
+    
+    this.addHierarchyListener(e ->  {
+      if(isShowing()) {
+        RepoUtil.initRepoIfNeeded(true);
+      }
+    });
     
     graphCellRender = new CommitsGraphCellRender();
   
@@ -272,6 +284,7 @@ public class HistoryPanel extends JPanel {
         }
       }
     });
+    
     topPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     GridBagConstraints constr = new GridBagConstraints();
     constr.fill = GridBagConstraints.HORIZONTAL;
@@ -665,6 +678,9 @@ public class HistoryPanel extends JPanel {
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        if(isShowing()) {
+          RepoUtil.initRepoIfNeeded(true);
+        }
         scheduleRefreshHistory();
       }
     };

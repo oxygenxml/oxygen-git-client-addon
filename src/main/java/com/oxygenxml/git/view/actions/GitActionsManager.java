@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -327,7 +328,7 @@ public class GitActionsManager  {
 	public AbstractAction getShowHistoryAction() {
 		if(showHistoryAction == null) {
 			showHistoryAction = new ShowHistoryAction(historyController);
-			showHistoryAction.setEnabled(hasRepository());
+			showHistoryAction.setEnabled(couldShowBranchesOrHistory());
 			allActions.add(showHistoryAction);
 		}
 
@@ -342,7 +343,7 @@ public class GitActionsManager  {
 	public AbstractAction getShowBranchesAction() {
 		if(showBranchesAction == null) {
 			showBranchesAction = new ShowBranchesAction(branchManagementViewPresenter);
-			showBranchesAction.setEnabled(hasRepository());
+			showBranchesAction.setEnabled(couldShowBranchesOrHistory());
 			allActions.add(showBranchesAction);
 		}
 
@@ -373,7 +374,6 @@ public class GitActionsManager  {
 		if(stashChangesAction == null) {
 			stashChangesAction = new StashChangesAction();
 			
-			// TODO vedem daca facem si aici verificarea de hasFilesChanged()
 			boolean hasRepo = hasRepository();
 			stashChangesAction.setEnabled(hasRepo);
 			
@@ -557,6 +557,13 @@ public class GitActionsManager  {
 	 */
 	protected boolean hasRepositorySubmodules() {
 	  return !gitController.getGitAccess().getSubmoduleAccess().getSubmodules().isEmpty();
+	}
+	
+	/**
+	 * @return <code>true</code> if is possible to show Git Branch Manager or Git History.
+	 */
+	private boolean couldShowBranchesOrHistory() {
+	  return gitController.getGitAccess().isRepoInitialized() || !"".equals(OptionsManager.getInstance().getSelectedRepository());
 	}
     
 }
