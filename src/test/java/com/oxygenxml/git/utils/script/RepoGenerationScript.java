@@ -18,12 +18,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -36,7 +37,7 @@ public class RepoGenerationScript {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(RepoGenerationScript.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RepoGenerationScript.class);
   /**
    * A set of changes to be applied on the repository.
    */
@@ -55,8 +56,8 @@ public class RepoGenerationScript {
     File f = new File(wcTreeDir, c.path);
     f.getParentFile().mkdirs();
     
-    if (logger.isDebugEnabled()) {
-      logger.debug(c.path + " " + c.type);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug(c.path + " " + c.type);
     }
     if (c.type.equals("delete")) {
       f.delete();
@@ -146,19 +147,19 @@ public class RepoGenerationScript {
    * @param ch Change set.
    */
   private static void applyChanges(File wcTree, ChangeSet ch) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("change set " + ch.message);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("change set " + ch.message);
     }
     
     try {
-      if (logger.isDebugEnabled()) {
-        logger.debug(ch.branch);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(ch.branch);
       }
       setLocalBranch(ch.branch);
       
       mergeBranch(ch.mergeBranch, ch.message);
     } catch (Exception ex) {
-      logger.error(ex, ex);
+      LOGGER.error(ex.getMessage(), ex);
     }
     
     if (ch.changes != null) {
@@ -167,7 +168,7 @@ public class RepoGenerationScript {
           applyChange(wcTree, c);
           GitAccess.getInstance().add(c.toFileStatus());
         } catch (IOException e) {
-          logger.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
       });
       
@@ -176,7 +177,7 @@ public class RepoGenerationScript {
         
         GitAccess.getInstance().getGit().commit().setAuthor("Alex", "alex_jitianu@sync.ro").setMessage(ch.message).call();
       } catch (GitAPIException e) {
-        logger.error(e, e);
+        LOGGER.error(e.getMessage(), e);
       }
     }
   }
@@ -191,15 +192,15 @@ public class RepoGenerationScript {
   private static void setLocalBranch(String localBranchShortName) throws GitAPIException {
     if (localBranchShortName != null) {
       boolean anyMatch = GitAccess.getInstance().getLocalBranchList().stream().anyMatch(r -> localBranchShortName.equals(Repository.shortenRefName(r.getName())));
-      if (logger.isDebugEnabled()) {
-        logger.debug("Branch detected " + anyMatch);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Branch detected " + anyMatch);
       }
       if (!anyMatch) {
         try {
           // Not sure why we need this. Without it, the order of changes is messed up. 
           Thread.sleep(1000);
         } catch (InterruptedException e1) {
-          logger.error(e1, e1);
+          LOGGER.error(e1.getMessage(), e1);
         }
         GitAccess.getInstance().createBranch(localBranchShortName);
         GitAccess.getInstance().setBranch(localBranchShortName);
@@ -207,8 +208,8 @@ public class RepoGenerationScript {
         GitAccess.getInstance().setBranch(localBranchShortName);
       }
 
-      if (logger.isDebugEnabled()) {
-        logger.debug("On branch " + GitAccess.getInstance().getBranchInfo().getBranchName());
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("On branch " + GitAccess.getInstance().getBranchInfo().getBranchName());
       }
     }
   }
@@ -227,14 +228,14 @@ public class RepoGenerationScript {
         Thread.sleep(1000);
       } catch (InterruptedException e1) {
         // Not sure why we need this. Without it the order of changes is messed up.
-        logger.error(e1, e1);
+        LOGGER.error(e1.getMessage(), e1);
       }
 
       List<Ref> collect = GitAccess.getInstance().getLocalBranchList().stream().filter(r -> mergeBranchShortName.equals(Repository.shortenRefName(r.getName()))).collect(Collectors.toList());
       MergeResult call = GitAccess.getInstance().getGit().merge().setMessage(commitMessage).include(collect.get(0)).call();
 
-      if (logger.isDebugEnabled()) {
-        logger.debug("Merge result: " + call);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Merge result: " + call);
       }
     }
   }

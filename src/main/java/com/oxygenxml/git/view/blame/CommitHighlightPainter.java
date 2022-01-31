@@ -14,8 +14,9 @@ import javax.swing.text.LayeredHighlighter;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.utils.Equaler;
 
@@ -37,7 +38,7 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(CommitHighlightPainter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CommitHighlightPainter.class);
   /**
    * Text page on which the painter is installed.
    */
@@ -215,7 +216,7 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
 
       setCommitColor(g, revCommit);
     } catch (BadLocationException e) {
-      LOGGER.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
 
     return delta;

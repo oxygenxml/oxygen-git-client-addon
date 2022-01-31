@@ -125,8 +125,15 @@
 	      <artifactId>log4j-1.2-api</artifactId>
 	      <scope>provided</scope>
 	    </dependency>
-        
-		<!-- JGIT uses slf4j. We will distribute an implementation to avoid class 
+		
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.32</version>
+		</dependency>
+		
+			<!-- JGIT uses slf4j. We will distribute an implementation to avoid class 
 			loader issues. -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

@@ -16,8 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -40,7 +40,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
   /**
    * Logger for logging.
    */
-  private static final Logger logger = LogManager.getLogger(CreateBranchDialog.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreateBranchDialog.class.getName());
   /**
    * Translator.
    */
@@ -189,7 +189,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
       branchAlreadyExists = BranchesUtil.existsLocalBranch(branchName);
     } catch (NoRepositorySelected e) {
       // Not really possible 
-      logger.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     errorMessageTextArea.setText(branchAlreadyExists ? TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH_ALREADY_EXISTS) : "");
     

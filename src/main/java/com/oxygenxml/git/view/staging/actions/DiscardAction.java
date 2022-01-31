@@ -10,8 +10,9 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -21,7 +22,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
-import com.oxygenxml.git.view.staging.ChangesPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -37,7 +37,7 @@ public class DiscardAction extends AbstractAction {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(DiscardAction.class.getName());
+  private static final Logger LOGGER =  LoggerFactory.getLogger(DiscardAction.class.getName());
 
   /**
    * Translator for i18n.
@@ -96,7 +96,7 @@ public class DiscardAction extends AbstractAction {
             // Collect the parent folders. We'll later have to find the common ancestor and refresh it.
             deletedFilesParentDirs.add(fileToDiscard.getParentFile());
           } catch (IOException e1) {
-            logger.error(e1, e1);
+            LOGGER.error(e1.getMessage(), e1);
           }
         } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
           discardSubmodule(file, foldersToRefresh, selectedRepository);
@@ -131,7 +131,7 @@ public class DiscardAction extends AbstractAction {
       GitAccess.getInstance().getSubmoduleAccess().discardSubmodule();
       foldersToRefresh.add(new File(selectedRepository, submoduleDir.getFileLocation()));
     } catch (GitAPIException e1) {
-      logger.error(e1, e1);
+      LOGGER.error(e1.getMessage(), e1);
     }
   }
 

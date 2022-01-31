@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -31,7 +32,7 @@ public class GitStatusCommand {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(GitAccess.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitAccess.class);
   /**
    * A provider for the JGit API.
    */
@@ -59,7 +60,7 @@ public class GitStatusCommand {
         LOGGER.debug("-- Get JGit status -> git.status().call() --");
         gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status), status.hasUncommittedChanges());
       } catch (GitAPIException e) {
-        LOGGER.error(e, e);
+        LOGGER.error(e.getMessage(), e);
       }
     }
     return gitStatus != null ? gitStatus 
@@ -103,7 +104,7 @@ public class GitStatusCommand {
         LOGGER.debug("JGit Status computed: " + status);
         return getUnstagedFiles(status);
       } catch (GitAPIException e) {
-        LOGGER.error(e, e);
+        LOGGER.error(e.getMessage(), e);
       }
     }
     
@@ -130,7 +131,7 @@ public class GitStatusCommand {
         addMissingFilesToUnstaged(status, unstagedFiles, submodules);
         addConflictingFilesToUnstaged(status, unstagedFiles);
       } catch (NoWorkTreeException | GitAPIException e1) {
-        LOGGER.error(e1, e1);
+        LOGGER.error(e1.getMessage(), e1);
       }
     }
     return unstagedFiles;
@@ -274,7 +275,7 @@ public class GitStatusCommand {
        Status status = statusCmd.call();
        return getStagedFiles(status);
      } catch (GitAPIException e) {
-       LOGGER.error(e, e);
+       LOGGER.error(e.getMessage(), e);
      }
    }
    

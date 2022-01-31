@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.security.AccessControlException;
 
-import org.apache.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.WriterAppender;
 import org.eclipse.jgit.util.FS;
 import org.junit.Assert;
+import org.slf4j.LoggerFactory;
 
 import junit.framework.TestCase;
 
@@ -54,18 +54,18 @@ public class Log4jUtilTest extends TestCase {
     Assert.assertFalse("The log must pass: " + writer.toString(), writer.toString().contains("java.security.AccessControlException"));
     
     //=====================
-    // An AccessControlException issued through a specific class logger. It should be filtered.
+    // An AccessControlException issued through a specific class LOGGER. It should be filtered.
     //=====================
     writer.getBuffer().setLength(0);
     FilePermission perm = new FilePermission(".probe-64fe0316-10fa-4fa1-b163-d79366318e4b", "write");
     ex = new AccessControlException("access denied "+ perm, perm);
-    Logger.getLogger(FS.class).error(ex,  ex);
+    LoggerFactory.getLogger(FS.class).error(ex.getMessage(),  ex);
     
-    Assert.assertEquals("This exception should be filtered from the logger: " + writer.toString(), "", writer.toString());
+    Assert.assertEquals("This exception should be filtered from the LOGGER: " + writer.toString(), "", writer.toString());
     
 
     //=====================
-    // An AccessControlException issued through another class logger. It should pass.
+    // An AccessControlException issued through another class LOGGER. It should pass.
     //=====================
     writer.getBuffer().setLength(0);
     perm = new FilePermission(".probe-64fe0316-10fa-4fa1-b163-d79366318e4b", "write");

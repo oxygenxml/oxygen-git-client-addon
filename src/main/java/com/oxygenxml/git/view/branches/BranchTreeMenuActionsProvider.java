@@ -7,13 +7,13 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -39,7 +39,7 @@ public class BranchTreeMenuActionsProvider {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(BranchTreeMenuActionsProvider.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(BranchTreeMenuActionsProvider.class.getName());
   /**
    * Translator instance.
    */
@@ -162,7 +162,7 @@ public class BranchTreeMenuActionsProvider {
 
         }, ex -> {
           if (ex instanceof CheckoutConflictException) {
-            LOGGER.debug(ex, ex);
+            LOGGER.debug(ex.getMessage(), ex);
             BranchesUtil.showBranchSwitchErrorMessage();
           } else {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
@@ -323,7 +323,7 @@ public class BranchTreeMenuActionsProvider {
    * @param ex The exception.
    */
   private void treatCheckoutConflictForNewlyCreatedBranche(CheckoutConflictException ex) {
-    LOGGER.debug(ex, ex);
+    LOGGER.debug(ex.getMessage(), ex);
     BranchesUtil.showCannotCheckoutNewBranchMessage();
   }
 

@@ -3,7 +3,8 @@ package com.oxygenxml.git.service;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.view.event.GitEventInfo;
 
@@ -15,7 +16,7 @@ public class GitListeners {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(GitListeners.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitListeners.class);
   /**
    * Receive notifications when things change. First ones to be notified.
    */
@@ -50,8 +51,8 @@ public class GitListeners {
    * @param info event info.
    */
   public void fireOperationAboutToStart(GitEventInfo info) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Fire operation about to start: " + info);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Fire operation about to start: " + info);
     }
     
     for (GitEventListener gitEventListener : gitEventPriorityListeners) {
@@ -69,8 +70,8 @@ public class GitListeners {
    * @param info event info.
    */
   public void fireOperationSuccessfullyEnded(GitEventInfo info) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Fire operation successfully ended: " + info);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Fire operation successfully ended: " + info);
     }
     
     for (GitEventListener gitEventListener : gitEventPriorityListeners) {
@@ -89,8 +90,8 @@ public class GitListeners {
    * @param t related exception/error. May be <code>null</code>.
    */
   public void fireOperationFailed(GitEventInfo info, Throwable t) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
     }
     
     for (GitEventListener gitEventListener : gitEventPriorityListeners) {

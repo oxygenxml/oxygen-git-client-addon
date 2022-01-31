@@ -11,8 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ibm.icu.text.MessageFormat;
 import com.oxygenxml.git.constants.UIConstants;
@@ -36,7 +37,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(SubmoduleSelectDialog.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SubmoduleSelectDialog.class);
 
 	/**
 	 * Combo box for showing and selectind the submodule
@@ -129,8 +130,8 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
       String formated = MessageFormat.format(translator.getTranslation(Tags.SUBMODULE_LOAD_FAIL), message);
       
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(formated);
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(e.getMessage(), e);
 			}
 		}
 	}

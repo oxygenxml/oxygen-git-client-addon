@@ -5,7 +5,8 @@ import java.lang.reflect.Method;
 
 import javax.swing.JComponent;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -19,7 +20,7 @@ public class RendererUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(RendererUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RendererUtil.class);
   /**
    * Private constructor.
    */
@@ -81,7 +82,7 @@ public class RendererUtil {
       inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
     } catch (Exception e) {
       if (comp.isDoubleBuffered()) {
-        logger.debug(e, e);
+        LOGGER.debug(e.getMessage(), e);
       }
     }
     return inactiveBgColor;

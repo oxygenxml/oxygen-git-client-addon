@@ -6,7 +6,8 @@ import java.util.List;
 
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.util.TreeUtil;
@@ -23,7 +24,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = Logger.getLogger(BranchManagementTreeModel.class);
+  private static final Logger LOGGER =LoggerFactory.getLogger(BranchManagementTreeModel.class);
 
   /**
    * The branches in the model for the current repository.

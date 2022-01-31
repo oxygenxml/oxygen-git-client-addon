@@ -7,8 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
@@ -32,7 +33,7 @@ public class BlameManager {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(BlameManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BlameManager.class);
   /**
    * Singleton instance.
    */
@@ -138,7 +139,7 @@ public class BlameManager {
         }
       }
     } catch (NoRepositorySelected e) {
-      LOGGER.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
   }
 

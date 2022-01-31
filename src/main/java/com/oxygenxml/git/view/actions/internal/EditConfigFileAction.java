@@ -4,7 +4,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -29,7 +30,7 @@ public class EditConfigFileAction extends BaseGitAbstractAction {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(EditConfigFileAction.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditConfigFileAction.class);
 
 	
 	
@@ -48,7 +49,7 @@ public class EditConfigFileAction extends BaseGitAbstractAction {
 					new File(GitAccess.getInstance().getConfigFilePath()).toURI().toURL()), 
 					null, "text/plain");
 		} catch (MalformedURLException | NoRepositorySelected exc) {
-			LOGGER.error(exc, exc);
+			LOGGER.error(exc.getMessage(), exc);
 		} 
 	}
 	

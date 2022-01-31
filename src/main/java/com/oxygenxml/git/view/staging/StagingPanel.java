@@ -24,7 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.UIConstants;
@@ -74,7 +75,7 @@ public class StagingPanel extends JPanel {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(StagingPanel.class);
+	private static final Logger LOGGER =  LoggerFactory.getLogger(StagingPanel.class);
 
 	/**
 	 * <code>true</code> if focus gained.
@@ -365,7 +366,7 @@ public class StagingPanel extends JPanel {
 						
 					}
 				} catch (NoRepositorySelected e) {
-					LOGGER.debug(e, e);
+					LOGGER.debug(e.getMessage(), e);
 				}
 			}
 		}

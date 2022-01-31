@@ -4,18 +4,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubmoduleAccess {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(SubmoduleAccess.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SubmoduleAccess.class);
   /**
    * Git repository API.
    */
@@ -51,7 +52,7 @@ public class SubmoduleAccess {
         objID = index ? submoduleStatus.getIndexId() : submoduleStatus.getHeadId();
       }
     } catch (GitAPIException e) {
-      logger.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
     return objID;
   }
@@ -68,7 +69,7 @@ public class SubmoduleAccess {
         return git.get().submoduleStatus().call().keySet();
       }
     } catch (GitAPIException e) {
-      logger.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
     return new HashSet<>();
   }

@@ -25,8 +25,9 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -60,7 +61,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(WorkingCopySelectionPanel.class);
+	private static final Logger LOGGER =  LoggerFactory.getLogger(WorkingCopySelectionPanel.class);
 
 	/**
 	 * Clear history.
@@ -549,7 +550,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 					}
 				}
 			} catch (NoRepositorySelected e) {
-				LOGGER.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 		}
 	}

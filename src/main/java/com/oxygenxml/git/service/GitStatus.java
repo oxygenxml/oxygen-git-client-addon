@@ -2,7 +2,8 @@ package com.oxygenxml.git.service;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 
@@ -16,7 +17,7 @@ public class GitStatus {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(GitStatus.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitStatus.class.getName());
   /**
    * Unstaged files.
    */
@@ -51,10 +52,10 @@ public class GitStatus {
     this.unstagedFiles = unstagedFiles;
     this.stagedFiles = stagedFiles;
     this.hasUncommittedChanges = hasUncommittedChanges;
-    if (logger.isDebugEnabled()) {
-      logger.debug("Create GitStatus...");
-      logger.debug("GitStatus unstaged files: " + unstagedFiles);
-      logger.debug("GitStatus staged files: " + stagedFiles);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Create GitStatus...");
+      LOGGER.debug("GitStatus unstaged files: " + unstagedFiles);
+      LOGGER.debug("GitStatus staged files: " + stagedFiles);
     }
   }
   

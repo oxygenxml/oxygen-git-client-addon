@@ -8,7 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.utils.Equaler;
 
@@ -21,7 +22,7 @@ import ro.sync.exml.workspace.api.options.ExternalPersistentObject;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PersonalAccessTokenInfoList implements ExternalPersistentObject {
 
-  private static final Logger LOGGER = Logger.getLogger(PersonalAccessTokenInfoList.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PersonalAccessTokenInfoList.class);
   
 	/**
 	 * List with the token info items.
@@ -76,7 +77,7 @@ public class PersonalAccessTokenInfoList implements ExternalPersistentObject {
       clone.setPersonalAccessTokens(cloneTokensAccessTokenInfos);
       return clone;
     } catch (CloneNotSupportedException e) {
-      LOGGER.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
 
     return new PersonalAccessTokenInfoList();

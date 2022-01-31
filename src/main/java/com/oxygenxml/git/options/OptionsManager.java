@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
@@ -32,7 +33,7 @@ public class OptionsManager {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(OptionsManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OptionsManager.class);
   /**
    * Maximum number of locations stored in history.
    */
@@ -92,7 +93,7 @@ public class OptionsManager {
       String home = System.getProperty("com.oxygenxml.editor.home.url");
       if (home == null) {
         // Probably test environment.
-        logger.warn("Options not initialized.");
+        LOGGER.warn("Options not initialized.");
         if (PluginWorkspaceProvider.getPluginWorkspace() != null
             && PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage() != null) {
           options = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
@@ -101,7 +102,7 @@ public class OptionsManager {
         }
       } else {
         // Oxygen environment. Should not happen.
-        logger.warn("Options not initialized! Custom ro.sync.exml.workspace.api.options.ExternalPersistentObject will not be loaded/saved.");
+        LOGGER.warn("Options not initialized! Custom ro.sync.exml.workspace.api.options.ExternalPersistentObject will not be loaded/saved.");
         options = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
       }
     }

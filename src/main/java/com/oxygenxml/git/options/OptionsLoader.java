@@ -9,7 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.OxygenGitPlugin;
 
@@ -25,7 +26,7 @@ public class OptionsLoader {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(OptionsManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OptionsManager.class);
   
   /**
    * The initial key used to saved options.
@@ -123,7 +124,7 @@ public class OptionsLoader {
         if (optionsFileForTests.exists()) {
           options = (JaxbOptions) jaxbUnmarshaller.unmarshal(optionsFileForTests);
         } else {
-          logger.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
+          LOGGER.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
         }
       } else {
         // Running in Oxygen's context. Save inside Oxygen's options. 
@@ -147,7 +148,7 @@ public class OptionsLoader {
  
       }
     } catch (JAXBException e) {
-      logger.warn("Options not loaded: " + e, e);
+      LOGGER.warn("Options not loaded: " + e, e);
     }
     
     return Optional.ofNullable(options);

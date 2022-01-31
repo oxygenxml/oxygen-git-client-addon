@@ -18,12 +18,13 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -51,7 +52,7 @@ public class BlamePerformer {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(BlamePerformer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BlamePerformer.class);
   /**
    * The current active commit. The one that contained the caret line. 
    */
@@ -161,7 +162,7 @@ public class BlamePerformer {
             Object addHighlight = highlighter.addHighlight(offsetOfLineStart, offsetOfLineEnd, getPainter(commit, textpage));
             highlightsToRevCommits.put(addHighlight, commit);
           } catch (BadLocationException e) {
-            LOGGER.error(e, e);
+            LOGGER.error(e.getMessage(), e);
           }
         }
       }
@@ -246,7 +247,7 @@ public class BlamePerformer {
       }
     } catch (BadLocationException e1) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e1, e1);
+        LOGGER.debug(e1.getMessage(), e1);
       }
     }
   }

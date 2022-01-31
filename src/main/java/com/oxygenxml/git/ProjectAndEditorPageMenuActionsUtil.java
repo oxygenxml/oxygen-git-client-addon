@@ -6,8 +6,9 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -30,7 +31,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(ProjectAndEditorPageMenuActionsUtil.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProjectAndEditorPageMenuActionsUtil.class.getName());
   
   /**
    * i18n
@@ -88,7 +89,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
       }
     } catch (IOException e) {
       pluginWS.showErrorMessage("Repository opening failed due to: " + e.getMessage());
-      logger.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     } finally {
       UIUtil.setBusyCursor(false, viewsToUpdateCursorFor);
     }
@@ -108,7 +109,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
           FileUtil.rewriteSeparator(relativeFilePath),
           historyCtrl);
     } catch (IOException | GitAPIException e1) {
-      logger.error(e1, e1);
+      LOGGER.error(e1.getMessage(), e1);
     }
   }
   
@@ -140,7 +141,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
     } catch (IOException e) {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Repository opening failed due to: " + e.getMessage());
       
-      logger.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     } finally {
       UIUtil.setBusyCursor(false, viewsToUpdateCursorFor);
     }

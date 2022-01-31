@@ -24,13 +24,14 @@ import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
@@ -117,7 +118,7 @@ public class ToolbarPanel extends JPanel {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(ToolbarPanel.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(ToolbarPanel.class);
 
   /**
    * Toolbar in which the button will be placed
@@ -234,14 +235,14 @@ public class ToolbarPanel extends JPanel {
       this.pushesAhead = GIT_ACCESS.getPushesAhead();
     } catch (RepoNotInitializedException e) {
       this.pushesAhead = -1;
-      LOGGER.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     
     Repository repo = null;
     try {
       repo = GIT_ACCESS.getRepository();
     } catch (NoRepositorySelected e) {
-      LOGGER.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     
     final Collection<RevCommit> stashes = GIT_ACCESS.listStashes();
@@ -574,7 +575,7 @@ public class ToolbarPanel extends JPanel {
             }
           }
         } catch (IOException | GitAPIException e) {
-          LOGGER.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
       } else {
         // There is an upstream branch defined in "config",
@@ -660,7 +661,7 @@ public class ToolbarPanel extends JPanel {
             }
           }
         } catch (IOException | GitAPIException e) {
-          LOGGER.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
 
       } else {

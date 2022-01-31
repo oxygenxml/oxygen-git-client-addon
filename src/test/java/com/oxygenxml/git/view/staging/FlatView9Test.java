@@ -4,11 +4,11 @@ import java.io.File;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.service.GitAccess;
@@ -30,7 +30,7 @@ public class FlatView9Test extends FlatViewTestBase {
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static final Logger logger = LogManager.getLogger(FlatView9Test.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(FlatView9Test.class.getName());
 
   @Override
   public void setUp() throws Exception {

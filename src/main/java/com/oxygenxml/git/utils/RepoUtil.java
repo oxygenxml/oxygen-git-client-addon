@@ -17,7 +17,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -28,6 +27,8 @@ import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -48,7 +49,7 @@ public class RepoUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(RepoUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RepoUtil.class);
 
   /**
    * Hidden constructor.
@@ -231,7 +232,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
       repoDir = detectRepoDownwards(projectDir, handler.getPaths());
     } catch (ParserConfigurationException | SAXException | IOException e1) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e1, e1);
+        LOGGER.debug(e1.getMessage(), e1);
       }
     }
 
@@ -280,7 +281,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
           try {
             file = new File(new URL(path).toURI());
           } catch (MalformedURLException | URISyntaxException e) {
-            LOGGER.error(e, e);
+            LOGGER.error(e.getMessage(), e);
           }
         } else  if (".".equals(path)) {
           file = projectDir;
@@ -379,7 +380,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
         .append("\n");
       appendCommitDetails(b, submoduleRepository.parseCommit(submoduleStatus.getIndexId()));
     } catch (IOException e) {
-      LOGGER.error(e, e);
+      LOGGER.error(e.getMessage(), e);
     }
     
     return b.toString();
@@ -405,7 +406,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
     try {
       return Optional.of(GitAccess.getInstance().getRepository().getRepositoryState());
     } catch (NoRepositorySelected e1) {
-      LOGGER.debug(e1, e1);
+      LOGGER.debug(e1.getMessage(), e1);
     }
     return Optional.empty();
   }

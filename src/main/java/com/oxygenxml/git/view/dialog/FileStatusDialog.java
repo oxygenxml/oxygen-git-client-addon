@@ -22,7 +22,8 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -46,7 +47,7 @@ public class FileStatusDialog extends OKCancelDialog {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(FileStatusDialog.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileStatusDialog.class.getName());
   
   /**
    * The preferred width of the scroll pane for the files list.
@@ -182,7 +183,7 @@ public class FileStatusDialog extends OKCancelDialog {
             File absoluteFile = new File(workingCopyAbsolute, (String) value); // NOSONAR: no vulnerability here
             setToolTipText(absoluteFile.toString());
           } catch (NoRepositorySelected e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
           }
           return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }

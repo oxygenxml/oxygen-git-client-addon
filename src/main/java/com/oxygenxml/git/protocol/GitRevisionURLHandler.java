@@ -11,9 +11,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
@@ -35,7 +36,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(GitRevisionURLHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitRevisionURLHandler.class);
 	
 	/**
 	 * The git protocol
@@ -113,7 +114,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			    try {
 	          fileObject = gitAccess.locateObjectIdInIndex(path);
 	        } catch (Exception ex) {
-	          logger.error(ex, ex);
+	          LOGGER.error(ex.getMessage(), ex);
 	        }
 	        if (fileObject == null) {
 	          fileObject = gitAccess.getCommit(Commit.LOCAL, path);
