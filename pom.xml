@@ -7,7 +7,7 @@
 	<parent>
 	    <groupId>com.oxygenxml</groupId>
 	    <artifactId>oxygen-superpom-standard</artifactId>
-	    <version>24.1-SNAPSHOT</version>
+	    <version>22.1.0.0</version>
   	</parent>
   	
     <developers>
@@ -140,10 +140,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<version>1.7.32</version>
 		</dependency>
 		<dependency>
 		    <groupId>ch.qos.logback</groupId>
         	<artifactId>logback-classic</artifactId>
+        	<version>1.2.10</version>
         	<scope>provided</scope>
 		</dependency>
 		
