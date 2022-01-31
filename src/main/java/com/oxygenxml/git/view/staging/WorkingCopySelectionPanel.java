@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
@@ -305,16 +306,18 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 
 		workingCopyCombo = new JComboBox<>();
-		WorkingCopyToolTipRenderer renderer = new WorkingCopyToolTipRenderer();
+		WorkingCopyToolTipRenderer renderer = new WorkingCopyToolTipRenderer(workingCopyCombo.getRenderer());
 		workingCopyCombo.setRenderer(renderer);
-		int height = (int) workingCopyCombo.getPreferredSize().getHeight();
-		workingCopyCombo.setMinimumSize(new Dimension(UIUtil.DUMMY_MIN_WIDTH, height));
 
 		addWorkingCopySelectorListener();
 
 		this.add(workingCopyCombo, gbc);
 	}
 
+	@Override
+	public Dimension getMinimumSize() {
+	  return new Dimension(UIUtil.DUMMY_MIN_WIDTH, super.getMinimumSize().height);
+	}
 
 	/**
 	 * Load the recorded working copy locations into the combo and load repository.
@@ -362,8 +365,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * 
 	 */
 	private void addBrowseButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, 0,
+				UIConstants.COMPONENT_BOTTOM_PADDING, 0);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = isLabeled ? 2 : 1;
@@ -392,12 +395,26 @@ public class WorkingCopySelectionPanel extends JPanel {
 	@SuppressWarnings("java:S110")
 	private static final class WorkingCopyToolTipRenderer extends DefaultListCellRenderer {
 
-		@Override
+	  /**
+	   * This rendered is a wrapper over an old render.
+	   */
+	  private final ListCellRenderer<? super String> renderer;
+	  
+	  /**
+     * Constructor.
+     *
+	   * @param listCellRenderer Render to wrap.
+	   */
+		public WorkingCopyToolTipRenderer(ListCellRenderer<? super String> listCellRenderer) {
+      this.renderer = listCellRenderer;
+    }
+
+    @Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 
-			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
+			@SuppressWarnings("unchecked")
+      JLabel comp = (JLabel) renderer.getListCellRendererComponent((JList<String>)list, (String)value, index, isSelected, cellHasFocus);
 			if (value != null) {
 				if (value.equals(CLEAR_HISTORY_ENTRY)) {
 					comp.setText(TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY) + "...");
