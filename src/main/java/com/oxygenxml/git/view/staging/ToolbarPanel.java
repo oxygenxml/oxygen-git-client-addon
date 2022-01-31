@@ -8,6 +8,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -16,6 +18,7 @@ import java.util.List;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
@@ -52,6 +55,8 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.util.UIUtil;
 
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
+import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -402,29 +407,40 @@ public class ToolbarPanel extends JPanel {
   /**
    * Create the More Actions Button.
    */
-  private SplitMenuButton createMoreActionsButton() {
+  private JButton createMoreActionsButton() {
     
-    final SplitMenuButton tempMoreActionsButton = new SplitMenuButton("", Icons.getIcon(Icons.GIT_STAGING_MORE), false, false, true, false);
+    final JButton tempMoreActionsButton = new ToolbarButton(null, false);
+   
+    tempMoreActionsButton.setIcon(Icons.getIcon(Icons.GIT_STAGING_MORE));
+    final PopupMenu buttonMenu = OxygenUIComponentsFactory.createPopupMenu();
     
-    tempMoreActionsButton.add(gitActionsManager.getCloneRepositoryAction());
-    tempMoreActionsButton.add(gitActionsManager.getPushAction());
-    tempMoreActionsButton.add(gitActionsManager.getPullMergeAction());
-    tempMoreActionsButton.add(gitActionsManager.getPullRebaseAction());
-    tempMoreActionsButton.addSeparator();
-    tempMoreActionsButton.add(gitActionsManager.getShowBranchesAction());
-    tempMoreActionsButton.add(gitActionsManager.getShowTagsAction());
-    tempMoreActionsButton.add(gitActionsManager.getShowHistoryAction());
-    tempMoreActionsButton.add(gitActionsManager.getSubmoduleAction());
-    tempMoreActionsButton.addSeparator();
-    tempMoreActionsButton.add(gitActionsManager.getStashChangesAction());
-    tempMoreActionsButton.add(gitActionsManager.getListStashesAction());
-    tempMoreActionsButton.addSeparator();
-    tempMoreActionsButton.add(gitActionsManager.getManageRemoteRepositoriesAction());
-    tempMoreActionsButton.add(gitActionsManager.getTrackRemoteBranchAction());
-    tempMoreActionsButton.add(gitActionsManager.getEditConfigAction());
-    tempMoreActionsButton.addSeparator();
-    tempMoreActionsButton.add(gitActionsManager.getOpenPreferencesAction());
-    tempMoreActionsButton.add(gitActionsManager.getResetAllCredentialsAction());
+    tempMoreActionsButton.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        buttonMenu.show(e.getComponent(), e.getX(), e.getY());
+      }
+    });
+    
+    
+    buttonMenu.add(gitActionsManager.getCloneRepositoryAction());
+    buttonMenu.add(gitActionsManager.getPushAction());
+    buttonMenu.add(gitActionsManager.getPullMergeAction());
+    buttonMenu.add(gitActionsManager.getPullRebaseAction());
+    buttonMenu.addSeparator();
+    buttonMenu.add(gitActionsManager.getShowBranchesAction());
+    buttonMenu.add(gitActionsManager.getShowTagsAction());
+    buttonMenu.add(gitActionsManager.getShowHistoryAction());
+    buttonMenu.add(gitActionsManager.getSubmoduleAction());
+    buttonMenu.addSeparator();
+    buttonMenu.add(gitActionsManager.getStashChangesAction());
+    buttonMenu.add(gitActionsManager.getListStashesAction());
+    buttonMenu.addSeparator();
+    buttonMenu.add(gitActionsManager.getManageRemoteRepositoriesAction());
+    buttonMenu.add(gitActionsManager.getTrackRemoteBranchAction());
+    buttonMenu.add(gitActionsManager.getEditConfigAction());
+    buttonMenu.addSeparator();
+    buttonMenu.add(gitActionsManager.getOpenPreferencesAction());
+    buttonMenu.add(gitActionsManager.getResetAllCredentialsAction());
     
     return tempMoreActionsButton;    
   }
