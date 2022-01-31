@@ -7,7 +7,7 @@
 	<parent>
 	    <groupId>com.oxygenxml</groupId>
 	    <artifactId>oxygen-superpom-standard</artifactId>
-	    <version>22.1.0.0</version>
+	    <version>24.1-SNAPSHOT</version>
   	</parent>
   	
     <developers>
@@ -100,6 +100,16 @@
 			<artifactId>oxygen-sdk</artifactId>
 			<version>22.1.0.0</version>
 			<scope>provided</scope>
+			<exclusions>
+			  <exclusion>
+			    <groupId>org.apache.logging.log4j</groupId>
+			    <artifactId>log4j-core</artifactId>
+		      </exclusion>
+	          <exclusion>
+	            <groupId>org.apache.logging.log4j</groupId>
+	            <artifactId>log4j-1.2-api</artifactId>
+	          </exclusion>
+			</exclusions>
 		</dependency>
 		
 		<!-- JUnit -->
@@ -114,23 +124,15 @@
             <scope>test</scope>
         </dependency>
 
-		<!-- EXM-47243 Log4j is declared in superpom. We don't want to add this as runtime dependency-->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-	    <dependency>
-	      <groupId>org.apache.logging.log4j</groupId>
-	      <artifactId>log4j-1.2-api</artifactId>
-	      <scope>provided</scope>
-	    </dependency>
-		
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.32</version>
+		</dependency>
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+        	<artifactId>logback-classic</artifactId>
+        	<scope>provided</scope>
 		</dependency>
 		
 			<!-- JGIT uses slf4j. We will distribute an implementation to avoid class 

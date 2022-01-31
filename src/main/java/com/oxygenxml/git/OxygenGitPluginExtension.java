@@ -38,7 +38,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
-import com.oxygenxml.git.utils.Log4jUtil;
+import com.oxygenxml.git.utils.LoggingUtil;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.blame.BlameManager;
@@ -264,7 +264,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			// Call the refresh command when the Oxygen window is activated
 			parentFrame.addWindowListener(panelRefreshWindowListener);
 
-			Log4jUtil.setupLog4JLogger();
+			LoggingUtil.setupLogger();
 
 		} catch (Throwable t) { // NOSONAR
 			// Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
