@@ -116,6 +116,16 @@ public class BranchManagementPanel extends JPanel {
    */
   private final BranchesCache cache = new BranchesCache();
   
+  /**
+   * <code>true</code> if component should refresh after is showing.
+   */
+  private boolean shouldRefresh = false;
+  
+  /**
+   * <code>true</code> if is needed to force branches showing, not only refresh them.
+   */
+  private boolean forceShowBranches = false;
+  
 
   /**
    * Constructor.
@@ -130,6 +140,16 @@ public class BranchManagementPanel extends JPanel {
     this.addHierarchyListener(e ->  {
       if(isShowing()) {
         RepoUtil.initRepoIfNeeded(true);
+        
+        if(shouldRefresh) {
+          if(forceShowBranches) {
+            showBranches();
+            forceShowBranches = false;
+          } else {
+            refreshBranches();
+          }
+          shouldRefresh = false;
+        }
       }
     });
     
@@ -143,14 +163,25 @@ public class BranchManagementPanel extends JPanel {
             || operation == GitOperation.DELETE_BRANCH
             || operation == GitOperation.CHECKOUT_COMMIT) {
           
-          GitOperationScheduler.getInstance().schedule(BranchManagementPanel.this::refreshBranches);
+          if(isShowing()) {
+            GitOperationScheduler.getInstance().schedule(BranchManagementPanel.this::refreshBranches);
+          } else {
+            shouldRefresh = true;
+          }
+          
         
         } else if (operation == GitOperation.OPEN_WORKING_COPY) {
+          if(isShowing()) {
+            GitOperationScheduler.getInstance().schedule(BranchManagementPanel.this::showBranches);
+          } else {
+            forceShowBranches = true;
+            shouldRefresh = true;
+          }
           
-          GitOperationScheduler.getInstance().schedule(BranchManagementPanel.this::showBranches);
         }
       }
     });
+    
     addTreeListeners();
     
     branchesTreeActionProvider = new BranchTreeMenuActionsProvider(ctrl);
@@ -302,6 +333,9 @@ public class BranchManagementPanel extends JPanel {
   private void createGUI() {
     setLayout(new GridBagLayout());
  
+    forceShowBranches = !isShowing();
+    shouldRefresh = !isShowing();
+    
     createSearchBar();
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
@@ -455,5 +489,4 @@ public class BranchManagementPanel extends JPanel {
     return branchesTree;
   }
 
-  
 }
