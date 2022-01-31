@@ -1,0 +1,29 @@
+<configuration>
+	<appender name="R" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%r %p [ %t ] %c - %m%n</pattern>
+		</encoder>
+	</appender>
+	
+<!-- 
+	<appender name="R2"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${user.home}/Desktop/oxygenLog/oxygen.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${user.home}/Desktop/oxygenLog/oxygen.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>20</maxHistory>
+			<totalSizeCap>12MB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%r %p [ %t ] %c - %m%n</pattern>
+		</encoder>
+	</appender>
+ -->
+ 
+ 	<logger name="com.oxygenxml.git" level="info" />
+
+	<root level="info">
+		<appender-ref ref="R" />
+	</root>
+</configuration>

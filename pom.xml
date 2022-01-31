@@ -135,19 +135,6 @@
         	<scope>provided</scope>
 		</dependency>
 		
-			<!-- JGIT uses slf4j. We will distribute an implementation to avoid class 
-			loader issues. -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.30</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 	</dependencies>
 
 	<build>
