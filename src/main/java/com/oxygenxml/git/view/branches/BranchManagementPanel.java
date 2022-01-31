@@ -39,6 +39,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -129,9 +130,12 @@ public class BranchManagementPanel extends JPanel {
             || operation == GitOperation.CHECKOUT
             || operation == GitOperation.DELETE_BRANCH
             || operation == GitOperation.CHECKOUT_COMMIT) {
-          SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
+          
+          GitOperationScheduler.getInstance().schedule(BranchManagementPanel.this::refreshBranches);
+        
         } else if (operation == GitOperation.OPEN_WORKING_COPY) {
-          SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
+          
+          GitOperationScheduler.getInstance().schedule(BranchManagementPanel.this::showBranches);
         }
       }
     });
@@ -285,7 +289,7 @@ public class BranchManagementPanel extends JPanel {
    */
   private void createGUI() {
     setLayout(new GridBagLayout());
-
+ 
     createSearchBar();
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;

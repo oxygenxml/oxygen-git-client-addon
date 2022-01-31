@@ -143,23 +143,9 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		panel.add(lblGitRemote, gbc);
 		
-		// Basic authentication radio
-		ButtonGroup buttonGroup = new ButtonGroup();
-		basicAuthRadio = new JRadioButton(translator.getTranslation(Tags.BASIC_AUTHENTICATION));
-		basicAuthRadio.setFocusPainted(false);
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.gridx = 0;
-    gbc.gridy ++;
-    panel.add(basicAuthRadio, gbc);
-    buttonGroup.add(basicAuthRadio);
-    
-    // User + password
-    userAndPasswordPanel = createUserAndPasswordPanel();
-    gbc.gridy ++;
-    gbc.insets = new Insets(0, INNER_PANELS_LEFT_INSET, 0, 0);
-    panel.add(userAndPasswordPanel, gbc);
     
     // Personal access token radio
+		final ButtonGroup buttonGroup = new ButtonGroup();
     tokenAuthRadio = new JRadioButton(translator.getTranslation(Tags.PERSONAL_ACCESS_TOKEN));
     tokenAuthRadio.setFocusPainted(false);
     gbc.insets = new Insets(0, 0, 0, 0);
@@ -180,6 +166,21 @@ public class LoginDialog extends OKCancelDialog {
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     panel.add(tokenTextField, gbc);
+    
+    // Basic authentication radio
+    basicAuthRadio = new JRadioButton(translator.getTranslation(Tags.BASIC_AUTHENTICATION));
+    basicAuthRadio.setFocusPainted(false);
+    gbc.insets = new Insets(0, 0, 0, 0);
+    gbc.gridx = 0;
+    gbc.gridy ++;
+    panel.add(basicAuthRadio, gbc);
+    buttonGroup.add(basicAuthRadio);
+    
+    // User + password
+    userAndPasswordPanel = createUserAndPasswordPanel();
+    gbc.gridy ++;
+    gbc.insets = new Insets(0, INNER_PANELS_LEFT_INSET, 0, 0);
+    panel.add(userAndPasswordPanel, gbc);
 
 		this.add(panel, BorderLayout.CENTER);
 		
