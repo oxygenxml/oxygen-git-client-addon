@@ -27,9 +27,9 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -63,7 +63,7 @@ public class TagsDialog extends OKCancelDialog {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(TagsDialog.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(TagsDialog.class.getName());
 
   /**
    * Translator
@@ -346,7 +346,7 @@ public class TagsDialog extends OKCancelDialog {
           deleteButton.setEnabled(false);
           tag.setPushed(true);
         } catch (GitAPIException ex) {
-          LOGGER.debug(ex);
+          LOGGER.debug(ex.getMessage(), ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
       }

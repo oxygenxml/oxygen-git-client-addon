@@ -10,7 +10,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -23,7 +24,7 @@ public class SourceFilesIteratorTest extends JFCTestCase {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(SourceFilesIteratorTest.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SourceFilesIteratorTest.class.getName());
   
   /**
    * Source code folder.
@@ -85,12 +86,12 @@ public class SourceFilesIteratorTest extends JFCTestCase {
           }
         }
       } catch (FileNotFoundException e) {
-        logger.error(e, e);
+        LOGGER.error(e.getMessage(), e);
       } finally {
         try {
           br.close();
         } catch (IOException e) {
-          logger.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
       }
     }
@@ -155,12 +156,12 @@ public class SourceFilesIteratorTest extends JFCTestCase {
             }
           }
         } catch (FileNotFoundException e) {
-          logger.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         } finally {
           try {
             br.close();
           } catch (IOException e) {
-            logger.error(e, e);
+            LOGGER.error(e.getMessage(), e);
           }
         }
       }

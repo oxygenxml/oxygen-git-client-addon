@@ -9,8 +9,9 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
@@ -30,7 +31,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(StagingResourcesTableModel.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(StagingResourcesTableModel.class);
 
 	/**
 	 * Constant for the index representing the file status

@@ -18,13 +18,13 @@ import javax.swing.ListCellRenderer;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -59,7 +59,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = LogManager.getLogger(CurrentBranchRemotesDialog.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CurrentBranchRemotesDialog.class);
 
 	/**
 	 * Combo box with all remotes from current repository.
@@ -136,7 +136,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 			existsRemotes = addRemoteBranches(branchesToAdd);
 
 		} catch (NoRepositorySelected | URISyntaxException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 
 		if(!existsRemotes) {
@@ -292,7 +292,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				branchConfig.setMerge(currentSelectedBranch.branch);
 				GitAccess.getInstance().updateConfigFile();
 			} catch (NoRepositorySelected e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 			}
 		}
 		

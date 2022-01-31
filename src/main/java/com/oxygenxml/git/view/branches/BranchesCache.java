@@ -5,11 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -36,7 +36,7 @@ public class BranchesCache {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = LogManager.getLogger(BranchesCache.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(BranchesCache.class);
 
 	/**
 	 * A map where: <code>key</code>: the node value, <code>value</code>: the tool tip for node. 
@@ -60,7 +60,7 @@ public class BranchesCache {
 			try {
 				return ToolTipContentProvider.computeToolTipText(leaf, path, branchName);
 			} catch (GitAPIException | IOException | NoRepositorySelected e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				return null;
 			}
 		}) : null;

@@ -13,10 +13,11 @@ import java.util.Optional;
 
 import javax.swing.JFrame;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.options.OptionsManager;
@@ -54,7 +55,7 @@ public class DiffPresenter {
   /**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(DiffPresenter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DiffPresenter.class);
 	
 	/**
 	 * Avoid instantiation.
@@ -104,7 +105,7 @@ public class DiffPresenter {
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage());
 	    
 	    if (LOGGER.isDebugEnabled()) {
-	      LOGGER.debug(ex, ex);
+	      LOGGER.debug(ex.getMessage(), ex);
 	    }
 	  }
 	}
@@ -128,7 +129,7 @@ public class DiffPresenter {
 	  } catch (MalformedURLException | NoRepositorySelected e) {
 	    // Shouldn't rreally happen
 	    if (LOGGER.isDebugEnabled()) {
-	      LOGGER.debug(e, e);
+	      LOGGER.debug(e.getMessage(), e);
 	    }
 	  }
 	  showDiffFrame(url, null, null, fileStatus.getFileLocation());
@@ -146,7 +147,7 @@ public class DiffPresenter {
 	        VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
 	  } catch (MalformedURLException e1) {
 	    if (LOGGER.isDebugEnabled()) {
-	      LOGGER.debug(e1, e1);
+	      LOGGER.debug(e1.getMessage(), e1);
 	    }
 	  }
 	  showDiffFrame(null, lastCommitedFileURL, null, path);
@@ -166,7 +167,7 @@ public class DiffPresenter {
 			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, previouslySubmoduleCommit, path);
 		} catch (MalformedURLException e) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 		}
 	}
@@ -188,7 +189,7 @@ public class DiffPresenter {
 			    VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
 		} catch (MalformedURLException e1) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(e1, e1);
+				LOGGER.debug(e1.getMessage(), e1);
 			}
 		}
 		
@@ -213,7 +214,7 @@ public class DiffPresenter {
       rightSideURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.LAST_COMMIT, path);
     } catch (MalformedURLException e1) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e1, e1);
+        LOGGER.debug(e1.getMessage(), e1);
       }
     }
 
@@ -286,7 +287,7 @@ public class DiffPresenter {
 
 		} catch (MalformedURLException | NoRepositorySelected e1) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(e1, e1);
+				LOGGER.debug(e1.getMessage(), e1);
 			}
 		}
 	}
@@ -342,7 +343,7 @@ public class DiffPresenter {
 	    }
 	  } catch (IOException e) {
 	    threeWays = false;
-	    LOGGER.error(e, e);
+	    LOGGER.error(e.getMessage(), e);
 	  }
 
 	  JFrame diffFrame = null;

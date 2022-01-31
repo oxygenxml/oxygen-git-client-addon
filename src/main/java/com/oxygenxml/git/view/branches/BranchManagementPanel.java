@@ -32,7 +32,8 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -67,7 +68,7 @@ public class BranchManagementPanel extends JPanel {
    * Logger for this class.
    */
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = Logger.getLogger(BranchManagementPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BranchManagementPanel.class);
 
   /**
    * A field for searching branches in the current repository.

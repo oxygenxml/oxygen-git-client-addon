@@ -8,10 +8,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 import com.oxygenxml.git.constants.Icons;
@@ -56,7 +57,7 @@ public class GitActionsManager  {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(GitActionsManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitActionsManager.class);
 
   /**
    * The translator for translations.
@@ -209,7 +210,7 @@ public class GitActionsManager  {
 		try {
 			this.repository = gitController.getGitAccess().getRepository();
 		} catch (NoRepositorySelected e) {
-			LOGGER.debug(e, e);
+			LOGGER.debug(e.getMessage(), e);
 		}
 
 		gitController.addGitListener(new GitEventAdapter() {
@@ -495,7 +496,7 @@ public class GitActionsManager  {
 		try {
 			repository = gitController.getGitAccess().getRepository();
 		} catch (NoRepositorySelected e) {
-			LOGGER.debug(e, e);
+			LOGGER.debug(e.getMessage(), e);
 		}
 
 		final boolean isRepoOpen = hasRepository();
@@ -532,7 +533,7 @@ public class GitActionsManager  {
 				int noOfTags = GitTagsManager.getNoOfTags();
 				showTagsAction.setEnabled(noOfTags > 0);
 			} catch (GitAPIException e) {
-				LOGGER.debug(e,e);
+				LOGGER.debug(e.getMessage(), e);
 				showTagsAction.setEnabled(false);
 			}
 		}

@@ -36,11 +36,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.constants.Icons;
@@ -165,7 +166,7 @@ public class CommitAndStatusPanel extends JPanel {
         commitSuccessful = true;
         
       } catch (GitAPIException e1) {
-        logger.debug(e1, e1);
+        LOGGER.debug(e1.getMessage(), e1);
         
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
             "Commit failed.  " + e1.getMessage());
@@ -235,7 +236,7 @@ public class CommitAndStatusPanel extends JPanel {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(CommitAndStatusPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CommitAndStatusPanel.class);
   /**
    * Text area for the commit message.
    */
@@ -321,7 +322,7 @@ public class CommitAndStatusPanel extends JPanel {
               toggleCommitButtonAndUpdateMessageArea(false);
             }
           } catch (NoRepositorySelected e) {
-            logger.debug(e, e);
+            LOGGER.debug(e.getMessage(), e);
           }
         } else if (gitOperation == GitOperation.CHECKOUT) {
           reset();
@@ -460,7 +461,7 @@ public class CommitAndStatusPanel extends JPanel {
         try {
           latestCommitOnBranch = GitAccess.getInstance().getLatestCommitOnCurrentBranch();
         } catch (GitAPIException | IOException | NoRepositorySelected e) {
-          logger.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
         if (latestCommitOnBranch != null) {
           String text = latestCommitOnBranch.getFullMessage();

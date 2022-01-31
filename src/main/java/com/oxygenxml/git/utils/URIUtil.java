@@ -2,8 +2,9 @@ package com.oxygenxml.git.utils;
 
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.transport.URIish;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for URIs.
@@ -14,7 +15,7 @@ public class URIUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(URIUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(URIUtil.class);
   /**
    * Utility class.
    */
@@ -32,7 +33,7 @@ public class URIUtil {
     try {
       hostName = new URIish(url).getHost();
     } catch (URISyntaxException e) {
-      logger.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     
     return hostName;

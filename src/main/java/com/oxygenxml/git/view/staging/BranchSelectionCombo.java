@@ -13,13 +13,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
@@ -53,7 +54,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(BranchSelectionCombo.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(BranchSelectionCombo.class);
 
   /**
    * i18n
@@ -179,7 +180,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
     try {
       pushesAhead = GIT_ACCESS.getPushesAhead();
     } catch (RepoNotInitializedException e) {
-      LOGGER.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
     
     // update pop up
@@ -189,7 +190,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
     try {
       repo = GIT_ACCESS.getRepository();
     } catch (NoRepositorySelected e) {
-      LOGGER.debug(e, e);
+      LOGGER.debug(e.getMessage(), e);
     }
 
     this.setEnabled(repo != null);

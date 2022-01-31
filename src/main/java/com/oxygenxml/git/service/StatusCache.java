@@ -3,8 +3,9 @@ package com.oxygenxml.git.service;
 import java.net.URL;
 import java.util.function.Supplier;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -23,7 +24,7 @@ public class StatusCache {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(StatusCache.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StatusCache.class);
   /**
    * Inner cache.
    */
@@ -68,7 +69,7 @@ public class StatusCache {
    * Reset inner cache.
    */
   public synchronized void resetCache() {
-    logger.debug("Reset cahche", new Exception());
+    LOGGER.debug("Reset cahche", new Exception());
     cache = null;
     
   }

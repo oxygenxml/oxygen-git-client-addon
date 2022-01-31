@@ -9,7 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
@@ -28,7 +29,7 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static final Logger logger = Logger.getLogger(FlatViewTestBase.class);
+  private static final Logger LOGGER =LoggerFactory.getLogger(FlatViewTestBase.class);
   /**
    * Main frame.
    */

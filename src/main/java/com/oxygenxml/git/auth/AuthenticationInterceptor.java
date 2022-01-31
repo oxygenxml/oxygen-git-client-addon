@@ -10,7 +10,8 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Custom authenticator used when accessing Git-related hosts and also to get over
@@ -142,7 +143,7 @@ public class AuthenticationInterceptor {
 					passwordAuth = (PasswordAuthentication) getPasswordAuthentication.invoke(oldAuth);
 				}
 			} catch (Exception e) {
-				logger.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 			}
 			return passwordAuth;
 		}
@@ -195,7 +196,7 @@ public class AuthenticationInterceptor {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(AuthenticationInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
 	/**
 	 * This is used to check if the authenticator has been set by Oxygen, and if
@@ -233,7 +234,7 @@ public class AuthenticationInterceptor {
 			}
 
 		} catch (IllegalArgumentException | NoSuchFieldException | IllegalAccessException e) {
-		  logger.error(e, e);
+		  LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -293,7 +294,7 @@ public class AuthenticationInterceptor {
 				installedAuthenticator.unbind(hostName);
 			}
 		} catch (Throwable e) { // NOSONAR
-		  logger.warn(e, e);
+		  LOGGER.warn(e.getMessage(), e);
 		}
 	}
 

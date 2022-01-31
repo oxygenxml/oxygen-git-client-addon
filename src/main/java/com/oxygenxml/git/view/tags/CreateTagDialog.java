@@ -16,10 +16,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -43,7 +43,7 @@ public class CreateTagDialog extends OKCancelDialog {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = LogManager.getLogger(CreateTagDialog.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreateTagDialog.class.getName());
   /**
    * Number of rows for tag message.
    */
@@ -232,7 +232,7 @@ public class CreateTagDialog extends OKCancelDialog {
         try {
           titleAlreadyExists = GitAccess.getInstance().existsTag(tagTitle);
         } catch (NoRepositorySelected | IOException e) {
-          logger.debug(e, e);
+          LOGGER.debug(e.getMessage(), e);
         }
         errorMessageTextArea.setText(titleAlreadyExists ? TRANSLATOR.getTranslation(Tags.TAG_ALREADY_EXISTS) : "");
       } 

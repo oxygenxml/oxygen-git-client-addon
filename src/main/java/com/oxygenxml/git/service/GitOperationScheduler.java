@@ -9,7 +9,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Schedules git operations on a thread. The same thread is being used. 
@@ -19,7 +20,7 @@ public class GitOperationScheduler {
   /**
    * Logger.
    */
-  private static final Logger logger = Logger.getLogger(GitOperationScheduler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitOperationScheduler.class);
   
   /**
    * Operation shutdown timeout in milliseconds.
@@ -33,19 +34,19 @@ public class GitOperationScheduler {
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
       if (t != null) {
-        logger.error(t, t);
+        LOGGER.error(t.getMessage(), t);
       }
 
       if (r instanceof Future) {
         try {
           ((Future<?>) r).get();
         } catch (CancellationException e) {
-          logger.debug(e, e);
+          LOGGER.debug(e.getMessage(), e);
         } catch (InterruptedException e) { 
-          logger.error(e, e);
+          LOGGER.error(e.getMessage(), e);
           Thread.currentThread().interrupt();
         } catch (Exception e) {
-          logger.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
       }
     }
@@ -175,7 +176,7 @@ public class GitOperationScheduler {
     try {
       return executor.awaitTermination(OPERATION_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
-      logger.warn("Unable to stop task thread: " + e.getMessage(), e);
+      LOGGER.warn("Unable to stop task thread: " + e.getMessage(), e);
       // Restore interrupted state...
       Thread.currentThread().interrupt();
 

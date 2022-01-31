@@ -6,7 +6,8 @@ import java.util.List;
 
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
@@ -26,7 +27,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(StagingResourcesTreeModel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StagingResourcesTreeModel.class);
 
 	/**
 	 * The files in the model
@@ -66,8 +67,8 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * @param eventInfo Event information.
 	 */
 	public void fileStatesChanged(GitEventInfo eventInfo) {
-	  if (logger.isDebugEnabled()) {
-	    logger.debug("Tree model for index: " + inIndex + " event " + eventInfo);
+	  if (LOGGER.isDebugEnabled()) {
+	    LOGGER.debug("Tree model for index: " + inIndex + " event " + eventInfo);
 	  }
 
 	  GitAccess gitAccess = GitAccess.getInstance();

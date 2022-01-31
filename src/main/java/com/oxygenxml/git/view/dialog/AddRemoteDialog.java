@@ -11,11 +11,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.UIConstants;
@@ -41,7 +42,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(AddRemoteDialog.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AddRemoteDialog.class);
 
 	/**
 	 * The translator for the messages that are displayed in this dialog
@@ -165,7 +166,7 @@ public class AddRemoteDialog extends OKCancelDialog {
         AuthenticationInterceptor.bind(host);
       }
 		} catch (NoRepositorySelected | URISyntaxException | IOException e) {
-			logger.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 		dispose();
 	}

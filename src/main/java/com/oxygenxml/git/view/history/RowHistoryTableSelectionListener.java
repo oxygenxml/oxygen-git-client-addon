@@ -13,8 +13,9 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.RevCommitUtil;
@@ -135,7 +136,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
         try {
           files.addAll(RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId()));
         } catch (IOException | GitAPIException e) {
-        LOGGER.error(e, e);
+        LOGGER.error(e.getMessage(), e);
       }
       } else {
         files.addAll(GitAccess.getInstance().getUnstagedFiles());
@@ -148,7 +149,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
    /**
     * Logger for logging.
     */
-    private static final Logger LOGGER = Logger.getLogger(RowHistoryTableSelectionListener.class);
+    private static final Logger LOGGER =  LoggerFactory.getLogger(RowHistoryTableSelectionListener.class);
 	/**
 	 * Fake commit URL to search for parents when using hyperlink.
 	 */

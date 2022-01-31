@@ -17,12 +17,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
@@ -37,7 +38,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
-import com.oxygenxml.git.utils.Log4jUtil;
+import com.oxygenxml.git.utils.LoggingUtil;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.blame.BlameManager;
@@ -78,7 +79,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(OxygenGitPluginExtension.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OxygenGitPluginExtension.class);
 
 	/**
 	 * ID of the Git staging view. Defined in plugin.xml.
@@ -263,12 +264,12 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			// Call the refresh command when the Oxygen window is activated
 			parentFrame.addWindowListener(panelRefreshWindowListener);
 
-			Log4jUtil.setupLog4JLogger();
+			LoggingUtil.setupLogger();
 
 		} catch (Throwable t) { // NOSONAR
 			// Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
 			pluginWorkspaceAccess.showErrorMessage(t.getMessage());
-			logger.fatal(t, t);
+			LOGGER.error(t.getMessage(), t);
 		}
 
 		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
@@ -355,7 +356,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 						try {
 							FileUtil.refreshProjectView();
 						} catch (NoRepositorySelected e) {
-							logger.debug(e, e);
+							LOGGER.debug(e.getMessage(), e);
 						}
 					} else if (operation == GitOperation.OPEN_WORKING_COPY
 							&& GitAccess.getInstance().getBranchInfo().isDetached()) {
@@ -393,7 +394,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		try {
 			repo = GitAccess.getInstance().getRepository();
 		} catch (NoRepositorySelected e) {
-			logger.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 
 		if (repo != null && repo.getRepositoryState() != RepositoryState.REBASING_MERGE) {
@@ -403,7 +404,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 				DetachedHeadDialog dlg = new DetachedHeadDialog(commit);
 				dlg.setVisible(true);
 			} catch (RevisionSyntaxException | IOException e) {
-				logger.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 		}
 	}

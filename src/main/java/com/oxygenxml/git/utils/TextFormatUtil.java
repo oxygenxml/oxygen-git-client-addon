@@ -8,6 +8,9 @@ package com.oxygenxml.git.utils;
  */
 public class TextFormatUtil {
 
+  /**
+   * Hidden constructor.
+   */
   private TextFormatUtil() {
     // nothing
   }
@@ -35,7 +38,10 @@ public class TextFormatUtil {
    * 
    * @return The computed text.
    */
-  public static String shortenText(final String text, int firstCharactersToKeep, int lastCharactersToKeep, final String addBetweenCharacters) {
+  public static String shortenText(final String text, 
+      final int firstCharactersToKeep, 
+      final int lastCharactersToKeep, 
+      final String addBetweenCharacters) {
 	  String toReturn = text;
 	  if(text.length() > (firstCharactersToKeep + lastCharactersToKeep)) {
 		  toReturn = text.substring(0, firstCharactersToKeep) + addBetweenCharacters + text.substring(text.length() - lastCharactersToKeep, text.length());

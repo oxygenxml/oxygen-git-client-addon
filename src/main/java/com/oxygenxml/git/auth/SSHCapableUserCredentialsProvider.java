@@ -1,8 +1,9 @@
 package com.oxygenxml.git.auth;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
@@ -17,7 +18,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(SSHCapableUserCredentialsProvider.class); 
+  private static final Logger LOGGER = LoggerFactory.getLogger(SSHCapableUserCredentialsProvider.class); 
 	/**
 	 * The pass phase to be used for SSH connections.
 	 */
@@ -45,14 +46,14 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	 */
 	@Override
 	public boolean get(URIish uri, CredentialItem... items) {
-	  if (logger.isDebugEnabled()) {
-	    logger.debug("Credential query, uri " + uri);
+	  if (LOGGER.isDebugEnabled()) {
+	    LOGGER.debug("Credential query, uri " + uri);
 	  }
 	  for (CredentialItem item : items) {
 	    // TODO Should handle item.isValueSecure()
-	    if (logger.isDebugEnabled()) {
-	      logger.debug("Item class :" + item.getClass() + ", is secure value: " + item.isValueSecure());
-	      logger.debug("Message: |" + item.getPromptText() + "|");
+	    if (LOGGER.isDebugEnabled()) {
+	      LOGGER.debug("Item class :" + item.getClass() + ", is secure value: " + item.isValueSecure());
+	      LOGGER.debug("Message: |" + item.getPromptText() + "|");
 	    }
 	    
 	    if ((item instanceof CredentialItem.StringType || item instanceof CredentialItem.Password)
@@ -61,8 +62,8 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	    }
 
 	    if (item instanceof CredentialItem.YesNoType) {
-	      if (logger.isDebugEnabled()) {
-	        logger.debug("YesNoType");
+	      if (LOGGER.isDebugEnabled()) {
+	        LOGGER.debug("YesNoType");
 	      }
 
 	      // Present the question to the user.
@@ -87,14 +88,14 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	 * <code>false</code> if the user canceled the request and did not supply all requested values.
 	 */
   private boolean treatPassphrase(CredentialItem item) {
-    logger.debug("Passphrase required.");
+    LOGGER.debug("Passphrase required.");
     
     // A not so great method to check that the pass phrase is requested.
     passphaseRequested = true;
     
     if (!validPassphrase(passphrase)) {
       // We don't have a phrase from options. Ask the user.
-      logger.debug("Ask for new passphrase...");
+      LOGGER.debug("Ask for new passphrase...");
       passphrase = new PassphraseDialog(translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE) + ".").getPassphrase();
     }
     
@@ -133,8 +134,8 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
     OptionsManager optionsManager = OptionsManager.getInstance();
     Boolean response = optionsManager.getSshPromptAnswer(promptText);
     
-    if (logger.isDebugEnabled()) {
-      logger.debug("Look in cache for answer to: " + promptText + ", got " + response);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Look in cache for answer to: " + promptText + ", got " + response);
     }
     
     if (response == null) {
@@ -144,8 +145,8 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
       int result = PluginWorkspaceProvider.getPluginWorkspace()
           .showConfirmDialog("Connection", promptText, options, optonsId);
 
-      if (logger.isDebugEnabled()) {
-        logger.debug("Asked the user, answer: " + response);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Asked the user, answer: " + response);
       }
 
       if (result == 0) {

@@ -4,7 +4,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Equaler.
@@ -14,7 +15,7 @@ public class Equaler {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(Equaler.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(Equaler.class.getName());
 
   /**
    * Hidden constructor.
