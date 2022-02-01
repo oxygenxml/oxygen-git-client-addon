@@ -119,12 +119,17 @@ public class BranchManagementPanel extends JPanel {
   /**
    * <code>true</code> if component should refresh after is showing.
    */
-  private boolean shouldRefresh = false;
+  private boolean shouldRefresh = true;
   
   /**
    * <code>true</code> if is needed to force branches showing, not only refresh them.
    */
-  private boolean forceShowBranches = false;
+  private boolean forceShowBranches = true;
+  
+  /**
+   * <code>true<code> if the component has previous state for showed.
+   */
+  private boolean wasPreviousShowed = false;
   
 
   /**
@@ -133,27 +138,11 @@ public class BranchManagementPanel extends JPanel {
    * @param ctrl Git controller.
    */
   public BranchManagementPanel(GitControllerBase ctrl) {
-    if(isShowing()) {
-      RepoUtil.initRepoIfNeeded(true);
-    }
     
-    this.addHierarchyListener(e ->  {
-      if(isShowing()) {
-        RepoUtil.initRepoIfNeeded(false);
-        
-        if(shouldRefresh) {
-          if(forceShowBranches) {
-            showBranches();
-            forceShowBranches = false;
-          } else {
-            refreshBranches();
-          }
-          shouldRefresh = false;
-        }
-      }
-    });
+    installHierarchyListener();
     
     createGUI();
+    
     ctrl.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
@@ -185,6 +174,31 @@ public class BranchManagementPanel extends JPanel {
     addTreeListeners();
     
     branchesTreeActionProvider = new BranchTreeMenuActionsProvider(ctrl);
+  }
+
+  /**
+   * Install an hierarchy listener to initialize repository if the component becomes visible and repository is not initialized.
+   */
+  private void installHierarchyListener() {
+    addHierarchyListener(e ->  {
+    
+      final boolean actualState = isShowing();
+      if(actualState && !wasPreviousShowed) {
+        RepoUtil.initRepoIfNeeded(false);
+        
+        if(shouldRefresh) {
+          if(forceShowBranches) {
+            showBranches();
+            forceShowBranches = false;
+          } else {
+            refreshBranches();
+          }
+          shouldRefresh = false;
+        } 
+      }  
+      
+      wasPreviousShowed = actualState;
+    });
   }
   
   /**
@@ -331,11 +345,8 @@ public class BranchManagementPanel extends JPanel {
    * Creates the components and adds listeners to some of them.
    */
   private void createGUI() {
-    setLayout(new GridBagLayout());
- 
-    forceShowBranches = !isShowing();
-    shouldRefresh = !isShowing();
     
+    setLayout(new GridBagLayout());   
     createSearchBar();
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;

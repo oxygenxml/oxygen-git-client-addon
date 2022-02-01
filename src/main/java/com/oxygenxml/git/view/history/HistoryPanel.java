@@ -181,8 +181,15 @@ public class HistoryPanel extends JPanel {
    */
   private final WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
   
+  /**
+   * <code>true</code> if the branch has uncommited changes.
+   */
   private boolean hasUncommitedChanges  = false;
 
+  /**
+   * <code>true<code> if the component has previous state for showed.
+   */
+  private boolean wasPreviousShowed = false;
   
 
   /**
@@ -194,14 +201,12 @@ public class HistoryPanel extends JPanel {
     
     setLayout(new BorderLayout());
     
-    if(isShowing()) {
-      RepoUtil.initRepoIfNeeded(true);
-    }
-    
     this.addHierarchyListener(e ->  {
-      if(isShowing()) {
+      final boolean actualState = isShowing();
+      if(actualState && !wasPreviousShowed) {
         RepoUtil.initRepoIfNeeded(true);
       }
+      wasPreviousShowed = actualState;
     });
     
     graphCellRender = new CommitsGraphCellRender();
@@ -219,36 +224,7 @@ public class HistoryPanel extends JPanel {
     addPresentHistoryActions(presentHistoryStrategyButton);
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
-    historyTable = new Table();
-    
-    historyTable.setIntercellSpacing(new Dimension(0, 0)); 
-    historyTable.setShowGrid(false);
-    historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    historyTable.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mousePressed(java.awt.event.MouseEvent e) {
-        if (e.isPopupTrigger()) {
-          showHistoryTableContextualMenu(historyTable, e.getPoint());
-        }
-      }
-
-      @Override
-      public void mouseReleased(java.awt.event.MouseEvent e) {
-        mousePressed(e);
-      }
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        if (activeFilePath != null && !e.isConsumed() && !e.isPopupTrigger() && e.getClickCount() == 2) {
-          e.consume();
-          int rowAtPoint = historyTable.rowAtPoint(e.getPoint());
-          if (rowAtPoint != -1) {
-            updateTableSelection(historyTable, rowAtPoint);
-            historyDoubleClickAction(rowAtPoint);
-          }
-        }
-      }
-    });
+    initHistoryTable();
 
     JScrollPane historyTableScrollPane = new JScrollPane(historyTable);
     historyTable.setFillsViewportHeight(true);
@@ -358,6 +334,44 @@ public class HistoryPanel extends JPanel {
     }, PluginWorkspace.MAIN_EDITING_AREA);
 
     add(centerSplitPane, BorderLayout.CENTER);
+  }
+
+  
+  /**
+   * Initialize history table.
+   */
+  private void initHistoryTable() {
+    historyTable = new Table();
+    
+    historyTable.setIntercellSpacing(new Dimension(0, 0)); 
+    historyTable.setShowGrid(false);
+    historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    historyTable.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(java.awt.event.MouseEvent e) {
+        if (e.isPopupTrigger()) {
+          showHistoryTableContextualMenu(historyTable, e.getPoint());
+        }
+      }
+
+      @Override
+      public void mouseReleased(java.awt.event.MouseEvent e) {
+        mousePressed(e);
+      }
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (activeFilePath != null && !e.isConsumed() && !e.isPopupTrigger() && e.getClickCount() == 2) {
+          e.consume();
+          int rowAtPoint = historyTable.rowAtPoint(e.getPoint());
+          if (rowAtPoint != -1) {
+            updateTableSelection(historyTable, rowAtPoint);
+            historyDoubleClickAction(rowAtPoint);
+          }
+        }
+      }
+    });
+    
   }
 
   
