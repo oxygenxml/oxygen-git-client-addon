@@ -29,10 +29,12 @@
             <div>
                 <h3>What's new in version 4.0.0</h3>
                 <ol>
-                    <li>The History view now includes a new revision graph that helps you to understand how commits connect with one another.</li>
+                  <li>The <i>History view</i> now includes a new revision graph that helps you to understand how commits connect with one another.</li>
                     <li>Fixed an issue where the index got reset after pulling changes from the remote.</li>
-                    <li>The Stash dialog box now has a column that shows the creation time for each stash.</li>
+                  <li>The <i>Stash</i> dialog box now has a column that shows the creation time for each stash.</li>
                     <li>Performance was improved by optimizing the process of checking the status of the repository.</li>
+                  <li>A new <i>Checkout</i> action was added in the <i>History view</i> contextual menu to checkout a branch 
+                    at a specific commit (either in detached head form or by creating a new branch at that commit).</li>
                 </ol>
             </div>
                     
