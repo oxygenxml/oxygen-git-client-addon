@@ -457,8 +457,14 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 	@Override
 	public void showGitBranchManager() {
-		pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_BRANCH_VIEW, true);
-		branchManagementPanel.showBranches();
+	  if(branchManagementPanel.isShowing()) {
+      branchManagementPanel.showBranches();
+    } else {
+      // EXM-49642
+      // No need to call @BranchManagementPanel::showBranches because the installed @HierarchyListener will detect that the view has been displayed 
+      // and will call the method
+      pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_BRANCH_VIEW, true);
+    }
 	}
 
 	@Override
