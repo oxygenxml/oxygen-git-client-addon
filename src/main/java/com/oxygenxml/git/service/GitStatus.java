@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 
 /**
  * Working copy's status info.
@@ -31,6 +32,12 @@ public class GitStatus {
    * Whether there are uncommitted changes. {@code true} if any tracked file is changed
    */
   private final boolean hasUncommittedChanges;
+  
+  /**
+   * <code>null</code> if is not initialized, <code>true</code> if the repository has files in conflict or <code>false</code> otherwise.
+   */
+  private Boolean hasFileInConflicts = null;
+  
   
   /**
    * Whether there are uncommitted changes.
@@ -71,5 +78,17 @@ public class GitStatus {
    */
   public List<FileStatus> getUnstagedFiles() {
     return unstagedFiles;
+  }
+  
+  /**
+   * @return <code>true</code> if the repository has files in conflict or <code>false</code> otherwise.
+   */
+  public boolean repositoryHasConflicts() {
+    if(hasFileInConflicts == null) {
+      hasFileInConflicts = getUnstagedFiles() != null && 
+          getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
+    }
+    
+    return hasFileInConflicts;
   }
 }

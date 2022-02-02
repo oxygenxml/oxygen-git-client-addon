@@ -2341,10 +2341,7 @@ public class GitAccess {
       stash = createStashCmd.call();
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
     } catch (GitAPIException e) {
-      boolean isBecauseConflicts = getUnstagedFiles() != null 
-          && !getUnstagedFiles().isEmpty() 
-          && getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
-      if(isBecauseConflicts) {
+      if(repositoryHasConflicts()) {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
       } else {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
@@ -2928,6 +2925,11 @@ public class GitAccess {
     return toReturn;
   }
   
-  
+  /**
+   * @return <code>true</code> if the repository has files in conflict or <code>false</code> otherwise.
+   */
+  public boolean repositoryHasConflicts() {
+    return getStatus().repositoryHasConflicts();
+  }
 	
 }

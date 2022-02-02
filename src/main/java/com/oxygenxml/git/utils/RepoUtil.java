@@ -135,6 +135,9 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
          || repoState == RepositoryState.REBASING_MERGE
          || repoState == RepositoryState.REBASING_REBASING
          || repoState == RepositoryState.REVERTING;
+     if(!toReturn) {
+       toReturn = GitAccess.getInstance().repositoryHasConflicts();
+     }
    }
    return toReturn;
  }
