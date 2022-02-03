@@ -7,12 +7,15 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JToolTip;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -53,6 +56,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   private static final int HORIZONTAL_INSET = 3;
 
   /**
+   * The maximum length for a branch or tag name.
+   */
+  private static final int MAX_BRANCH_OR_TAG_NAME_LENGTH = 18;
+
+  /**
    * Logger for logging.
    */
   @SuppressWarnings("unused")
@@ -85,6 +93,22 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   private final Map<String, List<String>> remoteBranchMap;
 
   /**
+   * Table for this render.
+   */
+  private JTable table;
+
+  /**
+   * The current row.
+   */
+  private int row;
+
+  /**
+   * The current column.
+   */
+  private int column;
+
+
+  /**
    * Construct the Table Renderer with accurate alignment.
    * 
    * @param repository            The current repository
@@ -114,6 +138,10 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   @Override
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
       int row, int column) {
+    this.table = table;
+    this.row = row;
+    this.column = column;
+
     removeAll();
 
     // keep the selection for whole columns of the row when selecting.
@@ -134,7 +162,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
     setFont(table.getFont());
     setBorder(getNoFocusBorder());
-    
+
     // adding constraints for commit message label when wrapping
     GridBagConstraints constr = new GridBagConstraints();
     constr.fill = GridBagConstraints.NONE;
@@ -153,10 +181,13 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
     constr.gridx ++;
     constr.fill = GridBagConstraints.HORIZONTAL;
     constr.weightx = 1;
-    JLabel comp = new JLabel(toRender);
+    final JLabel comp = new JLabel(toRender);
     comp.setForeground(getForeground());
+    if(!toRender.isEmpty()) {
+      comp.setToolTipText(toRender);
+    }
     add(comp, constr);
-    
+
     return this;
   }
 
@@ -172,7 +203,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   private String getRenderingStringForCommit(Object value, GridBagConstraints constr, JTable table) {
     CommitCharacteristics commitCharacteristics = (CommitCharacteristics) value;
     String toRender = commitCharacteristics.getCommitMessage().replaceAll("\\n+", " ").trim();
-    
+
     // Show outgoing and incoming commits using arrows
     String arrow = "";
     if (isAheadCommit(commitCharacteristics.getCommitId())) {
@@ -189,9 +220,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       constr.gridx ++;
       add(arrowLabel, constr);
     }
-    
+
     // bold the text for uncommitted changes
-    String uncommittedChangesMessage = Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES);
+    final String uncommittedChangesMessage = Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES);
     if (toRender.equals(uncommittedChangesMessage)) {
       toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
     } else if (repository != null) {
@@ -209,10 +240,10 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
       Color remoteBackgroundColor = isDarkTheme ? UIUtil.REMOTE_BRANCH_GRAPHITE_BACKGROUND 
           : UIUtil.REMOTE_BRANCH_LIGHT_BACKGROUND;
-     
+
       addTagOrBranchLabel(remoteBranchList, constr, remoteBackgroundColor, table.getForeground());
     }
-    
+
     return toRender;
   }
 
@@ -234,15 +265,23 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       // No insets. We will impose space from the borders.
       constr.insets = new Insets(0, 0, 0, 0);
       int lineSize = 1;
-      
+
       for (String name : nameForLabelList) {
-        RoundedLineBorder border = new RoundedLineBorder(null, lineSize, LABEL_BORDER_CORNER_SIZE, true);
-        JLabel label = new JLabel(name) {
+        final RoundedLineBorder border = new RoundedLineBorder(null, lineSize, LABEL_BORDER_CORNER_SIZE, true);
+        final JLabel label = new JLabel(name.length() > MAX_BRANCH_OR_TAG_NAME_LENGTH ? 
+            (name.substring(0, MAX_BRANCH_OR_TAG_NAME_LENGTH - "...".length()) + "...") 
+            : name) {
+
           @Override
           protected void paintComponent(Graphics g) {
             border.fillBorder(this, g, 0, 0, getWidth(), getHeight());
             super.paintComponent(g);
-          }         
+          }
+
+          @Override
+          public JToolTip createToolTip() {
+            return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+          }
         };
         if (name.equals(currentBranchName)) {
           label.setFont(label.getFont().deriveFont(Font.BOLD));
@@ -250,15 +289,16 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         label.setBackground(backgroundColor);
         label.setForeground(foregroundColor);
         label.setBorder(border);
+        label.setToolTipText(name);
         constr.gridx ++;
         add(label, constr);
       }
-      
+
       // We added a label. Update the top insets of the initial insets.
       constr.insets = oldInsets;
     }
   }
-  
+
   /**
    * Check if this is a commit to push.
    * 
@@ -274,7 +314,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
     }
     return isIt;
   }
-  
+
   /**
    * Check if this is a commit to pull.
    * 
@@ -289,7 +329,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       isIt = commitsBehind.stream().anyMatch(commit -> commit.getId().getName().equals(commitID));
     }
     return isIt;
- }
+  }
 
   /**
    * @see javax.swing.table.DefaultTableCellRenderer.getNoFocusBorder()
@@ -297,7 +337,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    */
   private Border getNoFocusBorder() {
     Border toReturn = noFocusBorder;
-    
+
     Border border = UIManager.getBorder("Table.cellNoFocusBorder");
     if (System.getSecurityManager() != null) {
       toReturn = border != null ? border : SAFE_NO_FOCUS_BORDER;
@@ -306,8 +346,28 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         toReturn = border;
       }
     }
-    
+
     return toReturn;
+  }
+
+  @Override
+  public String getToolTipText(MouseEvent event) {
+
+    String tooltipText = null;
+
+    Rectangle rectangle = table.getCellRect(row, column, true);
+    setBounds(rectangle);
+    doLayout();
+
+    final Component component = getComponentAt(event.getPoint());
+
+    if (component instanceof JLabel) {
+      final JLabel label = (JLabel)component;
+      tooltipText = label.getToolTipText();
+    }
+
+    return tooltipText;
+
   }
 
   /**
