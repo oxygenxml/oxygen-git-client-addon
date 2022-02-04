@@ -8,6 +8,24 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+      <key value="Edit_Remote">
+        <comment>Edit remote.</comment>
+        <val lang="en_US">Edit remote repository</val>
+        <val lang="de_DE">Edit remote repository</val>
+        <val lang="fr_FR">Edit remote repository</val>
+        <val lang="ja_JP">Edit remote repository</val>
+        <val lang="nl_NL">Edit remote repository</val>
+        <val lang="zh_CN">Edit remote repository</val>
+    </key>
+     <key value="Add_Remote">
+        <comment>Add remote.</comment>
+        <val lang="en_US">Add remote repository</val>
+        <val lang="de_DE">Add remote repository</val>
+        <val lang="fr_FR">Add remote repository</val>
+        <val lang="ja_JP">Add remote repository</val>
+        <val lang="nl_NL">Add remote repository</val>
+        <val lang="zh_CN">Add remote repository</val>
+    </key>
     <key value="Remote_Tracking_Branch">
         <comment>Remote tracking branch.</comment>
         <val lang="en_US">Remote-tracking branch</val>
@@ -250,24 +268,6 @@
         <val lang="ja_JP">Delete remote</val>
         <val lang="nl_NL">Delete remote</val>
         <val lang="zh_CN">Delete remote</val>
-    </key>
-    <key value="Edit_Remote">
-        <comment>Edit remote.</comment>
-        <val lang="en_US">Edit remote</val>
-        <val lang="de_DE">Edit remote</val>
-        <val lang="fr_FR">Modifier le remote</val>
-        <val lang="ja_JP">Edit remote</val>
-        <val lang="nl_NL">Edit remote</val>
-        <val lang="zh_CN">Edit remote</val>
-    </key>
-     <key value="Add_Remote">
-        <comment>Add remote.</comment>
-        <val lang="en_US">Add remote</val>
-        <val lang="de_DE">Add remote</val>
-        <val lang="fr_FR">Ajouter un remote</val>
-        <val lang="ja_JP">Add remote</val>
-        <val lang="nl_NL">Add remote</val>
-        <val lang="zh_CN">Add remote</val>
     </key>
     <key value="URL">
         <comment>URL.</comment>

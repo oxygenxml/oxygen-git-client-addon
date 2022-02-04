@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 import javax.swing.table.TableColumn;
@@ -33,13 +32,11 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.stash.StashCellRendersFactory;
 import com.oxygenxml.git.view.util.CoalescingDocumentListener;
-import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
-import ro.sync.exml.workspace.api.standalone.ui.Table;
 
 
 /**
@@ -90,7 +87,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				TRANSLATOR.getTranslation(Tags.REMOTES_DIALOG_TITLE), true
 				);
 		
-		this.setResizable(false);
+		this.setResizable(true);
 
 		try {
 			getContentPane().add(createRemotesPanel());
@@ -98,6 +95,9 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			LOGGER.error(e.getMessage(), e);
 		}
 
+		setPreferredSize(new Dimension(DIALOG_WIDTH, DIALOG_HEIGHT));
+		setMinimumSize(new Dimension(DIALOG_WIDTH / 2, DIALOG_HEIGHT));
+		
 		pack();
 		
 		JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
@@ -113,26 +113,6 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				pack();
 				repaint();
 	}
-	
-	@Override
-	public Dimension getSize() {
-		return new Dimension(DIALOG_WIDTH, DIALOG_HEIGHT);
-	}
-	
-	@Override
-	public Dimension getMinimumSize() {
-		return getSize();
-	}
-	
-	@Override
-	public Dimension getPreferredSize() {
-		return getSize();
-	}
-	
-    @Override
-    public Dimension getMaximumSize() {
-    	return getSize();
-    }
 	
     
     /**
@@ -277,14 +257,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			remotesModel = new RemotesTableModel();
 			remotesModel.setRemotes(GitAccess.getInstance().getRemotesFromConfig());
 
-			remotesTable = new Table(remotesModel) {
-
-				@Override
-				public JToolTip createToolTip() {
-					return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-				}
-
-			};
+			remotesTable = OxygenUIComponentsFactory.createTable(remotesModel);
 			
 			remotesTable.setDefaultRenderer(String.class, StashCellRendersFactory.getMessageCellRender());
 
@@ -294,11 +267,11 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			remotesTable.getTableHeader().setVisible(true);
 
 			remotesTable.getSelectionModel().addListSelectionListener(e -> {
-				int selectedRow = remotesTable.getSelectedRow();
-				if(selectedRow >= 0) {
-					editButton.setEnabled(true);
-					deleteButton.setEnabled(true);
-				}
+			  if (!e.getValueIsAdjusting()) {
+	        final boolean tableHasSelection = remotesTable.getSelectedRowCount() > 0;
+	        editButton.setEnabled(tableHasSelection);
+	        deleteButton.setEnabled(tableHasSelection);
+	      }
 			});
 
 			TableColumn statusCol = remotesTable.getColumnModel().getColumn(RemotesTableModel.REMOTE_COLUMN);
@@ -356,9 +329,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			return new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.ADD) + "...") {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog(
-							TRANSLATOR.getTranslation(Tags.ADD_REMOTE), 
-							null, null);
+					final AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog(true, null, null);
 					if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
 						final String remoteName = dialog.getRemoteName();
 						final String remoteURL = dialog.getRemoteURL();
@@ -384,12 +355,12 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 		 * @return The created button.
 		 */
 		private JButton createEditButton() {
-			editButton = new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT) + "...") {
+			editButton = new Button(new AbstractAction(TRANSLATOR.getTranslation(Tags.EDIT)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int selectedRow = remotesTable.getSelectedRow();
 					if(selectedRow >= 0) {
-						AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog(TRANSLATOR.getTranslation(Tags.EDIT_REMOTE), 
+						final AddOrEditRemoteDialog dialog = new AddOrEditRemoteDialog(false, 
 								(String)remotesModel.getValueAt(selectedRow, RemotesTableModel.REMOTE_COLUMN), 
 								(String)remotesModel.getValueAt(selectedRow, RemotesTableModel.URL_COLUMN));
 						if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
@@ -504,11 +475,15 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			 * @param remoteName  The remote name. May be null if the dialog is for adding a new remote.
 			 * @param remoteURL   The remote  URL.  May be null if the dialog is for adding a new remote.
 			 */
-			public AddOrEditRemoteDialog(String title, String remoteName, String remoteURL) {
+			public AddOrEditRemoteDialog(boolean isAddDialog, String remoteName, String remoteURL) {
 				super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-						title, true
+						TRANSLATOR.getTranslation(isAddDialog ? Tags.ADD_REMOTE : Tags.EDIT_REMOTE), true
 						);
 
+				if(isAddDialog) {
+				  setOkButtonText(TRANSLATOR.getTranslation(Tags.ADD));  
+				}
+				
 				oldRemoteName = remoteName;
 				oldRemoteURL = remoteURL;
 				
@@ -526,6 +501,11 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 				this.getOkButton().setEnabled(remoteName != null && remoteURL != null);
 
+				this.setMinimumSize(new Dimension((int)(WIDTH * 0.75), HEIGHT));
+				this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+				
+			  this.setResizable(true);
+			  
 				getContentPane().add(createGUIPanel());
 				pack();
 
@@ -537,7 +517,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 				remoteNameTF.getDocument().addDocumentListener(updateOkButtonListener);
 				remoteURLTF.getDocument().addDocumentListener(updateOkButtonListener);
-
+				
 				JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
 						(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
 						if (parentFrame != null) {
@@ -547,28 +527,9 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
 						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
+						this.setResizable(true);
 						this.setVisible(true);
-						this.setResizable(false);
-			}
-			
-			@Override
-			public Dimension getSize() {
-				return new Dimension(WIDTH, HEIGHT);
-			}
-			
-			@Override
-			public Dimension getPreferredSize() {
-				return getSize();
-			}
-			
-			@Override
-			public Dimension getMinimumSize() {
-				return getSize();
-			}
-			
-			@Override
-			public Dimension getMaximumSize() {
-				return getSize();
+						
 			}
 
 			/**
@@ -577,8 +538,8 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			 * @return The created panel.
 			 */
 			private JPanel createGUIPanel() {
-				JPanel guiPanel = new JPanel(new GridBagLayout());
-				GridBagConstraints constraints = new GridBagConstraints();
+				final JPanel guiPanel = new JPanel(new GridBagLayout());
+				final GridBagConstraints constraints = new GridBagConstraints();
 
 				constraints.gridx = 0;
 				constraints.gridy = 0;
@@ -613,6 +574,15 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 				constraints.fill = GridBagConstraints.HORIZONTAL;
 				guiPanel.add(remoteURLTF, constraints);
 
+				constraints.gridx = 0;
+				constraints.gridy++;
+			  constraints.gridwidth = 3;
+        constraints.gridheight = 3;
+				constraints.weightx = 1;
+				constraints.weighty = 1;
+				constraints.fill = GridBagConstraints.BOTH;
+				guiPanel.add(new JPanel(), constraints);
+				
 				return guiPanel;
 			}
 
