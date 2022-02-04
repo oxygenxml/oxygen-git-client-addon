@@ -147,11 +147,7 @@ public class GitAccess {
    * The length of the short commit ID.
    */
   public static final int SHORT_COMMIT_ID_LENGTH = 7;
-  /**
-	 * A synthetic object representing the uncommitted changes.
-	 */
-  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(
-      Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES), null, "*", "*", "*", null, null);
+  
   /**
 	 * Logger for logging.
 	 */
@@ -172,6 +168,21 @@ public class GitAccess {
 	 * Translation support.
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
+	
+	/**
+   * A synthetic object representing the uncommitted changes.
+   */
+  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(
+      TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES), null, "*", "*", "*", null, null) {
+    
+    @Override
+    public String getCommitMessage() {
+      // because the translation is not available for class loading in memory, so the message will be not processed correct.
+      return TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES);
+    }
+    
+  };
+  
 	/**
 	 * Keeps a cache of the computed status to avoid processing overhead.
 	 */

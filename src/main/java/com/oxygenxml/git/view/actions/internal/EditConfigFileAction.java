@@ -46,7 +46,7 @@ public class EditConfigFileAction extends BaseGitAbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		try {
 			PluginWorkspaceProvider.getPluginWorkspace().open((
-					new File(GitAccess.getInstance().getConfigFilePath()).toURI().toURL()), 
+					new File(GitAccess.getInstance().getConfigFilePath()).toURI().toURL()), //NOSONAR
 					null, "text/plain");
 		} catch (MalformedURLException | NoRepositorySelected exc) {
 			LOGGER.error(exc.getMessage(), exc);
