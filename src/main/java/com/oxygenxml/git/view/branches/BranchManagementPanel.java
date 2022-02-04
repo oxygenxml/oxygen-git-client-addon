@@ -184,17 +184,20 @@ public class BranchManagementPanel extends JPanel {
     
       final boolean actualState = isShowing();
       if(actualState && !wasPreviousShowed) {
-        RepoUtil.initRepoIfNeeded(false);
+        RepoUtil.initRepoIfNeeded(true);
         
-        if(shouldRefresh) {
-          if(forceShowBranches) {
-            showBranches();
-            forceShowBranches = false;
-          } else {
-            refreshBranches();
-          }
-          shouldRefresh = false;
-        } 
+        GitOperationScheduler.getInstance().schedule(() -> {
+          if(shouldRefresh) {
+            if(forceShowBranches) {
+              showBranches();
+              forceShowBranches = false;
+            } else {
+              refreshBranches();
+            }
+            shouldRefresh = false;
+          } 
+        });
+       
       }  
       
       wasPreviousShowed = actualState;

@@ -204,7 +204,7 @@ public class HistoryPanel extends JPanel {
     this.addHierarchyListener(e ->  {
       final boolean actualState = isShowing();
       if(actualState && !wasPreviousShowed) {
-        RepoUtil.initRepoIfNeeded(true);
+        GitOperationScheduler.getInstance().schedule(() -> RepoUtil.initRepoIfNeeded(true));
       }
       wasPreviousShowed = actualState;
     });
