@@ -586,16 +586,22 @@ public class ListStashesDialog extends OKCancelDialog {
     tableOfStashes.setComponentPopupMenu(contextualActions);
     
     tableOfStashes.getSelectionModel().addListSelectionListener(e -> {
-      setStashTableButtonsEnabled(true);
-      int selectedRow = tableOfStashes.getSelectedRow();
-      if(selectedRow >= 0) {
-    	  try {
-    		  affectedStashFilesTableModel.setFilesStatus(
-    				  RevCommitUtil.getChangedFiles(stashesTableModel.getStashes().get(selectedRow).getName()));
-    	  } catch (IOException | GitAPIException exc) {
-    		  LOGGER.error(exc.getMessage(), exc);
-    	  }
-      }
+      if (!e.getValueIsAdjusting()) {
+        if(tableOfStashes.getSelectedRowCount() > 0) {
+          setStashTableButtonsEnabled(true);
+          final int selectedRow = tableOfStashes.getSelectedRow();
+          try {
+            affectedStashFilesTableModel.setFilesStatus(
+                RevCommitUtil.getChangedFiles(stashesTableModel.getStashes().get(selectedRow).getName()));
+          } catch (IOException | GitAPIException exc) {
+            LOGGER.error(exc.getMessage(), exc);
+          }
+        } else {
+          deleteSelectedButton.setEnabled(false);
+          applyButton.setEnabled(false);
+          affectedStashFilesTableModel.setFilesStatus(new ArrayList<>());
+        }
+      }  
     });
 
     stashesTableModel.fireTableDataChanged();
