@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+    <key value="Show_current_branch_history">
+        <comment>Show current repository history.</comment>
+        <val lang="en_US">Show current repository history</val>
+        <val lang="de_DE">Show current repository history</val>
+        <val lang="fr_FR">Show current repository history</val>
+        <val lang="ja_JP">Show current repository history</val>
+        <val lang="nl_NL">Show current repository history</val>
+        <val lang="zh_CN">Show current repository history</val>
+    </key>
       <key value="Edit_Remote">
         <comment>Edit remote.</comment>
         <val lang="en_US">Edit remote repository</val>
@@ -2197,15 +2206,6 @@
         <val lang="ja_JP">前のバージョンを開く</val>
         <val lang="nl_NL">Open vorige versie</val>
         <val lang="zh_CN">打开以前的版本</val>
-    </key>
-    <key value="Show_current_branch_history">
-        <comment>Show current branch history</comment>
-        <val lang="en_US">Show current branch history</val>
-        <val lang="de_DE">Zeige die Historie des aktuellen Branch</val>
-        <val lang="fr_FR">Afficher l'historique de la branche actuelle</val>
-        <val lang="ja_JP">現在の分岐履歴を表示する</val>
-        <val lang="nl_NL">Huidige branch-historie tonen</val>
-        <val lang="zh_CN">显示当前分支历史</val>
     </key>
     <key value="Git_history">
         <comment>The title for the "Git History" panel/view.</comment>

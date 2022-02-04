@@ -539,8 +539,7 @@ public class GitActionsManager  {
 		}
 
 		if(submoduleAction != null) {
-			boolean hasRepositorySubmodules = hasRepositorySubmodules();
-      submoduleAction.setEnabled(hasRepositorySubmodules);
+      submoduleAction.setEnabled(hasRepositorySubmodules());
 		}
 
 		if(stashChangesAction != null) {
