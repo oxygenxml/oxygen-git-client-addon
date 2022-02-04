@@ -47,7 +47,7 @@ public class LoginDialog extends OKCancelDialog {
   /**
    * The translator for the messages that are displayed in this dialog
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    *  Logger for logging.
    */
@@ -81,9 +81,9 @@ public class LoginDialog extends OKCancelDialog {
    */
   private JRadioButton tokenAuthRadio;
   /**
-   * Personal access token text field.
+   * Personal access token password field.
    */
-  private JTextField tokenTextField;
+  private JPasswordField tokenPassField;
   /**
    * Username and password panel.
    */
@@ -98,7 +98,7 @@ public class LoginDialog extends OKCancelDialog {
 	public LoginDialog(String host, String loginMessage) {
 		super(
 		    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE),
+		    TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_TITLE),
 		    true);
 		
 		if (LOGGER.isDebugEnabled()) {
@@ -128,7 +128,7 @@ public class LoginDialog extends OKCancelDialog {
 		// Info label
 		JLabel lblGitRemote = new JLabel(
 				"<html>" + message + "<br/>" 
-				    + translator.getTranslation(Tags.LOGIN_DIALOG_MAIN_LABEL) 
+				    + TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_MAIN_LABEL) 
 				    + " <b>" + host + "</b>"
 				    + "."
 				    + "</html>");
@@ -148,7 +148,7 @@ public class LoginDialog extends OKCancelDialog {
     
     // Personal access token radio
 		final ButtonGroup buttonGroup = new ButtonGroup();
-    tokenAuthRadio = new JRadioButton(translator.getTranslation(Tags.PERSONAL_ACCESS_TOKEN));
+    tokenAuthRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.PERSONAL_ACCESS_TOKEN));
     tokenAuthRadio.setFocusPainted(false);
     gbc.insets = new Insets(0, 0, 0, 0);
     gbc.gridx = 0;
@@ -157,7 +157,7 @@ public class LoginDialog extends OKCancelDialog {
     buttonGroup.add(tokenAuthRadio);
     
     // Token field
-    tokenTextField = OxygenUIComponentsFactory.createTextField();
+    tokenPassField = new JPasswordField();
     gbc.insets = new Insets(
         0,
         INNER_PANELS_LEFT_INSET,
@@ -167,10 +167,10 @@ public class LoginDialog extends OKCancelDialog {
     gbc.gridy ++;
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(tokenTextField, gbc);
+    panel.add(tokenPassField, gbc);
     
     // Basic authentication radio
-    basicAuthRadio = new JRadioButton(translator.getTranslation(Tags.BASIC_AUTHENTICATION));
+    basicAuthRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.BASIC_AUTHENTICATION));
     basicAuthRadio.setFocusPainted(false);
     gbc.insets = new Insets(0, 0, 0, 0);
     gbc.gridx = 0;
@@ -201,7 +201,7 @@ public class LoginDialog extends OKCancelDialog {
    * Init GUI.
    */
   private void initGUI() {
-    setOkButtonText(translator.getTranslation(Tags.AUTHENTICATE));
+    setOkButtonText(TRANSLATOR.getTranslation(Tags.AUTHENTICATE));
     
     if (GITHUB_COM.equals(host)) {
       tokenAuthRadio.doClick();
@@ -218,11 +218,11 @@ public class LoginDialog extends OKCancelDialog {
     for (Component component : components) {
       component.setEnabled(basicAuthRadio.isSelected());
     }
-    tokenTextField.setEnabled(tokenAuthRadio.isSelected());
+    tokenPassField.setEnabled(tokenAuthRadio.isSelected());
 
     SwingUtilities.invokeLater(() -> {
-      if (tokenTextField.isEnabled()) {
-        tokenTextField.requestFocus();
+      if (tokenPassField.isEnabled()) {
+        tokenPassField.requestFocus();
       } else if (tfUsername.isEnabled()) {
         tfUsername.requestFocus();
       }
@@ -236,7 +236,7 @@ public class LoginDialog extends OKCancelDialog {
     JPanel userAndPassPanel = new JPanel(new GridBagLayout());
     
     // Username label
-		JLabel lbUsername = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
+		JLabel lbUsername = new JLabel(TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(
 		    0,
@@ -264,7 +264,7 @@ public class LoginDialog extends OKCancelDialog {
 		userAndPassPanel.add(tfUsername, c);
 
 		// Password label
-		JLabel lbPassword = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_PASS_WORD_LABEL));
+		JLabel lbPassword = new JLabel(TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PASS_WORD_LABEL));
 		c.insets = new Insets(
         0,
         0,
@@ -299,7 +299,7 @@ public class LoginDialog extends OKCancelDialog {
 	    String password = new String(pfPassword.getPassword());
 	    credentials = new UserAndPasswordCredentials(username, password, host);
     } else {
-      String tokenValue = tokenTextField.getText().trim();
+      String tokenValue = new String(tokenPassField.getPassword());
       credentials = new PersonalAccessTokenInfo(host, tokenValue);
     }
 	  
