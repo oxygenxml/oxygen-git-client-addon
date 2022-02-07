@@ -35,6 +35,7 @@
                     <li>Performance was improved by optimizing the process of checking the status of the repository.</li>
                   <li>A new <i>Checkout</i> action was added in the <i>History view</i> contextual menu to checkout a branch 
                     at a specific commit (either in detached head form or by creating a new branch at that commit).</li>
+                  <li>A combo box was added in the <i>Git staging</i> view to switch between local branches.</li>
                 </ol>
             </div>
                     
