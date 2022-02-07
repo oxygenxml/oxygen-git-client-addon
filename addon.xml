@@ -36,6 +36,8 @@
                   <li>A new <i>Checkout</i> action was added in the <i>History view</i> contextual menu to checkout a branch 
                     at a specific commit (either in detached head form or by creating a new branch at that commit).</li>
                   <li>A combo box was added in the <i>Git staging</i> view to switch between local branches.</li>
+                  <li>A new <i>Git</i> menu containing various Git actions was added in the main menu bar.</li>
+                  <li>The Git Staging view toolbar was simplified by keeping just the most important ones while all actions are available under a kebab menu.</li>
                 </ol>
             </div>
                     
