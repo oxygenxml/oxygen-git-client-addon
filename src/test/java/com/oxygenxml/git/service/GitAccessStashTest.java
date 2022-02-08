@@ -40,7 +40,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(FileStatusDialog.class)
-@PowerMockIgnore({"javax.management.*", "javax.script.*"})
+@PowerMockIgnore({"javax.management.*", "javax.script.*",  "javax.xml.*", "org.xml.*"})
 public class GitAccessStashTest extends TestCase {
 
   /**

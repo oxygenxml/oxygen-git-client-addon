@@ -31,7 +31,7 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PluginWorkspaceProvider.class})
-@PowerMockIgnore({"javax.management.*", "javax.script.*"})
+@PowerMockIgnore({"javax.management.*", "javax.script.*",  "javax.xml.*", "org.xml.*"})
 public class FileHelperTest extends TestCase {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/FileHelperTest/local";

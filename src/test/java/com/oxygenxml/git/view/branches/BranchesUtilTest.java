@@ -21,7 +21,7 @@ import junit.framework.TestCase;
  * Test cases.
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*", "javax.script.*"})
+@PowerMockIgnore({"javax.management.*", "javax.script.*",  "javax.xml.*", "org.xml.*"})
 public class BranchesUtilTest extends TestCase {
   
   /**
