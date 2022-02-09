@@ -174,7 +174,9 @@ public class BranchActionsTest extends GitTestBase {
           JButton okButton = findFirstButton(createBranchDialog, "Create");
           if (okButton != null) {
             okButton.setEnabled(true);
+            flushAWT();
             okButton.doClick();
+            waitForScheduler();
           }
           break;
         }
@@ -182,6 +184,8 @@ public class BranchActionsTest extends GitTestBase {
       sleep(500);
 
       gitAccess.fetch();
+      branchManagementPanel.refreshBranches();
+      flushAWT();
       root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
       StringBuilder actualTree = new StringBuilder();
       BranchManagementTest.serializeTree(actualTree, root);
@@ -193,7 +197,6 @@ public class BranchActionsTest extends GitTestBase {
               "    refs/heads/LocalBranchCopy\n" +
               "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
               actualTree.toString());
-
       assertEquals("LocalBranchCopy", gitAccess.getBranchInfo().getBranchName());
     } finally {
       OptionsManager.getInstance().setCheckoutNewlyCreatedLocalBranch(initialIsCheckoutNewBranch);
@@ -227,6 +230,7 @@ public class BranchActionsTest extends GitTestBase {
       GitControllerBase mock = new GitController();
       BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
       branchManagementPanel.refreshBranches();
+      waitForScheduler();
       flushAWT();
       BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
       GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
@@ -258,14 +262,18 @@ public class BranchActionsTest extends GitTestBase {
           JButton okButton = findFirstButton(createBranchDialog, "Create");
           if (okButton != null) {
             okButton.setEnabled(true);
+            flushAWT();
             okButton.doClick();
+            waitForScheduler();
           }
           break;
         }
       }
       sleep(500);
-
+      waitForScheduler();
       gitAccess.fetch();
+      branchManagementPanel.refreshBranches();
+      flushAWT();
       root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
       StringBuilder actualTree = new StringBuilder();
       BranchManagementTest.serializeTree(actualTree, root);
@@ -338,6 +346,8 @@ public class BranchActionsTest extends GitTestBase {
     sleep(500);
     
     gitAccess.fetch();
+    branchManagementPanel.refreshBranches();
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);
@@ -402,13 +412,15 @@ public class BranchActionsTest extends GitTestBase {
         JButton firstButtonFound = findFirstButton(checkoutBranchDialog, "Checkout");
         if (firstButtonFound != null) {
           firstButtonFound.setEnabled(true);
+          flushAWT();
           firstButtonFound.doClick();
         }
       }
     }
     sleep(500);
     gitAccess.fetch();
-    
+    branchManagementPanel.refreshBranches();
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);
@@ -446,7 +458,9 @@ public class BranchActionsTest extends GitTestBase {
           JButton firstButtonFound = findFirstButton(checkoutDialog, "Checkout");
           if (firstButtonFound != null) {
             firstButtonFound.setEnabled(true);
+            flushAWT();
             firstButtonFound.doClick();
+            waitForScheduler();
           }
         }
         break;
@@ -454,7 +468,8 @@ public class BranchActionsTest extends GitTestBase {
     }
     sleep(500);
     gitAccess.fetch();
-    
+    branchManagementPanel.refreshBranches();
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);

@@ -110,7 +110,7 @@ public class RemoteVisualTests extends GitTestBase {
       final String firstRemoteName = (String)model.getValueAt(0, 0);
       final String firstRemoteURL = (String)model.getValueAt(0, 1);
       assertEquals(1, model.getRowCount());
-      JButton doAddButton = findFirstButton(manageRemoteDialog[0], Tags.ADD);
+      JButton doAddButton = findFirstButton(manageRemoteDialog[0], Tags.ADD + "...");
       assertNotNull(doAddButton);
       SwingUtilities.invokeLater(() -> doAddButton.doClick());
       flushAWT();
@@ -342,7 +342,7 @@ public class RemoteVisualTests extends GitTestBase {
       RemotesTableModel model = manageRemoteDialog[0].getModel();
       final String firstRemoteName = (String)model.getValueAt(0, 0);
       assertEquals(1, model.getRowCount());
-      JButton doAddButton = findFirstButton(manageRemoteDialog[0], Tags.ADD);
+      JButton doAddButton = findFirstButton(manageRemoteDialog[0], Tags.ADD + "...");
       assertNotNull(doAddButton);
       SwingUtilities.invokeLater(() -> doAddButton.doClick());
       flushAWT();
