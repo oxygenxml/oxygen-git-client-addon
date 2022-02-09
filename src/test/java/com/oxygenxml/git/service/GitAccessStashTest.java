@@ -22,6 +22,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
 
@@ -262,6 +263,36 @@ public class GitAccessStashTest extends TestCase {
    * @throws Exception
    */
   public void testStashWithCommittedChangesWithConflicts() throws Exception {
+    
+    applyStashWithConflicts();
+    
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertTrue(content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
+   
+  }
+  
+  /**
+   * <p><b>Description:</b> tests if the stash conflicts are detected.</p>
+   * <p><b>Bug ID:</b>EXM-49850</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  public void testStashConflictsAreDetected() throws Exception {
+    
+    applyStashWithConflicts();
+    
+    assertTrue(RepoUtil.isUnfinishedConflictState(gitAccess.getRepository().getRepositoryState()));
+   
+  }
+
+  /**
+   * Apply a stash which generate a conflicting file.
+   */
+  private void applyStashWithConflicts() throws Exception {
     try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("test");
     } catch (FileNotFoundException e) {
@@ -282,11 +313,6 @@ public class GitAccessStashTest extends TestCase {
     assertNull(gitAccess.createStash(false, null));
     
     gitAccess.applyStash(ref.getName());
-    
-    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
-    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-    reader.close();
-    assertTrue(content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
   }
   
   
