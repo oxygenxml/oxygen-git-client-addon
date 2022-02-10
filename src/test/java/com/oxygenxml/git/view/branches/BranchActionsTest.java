@@ -182,6 +182,8 @@ public class BranchActionsTest extends GitTestBase {
       sleep(500);
 
       gitAccess.fetch();
+      branchManagementPanel.refreshBranches();
+      flushAWT();
       root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
       StringBuilder actualTree = new StringBuilder();
       BranchManagementTest.serializeTree(actualTree, root);
@@ -266,6 +268,8 @@ public class BranchActionsTest extends GitTestBase {
       sleep(500);
 
       gitAccess.fetch();
+      branchManagementPanel.refreshBranches();
+      flushAWT();
       root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
       StringBuilder actualTree = new StringBuilder();
       BranchManagementTest.serializeTree(actualTree, root);
@@ -338,6 +342,8 @@ public class BranchActionsTest extends GitTestBase {
     sleep(500);
     
     gitAccess.fetch();
+    branchManagementPanel.refreshBranches();
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);
@@ -408,7 +414,8 @@ public class BranchActionsTest extends GitTestBase {
     }
     sleep(500);
     gitAccess.fetch();
-    
+    branchManagementPanel.refreshBranches();
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);
@@ -454,7 +461,8 @@ public class BranchActionsTest extends GitTestBase {
     }
     sleep(500);
     gitAccess.fetch();
-    
+    branchManagementPanel.refreshBranches();
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);
