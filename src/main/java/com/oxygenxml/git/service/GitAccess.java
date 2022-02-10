@@ -822,8 +822,25 @@ public class GitAccess {
 		  fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName), e);
 		  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 		}
-
 	}
+	
+	/**
+   * Creates a new branch in the repository
+   * 
+   * @param branchName   - Name for the new branch
+   * @param sourceCommit - The commit source.    
+   */
+  public void createBranch(String branchName, String sourceCommit) {
+    try {
+      fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
+      git.branchCreate().setName(branchName).setStartPoint(sourceCommit).call();
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
+    } catch (GitAPIException e) {
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName), e);
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+    }
+  }
+  
 	/**
 	 * Creates a new local branch in the current repository, starting from another local branch.
 	 * 

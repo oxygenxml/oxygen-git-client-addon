@@ -52,7 +52,12 @@ public class CreateBranchFromCommitAction extends AbstractAction {
     if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
       GitOperationScheduler.getInstance().schedule(() -> {
         try {
-          GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
+          if(dialog.shouldCheckoutNewBranch()) {
+            GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
+          } else {
+            GitAccess.getInstance().createBranch(dialog.getBranchName(), commitId);
+          }
+          
         } catch (CheckoutConflictException ex) {
           BranchesUtil.showCannotCheckoutNewBranchMessage();
         } catch (HeadlessException | GitAPIException ex) {
