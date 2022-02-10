@@ -38,7 +38,7 @@
                   <li>A combo box was added in the <i>Git staging</i> view to switch between local branches.</li>
                     <li>A new Git menu that contains various Git actions was added in the main menu bar.</li>
                     <li>The Git Staging view toolbar was simplified to only include the most important actions (while all actions are available in a new three vertical dots menu).</li>
-                    <li>In the <i>History view</i> you can now apply a set of predefined filters controlling which branches are shown: Current branch, Current local branch, All branches, All local branches.</li>
+                    <li>In the <i>History view</i> you can choose which branches will have the history shown. You have the following options: Current branch, Current local branch, All branches, All local branches.</li>
                 </ol>
             </div>
                     
