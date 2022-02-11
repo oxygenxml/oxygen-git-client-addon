@@ -291,7 +291,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-osgi:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-osgi:2.7.0"  product="editor">
         <name>Apache Mina SSHD :: OSGi</name>
         <version>2.7.0</version>
         <project-info>
@@ -329,7 +329,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-  <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.13.0.202109080827-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.13.0.202109080827-r" product="editor">
         <name>JGit - Apache sshd-based SSH support</name>
         <version>5.13.0.202109080827-r</version>
         <project-info>
@@ -387,6 +387,21 @@ third-party archives.
             <type>Apache License, Version 2.0</type>
             <content>http://www.slf4j.org</content>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </component>
+    <component id="org.slf4j:slf4j-api:1.7.32" product="editor">
+        <name>SLF4J API Module</name>
+        <version>1.7.32</version>
+        <project-info>
+            <about>The slf4j API</about>
+            <licensor>QOS.ch</licensor>
+            <start-year>2005</start-year>
+            <project-url>http://www.slf4j.org</project-url>
+        </project-info>
+        <license>
+            <type>MIT License</type>
+            <content>http://www.slf4j.org</content>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </component>
 </third-party>
