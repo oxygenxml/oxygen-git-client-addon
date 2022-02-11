@@ -1,38 +1,41 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>oxygen-git-client</artifactId>
-	<version>1.0.0</version>
 	
 	<parent>
-	    <groupId>com.oxygenxml</groupId>
-	    <artifactId>oxygen-superpom-standard</artifactId>
-	    <version>22.1.0.0</version>
-  	</parent>
-  	
-    <developers>
-      <developer>
-        <name>Alex Jitianu</name>
-        <email>alex_jitianu@sync.ro</email>
-        <roles>
-          <role>manager</role>
-        </roles>
-      </developer>
-      <developer>
-        <name>Sorin Carbunaru</name>
-        <email>sorin_carbunaru@sync.ro</email>
-        <roles>
-          <role>co-manager</role>
-        </roles>
-      </developer>
-    </developers>
+		<groupId>com.oxygenxml</groupId>
+		<artifactId>oxygen-addons-superpom</artifactId>
+		<version>24.1-SNAPSHOT</version>
+	</parent>
+	
+	<artifactId>oxygen-git-client-addon</artifactId>
+	<version>4.0.0-SNAPSHOT</version>
+    
+	<developers>
+		<developer>
+			<name>Alex Jitianu</name>
+			<email>alex_jitianu@sync.ro</email>
+			<roles>
+				<role>manager</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Sorin Carbunaru</name>
+			<email>sorin_carbunaru@sync.ro</email>
+			<roles>
+				<role>co-manager</role>
+			</roles>
+		</developer>
+	</developers>
 
 	<properties>
-    	<maven.compiler.source>1.8</maven.compiler.source>
-    	<maven.compiler.target>1.8</maven.compiler.target>
-    	<!-- We want sonar. -->
+	    <oxygen.version>22.1.0.0</oxygen.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<!-- We want sonar. -->
 		<sonar.skip>false</sonar.skip>
-  	</properties>
+	</properties>
 
 	<repositories>
 		<repository>
@@ -49,51 +52,59 @@
 	</repositories>
 
 	<dependencies>
-        <!-- Mockito and PowerMock -->
+		<!-- Mockito and PowerMock -->
 		<dependency>
-		    <groupId>org.mockito</groupId>
-		    <artifactId>mockito-inline</artifactId>
-		    <version>3.6.0</version>
-		    <scope>test</scope>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<version>3.6.0</version>
+			<scope>test</scope> 
 		</dependency>
 		<dependency>
-		    <groupId>org.powermock</groupId>
-		    <artifactId>powermock-api-mockito2</artifactId>
-		    <version>2.0.9</version>
-		    <scope>test</scope>
-		</dependency>
-	    <dependency>
 			<groupId>org.powermock</groupId>
-  			<artifactId>powermock-module-junit4</artifactId>
- 			<version>2.0.9</version>
-	        <scope>test</scope>
-	    </dependency>
-	    
-	    <!-- JGit -->
-	    <dependency>
-		    <groupId>org.eclipse.jgit</groupId>
-		    <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
-		    <version>5.13.0.202109080827-r</version>
+			<artifactId>powermock-api-mockito2</artifactId>
+			<version>2.0.9</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.eclipse.jgit</groupId>
-		    <artifactId>org.eclipse.jgit.ssh.apache</artifactId>
-		    <version>5.13.0.202109080827-r</version>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>2.0.9</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- JGit -->
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
+			<version>5.13.0.202109080827-r</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.eclipse.jgit</groupId>
-		    <artifactId>org.eclipse.jgit.junit</artifactId>
-		    <version>5.13.0.202109080827-r</version>
-		    <scope>test</scope>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
+			<version>5.13.0.202109080827-r</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit.junit</artifactId>
+			<version>5.13.0.202109080827-r</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>2.17.1</version>
+			<scope>test</scope>
+		</dependency>
+
+
 		<!-- JAXB -->
 		<dependency>
-		    <groupId>com.sun.xml.bind</groupId>
-		    <artifactId>jaxb-impl</artifactId>
-		    <scope>provided</scope>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Oxygen SDK -->
 		<dependency>
 			<groupId>com.oxygenxml</groupId>
@@ -101,18 +112,18 @@
 			<version>22.1.0.0</version>
 			<scope>provided</scope>
 			<exclusions>
-			  <exclusion>
-			    <groupId>org.apache.logging.log4j</groupId>
-			    <artifactId>log4j-core</artifactId>
-		      </exclusion>
-	          <exclusion>
-	            <groupId>org.apache.logging.log4j</groupId>
-	            <artifactId>log4j-1.2-api</artifactId>
-	          </exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-1.2-api</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<!-- We need log4j in TCs because the old version of sdk use log4j.  -->
+
+		<!-- We need log4j in TCs because the old version of sdk use log4j. -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
@@ -120,10 +131,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-	        <artifactId>log4j-1.2-api</artifactId>
+			<artifactId>log4j-1.2-api</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -131,10 +142,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-            <groupId>net.sf.jfcunit</groupId>
-            <artifactId>jfcunit</artifactId>
-            <scope>test</scope>
-        </dependency>
+			<groupId>net.sf.jfcunit</groupId>
+			<artifactId>jfcunit</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
@@ -144,80 +155,80 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-		    <groupId>ch.qos.logback</groupId>
-        	<artifactId>logback-classic</artifactId>
-        	<version>1.2.10</version>
-        	<scope>provided</scope>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.10</version>
+			<scope>provided</scope>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
-			<plugins>
-				<!-- Copy the runtime dependencies to the lib folder. -->
-				<plugin>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<executions>
-						<execution>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>copy-dependencies</goal>
-							</goals>
-							<configuration>
-								<outputDirectory>${project.build.directory}/lib</outputDirectory>
-								<includeScope>runtime</includeScope>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-	
-				<!-- We only want the final JAR package in the target folder so that it's 
-					easier for users to identify it. -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<configuration>
-						<outputDirectory>${project.build.directory}/build</outputDirectory>
-					</configuration>
-				</plugin>
-	
-				<plugin>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<executions>
-						<execution>
-							<id>make-assembly</id>
-							<phase>package</phase>
-							<goals>
-								<goal>single</goal>
-							</goals>
-							<configuration>
-								<archiveBaseDirectory>${project.basedir}</archiveBaseDirectory>
-								<descriptors>
-									<descriptor>assembly.xml</descriptor>
-								</descriptors>
-							</configuration>
-						</execution>
-	
-						<!-- Put the images into a separate JAR -->
-						<execution>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>single</goal>
-							</goals>
-							<id>build-images-jar</id>
-							<configuration>
-								<descriptors>
-									<descriptor>assembly-images.xml</descriptor>
-								</descriptors>
-							</configuration>
-						</execution>
-	
-	
-					</executions>
-				</plugin>
-				
-				<!-- Download licenses -->
+		<plugins>
+			<!-- Copy the runtime dependencies to the lib folder. -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- We only want the final JAR package in the target folder so that it's 
+				easier for users to identify it. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.directory}/build</outputDirectory>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archiveBaseDirectory>${project.basedir}</archiveBaseDirectory>
+							<descriptors>
+								<descriptor>assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+
+					<!-- Put the images into a separate JAR -->
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<id>build-images-jar</id>
+						<configuration>
+							<descriptors>
+								<descriptor>assembly-images.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+
+
+				</executions>
+			</plugin>
+
+			<!-- Download licenses -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
@@ -237,131 +248,132 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}</directory>
+									<includes>
+										<include>addon.xml</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<runOrder>alphabetical</runOrder>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-prepare-agent-integration</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report-integration</id>
+						<goals>
+							<goal>report-integration</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<executions>
-						<execution>
-							<id>copy-resources</id>
-							<!-- here the phase you need -->
-							<phase>validate</phase>
-							<goals>
-								<goal>copy-resources</goal>
-							</goals>
-							<configuration>
-								<outputDirectory>${basedir}/target/</outputDirectory>
-								<resources>
-									<resource>
-										<directory>${project.basedir}</directory>
-										<includes>
-											<include>addon.xml</include>
-										</includes>
-										<filtering>true</filtering>
-									</resource>
-								</resources>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-				
-				
-			      <plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-surefire-plugin</artifactId>
-			        <configuration>
-			        	<runOrder>alphabetical</runOrder>
-			        	<forkCount>1</forkCount>
-			        	<reuseForks>false</reuseForks>
-			        </configuration>
-			      </plugin>
-			
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.5</version>
-					<executions>
-						<execution>
-							<id>default-prepare-agent</id>
-							<goals>
-								<goal>prepare-agent</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>default-prepare-agent-integration</id>
-							<goals>
-								<goal>prepare-agent-integration</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>default-report</id>
-							<goals>
-								<goal>report</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>default-report-integration</id>
-							<goals>
-								<goal>report-integration</goal>
-							</goals>
-						</execution>
-					</executions>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-assembly-plugin
+										</artifactId>
+										<versionRange>
+											[2.4,)
+										</versionRange>
+										<goals>
+											<goal>single</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											license-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.8,)
+										</versionRange>
+										<goals>
+											<goal>
+												download-licenses
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
 				</plugin>
 			</plugins>
-			<pluginManagement>
-				<plugins>
-					<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-					<plugin>
-						<groupId>org.eclipse.m2e</groupId>
-						<artifactId>lifecycle-mapping</artifactId>
-						<version>1.0.0</version>
-						<configuration>
-							<lifecycleMappingMetadata>
-								<pluginExecutions>
-									<pluginExecution>
-										<pluginExecutionFilter>
-											<groupId>
-												org.apache.maven.plugins
-											</groupId>
-											<artifactId>
-												maven-assembly-plugin
-											</artifactId>
-											<versionRange>
-												[2.4,)
-											</versionRange>
-											<goals>
-												<goal>single</goal>
-											</goals>
-										</pluginExecutionFilter>
-										<action>
-											<ignore></ignore>
-										</action>
-									</pluginExecution>
-									<pluginExecution>
-										<pluginExecutionFilter>
-											<groupId>
-												org.codehaus.mojo
-											</groupId>
-											<artifactId>
-												license-maven-plugin
-											</artifactId>
-											<versionRange>
-												[1.8,)
-											</versionRange>
-											<goals>
-												<goal>
-													download-licenses
-												</goal>
-											</goals>
-										</pluginExecutionFilter>
-										<action>
-											<ignore></ignore>
-										</action>
-									</pluginExecution>
-								</pluginExecutions>
-							</lifecycleMappingMetadata>
-						</configuration>
-					</plugin>
-				</plugins>
-			</pluginManagement>
+		</pluginManagement>
 	</build>
 </project>

@@ -44,5 +44,10 @@
       <source>i18n/translation.xml</source>
       <outputDirectory>/i18n</outputDirectory>
     </file>
+    <file>
+      <source>third-party-components.xml</source>
+      <outputDirectory>/lib</outputDirectory>
+      <filtered>true</filtered>
+   </file>
   </files>
 </assembly>
