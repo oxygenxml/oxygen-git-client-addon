@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>com.oxygenxml</groupId>
 			<artifactId>oxygen-sdk</artifactId>
-			<version>22.1.0.0</version>
+			<version>${oxygen.version}</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -140,37 +140,23 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- EXM-49720 - SET SCOPE PROVIDED TO EXCLUDE slf4j-api AND logback FROM ADDON. -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+        	<artifactId>logback-classic</artifactId>
+        	<scope>provided</scope>
+		</dependency>
+		<!-- EXM-49720 END -->
+
 	</dependencies>
 
 	<build>
-		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
-			<!-- Copy the runtime dependencies to the lib folder. -->
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/lib</outputDirectory>
-							<includeScope>runtime</includeScope>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- We only want the final JAR package in the target folder so that it's 
-				easier for users to identify it. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}/build</outputDirectory>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
