@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <third-party>
-    <component id="com.googlecode.javaewah:JavaEWAH:1.1.7" product="editor">
+    <component id="com.googlecode.javaewah:JavaEWAH:1.1.7" draft="false" product="editor">
         <name>JavaEWAH</name>
         <version>1.1.7</version>
         <project-info>
@@ -208,7 +208,7 @@ third-party archives.
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </component>
-    <component id="com.jcraft:jsch:0.1.54" product="editor">
+    <component id="com.jcraft:jsch:0.1.54" draft="false" product="editor">
         <name>JSch</name>
         <version>0.1.54</version>
         <project-info>
@@ -223,7 +223,7 @@ third-party archives.
             <url>http://www.jcraft.com/jsch/LICENSE.txt</url>
         </license>
     </component>
-    <component id="com.jcraft:jzlib:1.1.1" product="editor">
+    <component id="com.jcraft:jzlib:1.1.1" draft="false" product="editor">
         <name>JZlib</name>
         <version>1.1.1</version>
         <project-info>
@@ -238,7 +238,7 @@ third-party archives.
             <url>http://www.jcraft.com/jzlib/LICENSE.txt</url>
         </license>
     </component>
-    <component id="net.i2p.crypto:eddsa:0.3.0" product="editor">
+    <component id="net.i2p.crypto:eddsa:0.3.0" draft="false" product="editor">
         <name>EdDSA-Java</name>
         <version>0.3.0</version>
         <project-info>
@@ -253,7 +253,7 @@ third-party archives.
             <url>https://creativecommons.org/publicdomain/zero/1.0/</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-common:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-common:2.7.0" draft="false" product="editor">
         <name>Apache Mina SSHD :: Common support utilities</name>
         <version>2.7.0</version>
         <project-info>
@@ -272,7 +272,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-core:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-core:2.7.0" draft="false" product="editor">
         <name>Apache Mina SSHD :: Core</name>
         <version>2.7.0</version>
         <project-info>
@@ -291,7 +291,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-osgi:2.7.0"  product="editor">
+    <component id="org.apache.sshd:sshd-osgi:2.7.0" draft="false" product="editor">
         <name>Apache Mina SSHD :: OSGi</name>
         <version>2.7.0</version>
         <project-info>
@@ -310,7 +310,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-sftp:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-sftp:2.7.0" draft="false" product="editor">
         <name>Apache Mina SSHD :: SFTP</name>
         <version>2.7.0</version>
         <project-info>
@@ -329,7 +329,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.13.0.202109080827-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.13.0.202109080827-r" draft="false" product="editor">
         <name>JGit - Apache sshd-based SSH support</name>
         <version>5.13.0.202109080827-r</version>
         <project-info>
@@ -344,7 +344,7 @@ third-party archives.
             <url></url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:5.13.0.202109080827-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:5.13.0.202109080827-r" draft="false" product="editor">
         <name>JGit - JSch-based SSH support</name>
         <version>5.13.0.202109080827-r</version>
         <project-info>
@@ -359,7 +359,7 @@ third-party archives.
             <url></url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit:5.11.0.202103091610-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit:5.11.0.202103091610-r" draft="false" product="editor">
         <name>JGit - Core</name>
         <version>5.11.0.202103091610-r</version>
         <project-info>
@@ -387,21 +387,6 @@ third-party archives.
             <type>Apache License, Version 2.0</type>
             <content>http://www.slf4j.org</content>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </component>
-    <component id="org.slf4j:slf4j-api:1.7.32" product="editor">
-        <name>SLF4J API Module</name>
-        <version>1.7.32</version>
-        <project-info>
-            <about>The slf4j API</about>
-            <licensor>QOS.ch</licensor>
-            <start-year>2005</start-year>
-            <project-url>http://www.slf4j.org</project-url>
-        </project-info>
-        <license>
-            <type>MIT License</type>
-            <content>http://www.slf4j.org</content>
-            <url>http://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </component>
 </third-party>
