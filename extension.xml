@@ -366,7 +366,7 @@
           <h1>Using the plugin</h1>
           <p>
             <b>Note:</b> After installing the plugin, if the <b>Git Staging</b> view is not visible,
-            you can open it from the <b>Window > Show View</b> menu. </p>
+            you can open it from the <b>Window / Show View</b> menu. </p>
           <p> For information about how to use the Git Client, please see the README document on
             GitHub: <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md">
               https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md </a> . </p>
