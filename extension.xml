@@ -186,7 +186,7 @@
             <li>The Git History view now has better automatic refresh support. </li>
             <li>A confirmation dialog box has been added for instances when you try to commit
               without a message. </li>
-            <li>The add-on now contributes a preferences page (Options > Preferences > Plugins > Git
+            <li>The add-on now contributes a preferences page (Options / Preferences / Plugins / Git
               Client) that contains a "Notify me about new commits in the remote repository" option.
               When this option is selected, Oxygen will show notification messages when it detects
               that new commits have been pushed to the remote repository. </li>
