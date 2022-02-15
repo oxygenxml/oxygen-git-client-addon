@@ -261,7 +261,6 @@
         <configuration>
           <excludes>
             <exclude>**/StatusCacheTest.java</exclude>
-            <exclude>**/TreeViewTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
