@@ -260,7 +260,7 @@
         <version>2.17</version>
         <configuration>
           <excludes>
-            <exclude>**/StatusCacheTest.java</exclude>
+             <exclude>**/TreeViewTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
