@@ -1,7 +1,5 @@
 package com.oxygenxml.git.view.actions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -182,17 +180,13 @@ public class GitActionsManager  {
 	 *  Refresh support. Needed by some actions.
 	 */
 	private final GitRefreshSupport refreshSupport;
-
-	/**
-	 * All actions.
-	 */
-	private final List<AbstractAction> allActions = new ArrayList<>();
-
+	                                                                                                  
 	/**
 	 * The current repository.
 	 */
 	private Repository repository;
 
+	
 	/**
 	 * Constructor.
 	 * 
@@ -200,8 +194,10 @@ public class GitActionsManager  {
 	 * @param historyController History controller.
 	 * @param branchManagementViewPresenter Branch management view presenter.
 	 */
-	public GitActionsManager(GitController gitController, HistoryController historyController,
-			BranchManagementViewPresenter branchManagementViewPresenter, GitRefreshSupport refreshSupport) {
+	public GitActionsManager(final GitController gitController, 
+	    final HistoryController historyController,
+			final BranchManagementViewPresenter branchManagementViewPresenter, 
+			final GitRefreshSupport refreshSupport) {
 	  
 		this.gitController = gitController;
 		this.historyController = historyController;
@@ -220,14 +216,16 @@ public class GitActionsManager  {
 				GitOperation operation = info.getGitOperation();
 				if (operation == GitOperation.OPEN_WORKING_COPY) {
 					if(submoduleAction != null) {
-						submoduleAction.setEnabled(gitController.getGitAccess()
-								.getSubmoduleAccess().getSubmodules().isEmpty());
+					  final boolean hasSubmodules = hasRepositorySubmodules();
+					  SwingUtilities.invokeLater(() -> 
+		          submoduleAction.setEnabled(hasSubmodules));
 					}
 				} else if (REFRESH_AWARE_ACTIONS.contains(operation)) {
 				  refreshActionsStates();
 				}
 			}
 		});
+		
 	}
 
 
@@ -239,7 +237,6 @@ public class GitActionsManager  {
 		if(cloneRepositoryAction == null) {
 			cloneRepositoryAction = new CloneRepositoryAction();
 			cloneRepositoryAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
-			allActions.add(cloneRepositoryAction);
 		}
 
 		return cloneRepositoryAction;
@@ -253,7 +250,6 @@ public class GitActionsManager  {
 	public AbstractAction getOpenRepositoryAction() {
 		if(openRepositoryAction == null) {
 			openRepositoryAction = new OpenRepositoryAction(gitController);
-			allActions.add(openRepositoryAction);
 		}
 
 		return openRepositoryAction;
@@ -267,8 +263,8 @@ public class GitActionsManager  {
 	public AbstractAction getPushAction() {
 		if(pushAction == null) {
 			pushAction = new PushAction(gitController);
-			pushAction.setEnabled(hasRepository());
-			allActions.add(pushAction);
+			final boolean hasRepository = hasRepository();
+      SwingUtilities.invokeLater(() -> pushAction.setEnabled(hasRepository));
 		}
 
 		return pushAction;
@@ -283,8 +279,8 @@ public class GitActionsManager  {
 		if(pullMergeAction == null) {
 			pullMergeAction = new PullAction(gitController, 
 					TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF);
-			pullMergeAction.setEnabled(hasRepository());
-			allActions.add(pullMergeAction);
+			final boolean hasRepository = hasRepository();
+	    SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(hasRepository));
 		}
 
 		return pullMergeAction;
@@ -299,8 +295,8 @@ public class GitActionsManager  {
 		if(pullRebaseAction == null) {
 			pullRebaseAction = new PullAction(gitController, 
 					TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE);
-			pullRebaseAction.setEnabled(hasRepository());
-			allActions.add(pullRebaseAction);
+			final boolean hasRepository = hasRepository();
+			SwingUtilities.invokeLater(() -> pullRebaseAction.setEnabled(hasRepository));
 		}
 
 		return pullRebaseAction;
@@ -314,7 +310,6 @@ public class GitActionsManager  {
 	public AbstractAction getShowStagingAction() {
 		if(showStagingAction == null) {
 			showStagingAction = new ShowStagingAction();
-			allActions.add(showStagingAction);
 		}
 
 		return showStagingAction;
@@ -328,8 +323,8 @@ public class GitActionsManager  {
 	public AbstractAction getShowHistoryAction() {
 		if(showHistoryAction == null) {
 			showHistoryAction = new ShowHistoryAction(historyController);
-			showHistoryAction.setEnabled(couldShowBranchesOrHistory());
-			allActions.add(showHistoryAction);
+			final boolean couldShowHistory = couldShowBranchesOrHistory();
+      SwingUtilities.invokeLater(() -> showHistoryAction.setEnabled(couldShowHistory));
 		}
 
 		return showHistoryAction;
@@ -343,8 +338,8 @@ public class GitActionsManager  {
 	public AbstractAction getShowBranchesAction() {
 		if(showBranchesAction == null) {
 			showBranchesAction = new ShowBranchesAction(branchManagementViewPresenter);
-			showBranchesAction.setEnabled(couldShowBranchesOrHistory());
-			allActions.add(showBranchesAction);
+			final boolean couldShowBranches = couldShowBranchesOrHistory();
+      SwingUtilities.invokeLater(() -> showBranchesAction.setEnabled(couldShowBranches));
 		}
 
 		return showBranchesAction;
@@ -358,8 +353,13 @@ public class GitActionsManager  {
 	public AbstractAction getShowTagsAction() {
 		if(showTagsAction == null) {
 			showTagsAction = new ShowTagsAction();
-			showTagsAction.setEnabled(hasRepository());
-			allActions.add(showTagsAction);
+			try {
+        final boolean enableTags = hasRepository() &&  GitTagsManager.getNoOfTags() > 0;
+        SwingUtilities.invokeLater(() -> showTagsAction.setEnabled(enableTags));
+      } catch (GitAPIException e) {
+        LOGGER.debug(e.getMessage(),  e);
+        SwingUtilities.invokeLater(() -> showTagsAction.setEnabled(false));
+      }
 		}
 
 		return showTagsAction;
@@ -372,12 +372,9 @@ public class GitActionsManager  {
 	@NonNull
 	public AbstractAction getStashChangesAction() {
 		if(stashChangesAction == null) {
-			stashChangesAction = new StashChangesAction();
-			
-			boolean hasRepo = hasRepository();
-			stashChangesAction.setEnabled(hasRepo);
-			
-			allActions.add(stashChangesAction);
+			stashChangesAction = new StashChangesAction();	
+			final boolean hasRepo = hasRepository();
+			SwingUtilities.invokeLater(() -> stashChangesAction.setEnabled(hasRepo));
 		}
 
 		return stashChangesAction;
@@ -391,8 +388,8 @@ public class GitActionsManager  {
 	public AbstractAction getListStashesAction() {
 		if(listStashesAction == null) {
 			listStashesAction = new ListStashesAction();
-			listStashesAction.setEnabled(hasRepository());
-			allActions.add(listStashesAction);
+			final boolean hasRepository = hasRepository();
+	    SwingUtilities.invokeLater(() -> listStashesAction.setEnabled(hasRepository));
 		}
 
 		return listStashesAction;
@@ -406,8 +403,8 @@ public class GitActionsManager  {
 	public AbstractAction getEditConfigAction() {
 		if(editConfigFileAction == null) {
 			editConfigFileAction = new EditConfigFileAction();
-			editConfigFileAction.setEnabled(hasRepository());
-			allActions.add(editConfigFileAction);
+			final boolean hasRepository = hasRepository();
+      SwingUtilities.invokeLater(() -> editConfigFileAction.setEnabled(hasRepository));
 		}
 
 		return editConfigFileAction;
@@ -421,8 +418,9 @@ public class GitActionsManager  {
 	public AbstractAction getManageRemoteRepositoriesAction() {
 		if(manageRemoteRepositoriesAction == null) {
 			manageRemoteRepositoriesAction = new ManageRemoteRepositoriesAction();
-			manageRemoteRepositoriesAction.setEnabled(hasRepository());
-			allActions.add(manageRemoteRepositoriesAction);
+			final boolean hasRepository = hasRepository();
+      SwingUtilities.invokeLater(() -> manageRemoteRepositoriesAction.setEnabled(
+          hasRepository));
 		}
 
 		return manageRemoteRepositoriesAction;
@@ -436,8 +434,9 @@ public class GitActionsManager  {
 	public AbstractAction getTrackRemoteBranchAction() {
 		if(trackRemoteBranchAction == null) {
 			trackRemoteBranchAction = new SetRemoteAction();
-			trackRemoteBranchAction.setEnabled(hasRepository());
-			allActions.add(trackRemoteBranchAction);
+			 final boolean hasRepository = hasRepository();
+	      SwingUtilities.invokeLater(() -> trackRemoteBranchAction.setEnabled(
+	          hasRepository));
 		}
 
 		return trackRemoteBranchAction;
@@ -451,8 +450,9 @@ public class GitActionsManager  {
 	public AbstractAction getSubmoduleAction() {
 		if(submoduleAction == null) {
 			submoduleAction = new SubmodulesAction();
-			submoduleAction.setEnabled(hasRepository() && hasRepositorySubmodules());
-			allActions.add(submoduleAction);
+			final boolean enableAction = hasRepository() && hasRepositorySubmodules();
+			SwingUtilities.invokeLater(() -> 
+			  submoduleAction.setEnabled(enableAction));
 		}
 
 		return submoduleAction;
@@ -466,7 +466,6 @@ public class GitActionsManager  {
 	public AbstractAction getOpenPreferencesAction() {
 		if(openPreferencesAction == null) {
 			openPreferencesAction = new OpenPreferencesAction();
-			allActions.add(openPreferencesAction);
 		}
 
 		return openPreferencesAction;
@@ -480,7 +479,6 @@ public class GitActionsManager  {
 	public AbstractAction getResetAllCredentialsAction() {
 		if(resetAllCredentialsAction == null) {
 			resetAllCredentialsAction = new ResetAllCredentialsAction(refreshSupport);
-			allActions.add(resetAllCredentialsAction);
 		}
 
 		return resetAllCredentialsAction;
@@ -500,16 +498,13 @@ public class GitActionsManager  {
 		}
 
 		final boolean isRepoOpen = hasRepository();
-		
-		SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        allActions.forEach(action -> action.setEnabled(isRepoOpen));
-        if(isRepoOpen) {
-          updateActionsStatus();
-        }
-      }
-    });
 
+		if(isRepoOpen) {
+		  treatOpenedRepository();
+		} else {
+		  treatNoRepository();
+		}
+		
 	}
 
 
@@ -522,35 +517,7 @@ public class GitActionsManager  {
   protected boolean hasRepository() {
     return repository != null;
   }
-
-
-	/**
-	 * Update the actions status when repository is open.
-	 */
-	private void updateActionsStatus() {
-		if(showTagsAction != null) {
-			try {
-				int noOfTags = GitTagsManager.getNoOfTags();
-				showTagsAction.setEnabled(noOfTags > 0);
-			} catch (GitAPIException e) {
-				LOGGER.debug(e.getMessage(), e);
-				showTagsAction.setEnabled(false);
-			}
-		}
-
-		if(submoduleAction != null) {
-      submoduleAction.setEnabled(hasRepositorySubmodules());
-		}
-
-		if(stashChangesAction != null) {
-			stashChangesAction.setEnabled(gitController.getGitAccess().hasFilesChanged());	    
-		}
-
-		if(listStashesAction != null) {
-			listStashesAction.setEnabled(gitController.getGitAccess().hasStashes());
-		}
-	}
-
+  
 	/**
 	 * @return <code>true</code> if the repository has submodules.
 	 */
@@ -565,4 +532,133 @@ public class GitActionsManager  {
 	  return gitController.getGitAccess().isRepoInitialized() || !"".equals(OptionsManager.getInstance().getSelectedRepository());
 	}
     
+	/**
+	 * Update actions when no repository is opened.
+	 */
+	private void treatNoRepository() {
+	  
+	  if(pushAction != null) {
+	    SwingUtilities.invokeLater(() -> pushAction.setEnabled(false));
+    }
+	  
+	  if(pullMergeAction != null) {
+	    SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(false));
+	  }
+	  
+	  if(pullRebaseAction != null) {
+	    SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(false));
+	  }
+	  
+	  if(showBranchesAction != null) {
+	    SwingUtilities.invokeLater(() -> showBranchesAction.setEnabled(false));
+	  }
+	  
+	  if(showHistoryAction != null) {
+	    SwingUtilities.invokeLater(() -> showHistoryAction.setEnabled(false));
+	  }
+	  
+	  if(showTagsAction != null) {
+	    SwingUtilities.invokeLater(() -> showTagsAction.setEnabled(false));
+	  }
+	  
+	  if(submoduleAction != null) {
+	    SwingUtilities.invokeLater(() -> submoduleAction.setEnabled(false));
+	  }
+	  
+	  if(stashChangesAction != null) {
+	    SwingUtilities.invokeLater(() -> stashChangesAction.setEnabled(false));
+	  }
+	  
+	  if(listStashesAction != null) {
+	    SwingUtilities.invokeLater(() -> listStashesAction.setEnabled(false));
+	  }
+	  
+	  if(manageRemoteRepositoriesAction != null) {
+	    SwingUtilities.invokeLater(() -> manageRemoteRepositoriesAction.setEnabled(false));
+	  }
+	  
+	  if(trackRemoteBranchAction != null) {
+	    SwingUtilities.invokeLater(() -> trackRemoteBranchAction.setEnabled(false));
+	  }
+	  
+	  if(editConfigFileAction != null) {
+	    SwingUtilities.invokeLater(() -> editConfigFileAction.setEnabled(false));
+	  }
+	  
+	}
+	
+	/**
+   * Update actions when a repository is opened.
+   */
+  private void treatOpenedRepository() {
+    
+    if(pushAction != null) {
+      SwingUtilities.invokeLater(() -> pushAction.setEnabled(true));
+    }
+    
+    if(pullMergeAction != null) {
+      SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(true));
+    }
+    
+    if(pullRebaseAction != null) {
+      SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(true));
+    }
+    
+    if(manageRemoteRepositoriesAction != null) {
+      SwingUtilities.invokeLater(() -> manageRemoteRepositoriesAction.setEnabled(true));
+    }
+    
+    if(trackRemoteBranchAction != null) {
+      SwingUtilities.invokeLater(() -> trackRemoteBranchAction.setEnabled(true));
+    }
+    
+    if(editConfigFileAction != null) {
+      SwingUtilities.invokeLater(() -> editConfigFileAction.setEnabled(true));
+    }
+   
+    updateActionsStatus();
+  }
+	
+  /**
+   * Update the actions status when repository is open.
+   */
+  private void updateActionsStatus() {
+    
+    if(showBranchesAction != null || showHistoryAction != null) {
+         final boolean enableAction = couldShowBranchesOrHistory();
+         if(showBranchesAction != null) {
+           SwingUtilities.invokeLater(() -> showBranchesAction.setEnabled(enableAction));
+         }
+         if(showHistoryAction != null) {
+           SwingUtilities.invokeLater(() -> showHistoryAction.setEnabled(enableAction));
+         }
+    }
+    
+    if(showTagsAction != null) {
+      try {
+        final int noOfTags = GitTagsManager.getNoOfTags();
+        SwingUtilities.invokeLater(() -> showTagsAction.setEnabled(noOfTags > 0));
+      } catch (GitAPIException e) {
+        LOGGER.debug(e.getMessage(), e);
+        SwingUtilities.invokeLater(() -> showTagsAction.setEnabled(false));
+      }
+    }
+
+    if(submoduleAction != null) {
+      final boolean hasRepoSubmodules = hasRepositorySubmodules();
+      SwingUtilities.invokeLater(() -> submoduleAction.setEnabled(hasRepoSubmodules));   
+    }
+
+    if(stashChangesAction != null) {
+      final boolean hasFileChanged = gitController.getGitAccess().hasFilesChanged();
+      SwingUtilities.invokeLater(() -> stashChangesAction.setEnabled(hasFileChanged));    
+    }
+
+    if(listStashesAction != null) {
+      final boolean hasStashes = gitController.getGitAccess().hasStashes();
+      SwingUtilities.invokeLater(() -> listStashesAction.setEnabled(hasStashes)); 
+    }
+    
+  }
+
 }
