@@ -694,13 +694,18 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     // wait for cache to clear
     waitForScheduler();
     
+    Repository currentRepo = GitAccess.getInstance().getRepository();
     GitAccess.getInstance().cleanUp();
     waitForScheduler();
     
     for (Repository repository : loadedRepos) {
       // Remove the file system resources.
       try {
-        repository.close();
+        // We already closed the repository currently opened in GitAccess. Closing it
+        // again writes an error in the console and can slow down the tests.
+        if (currentRepo != repository) {
+          repository.close();
+        }
         waitForScheduler();
         flushAWT();
         deleteRepository(repository);
