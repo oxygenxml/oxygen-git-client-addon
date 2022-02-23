@@ -22,6 +22,13 @@
             for comparing and merging changes. </p>
         </div>
         <div>
+          <h3>What's new in version 4.0.1</h3>
+          <ol>
+            <li>Fixed a small problem where the UI would sometimes freeze when returning to Oxygen after going to another application.</li> 
+            <li>Fixed an exception that appeared under certain conditions and made the Git support unusable.</li>
+          </ol>
+        </div>
+        <div>
 	 <h3>What's new in version 4.0.0</h3>
                 <ol>
                   <li>The <i>History view</i> now includes a new revision graph that helps you to understand how commits connect with one another.</li>
