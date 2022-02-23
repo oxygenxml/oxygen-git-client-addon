@@ -13,7 +13,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.OxygenGitPluginExtension;
-import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
@@ -38,21 +37,11 @@ public class StatusCacheTest extends GitTestBase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    // AVOID executing this code from OxygenGitPluginExtension:
-//    if (!"true".equals(System.getProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS))) {
-//      org.eclipse.jgit.transport.SshSessionFactory.setInstance(
-//          new org.eclipse.jgit.transport.sshd.SshdSessionFactory(null, new ResolvingProxyDataFactory()));
-//    }
-    // because it fails with "Caused by: java.lang.SecurityException: class "org.eclipse.jgit.transport.JschConfigSessionFactory"'s signer information does not match signer information of other classes in the same package"
-    // It might be related with the mocks being created in this class.
-    System.setProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS, "true");
     createRepository(REPOSITORY_PATH);
   }
   
   @Override
   public void tearDown() throws Exception {
-    System.setProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS, "false");
-    
     super.tearDown();
   }
 
