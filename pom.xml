@@ -73,6 +73,13 @@
 		</dependency>
 
 		<!-- JGit -->
+		<!-- EXM-49967 oxygen-superpom-versions has a JGit 5.11 dependency. We need to override it,
+		othewise we will distribute mix versions. -->
+		<dependency>
+		    <groupId>org.eclipse.jgit</groupId>
+		    <artifactId>org.eclipse.jgit</artifactId>
+		    <version>5.13.0.202109080827-r</version>
+		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
