@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <third-party>
-    <component id="com.googlecode.javaewah:JavaEWAH:1.1.7" draft="false" product="editor">
+    <component id="com.googlecode.javaewah:JavaEWAH:1.1.12" product="editor">
         <name>JavaEWAH</name>
-        <version>1.1.7</version>
+        <version>1.1.12</version>
         <project-info>
             <about>The bit array data structure is implemented in Java as the BitSet class. Unfortunately, this fails to scale without compression.
   JavaEWAH is a word-aligned compressed variant of the Java bitset class. It uses a 64-bit run-length encoding (RLE) compression scheme.
@@ -208,7 +208,7 @@ third-party archives.
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </component>
-    <component id="com.jcraft:jsch:0.1.54" draft="false" product="editor">
+    <component id="com.jcraft:jsch:0.1.54" product="editor">
         <name>JSch</name>
         <version>0.1.54</version>
         <project-info>
@@ -219,11 +219,41 @@ third-party archives.
         </project-info>
         <license>
             <type>Revised BSD</type>
-            <content>http://www.jcraft.com/jsch/</content>
+            <content>JSch 0.0.* was released under the GNU LGPL license.  Later, we have switched 
+over to a BSD-style license. 
+
+------------------------------------------------------------------------------
+Copyright (c) 2002-2015 Atsuhiko Yamanaka, JCraft,Inc. 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright 
+     notice, this list of conditions and the following disclaimer in 
+     the documentation and/or other materials provided with the distribution.
+
+  3. The names of the authors may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
+INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</content>
             <url>http://www.jcraft.com/jsch/LICENSE.txt</url>
         </license>
     </component>
-    <component id="com.jcraft:jzlib:1.1.1" draft="false" product="editor">
+    <component id="com.jcraft:jzlib:1.1.1" product="editor">
         <name>JZlib</name>
         <version>1.1.1</version>
         <project-info>
@@ -234,11 +264,40 @@ third-party archives.
         </project-info>
         <license>
             <type>Revised BSD</type>
-            <content>http://www.jcraft.com/jzlib/</content>
+            <content>JZlib 0.0.* were released under the GNU LGPL license.  Later, we have switched 
+over to a BSD-style license. 
+
+------------------------------------------------------------------------------
+Copyright (c) 2000-2011 ymnk, JCraft,Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright 
+     notice, this list of conditions and the following disclaimer in 
+     the documentation and/or other materials provided with the distribution.
+
+  3. The names of the authors may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
+INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</content>
             <url>http://www.jcraft.com/jzlib/LICENSE.txt</url>
         </license>
     </component>
-    <component id="net.i2p.crypto:eddsa:0.3.0" draft="false" product="editor">
+    <component id="net.i2p.crypto:eddsa:0.3.0" product="editor">
         <name>EdDSA-Java</name>
         <version>0.3.0</version>
         <project-info>
@@ -253,7 +312,7 @@ third-party archives.
             <url>https://creativecommons.org/publicdomain/zero/1.0/</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-common:2.7.0" draft="false" product="editor">
+    <component id="org.apache.sshd:sshd-common:2.7.0" product="editor">
         <name>Apache Mina SSHD :: Common support utilities</name>
         <version>2.7.0</version>
         <project-info>
@@ -272,7 +331,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-core:2.7.0" draft="false" product="editor">
+    <component id="org.apache.sshd:sshd-core:2.7.0" product="editor">
         <name>Apache Mina SSHD :: Core</name>
         <version>2.7.0</version>
         <project-info>
@@ -291,7 +350,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-osgi:2.7.0" draft="false" product="editor">
+    <component id="org.apache.sshd:sshd-osgi:2.7.0" product="editor">
         <name>Apache Mina SSHD :: OSGi</name>
         <version>2.7.0</version>
         <project-info>
@@ -310,7 +369,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-sftp:2.7.0" draft="false" product="editor">
+    <component id="org.apache.sshd:sshd-sftp:2.7.0" product="editor">
         <name>Apache Mina SSHD :: SFTP</name>
         <version>2.7.0</version>
         <project-info>
@@ -329,7 +388,7 @@ third-party archives.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.13.0.202109080827-r" draft="false" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.13.0.202109080827-r" product="editor">
         <name>JGit - Apache sshd-based SSH support</name>
         <version>5.13.0.202109080827-r</version>
         <project-info>
@@ -344,7 +403,7 @@ third-party archives.
             <url></url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:5.13.0.202109080827-r" draft="false" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:5.13.0.202109080827-r" product="editor">
         <name>JGit - JSch-based SSH support</name>
         <version>5.13.0.202109080827-r</version>
         <project-info>
@@ -359,9 +418,9 @@ third-party archives.
             <url></url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit:5.11.0.202103091610-r" draft="false" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r" product="editor">
         <name>JGit - Core</name>
-        <version>5.11.0.202103091610-r</version>
+        <version>5.13.0.202109080827-r</version>
         <project-info>
             <about>Repository access and algorithms</about>
             <licensor>Eclipse JGit Project</licensor>
