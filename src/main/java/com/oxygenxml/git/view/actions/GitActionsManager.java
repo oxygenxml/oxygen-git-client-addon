@@ -546,7 +546,7 @@ public class GitActionsManager  {
 	  }
 	  
 	  if(pullRebaseAction != null) {
-	    SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(false));
+	    SwingUtilities.invokeLater(() -> pullRebaseAction.setEnabled(false));
 	  }
 	  
 	  if(showBranchesAction != null) {
@@ -601,7 +601,7 @@ public class GitActionsManager  {
     }
     
     if(pullRebaseAction != null) {
-      SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(true));
+      SwingUtilities.invokeLater(() -> pullRebaseAction.setEnabled(true));
     }
     
     if(manageRemoteRepositoriesAction != null) {
