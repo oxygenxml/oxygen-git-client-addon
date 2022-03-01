@@ -195,8 +195,6 @@
 							</descriptors>
 						</configuration>
 					</execution>
-
-
 				</executions>
 			</plugin>
 
@@ -209,73 +207,19 @@
 					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
-
 		</plugins>
 		<pluginManagement>
 			<plugins>
 			 <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.17</version>
-        <configuration>
-          <excludes>
-             <exclude>**/TreeViewTest.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-assembly-plugin
-										</artifactId>
-										<versionRange>
-											[2.4,)
-										</versionRange>
-										<goals>
-											<goal>single</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											license-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.8,)
-										</versionRange>
-										<goals>
-											<goal>
-												download-licenses
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <version>2.17</version>
+		        <configuration>
+		          <excludes>
+		             <exclude>**/TreeViewTest.java</exclude>
+		          </excludes>
+		        </configuration>
+		      </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
