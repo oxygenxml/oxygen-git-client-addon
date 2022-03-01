@@ -128,7 +128,8 @@ public class GitActionsMenuBar implements MenuBarCustomizer, UpdateActionsStates
 
 	@Override
 	public void updateButtonStates() {
-	  SwingUtilities.invokeLater(() -> pullMenuItem.setEnabled(isPullButtonEnabled()));
+	  final boolean isPullEnabled = isPullButtonEnabled();
+	  SwingUtilities.invokeLater(() -> pullMenuItem.setEnabled(isPullEnabled));
 	}
 
 	/**

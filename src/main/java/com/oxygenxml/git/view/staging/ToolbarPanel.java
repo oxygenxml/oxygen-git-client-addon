@@ -254,19 +254,20 @@ public class ToolbarPanel extends JPanel {
     if(stashes != null) {
     	noOfStashes = stashes.size();
     }
-    
-    
-    /* for @pushButton, @historyButton, @showBranchesButton ---> 
-     * it is necessary to refresh, even if it has a single action, 
-     * because there are other code sequences that directly change their state by calling the setEnabled(false) method
-     */
-    pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
-    pullMenuButton.setEnabled(isPullButtonEnabled());
-    stashButton.setEnabled(isStashButtonEnabled());
-    historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
-    showBranchesButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
-    
+      
+    final boolean isPullMenuEnabled = isPullButtonEnabled();
+    final boolean isStashButtonEnabled = isStashButtonEnabled(); 
     SwingUtilities.invokeLater(() -> {
+      /* for @pushButton, @historyButton, @showBranchesButton ---> 
+       * it is necessary to refresh, even if it has a single action, 
+       * because there are other code sequences that directly change their state by calling the setEnabled(false) method
+       */
+      pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
+      pullMenuButton.setEnabled(isPullMenuEnabled);
+      stashButton.setEnabled(isStashButtonEnabled);
+      historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
+      showBranchesButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
+      
       pullMenuButton.repaint();
       pushButton.repaint();
       stashButton.repaint();
