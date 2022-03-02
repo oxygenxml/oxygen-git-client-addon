@@ -212,10 +212,10 @@ public class HistoryPanel extends JPanel {
     graphCellRender = new CommitsGraphCellRender();
   
     currentStrategy = HistoryStrategy.getStrategy(optionsStorage.getOption(OptionTags.HISTORY_STRATEGY, 
-        HistoryStrategy.CURRENT_BRANCH.toString()));
+        HistoryStrategy.ALL_BRANCHES.toString()));
     
     if(currentStrategy == null) {
-      currentStrategy = HistoryStrategy.CURRENT_BRANCH;
+      currentStrategy = HistoryStrategy.ALL_BRANCHES;
     }
     
     presentHistoryStrategyButton = new SplitMenuButton(currentStrategy.toString(), 

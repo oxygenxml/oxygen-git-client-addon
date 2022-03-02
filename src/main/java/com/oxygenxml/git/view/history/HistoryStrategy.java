@@ -14,6 +14,18 @@ import com.oxygenxml.git.translator.Translator;
 public enum HistoryStrategy {
 
   /**
+   * Presents all branches, both local and remote.
+   */
+  ALL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_BRANCHES), 
+      Translator.getInstance().getTranslation(Tags.ALL_BRANCHES_TOOLTIP)),
+
+  /**
+   * Presents all local branches.
+   */
+  ALL_LOCAL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_LOCAL_BRANCHES),
+      Translator.getInstance().getTranslation(Tags.ALL_LOCAL_BRANCHES_TOOLTIP)),
+  
+  /**
    * Presents the current branch, both local and remote.
    */
   CURRENT_BRANCH(Translator.getInstance().getTranslation(Tags.CURRENT_BRANCH), 
@@ -23,19 +35,7 @@ public enum HistoryStrategy {
    * Presents only the current local branch.
    */
   CURRENT_LOCAL_BRANCH(Translator.getInstance().getTranslation(Tags.CURRENT_LOCAL_BRANCH),
-      Translator.getInstance().getTranslation(Tags.CURRENT_LOCAL_BRANCH_TOOLTIP)),
-  
-	/**
-	 * Presents all branches, both local and remote.
-	 */
-	ALL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_BRANCHES), 
-	    Translator.getInstance().getTranslation(Tags.ALL_BRANCHES_TOOLTIP)),
-
-	/**
-	 * Presents all local branches.
-	 */
-	ALL_LOCAL_BRANCHES(Translator.getInstance().getTranslation(Tags.ALL_LOCAL_BRANCHES),
-	    Translator.getInstance().getTranslation(Tags.ALL_LOCAL_BRANCHES_TOOLTIP));
+      Translator.getInstance().getTranslation(Tags.CURRENT_LOCAL_BRANCH_TOOLTIP));
 
 	
 
