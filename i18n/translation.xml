@@ -11,272 +11,277 @@
     <key value="Show_current_branch_history">
         <comment>Show current repository history.</comment>
         <val lang="en_US">Show current repository history</val>
-        <val lang="de_DE">Show current repository history</val>
+        <val lang="de_DE">Zeige die aktuelle Repository-Historie</val>
         <val lang="fr_FR">Show current repository history</val>
-        <val lang="ja_JP">Show current repository history</val>
-        <val lang="nl_NL">Show current repository history</val>
-        <val lang="zh_CN">Show current repository history</val>
+        <val lang="ja_JP">現在のリポジトリ履歴を表示する</val>
+        <val lang="nl_NL">De huidige opslaggeschiedenis tonen</val>
+        <val lang="zh_CN">显示当前存储库历史记录</val>
     </key>
       <key value="Edit_Remote">
         <comment>Edit remote.</comment>
         <val lang="en_US">Edit remote repository</val>
-        <val lang="de_DE">Edit remote repository</val>
+        <val lang="de_DE">Bearbeite entferntes Repository</val>
         <val lang="fr_FR">Edit remote repository</val>
-        <val lang="ja_JP">Edit remote repository</val>
-        <val lang="nl_NL">Edit remote repository</val>
-        <val lang="zh_CN">Edit remote repository</val>
+        <val lang="ja_JP">リモートリポジトリを編集する</val>
+        <val lang="nl_NL">Externe opslagplaats bewerken</val>
+        <val lang="zh_CN">编辑远程存储库</val>
     </key>
      <key value="Add_Remote">
         <comment>Add remote.</comment>
         <val lang="en_US">Add remote repository</val>
-        <val lang="de_DE">Add remote repository</val>
+        <val lang="de_DE">Füge entferntes Repository hinzu</val>
         <val lang="fr_FR">Add remote repository</val>
-        <val lang="ja_JP">Add remote repository</val>
-        <val lang="nl_NL">Add remote repository</val>
-        <val lang="zh_CN">Add remote repository</val>
+        <val lang="ja_JP">リモートリポジトリを追加する</val>
+        <val lang="nl_NL">Externe opslagplaats toevoegen</val>
+        <val lang="zh_CN">添加远程存储库</val>
     </key>
     <key value="Remote_Tracking_Branch">
         <comment>Remote tracking branch.</comment>
         <val lang="en_US">Remote-tracking branch</val>
-        <val lang="de_DE">Remote-tracking branch</val>
+        <val lang="de_DE">Verfolgter Remote-Branch</val>
         <val lang="fr_FR">Remote-tracking branch</val>
-        <val lang="ja_JP">Remote-tracking branch</val>
-        <val lang="nl_NL">Remote-tracking branch</val>
-        <val lang="zh_CN">Remote-tracking branch</val>
+        <val lang="ja_JP">リモートトラッキングの分岐</val>
+        <val lang="nl_NL">Vertaling extern bijhouden</val>
+        <val lang="zh_CN">远程跟踪分支</val>
     </key>
      <key value="Remotes_Dialog_Title">
         <comment>Title for remotes dialog.</comment>
         <val lang="en_US">Remote repositories</val>
-        <val lang="de_DE">Remote repositories</val>
+        <val lang="de_DE">Entfernte Repositories</val>
         <val lang="fr_FR">Remote repositories</val>
-        <val lang="ja_JP">Remote repositories</val>
-        <val lang="nl_NL">Remote repositories</val>
-        <val lang="zh_CN">Remote repositories</val>
+        <val lang="ja_JP">リモートリポジトリ</val>
+        <val lang="nl_NL">Externe opslagplaatsen</val>
+        <val lang="zh_CN">远程存储库</val>
     </key>
     <key value="Edit_Config_File">
         <comment>Action name to edit the config file of the current repository.</comment>
         <val lang="en_US">Edit repository "config" file</val>
-        <val lang="de_DE">Edit repository "config" file</val>
+        <val lang="de_DE">Bearbeite Repository-Konfigurationsdatei</val>
         <val lang="fr_FR">Edit repository "config" file</val>
-        <val lang="ja_JP">Edit repository "config" file</val>
-        <val lang="nl_NL">Edit repository "config" file</val>
-        <val lang="zh_CN">Edit repository "config" file</val>
+        <val lang="ja_JP">リポジトリ "config" ファイルを編集する</val>
+        <val lang="nl_NL">Opslagplaats 'config'-bestand bewerken</val>
+        <val lang="zh_CN">编辑存储库“配置”文件</val>
     </key>
     <key value="Current_Local_Branch_Tooltip">
         <comment>Tooltip for current local branch mode view in history.</comment>
         <val lang="en_US">Shows the commits only for the current local branch, including unpushed local commits.</val>
-        <val lang="de_DE">Shows the commits only for the current local branch, including unpushed local commits.</val>
+        <val lang="de_DE">Zeigt die Commits nur für den lokalen Zweig (branch), einschließlich der
+         nicht-gesendeten lokalen Commits.</val>
         <val lang="fr_FR">Affiche les commits uniquement pour la branche locale actuelle, y compris les commits locaux hors push.</val>
-        <val lang="ja_JP">Shows the commits only for the current local branch, including unpushed local commits.</val>
-        <val lang="nl_NL">Shows the commits only for the current local branch, including unpushed local commits.</val>
-        <val lang="zh_CN">Shows the commits only for the current local branch, including unpushed local commits.</val>
+        <val lang="ja_JP">プッシュされていないローカルコミットを含む、現在のローカル分岐のコミットのみを表示します。</val>
+        <val lang="nl_NL">Toont uitsluitend de commits voor de huidige lokale vertakking, inclusief lokale unpushed commits.</val>
+        <val lang="zh_CN">只显示当前本地分支的提交，包括未经推送的本地提交。</val>
     </key>
     <key value="Current_Branch_Tooltip">
         <comment>Tooltip for current branch(local + remote) mode view in history.</comment>
         <val lang="en_US">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
-        <val lang="de_DE">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+        <val lang="de_DE">Zeigt die Commits für den aktuellen Zweig (branch), die Commits des
+         aktuellen Zweigs, einschließlich ungesendeter lokaler und ungezogener entfernter
+         Commits.</val>
         <val lang="fr_FR">Affiche les commits pour la branche actuelle, y compris les commits locaux hors push et les commits distants hors pull.</val>
-        <val lang="ja_JP">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
-        <val lang="nl_NL">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
-        <val lang="zh_CN">Shows the commits for the current branch, including unpushed local and unpulled remote commits.</val>
+        <val lang="ja_JP">プッシュされていないローカルコミットとプルされていないリモートコミットを含む、現在の分岐のコミットを表示します。</val>
+        <val lang="nl_NL">Toont de commits voor de huidige vertakking, inclusief unpushed lokale en externe unpulled commits.</val>
+        <val lang="zh_CN">显示当前提交的分支，包括未推本地和未拖动远程分支。</val>
     </key>
      <key value="All_Local_Branches_Tooltip">
         <comment>Tooltip for all local branches mode view in history.</comment>
         <val lang="en_US">Shows the commits only for local branches, including unpushed local commits.</val>
-        <val lang="de_DE">Shows the commits only for local branches, including unpushed local commits.</val>
+        <val lang="de_DE">Zeigt die Commits nur für die lokalen Zweige (branches), einschließlich
+         ungesendeter lokaler Commits.</val>
         <val lang="fr_FR">Affiche les commits uniquement pour les branches locales, y compris les commits locaux hors push.</val>
-        <val lang="ja_JP">Shows the commits only for local branches, including unpushed local commits.</val>
-        <val lang="nl_NL">Shows the commits only for local branches, including unpushed local commits.</val>
-        <val lang="zh_CN">Shows the commits only for local branches, including unpushed local commits.</val>
+        <val lang="ja_JP">プッシュされていないローカルコミットを含む、ローカル分岐のコミットのみを表示します。</val>
+        <val lang="nl_NL">Toont uitsluitend de commits voor lokale vertakkingen, inclusief lokale unpushed commits.</val>
+        <val lang="zh_CN">只显示本地分支的提交，包括未提交的本地提交。</val>
     </key>
      <key value="All_Branches_Tooltip">
         <comment>Tooltip for all branches mode view in history.</comment>
         <val lang="en_US">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.</val>
-        <val lang="de_DE">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.</val>
+        <val lang="de_DE">Zeigt die Commits aller Zweige (branches) (lokale und entfernte),
+         einschließlich ungesendeter lokaler und ungezogener entfernter Commits.</val>
         <val lang="fr_FR">Affiche les commits pour toutes les branches (locales et distantes), y compris les commits locaux hors push et les commits distants hors pull.</val>
-        <val lang="ja_JP">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.</val>
-        <val lang="nl_NL">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.</val>
-        <val lang="zh_CN">Shows the commits for all branches (both local and remote), including unpushed local and unpulled remote commits.</val>
+        <val lang="ja_JP">プッシュされていないローカルコミットとプルされていないリモートコミットを含む、すべての分岐 (ローカルとリモートの両方) のコミットを表示します。</val>
+        <val lang="nl_NL">Toont de commits voor alle vertakkingen (lokaal en extern), inclusief unpushed lokale en unpulled externe commits.</val>
+        <val lang="zh_CN">显示所有（本地和远程）分支的提交，包括未推送的本地和未推送的远程提交。</val>
     </key>
      <key value="Settings">
         <comment>Show staging.</comment>
         <val lang="en_US">Settings</val>
-        <val lang="de_DE">Settings</val>
+        <val lang="de_DE">Einstellungen</val>
         <val lang="fr_FR">Paramètres</val>
-        <val lang="ja_JP">Settings</val>
-        <val lang="nl_NL">Settings</val>
-        <val lang="zh_CN">Settings</val>
+        <val lang="ja_JP">設定</val>
+        <val lang="nl_NL">Instellingen</val>
+        <val lang="zh_CN">设置</val>
     </key>
      <key value="Show_Staging">
         <comment>Show staging.</comment>
         <val lang="en_US">Show staging</val>
-        <val lang="de_DE">Show staging</val>
+        <val lang="de_DE">Zeige Bereitstellungszone (staging)</val>
         <val lang="fr_FR">Afficher le staging</val>
-        <val lang="ja_JP">Show staging</val>
-        <val lang="nl_NL">Show staging</val>
-        <val lang="zh_CN">Show staging</val>
+        <val lang="ja_JP">ステージングを表示する</val>
+        <val lang="nl_NL">Fasering weergeven</val>
+        <val lang="zh_CN">显示阶段</val>
     </key>
     <key value="Open_Repository">
         <comment>Open repository.</comment>
         <val lang="en_US">Open repository</val>
-        <val lang="de_DE">Open repository</val>
+        <val lang="de_DE">Öffne Repository</val>
         <val lang="fr_FR">Ouvrir le dépôt</val>
-        <val lang="ja_JP">Open repository</val>
-        <val lang="nl_NL">Open repository</val>
-        <val lang="zh_CN">Open repository</val>
+        <val lang="ja_JP">リポジトリを開く</val>
+        <val lang="nl_NL">Opslagplaats openen</val>
+        <val lang="zh_CN">打开存储库</val>
     </key>
     <key value="Pull">
         <comment>Pull.</comment>
         <val lang="en_US">Pull</val>
-        <val lang="de_DE">Pull</val>
+        <val lang="de_DE">Ziehen (pull)</val>
         <val lang="fr_FR" skipTranslation="true">Pull</val>
-        <val lang="ja_JP">Pull</val>
-        <val lang="nl_NL">Pull</val>
-        <val lang="zh_CN">Pull</val>
+        <val lang="ja_JP">プル</val>
+        <val lang="nl_NL">Ophalen</val>
+        <val lang="zh_CN">拉取</val>
     </key>
     <key value="Show_Branches">
         <comment>Show branches.</comment>
         <val lang="en_US">Show branches</val>
-        <val lang="de_DE">Show branches</val>
+        <val lang="de_DE">Zeige Zweige (branches)</val>
         <val lang="fr_FR">Afficher les branches</val>
-        <val lang="ja_JP">Show branches</val>
-        <val lang="nl_NL">Show branches</val>
-        <val lang="zh_CN">Show branches</val>
+        <val lang="ja_JP">分岐を表示ｓるう</val>
+        <val lang="nl_NL">Vertakkingen tonen</val>
+        <val lang="zh_CN">显示分支</val>
     </key>
     <key value="Please_Try_Again">
         <comment>Please try again message.</comment>
         <val lang="en_US">Please try again.</val>
-        <val lang="de_DE">Please try again.</val>
+        <val lang="de_DE">Bitte erneut versuchen.</val>
         <val lang="fr_FR">Veuillez réessayer.</val>
-        <val lang="ja_JP">Please try again.</val>
-        <val lang="nl_NL">Please try again.</val>
-        <val lang="zh_CN">Please try again.</val>
+        <val lang="ja_JP">再試行してください。</val>
+        <val lang="nl_NL">Probeer het opnieuw.</val>
+        <val lang="zh_CN">请重试一次。</val>
         </key>
    <key value="Previous_passphrase_invalid">
         <comment>Message shown when a previous SSH passphrase was invalid.</comment>
         <val lang="en_US">The previous SSH passphrase was invalid.</val>
-        <val lang="de_DE">The previous SSH passphrase was invalid.</val>
+        <val lang="de_DE">Die vorige SSH-Passphrase war ungültig.</val>
         <val lang="fr_FR">La phrase de passe SSH précédente n'était pas valide.</val>
-        <val lang="ja_JP">The previous SSH passphrase was invalid.</val>
-        <val lang="nl_NL">The previous SSH passphrase was invalid.</val>
-        <val lang="zh_CN">The previous SSH passphrase was invalid.</val>
+        <val lang="ja_JP">以前の SSH パスフレーズは無効でした。</val>
+        <val lang="nl_NL">De vorige SSH-wachtwoordzin was ongeldig.</val>
+        <val lang="zh_CN">以前的SSH密码是无效的。</val>
         </key>
      <key value="All_Branches">
         <comment>All branches.</comment>
         <val lang="en_US">All branches</val>
-        <val lang="de_DE">All branches</val>
+        <val lang="de_DE">Alle Zweige (branches)</val>
         <val lang="fr_FR">Toutes les branches</val>
-        <val lang="ja_JP">All branches</val>
-        <val lang="nl_NL">All branches</val>
-        <val lang="zh_CN">All branches</val>
+        <val lang="ja_JP">すべての分岐</val>
+        <val lang="nl_NL">Alle vertakkingen</val>
+        <val lang="zh_CN">所有分支</val>
     </key>
      <key value="All_Local_Branches">
         <comment>All local branches.</comment>
         <val lang="en_US">All local branches</val>
-        <val lang="de_DE">All local branches</val>
+        <val lang="de_DE">Alle lokalen Zweige (branches)</val>
         <val lang="fr_FR">Toutes les branches locales</val>
-        <val lang="ja_JP">All local branches</val>
-        <val lang="nl_NL">All local branches</val>
-        <val lang="zh_CN">All local branches</val>
+        <val lang="ja_JP">すべてのローカル分岐</val>
+        <val lang="nl_NL">Alle lokale vertakkingen</val>
+        <val lang="zh_CN">所有本地分支</val>
     </key>
      <key value="Current_Local_Branch">
         <comment>Current local branch.</comment>
         <val lang="en_US">Current local branch</val>
-        <val lang="de_DE">Current local branch</val>
+        <val lang="de_DE">Aktueller lokaler Zweig (branch)</val>
         <val lang="fr_FR">Branche locale actuelle</val>
-        <val lang="ja_JP">Current local branch</val>
-        <val lang="nl_NL">Current local branch</val>
-        <val lang="zh_CN">Current local branch</val>
+        <val lang="ja_JP">現在のローカル分岐</val>
+        <val lang="nl_NL">Huidige lokale vertakking</val>
+        <val lang="zh_CN">现任本地分支</val>
     </key>
       <key value="Current_Branch">
         <comment>Current branch.</comment>
         <val lang="en_US">Current branch</val>
-        <val lang="de_DE">Current branch</val>
+        <val lang="de_DE">Aktueller Zweig (branch)</val>
         <val lang="fr_FR">Branche actuelle</val>
-        <val lang="ja_JP">Current branch</val>
-        <val lang="nl_NL">Current branch</val>
-        <val lang="zh_CN">Current branch</val>
+        <val lang="ja_JP">現在の分岐</val>
+        <val lang="nl_NL">Huidige vertakking</val>
+        <val lang="zh_CN">当前分支</val>
     </key>
      <key value="Branch_Name_Too_Long">
         <comment>Message when branch name is too long.</comment>
         <val lang="en_US">The name is too long. The allowed character limit is {0} characters.</val>
-        <val lang="de_DE">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="de_DE">Der Name ist zu lang. Das Zeichenlimit beträgt {0} Zeichen.</val>
         <val lang="fr_FR">Le nom est trop long. La limite autorisée est de {0} caractères.</val>
-        <val lang="ja_JP">The name is too long. The allowed character limit is {0} characters.</val>
-        <val lang="nl_NL">The name is too long. The allowed character limit is {0} characters.</val>
-        <val lang="zh_CN">The name is too long. The allowed character limit is {0} characters.</val>
+        <val lang="ja_JP">名前が長すぎます。許可される文字数の制限は {0} 文字です。</val>
+        <val lang="nl_NL">De naam is te lang. Het toegestane maximumaantal tekens is {0} tekens.</val>
+        <val lang="zh_CN">名字太长了。允许的字符限制为{0}个字符。</val>
     </key>
     <key value="No_Branches_Founded">
         <comment>Message displayed when no branches are found.</comment>
         <val lang="en_US">Remote branches are not found in remote repositories.</val>
-        <val lang="de_DE">Remote branches are not found in remote repositories.</val>
+        <val lang="de_DE">Entfernte Zweige wurden nicht gefunden in den entfernten Repositories.</val>
         <val lang="fr_FR">Aucune branche remote trouvée dans les dépôts remote.</val>
-        <val lang="ja_JP">Remote branches are not found in remote repositories.</val>
-        <val lang="nl_NL">Remote branches are not found in remote repositories.</val>
-        <val lang="zh_CN">Remote branches are not found in remote repositories.</val>
+        <val lang="ja_JP">リモート分岐がリモートリポジトリに見つかりません。</val>
+        <val lang="nl_NL">Externe vertakkingen worden niet in de externe opslagplaatsen gevonden.</val>
+        <val lang="zh_CN">在远程存储库中找不到远程分支。</val>
     </key>
      <key value="Remote_Already_Exists_Confirmation_Message">
         <comment>Message to confirm the remote replace.</comment>
         <val lang="en_US">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
-        <val lang="de_DE">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="de_DE">Der "{0}" entfernte Standort existiert bereits in der Konfiguration des Repositories. Möchten Sie die URL aktualisieren?</val>
         <val lang="fr_FR">L''emplacement remote "{0}" existe déjà dans la configuration du dépôt. Voulez-vous mettre à jour l''URL?</val>
-        <val lang="ja_JP">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
-        <val lang="nl_NL">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
-        <val lang="zh_CN">The "{0}" remote location already exists in the repository''s configuration. Do you want to update the URL?</val>
+        <val lang="ja_JP">"{0}" リモートの場所は、リポジトリの構成にすでに存在します。URL を更新しますか?</val>
+        <val lang="nl_NL">De '{0}' externe locatie bestaat al in de configuratie van de opslagplaats. Wilt u de URL updaten?</val>
+        <val lang="zh_CN">“{ 0 }”远程位置已经存在于存储库的配置中。要更换URL吗？</val>
     </key>
     <key value="Delete_Remote_Confirmation_Message">
         <comment>Message to confirm remote deleting.</comment>
         <val lang="en_US">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="de_DE">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="de_DE">Sind Sie sicher, dass Sie den "{0}" entfernten Standort aus der Konfiguration des Repositories löschen möchten? Alle damit assoziierten Zweigkonfigurationen werden ebenfalls gelöscht.</val>
         <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer l''emplacement remote "{0}" de la configuration du dépôt? Toutes les configurations de branches qui lui sont associées seront également supprimées.</val>
-        <val lang="ja_JP">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="nl_NL">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
-        <val lang="zh_CN">Are you sure you want to delete the "{0}" remote location from the repository''s configuration? All branch configurations associated with it will also be deleted.</val>
+        <val lang="ja_JP">リポジトリの構成から "{0}" リモートの場所を削除しますか? それに関連付けられているすべてのブランチ構成も削除されます。</val>
+        <val lang="nl_NL">Weet u zeker dat u de externe locatie '{0}' uit de configuratie van de opslagplaats wilt verwijderen? Alle hieraan gerelateerde vertakkingsconfiguraties worden ook verwijderd.</val>
+        <val lang="zh_CN">您确定要从存储库的配置中删除“{ 0 }”远程位置吗？与之相关联的所有分支配置也将被删除。</val>
     </key>
     <key value="Manage_Remote_Repositories">
         <comment>Manage remote repositories action name.</comment>
         <val lang="en_US">Manage remote repositories</val>
-        <val lang="de_DE">Manage remote repositories</val>
+        <val lang="de_DE">Verwalte entfernte Repositories</val>
         <val lang="fr_FR">Gérer les dépôts remote</val>
-        <val lang="ja_JP">Manage remote repositories</val>
-        <val lang="nl_NL">Manage remote repositories</val>
-        <val lang="zh_CN">Manage remote repositories</val>
+        <val lang="ja_JP">リモートリポジトリを管理する</val>
+        <val lang="nl_NL">Externe opslagplaatsen beheren</val>
+        <val lang="zh_CN">管理远程存储库</val>
     </key>
     <key value="Current_Remote_For_Branch">
         <comment>Title for dialog to configure remote for current branch.</comment>
         <val lang="en_US">Track remote branch</val>
-        <val lang="de_DE">Track remote branch</val>
+        <val lang="de_DE">Verfolge entfernten Zweig</val>
         <val lang="fr_FR">Suivre la branche remote</val>
-        <val lang="ja_JP">Track remote branch</val>
-        <val lang="nl_NL">Track remote branch</val>
-        <val lang="zh_CN">Track remote branch</val>
+        <val lang="ja_JP">リモート分岐を追跡する</val>
+        <val lang="nl_NL">Externe vertakking bijhouden</val>
+        <val lang="zh_CN">跟踪远程分支</val>
     </key>
     <key value="Remote_URL">
         <comment>Remote URL.</comment>
         <val lang="en_US">Remote URL</val>
-        <val lang="de_DE">Remote URL</val>
+        <val lang="de_DE">Entfernte URL</val>
         <val lang="fr_FR">URL du remote</val>
-        <val lang="ja_JP">Remote URL</val>
-        <val lang="nl_NL">Remote URL</val>
-        <val lang="zh_CN">Remote URL</val>
+        <val lang="ja_JP">リモート URL</val>
+        <val lang="nl_NL">Externe URL</val>
+        <val lang="zh_CN">远程URL</val>
     </key>
     <key value="Remote_Name">
         <comment>Remote name.</comment>
         <val lang="en_US">Remote name</val>
-        <val lang="de_DE">Remote name</val>
+        <val lang="de_DE">Entfernter Name</val>
         <val lang="fr_FR">Nom du remote</val>
-        <val lang="ja_JP">Remote name</val>
-        <val lang="nl_NL">Remote name</val>
-        <val lang="zh_CN">Remote name</val>
+        <val lang="ja_JP">リモート名</val>
+        <val lang="nl_NL">Externe naam</val>
+        <val lang="zh_CN">远程名称</val>
     </key>
     <key value="Delete_Remote">
         <comment>Delete remote.</comment>
         <val lang="en_US">Delete remote</val>
-        <val lang="de_DE">Delete remote</val>
+        <val lang="de_DE">Lösche entferntes Repository</val>
         <val lang="fr_FR">Supprimer le remote</val>
-        <val lang="ja_JP">Delete remote</val>
-        <val lang="nl_NL">Delete remote</val>
-        <val lang="zh_CN">Delete remote</val>
+        <val lang="ja_JP">リモートを削除する</val>
+        <val lang="nl_NL">Extern verwijderen</val>
+        <val lang="zh_CN">删除远程分支</val>
     </key>
     <key value="URL">
         <comment>URL.</comment>
@@ -290,111 +295,112 @@
      <key value="Create_A_New_Branch">
         <comment>Create a new branch option.</comment>
         <val lang="en_US">Create a new branch</val>
-        <val lang="de_DE">Create a new branch</val>
+        <val lang="de_DE">Erzeuge einen neuen Zweig</val>
         <val lang="fr_FR">Créer une nouvelle branche</val>
-        <val lang="ja_JP">Create a new branch</val>
-        <val lang="nl_NL">Create a new branch</val>
-        <val lang="zh_CN">Create a new branch</val>
+        <val lang="ja_JP">新しい分岐を作成する</val>
+        <val lang="nl_NL">Een nieuwe vertakking aanmaken</val>
+        <val lang="zh_CN">创建新的分支</val>
     </key>
      <key value="Tag">
         <comment>Tag.</comment>
         <val lang="en_US">Tag</val>
         <val lang="de_DE">Tag</val>
         <val lang="fr_FR">Étiquette</val>
-        <val lang="ja_JP">Tag</val>
-        <val lang="nl_NL">Tag</val>
-        <val lang="zh_CN">Tag</val>
+        <val lang="ja_JP">タグ</val>
+        <val lang="nl_NL">Tags</val>
+        <val lang="zh_CN">标签</val>
     </key>
      <key value="Local_branch_already_exists">
         <comment>"The warning message when trying to create a branch with the same name as another
             local branch."</comment>
         <val lang="en_US">A local branch with the same name already exists.</val>
-        <val lang="de_DE">A local branch with the same name already exists.</val>
+        <val lang="de_DE">Ein lokaler Zweig mit demselben Namen existiert bereits.</val>
         <val lang="fr_FR">Une branche locale portant le même nom existe déjà.</val>
-        <val lang="ja_JP">A local branch with the same name already exists.</val>
-        <val lang="nl_NL">A local branch with the same name already exists.</val>
+        <val lang="ja_JP">同じ名前のローカル分岐がすでに存在します。</val>
+        <val lang="nl_NL">Er bestaat al een lokale vertakking met dezelfde naam.</val>
         <val lang="zh_CN">A local branch with the same name already exists..</val>
     </key>
      <key value="Uncommited_changes_when_checkout_commit">
         <comment>The the message displayed when the checkout commit is attempted and there are uncommited changes.</comment>
         <val lang="en_US">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="de_DE">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="de_DE">Es gibt nicht-übergebene Änderungen. Übergeben, verstecken oder verwerfen
+         Sie Ihre Änderungen bevor Sie es erneut versuchen.</val>
         <val lang="fr_FR">Il y a des modifications hors commit. Effectuez un commit, une remise ou abandonnez vos modifications avant de réessayer.</val>
-        <val lang="ja_JP">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="nl_NL">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
-        <val lang="zh_CN">There are uncommited changes. Commit, stash, or discard your changes before you try again.</val>
+        <val lang="ja_JP">コミットされていない変更があります。再試行する前に、変更をコミット、一時退避、または破棄してください。</val>
+        <val lang="nl_NL">Er zijn niet vastgelegde wijzigingen aanwezig. U moet uw wijzigingen vastleggen, bewaren of weggooien voordat u het nogmaals probeert.</val>
+        <val lang="zh_CN">存在未限制的更改。在重试之前提交、隐藏或放弃更改。</val>
     </key>
     <key value="Detached_HEAD_Warning_Message">
         <comment>The warning message about detached HEAD.</comment>
         <val lang="en_US">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
-        <val lang="de_DE">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="de_DE">Kein lokaler Zweig wird erzeugt. Wenn Sie Änderungen vornehmen möchten, empfehlen wir stattdessen einen neuen lokalen Zweig zu erstellen.</val>
         <val lang="fr_FR">Aucune branche locale ne sera créée. Si vous voulez faire des modifications, il est recommandé de créer une nouvelle branche locale à la place.</val>
-        <val lang="ja_JP">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
-        <val lang="nl_NL">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
-        <val lang="zh_CN">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="ja_JP">ローカル分岐は作成されません。変更する場合は、代わりに新しいローカル分岐を作成することをお勧めします。</val>
+        <val lang="nl_NL">Er wordt geen lokale vertakking aangemaakt. Als u wijzigingen wilt aanbrengen, wordt u geadviseerd in plaats hiervan een nieuwe lokale vertakking aan te maken.</val>
+        <val lang="zh_CN">不可创建本地分支。如果要进行更改，建议您创建一个新的本地分支。</val>
     </key>
     <key value="Enter_Branch_Name">
         <comment>The message for enter the branch name.</comment>
         <val lang="en_US">Branch name</val>
-        <val lang="de_DE">Branch name</val>
+        <val lang="de_DE">Name des Zweigs</val>
         <val lang="fr_FR">Nom de la branche</val>
-        <val lang="ja_JP">Branch name</val>
-        <val lang="nl_NL">Branch name</val>
-        <val lang="zh_CN">Branch name</val>
+        <val lang="ja_JP">分岐名</val>
+        <val lang="nl_NL">Naam vertakking</val>
+        <val lang="zh_CN">分支名称</val>
     </key>
     <key value="Empty_Branch_Name">
         <comment>The message for error when we have an empty name for branch.</comment>
         <val lang="en_US">The branch name cannot be empty.</val>
-        <val lang="de_DE">The branch name cannot be empty.</val>
+        <val lang="de_DE">Der Name des Zweigs darf nicht leer sein.</val>
         <val lang="fr_FR">Le nom de la branche ne peut pas être vide.</val>
-        <val lang="ja_JP">The branch name cannot be empty.</val>
-        <val lang="nl_NL">The branch name cannot be empty.</val>
-        <val lang="zh_CN">The branch name cannot be empty.</val>
+        <val lang="ja_JP">分岐名を空にすることはできません。</val>
+        <val lang="nl_NL">De naam van de vertakking mag niet leeg zijn.</val>
+        <val lang="zh_CN">分支名称不能为空。</val>
     </key>
     <key value="Branch_Contains_Spaces">
         <comment>The message for error when we have a tag with spaces.</comment>
         <val lang="en_US">Spaces are not allowed in a branch name.</val>
-        <val lang="de_DE">Spaces are not allowed in a branch name.</val>
+        <val lang="de_DE">Leerzeichen sind innerhalb eines Zweignamens nicht zulässig.</val>
         <val lang="fr_FR">Les espaces ne sont pas autorisés dans le nom d'une branche.</val>
-        <val lang="ja_JP">Spaces are not allowed in a branch name.</val>
-        <val lang="nl_NL">Spaces are not allowed in a branch name.</val>
-        <val lang="zh_CN">Spaces are not allowed in a branch name.</val>
+        <val lang="ja_JP">分岐名にスペースを入れることはできません。</val>
+        <val lang="nl_NL">Spaties zijn niet toegestaan in een naam van een vertakking.</val>
+        <val lang="zh_CN">分支名称中不允许使用空格。</val>
     </key>
     <key value="Branch_Contains_Invalid_Chars">
         <comment>The message for error when we have a branch with invalid chars.</comment>
         <val lang="en_US">The branch name contains not allowed characters.</val>
-        <val lang="de_DE">The branch name contains not allowed characters.</val>
+        <val lang="de_DE">Der Name des Zweigs enthält nicht zulässige Zeichen.</val>
         <val lang="fr_FR">Le nom de la branche contient des caractères non autorisés.</val>
-        <val lang="ja_JP">The branch name contains not allowed characters.</val>
-        <val lang="nl_NL">The branch name contains not allowed characters.</val>
-        <val lang="zh_CN">The branch name contains not allowed characters.</val>
+        <val lang="ja_JP">分岐名に許可されていない文字が含まれています。</val>
+        <val lang="nl_NL">De naam van de vertakking bevat niet-toegestane tekens.</val>
+        <val lang="zh_CN">分支名称含有不允许的字符。</val>
     </key>
     <key value="Branch_manager_button_tool_tip">
         <comment>"The tool tip for the button that opens the branch manager side view."</comment>
         <val lang="en_US">Show Git Branch Manager view.</val>
-        <val lang="de_DE">Show Git Branch Manager view.</val>
+        <val lang="de_DE">Zeige die Git Branch Manager Ansicht.</val>
         <val lang="fr_FR">Afficher la vue Gestionnaire de Branches Git.</val>
-        <val lang="ja_JP">Show Git Branch Manager view.</val>
-        <val lang="nl_NL">Show Git Branch Manager view.</val>
-        <val lang="zh_CN">Show Git Branch Manager view.</val>
+        <val lang="ja_JP">Git Branch Manager ビューを表示します。</val>
+        <val lang="nl_NL">Toon het overzicht van de Git-vertakkingsbeheerder.</val>
+        <val lang="zh_CN">显示Git分支管理器视图。</val>
     </key>
     <key value="Creation_Date">
         <comment>Column title in list stash.</comment>
         <val lang="en_US">Creation date</val>
-        <val lang="de_DE">Creation date</val>
+        <val lang="de_DE">Erstellungsdatum</val>
         <val lang="fr_FR">Date de création</val>
-        <val lang="ja_JP">Creation date</val>
-        <val lang="nl_NL">Creation date</val>
-        <val lang="zh_CN">Creation date</val>
+        <val lang="ja_JP">作成日</val>
+        <val lang="nl_NL">Aanmaakdatum</val>
+        <val lang="zh_CN">创建日期</val>
     </key>
     <key value="Graph">
         <comment>The title for Graph column in Git history.</comment>
         <val lang="en_US">Graph</val>
         <val lang="de_DE">Graph</val>
         <val lang="fr_FR">Graphe</val>
-        <val lang="ja_JP">Graph</val>
-        <val lang="nl_NL">Graph</val>
-        <val lang="zh_CN">Graph</val>
+        <val lang="ja_JP">グラフ</val>
+        <val lang="nl_NL">Grafiek</val>
+        <val lang="zh_CN">图表</val>
     </key>
     <key value="Pull_failed_because_conflicting_paths">
         <comment>The text is displayed when you pull but it fails because the files that are
@@ -557,11 +563,11 @@
     <key value="Apply_Stash">
         <comment>Apply stash</comment>
         <val lang="en_US">Apply stash</val>
-        <val lang="de_DE">Apply stash</val>
+        <val lang="de_DE">Versteck (stash) anwenden</val>
         <val lang="fr_FR">Appliquer la remise</val>
-        <val lang="ja_JP">Apply stash</val>
-        <val lang="nl_NL">Apply stash</val>
-        <val lang="zh_CN">Apply stash</val>
+        <val lang="ja_JP">一時退避を適用する</val>
+        <val lang="nl_NL">Bewaren toepassen</val>
+        <val lang="zh_CN">应用藏匿</val>
     </key>
 
     <key value="Create_Tag">
@@ -585,11 +591,11 @@
     <key value="Message_Label">
         <comment>The message in the label for a message</comment>
         <val lang="en_US">Message</val>
-        <val lang="de_DE">Message</val>
+        <val lang="de_DE">Nachricht</val>
         <val lang="fr_FR" skipTranslation="true">Message</val>
-        <val lang="ja_JP">Message</val>
-        <val lang="nl_NL">Message</val>
-        <val lang="zh_CN">Message</val>
+        <val lang="ja_JP">メッセージ</val>
+        <val lang="nl_NL">Bericht</val>
+        <val lang="zh_CN">邮件</val>
     </key>
     <key value="Create_Tag_Push_Checkbox">
         <comment>The message for the checkbox for Tag pushing</comment>
@@ -3375,7 +3381,6 @@
         <val lang="fr_FR">HEAD détaché</val>
         <val lang="ja_JP">HEAD が切り離されました</val>
         <val lang="nl_NL">HEAD ontkoppeld</val>
-        <val lang="zh_CN">Detached HEAD</val>
+        <val lang="zh_CN">HEAD端信号丢失</val>
     </key>
 </translation>
-    
