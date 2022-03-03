@@ -332,7 +332,7 @@
     </key>
     <key value="Detached_HEAD_Warning_Message">
         <comment>The warning message about detached HEAD.</comment>
-        <val lang="en_US">No local branch will be created. If you want to make changes, it is recomended to create a new local branch instead.</val>
+        <val lang="en_US">No local branch will be created. If you want to make changes, it is recommended to create a new local branch instead.</val>
         <val lang="de_DE">Kein lokaler Zweig wird erzeugt. Wenn Sie Änderungen vornehmen möchten, empfehlen wir stattdessen einen neuen lokalen Zweig zu erstellen.</val>
         <val lang="fr_FR">Aucune branche locale ne sera créée. Si vous voulez faire des modifications, il est recommandé de créer une nouvelle branche locale à la place.</val>
         <val lang="ja_JP">ローカル分岐は作成されません。変更する場合は、代わりに新しいローカル分岐を作成することをお勧めします。</val>
