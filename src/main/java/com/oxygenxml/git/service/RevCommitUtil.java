@@ -674,57 +674,60 @@ public class RevCommitUtil {
   private static String findPath(Git git, String filePath, List<RevCommit> revisions)
       throws IOException, GitAPIException {
     String path = filePath;
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("====SORTED===");
-      revisions.forEach(r -> LOGGER.debug(r.getFullMessage()));
-    }
+    
+    if(git != null) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("====SORTED===");
+        revisions.forEach(r -> LOGGER.debug(r.getFullMessage()));
+      }
 
-    if (!revisions.isEmpty()) {
-      RevCommit lastRev = revisions.get(revisions.size() - 1);
-      List<FileStatus> targetRevFiles = getFiles(git.getRepository(), lastRev);
-      Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
+      if (!revisions.isEmpty()) {
+        RevCommit lastRev = revisions.get(revisions.size() - 1);
+        List<FileStatus> targetRevFiles = getFiles(git.getRepository(), lastRev);
+        Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
 
-      RevCommit previous = null;
-      for (RevCommit revCommit : revisions) {
-        if (previous != null) {
+        RevCommit previous = null;
+        for (RevCommit revCommit : revisions) {
+          if (previous != null) {
 
-          // Fast stop.
-          if (lastRevFiles.contains(path)) {
-            // The current discovered path is the same as in the target revision.
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Same path as in target. Stop. " + revCommit.getFullMessage());
-            }
-            break;
-          }
-
-          // Check if the current discovered path is also present in the new revision to consume.
-          // TThis way we will avoid a time consuming diff with rename detection.
-          List<FileStatus> currentRevisionFiles = getFiles(git.getRepository(), revCommit);
-          final String fpath = path;
-          boolean same = currentRevisionFiles.stream().anyMatch(t -> fpath.equals(t.getFileLocation()));
-
-          if (!same) {
-            // Do a diff with rename detection.
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Search for a rename at revision " + revCommit.getFullMessage());
+            // Fast stop.
+            if (lastRevFiles.contains(path)) {
+              // The current discovered path is the same as in the target revision.
+              if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Same path as in target. Stop. " + revCommit.getFullMessage());
+              }
+              break;
             }
 
-            List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
-            for (DiffEntry diffEntry : diff) {
-              if (FileStatusUtil.isRename(diffEntry.getChangeType()) 
-                  && path.equals(diffEntry.getOldPath())) {
-                // Match.
-                path = diffEntry.getNewPath();
-                break;
+            // Check if the current discovered path is also present in the new revision to consume.
+            // TThis way we will avoid a time consuming diff with rename detection.
+            List<FileStatus> currentRevisionFiles = getFiles(git.getRepository(), revCommit);
+            final String fpath = path;
+            boolean same = currentRevisionFiles.stream().anyMatch(t -> fpath.equals(t.getFileLocation()));
+
+            if (!same) {
+              // Do a diff with rename detection.
+              if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Search for a rename at revision " + revCommit.getFullMessage());
+              }
+
+              List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
+              for (DiffEntry diffEntry : diff) {
+                if (FileStatusUtil.isRename(diffEntry.getChangeType()) 
+                    && path.equals(diffEntry.getOldPath())) {
+                  // Match.
+                  path = diffEntry.getNewPath();
+                  break;
+                }
               }
             }
           }
-        }
 
-        previous = revCommit;
+          previous = revCommit;
+        }
       }
     }
-
+    
     return path;
   }
 
@@ -777,35 +780,37 @@ public class RevCommitUtil {
 
     String originalPath = filePath;
 
-    Repository repository = git.getRepository();
+    if(git != null) {
+      Repository repository = git.getRepository();
 
-    File targetFile = new File(repository.getWorkTree(), originalPath);
-    if (!targetFile.exists()) {
-      // The file is not present in the working copy. Perhaps it was renamed.
-      RevCommit older = repository.parseCommit(repository.resolve(commitId));
-      RevCommit newer = repository.parseCommit(repository.resolve("HEAD"));
-
-      originalPath = RevCommitUtil.getNewPath(
-          git, 
-          older, 
-          newer,
-          filePath);
-
-
-      targetFile = new File(repository.getWorkTree(), originalPath);
+      File targetFile = new File(repository.getWorkTree(), originalPath);
       if (!targetFile.exists()) {
-        // Still not present inside the WC. Probably a rename that wasn't committed yet.
-        // One more try.
-        originalPath = findWCRename(git, newer, originalPath);
+        // The file is not present in the working copy. Perhaps it was renamed.
+        RevCommit older = repository.parseCommit(repository.resolve(commitId));
+        RevCommit newer = repository.parseCommit(repository.resolve("HEAD"));
 
-        // One last try to see if we identified the new location.
+        originalPath = RevCommitUtil.getNewPath(
+            git, 
+            older, 
+            newer,
+            filePath);
+
+
         targetFile = new File(repository.getWorkTree(), originalPath);
         if (!targetFile.exists()) {
-          throw new FileNotFoundException("File \"" + originalPath + "\" was probably removed from the working copy.");
+          // Still not present inside the WC. Probably a rename that wasn't committed yet.
+          // One more try.
+          originalPath = findWCRename(git, newer, originalPath);
+
+          // One last try to see if we identified the new location.
+          targetFile = new File(repository.getWorkTree(), originalPath);
+          if (!targetFile.exists()) {
+            throw new FileNotFoundException("File \"" + originalPath + "\" was probably removed from the working copy.");
+          }
         }
       }
     }
-
+   
     return originalPath;
   }
 
@@ -824,35 +829,39 @@ public class RevCommitUtil {
   private static String findWCRename(Git git, RevCommit head, String path)
       throws IOException, GitAPIException {
     String toReturn = path;
-    Repository repository = git.getRepository();
-    try (ObjectReader reader = repository.newObjectReader()) {
-      // Head files.
-      CanonicalTreeParser headTreeIter = new CanonicalTreeParser();
-      headTreeIter.reset(reader, head.getTree().getId());
+    if(git != null) {
+      Repository repository = git.getRepository();
+      try (ObjectReader reader = repository.newObjectReader()) {
+        // Head files.
+        CanonicalTreeParser headTreeIter = new CanonicalTreeParser();
+        headTreeIter.reset(reader, head.getTree().getId());
 
-      // Working copy files.
-      FileTreeIterator it = new FileTreeIterator(repository);
+        // Working copy files.
+        FileTreeIterator it = new FileTreeIterator(repository);
 
-      // Compute diff.
-      List<DiffEntry> diffs= git.diff()
-          .setNewTree(it)
-          .setOldTree(headTreeIter)
-          .call();
+        // Compute diff.
+        List<DiffEntry> diffs= git.diff()
+            .setNewTree(it)
+            .setOldTree(headTreeIter)
+            .call();
 
-      // Search for renames.
-      RenameDetector rd = new RenameDetector(repository);
-      rd.addAll(diffs);
-      List<DiffEntry> collect = rd.compute();
+        // Search for renames.
+        RenameDetector rd = new RenameDetector(repository);
+        rd.addAll(diffs);
+        List<DiffEntry> collect = rd.compute();
 
-      for (DiffEntry diffEntry : collect) {
-        if (FileStatusUtil.isRename(diffEntry.getChangeType()) && diffEntry.getOldPath().equals(path)) {
-          toReturn = diffEntry.getNewPath();
-          break;
+        for (DiffEntry diffEntry : collect) {
+          if (FileStatusUtil.isRename(diffEntry.getChangeType()) && diffEntry.getOldPath().equals(path)) {
+            toReturn = diffEntry.getNewPath();
+            break;
+          }
         }
-      }
 
-      return toReturn;
+        return toReturn;
+      }
     }
+    
+   return toReturn;
   }
 
   /**
@@ -919,16 +928,19 @@ public class RevCommitUtil {
    * @throws GitAPIException 
    */
   public static ObjectId getBaseCommit(Git git, String filePath) throws IOException, GitAPIException {
-    ObjectId toReturn;
-    List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(filePath)).call();
-    if (!entries.isEmpty()) {
-      toReturn = entries.get(0).getOldId().toObjectId();
-    } else { 
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("No BASE commit for: '" + filePath + "'");
+    ObjectId toReturn = null;
+    if(git != null) {
+      List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(filePath)).call();
+      if (!entries.isEmpty()) {
+        toReturn = entries.get(0).getOldId().toObjectId();
+      } else { 
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("No BASE commit for: '" + filePath + "'");
+        }
+        toReturn = getLastLocalCommitForPath(git, filePath);
       }
-      toReturn = getLastLocalCommitForPath(git, filePath);
     }
+  
     return toReturn;
   }
 
@@ -945,20 +957,23 @@ public class RevCommitUtil {
    * @throws GitAPIException 
    */
   public static ObjectId getTheirCommit(Git git, String filePath) throws IOException, GitAPIException {
-    ObjectId toReturn;
-    List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(filePath)).call();
-    int noOfDiffEntries = entries.size();
-    boolean isTwoWayDiff = noOfDiffEntries < THREE_DIFF_ENTRIES;
-    int indexOfTheirs = isTwoWayDiff ? 1 : 2;
-    if (indexOfTheirs < noOfDiffEntries) {
-      toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
-    } else {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("No THEIRS commit available for: '" + filePath + "'. "
-            + "Falling back to the last commit for this path.");
+    ObjectId toReturn = null;
+    if(git != null) {
+      List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(filePath)).call();
+      int noOfDiffEntries = entries.size();
+      boolean isTwoWayDiff = noOfDiffEntries < THREE_DIFF_ENTRIES;
+      int indexOfTheirs = isTwoWayDiff ? 1 : 2;
+      if (indexOfTheirs < noOfDiffEntries) {
+        toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
+      } else {
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("No THEIRS commit available for: '" + filePath + "'. "
+              + "Falling back to the last commit for this path.");
+        }
+        toReturn = getLastLocalCommitForPath(git, filePath);
       }
-      toReturn = getLastLocalCommitForPath(git, filePath);
     }
+   
     return toReturn;
   }
 
@@ -975,20 +990,23 @@ public class RevCommitUtil {
    * @throws GitAPIException 
    */
   public static ObjectId getMyCommit(Git git, String path) throws IOException, GitAPIException {
-    ObjectId toReturn;
-    List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
-    int noOfDiffEntries = entries.size();
-    boolean isTwoWayDiff = noOfDiffEntries < THREE_DIFF_ENTRIES;
-    int indexOfMine = isTwoWayDiff ? 0 : 1;
-    if (indexOfMine < noOfDiffEntries) {
-      toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
-    } else {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("No MINE commit available for: '" + path + "'."
-            + " Falling back to the last commit for this path.");
+    ObjectId toReturn = null;
+    if(git != null) {
+      List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
+      int noOfDiffEntries = entries.size();
+      boolean isTwoWayDiff = noOfDiffEntries < THREE_DIFF_ENTRIES;
+      int indexOfMine = isTwoWayDiff ? 0 : 1;
+      if (indexOfMine < noOfDiffEntries) {
+        toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
+      } else {
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("No MINE commit available for: '" + path + "'."
+              + " Falling back to the last commit for this path.");
+        }
+        toReturn = getLastLocalCommitForPath(git, path);
       }
-      toReturn = getLastLocalCommitForPath(git, path);
     }
+   
     return toReturn;
   }
 
@@ -1005,20 +1023,22 @@ public class RevCommitUtil {
   public static ObjectId getLastLocalCommitForPath(Git git, String path) throws IOException {
     ObjectId toReturn = null;
 
-    ObjectId lastLocalCommit = getLastLocalCommitInRepo(git);
-    RevWalk revWalk = new RevWalk(git.getRepository());
-    RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
-    RevTree tree = revCommit.getTree();
-    TreeWalk treeWalk = new TreeWalk(git.getRepository());
-    treeWalk.addTree(tree);
-    treeWalk.setRecursive(true);
-    treeWalk.setFilter(PathFilter.create(path));
-    if (treeWalk.next()) {
-      toReturn = treeWalk.getObjectId(0);
+    if(git != null) {
+      ObjectId lastLocalCommit = getLastLocalCommitInRepo(git);
+      RevWalk revWalk = new RevWalk(git.getRepository());
+      RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
+      RevTree tree = revCommit.getTree();
+      TreeWalk treeWalk = new TreeWalk(git.getRepository());
+      treeWalk.addTree(tree);
+      treeWalk.setRecursive(true);
+      treeWalk.setFilter(PathFilter.create(path));
+      if (treeWalk.next()) {
+        toReturn = treeWalk.getObjectId(0);
+      }
+      treeWalk.close();
+      revWalk.close();
     }
-    treeWalk.close();
-    revWalk.close();
-
+   
     return toReturn;
   }
 
@@ -1030,14 +1050,17 @@ public class RevCommitUtil {
    * @return the last local commit
    */
   public static ObjectId getLastLocalCommitInRepo(Git git) {
-    Repository repo = git.getRepository();
-    try {
-      return repo.resolve("HEAD^{commit}");
-    } catch (IOException e) {
-      LOGGER.error(e.getMessage(), e);
+    if(git != null) {
+      final Repository repo = git.getRepository();
+      try {
+        return repo.resolve("HEAD^{commit}");
+      } catch (IOException e) {
+        LOGGER.error(e.getMessage(), e);
+      }
     }
     return null;
   }
+  
   /**
    * Finds the commit from the commitID 
    * 
