@@ -12,7 +12,7 @@
         <comment>Show current repository history.</comment>
         <val lang="en_US">Show current repository history</val>
         <val lang="de_DE">Zeige die aktuelle Repository-Historie</val>
-        <val lang="fr_FR">Show current repository history</val>
+        <val lang="fr_FR">Afficher l'historique du dépôt actuel</val>
         <val lang="ja_JP">現在のリポジトリ履歴を表示する</val>
         <val lang="nl_NL">De huidige opslaggeschiedenis tonen</val>
         <val lang="zh_CN">显示当前存储库历史记录</val>
@@ -21,7 +21,7 @@
         <comment>Edit remote.</comment>
         <val lang="en_US">Edit remote repository</val>
         <val lang="de_DE">Bearbeite entferntes Repository</val>
-        <val lang="fr_FR">Edit remote repository</val>
+        <val lang="fr_FR">Modifier le dépôt distant</val>
         <val lang="ja_JP">リモートリポジトリを編集する</val>
         <val lang="nl_NL">Externe opslagplaats bewerken</val>
         <val lang="zh_CN">编辑远程存储库</val>
@@ -30,7 +30,7 @@
         <comment>Add remote.</comment>
         <val lang="en_US">Add remote repository</val>
         <val lang="de_DE">Füge entferntes Repository hinzu</val>
-        <val lang="fr_FR">Add remote repository</val>
+        <val lang="fr_FR">Ajouter un dépôt distant</val>
         <val lang="ja_JP">リモートリポジトリを追加する</val>
         <val lang="nl_NL">Externe opslagplaats toevoegen</val>
         <val lang="zh_CN">添加远程存储库</val>
@@ -39,7 +39,7 @@
         <comment>Remote tracking branch.</comment>
         <val lang="en_US">Remote-tracking branch</val>
         <val lang="de_DE">Verfolgter Remote-Branch</val>
-        <val lang="fr_FR">Remote-tracking branch</val>
+        <val lang="fr_FR">Branche de suivi à distance</val>
         <val lang="ja_JP">リモートトラッキングの分岐</val>
         <val lang="nl_NL">Vertaling extern bijhouden</val>
         <val lang="zh_CN">远程跟踪分支</val>
@@ -48,7 +48,7 @@
         <comment>Title for remotes dialog.</comment>
         <val lang="en_US">Remote repositories</val>
         <val lang="de_DE">Entfernte Repositories</val>
-        <val lang="fr_FR">Remote repositories</val>
+        <val lang="fr_FR">Dépôts distants</val>
         <val lang="ja_JP">リモートリポジトリ</val>
         <val lang="nl_NL">Externe opslagplaatsen</val>
         <val lang="zh_CN">远程存储库</val>
@@ -57,7 +57,7 @@
         <comment>Action name to edit the config file of the current repository.</comment>
         <val lang="en_US">Edit repository "config" file</val>
         <val lang="de_DE">Bearbeite Repository-Konfigurationsdatei</val>
-        <val lang="fr_FR">Edit repository "config" file</val>
+        <val lang="fr_FR">Modifier le fichier "config" du dépôt</val>
         <val lang="ja_JP">リポジトリ "config" ファイルを編集する</val>
         <val lang="nl_NL">Opslagplaats 'config'-bestand bewerken</val>
         <val lang="zh_CN">编辑存储库“配置”文件</val>
