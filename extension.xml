@@ -22,6 +22,12 @@
             for comparing and merging changes. </p>
         </div>
         <div>
+          <h3>What's new in version 4.0.3</h3>
+          <ol>
+            <li>Fixed an issue that made the <i>Pull(rebase)</i> action from the <i>Git Staging</i> view be disabled at all times.</li> 
+          </ol>
+        </div>
+        <div>
           <h3>What's new in version 4.0.1</h3>
           <ol>
             <li>Fixed a small problem where the UI would sometimes freeze when returning to Oxygen after going to another application.</li> 
