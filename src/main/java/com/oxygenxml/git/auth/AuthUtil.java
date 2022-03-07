@@ -3,6 +3,7 @@ package com.oxygenxml.git.auth;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class AuthUtil {
   /**
    * Translator for i18n.
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * Part of exception message shown when no value was found in the configuration for remote.origin.url.
    */
@@ -119,20 +120,20 @@ public class AuthUtil {
     if (lowercaseMsg.contains(NOT_AUTHORIZED) 
         || lowercaseMsg.contains(AUTHENTICATION_NOT_SUPPORTED)) {
       // Authorization problems.
-      String loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
+      String loginMessage = TRANSLATOR.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
       if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
         String username = ((UserAndPasswordCredentials) userCredentials).getUsername();
-        loginMessage += username == null ? translator.getTranslation(Tags.NO_CREDENTIALS_FOUND)
-            : translator.getTranslation(Tags.CHECK_CREDENTIALS);
+        loginMessage += username == null ? TRANSLATOR.getTranslation(Tags.NO_CREDENTIALS_FOUND)
+            : TRANSLATOR.getTranslation(Tags.CHECK_CREDENTIALS);
       } else if (userCredentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-        loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
+        loginMessage += TRANSLATOR.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
       }
       tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
     } else if (lowercaseMsg.contains(NOT_PERMITTED)) {
       // The user doesn't have permissions.
       PluginWorkspaceProvider.getPluginWorkspace()
-          .showErrorMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
-      String loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS); 
+          .showErrorMessage(TRANSLATOR.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
+      String loginMessage = TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS); 
       if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
         loginMessage += ", " + ((UserAndPasswordCredentials) userCredentials).getUsername();
       }
@@ -146,17 +147,17 @@ public class AuthUtil {
         || (cause instanceof SshException)
             && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
       // This message is thrown for SSH.
-      String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+      String passPhraseMessage = TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
       tryAgainOutside = passphrase != null;
     } else if (ex.getCause() instanceof NoRemoteRepositoryException
         || lowercaseMsg.contains("invalid advertisement of")) {
       if (excMessPresenter != null) {
         if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
-          excMessPresenter.presentMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+          excMessPresenter.presentMessage(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
         } else if (userCredentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-          excMessPresenter.presentMessage(translator.getTranslation(Tags.CANNOT_REACH_HOST) + ". "
-              + translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS));
+          excMessPresenter.presentMessage(TRANSLATOR.getTranslation(Tags.CANNOT_REACH_HOST) + ". "
+              + TRANSLATOR.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS));
         }
       } else {
         LOGGER.error(ex.getMessage(), ex);
@@ -164,7 +165,9 @@ public class AuthUtil {
     } else {
       // "Unhandled" exception
       if (excMessPresenter != null) {
-        excMessPresenter.presentMessage(ex.getClass().getName() + ": " + ex.getMessage());
+        excMessPresenter.presentMessage(ex instanceof RefNotAdvertisedException ? 
+            TRANSLATOR.getTranslation(Tags.NO_REMOTE_EXCEPTION_MESSAGE) : 
+          ex.getClass().getName() + ": " + ex.getMessage());
       } else {
         LOGGER.error(ex.getMessage(), ex);
       }

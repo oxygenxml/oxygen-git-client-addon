@@ -8,6 +8,15 @@
         <language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
         <language description="Chinese" lang="zh_CN" localeDescription="中文"/>
     </languageList>
+     <key value="No_Remote_Exception_Message">
+        <comment>Message for exception that appears when a pull is executed and no remote is associated with current branch.</comment>
+        <val lang="en_US">Operation failed. A possible cause is that this branch is not associated with a remote or may be hidden by permission settings.</val>
+        <val lang="de_DE">Operation failed. A possible cause is that this branch is not associated with a remote or may be hidden by permission settings.</val>
+        <val lang="fr_FR">Operation failed. A possible cause is that this branch is not associated with a remote or may be hidden by permission settings.</val>
+        <val lang="ja_JP">Operation failed. A possible cause is that this branch is not associated with a remote or may be hidden by permission settings.</val>
+        <val lang="nl_NL">Operation failed. A possible cause is that this branch is not associated with a remote or may be hidden by permission settings.</val>
+        <val lang="zh_CN">Operation failed. A possible cause is that this branch is not associated with a remote or may be hidden by permission settings.</val>
+    </key>
     <key value="Show_current_branch_history">
         <comment>Show current repository history.</comment>
         <val lang="en_US">Show current repository history</val>

@@ -820,8 +820,10 @@ public class HistoryPanel extends JPanel {
             gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_REMOTE));
         final int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
 
-        SwingUtilities.invokeLater(() -> {
-          HistoryCommitTableModel historyModel = new HistoryCommitTableModel(commitCharacteristicsVector);
+        final HistoryCommitTableModel historyModel = new HistoryCommitTableModel(
+            commitCharacteristicsVector);
+        
+        SwingUtilities.invokeLater(() -> { 
           historyModel.filterChanged(filter.getText());
           historyTable.setModel(historyModel);
           updateHistoryTableWidths();

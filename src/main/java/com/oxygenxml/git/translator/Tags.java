@@ -1743,5 +1743,11 @@ public class Tags {
    */
   public static final String REMOTE_TRACKING_BRANCH = "Remote_Tracking_Branch";
   
+  /**
+   * Message for exception that appears when a pull is executed and 
+   * no remote is associated with current branch.
+   */
+  public static final String NO_REMOTE_EXCEPTION_MESSAGE = "No_Remote_Exception_Message";
+  
 }
 
