@@ -81,6 +81,7 @@ public class BranchTreeMenuActionsProvider {
         nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
         nodeActions.add(createNewBranchAction(nodeContent));
         nodeActions.add(createMergeAction(nodeContent));
+        nodeActions.add(createSquashAndMergeAction(nodeContent));
         nodeActions.add(null);
         nodeActions.add(createDeleteLocalBranchAction(nodeContent));
       }
@@ -307,6 +308,54 @@ public class BranchTreeMenuActionsProvider {
                 if (answer == OKCancelDialog.RESULT_OK) {
                   ctrl.getGitAccess().mergeBranch(nodePath);
                 }
+              }
+              return null;
+            },
+            ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
+      }
+    };
+  }
+  
+  /**
+   * Create squash and merge action for [selected_branch] into [current_branch].
+   * 
+   * @param nodePath The node path of the selected branch.
+   * 
+   * @return The merge action.
+   */
+  private AbstractAction createSquashAndMergeAction(String nodePath) {
+    final String selectedBranch = BranchesUtil.createBranchPath(nodePath,
+        BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+    final String currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
+
+    final String squashMergeActionName = MessageFormat.format(
+        Translator.getInstance().getTranslation(Tags.SQUASH_MERGE_BRANCH1_INTO_BRANCH2),
+        TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
+        TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")
+    );
+    
+    return new AbstractAction(squashMergeActionName) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ctrl.asyncTask(
+            () -> {
+              if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+              } else {
+                final String questionMessage = MessageFormat.format(
+                    Translator.getInstance().getTranslation(Tags.SQUASH_MERGE_BRANCHES_QUESTION_MESSAGE),
+                    selectedBranch,
+                    currentBranch);
+
+               final  int answer = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(
+                   Tags.MERGE_BRANCHES), questionMessage,
+                    TRANSLATOR.getTranslation(Tags.YES),
+                    TRANSLATOR.getTranslation(Tags.CANCEL));
+                
+                if (answer == OKCancelDialog.RESULT_OK) {
+                  ctrl.getGitAccess().squashAndMergeBranch(nodePath);
+                }
+                 
               }
               return null;
             },
