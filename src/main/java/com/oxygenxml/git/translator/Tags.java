@@ -1752,15 +1752,19 @@ public class Tags {
    */
   public static final String NO_REMOTE_EXCEPTION_MESSAGE = "No_Remote_Exception_Message";
   
-
   /**
-   * The question message on the squash and merge branches action.
+   * The information about merge operation.
    */
-  public static final String SQUASH_MERGE_BRANCHES_QUESTION_MESSAGE = "Squash_Merge_Branches_Question_Message";
+  public static final String MERGE_INFO = "Merge_Info";
   
   /**
-   * Squash and Merge {0} into {1}.
+   * The information about squash merge.
    */
-  public static final String SQUASH_MERGE_BRANCH1_INTO_BRANCH2 = "Squash_Merge_Branch1_Into_Branch2";
+  public static final String SQUASH_MERGE_INFO = "Squash_Merge_Info";
+  
+  /**
+   * Squash merge.
+   */
+  public static final String SQUASH_MERGE = "Squash_Merge";
 }
 

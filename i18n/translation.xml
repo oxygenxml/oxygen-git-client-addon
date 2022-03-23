@@ -14,36 +14,45 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
-	<key value="Squash_Merge_Branch1_Into_Branch2">
-		<comment>Squash and Merge {branch1} into {branch2}</comment>
-		<val lang="en_US">Squash and Merge "{0}" into "{1}"</val>
-		<val lang="de_DE">Squash and Merge "{0}" into "{1}"</val>
-		<val lang="fr_FR">Squash and Merge "{0}" into "{1}"</val>
-		<val lang="ja_JP">Squash and Merge "{0}" into "{1}"</val>
-		<val lang="nl_NL">Squash and Merge "{0}" into "{1}"</val>
-		<val lang="zh_CN">Squash and Merge "{0}" into "{1}"</val>
+	<key value="Squash_Merge">
+		<comment>Squash merge.</comment>
+		<val lang="en_US">Squash merge</val>
+		<val lang="de_DE">Squash merge</val>
+		<val lang="fr_FR">Squash merge</val>
+		<val lang="ja_JP">Squash merge</val>
+		<val lang="nl_NL">Squash merge</val>
+		<val lang="zh_CN">Squash merge</val>
 	</key>
-	<key value="Squash_Merge_Branches_Question_Message">
-		<comment>The question message on the squash and merge branches action.
+	<key value="Merge_Info">
+		<comment>The information about merge operation.</comment>
+		<val lang="en_US">This operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch, 
+		and will record the result in a new commit.</val>
+		<val lang="de_DE">his operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch, 
+		and will record the result in a new commit.</val>
+		<val lang="fr_FR">his operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch, 
+		and will record the result in a new commit.</val>
+		<val lang="ja_JP">his operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch, 
+		and will record the result in a new commit.</val>
+		<val lang="nl_NL">his operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch, 
+		and will record the result in a new commit.</val>
+		<val lang="zh_CN">his operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch, 
+		and will record the result in a new commit.</val>
+	</key>
+	<key value="Squash_Merge_Info">
+		<comment>The information about squash merge.
 		</comment>
-		<val lang="en_US">Are you sure you want to squash and go from branch {0}
-			to branch {1}? The result will be a commit that will contain all the
-			changes made by the {1} branch.</val>
-		<val lang="de_DE">Are you sure you want to squash and go from branch {0}
-			to branch {1}? The result will be a commit that will contain all the
-			changes made by the {1} branch.</val>
-		<val lang="fr_FR">Are you sure you want to squash and go from branch {0}
-			to branch {1}? The result will be a commit that will contain all the
-			changes made by the {1} branch.</val>
-		<val lang="ja_JP">Are you sure you want to squash and go from branch {0}
-			to branch {1}? The result will be a commit that will contain all the
-			changes made by the {1} branch.</val>
-		<val lang="nl_NL">Are you sure you want to squash and go from branch {0}
-			to branch {1}? The result will be a commit that will contain all the
-			changes made by the {1} branch.</val>
-		<val lang="zh_CN">Are you sure you want to squash and go from branch {0}
-			to branch {1}? The result will be a commit that will contain all the
-			changes made by the {1} branch.</val>
+		<val lang="en_US">All the changes will be combined into a single change producing a merge commit with only one parent.</val>
+		<val lang="de_DE">All the changes will be combined into a single change producing a merge commit with only one parent.</val>
+		<val lang="fr_FR">All the changes will be combined into a single change producing a merge commit with only one parent.</val>
+		<val lang="ja_JP">All the changes will be combined into a single change producing a merge commit with only one parent.</val>
+		<val lang="nl_NL">All the changes will be combined into a single change producing a merge commit with only one parent.</val>
+		<val lang="zh_CN">All the changes will be combined into a single change producing a merge commit with only one parent.</val>
 	</key>
 	<key value="No_Remote_Exception_Message">
 		<comment>Message for exception that appears when a pull is executed
@@ -1257,11 +1266,11 @@
 	</key>
 	<key value="Merge">
 		<comment>Merge.</comment>
-		<val lang="en_US">merge</val>
+		<val lang="en_US">Merge</val>
 		<val lang="de_DE">Merge</val>
-		<val lang="fr_FR">fusion</val>
+		<val lang="fr_FR">Fusion</val>
 		<val lang="ja_JP">マージ</val>
-		<val lang="nl_NL">samenvoegen</val>
+		<val lang="nl_NL">Samenvoegen</val>
 		<val lang="zh_CN">合并</val>
 	</key>
 	<key value="Revert_commit_resulted_in_conflicts">
