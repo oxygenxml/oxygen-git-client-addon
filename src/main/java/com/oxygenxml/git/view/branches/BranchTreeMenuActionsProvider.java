@@ -296,9 +296,16 @@ public class BranchTreeMenuActionsProvider {
               if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
               } else {
-                final int answer = new MergeBranchesDialog(currentBranch, selectedBranch).getResult();
-                if (answer == OKCancelDialog.RESULT_OK) {
-                  ctrl.getGitAccess().mergeBranch(nodePath);
+                final MergeBranchesDialog mergeDialog = new MergeBranchesDialog(currentBranch, 
+                    selectedBranch);
+              
+                if (mergeDialog.getResult() == OKCancelDialog.RESULT_OK) {
+                  if(mergeDialog.isSquashSelected()) {
+                    ctrl.getGitAccess().squashAndMergeBranch(nodePath);
+                  } else {
+                    ctrl.getGitAccess().mergeBranch(nodePath);
+                  }
+                  
                 }
               }
               return null;

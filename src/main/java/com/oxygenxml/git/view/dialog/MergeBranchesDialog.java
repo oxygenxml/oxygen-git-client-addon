@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.IOException;
 import java.text.MessageFormat;
 
 import javax.swing.JCheckBox;
@@ -13,13 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.TextFormatUtil;
@@ -52,11 +45,6 @@ public class MergeBranchesDialog extends OKCancelDialog {
 	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
-	 *  Logger for logging.
-	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(MergeBranchesDialog.class); 
-
-	/**
 	 * Squash info.
 	 */
 	private final JTextArea squashInfo;
@@ -71,10 +59,6 @@ public class MergeBranchesDialog extends OKCancelDialog {
 	 */
 	private final JCheckBox squashOption = new JCheckBox(TRANSLATOR.getTranslation(Tags.SQUASH_MERGE));
 	
-	/**
-	 * The selected branch to merge.
-	 */
-	private final String selectedBranch;
 
 	
 	/**
@@ -95,8 +79,6 @@ public class MergeBranchesDialog extends OKCancelDialog {
         TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
 		
 		squashInfo = UIUtil.createMessageArea(TRANSLATOR.getTranslation(Tags.SQUASH_MERGE_INFO));
-		    
-		this.selectedBranch = selectedBranch;
 		
 		createGUI();
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -157,19 +139,13 @@ public class MergeBranchesDialog extends OKCancelDialog {
 		setOkButtonText(TRANSLATOR.getTranslation(Tags.MERGE));	    
 	}
 
-	@Override
-	protected void doOK() {
-	  try {
-      if(squashOption.isSelected()) {
-        GitAccess.getInstance().squashAndMergeBranch(selectedBranch);
-      } else {
-        GitAccess.getInstance().mergeBranch(selectedBranch);
-      }     
-    } catch (IOException | NoRepositorySelected | GitAPIException e) {
-      LOGGER.error(e.getMessage(), e);
-    }
-	  
-	  super.doOK();
+	
+	/**
+	 * @return <code>true</code> if the squash option is also selected.
+	 */
+	public boolean isSquashSelected() {
+	  return squashOption.isSelected();
 	}
+	
 
 }
