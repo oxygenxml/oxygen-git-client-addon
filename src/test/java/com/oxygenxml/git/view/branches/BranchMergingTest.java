@@ -22,7 +22,10 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.dialog.MergeBranchesDialog;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -87,7 +90,7 @@ public class BranchMergingTest extends GitTestBase {
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    
+    refreshSupport.call();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
     String firstLeafPath = (String)firstLeaf.getUserObject();
@@ -96,6 +99,7 @@ public class BranchMergingTest extends GitTestBase {
     String[] branchPath = firstLeafPath.split("/");
     assertEquals(LOCAL_BRANCH_NAME1, branchPath[branchPath.length - 1]);
     
+    refreshSupport.call();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
@@ -104,6 +108,7 @@ public class BranchMergingTest extends GitTestBase {
         break;
       }
     }
+    refreshSupport.call();
     flushAWT();
     sleep(300);
     
@@ -112,12 +117,13 @@ public class BranchMergingTest extends GitTestBase {
     // Change file on the secondary branch
     setFileContent(file, "local content for merging");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Branch commit");
-  
+    gitAccess.commit("Branch commit 10");
+    refreshSupport.call();
+    
     // Move back to the main branch
     gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
-    
+    refreshSupport.call();
     // Merge LocalBranch into main
     List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction action : actionsForSecondaryBranch) {
@@ -134,13 +140,116 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
     sleep(200);
     
     assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
     
+  }
+  
+  /**
+   * <p><b>Description:</b>Tests the branch squash and merge.</p>
+   * <p><b>Bug ID:</b> EXM-49976</p>
+   * 
+   * @author alex_smarandache
+   * 
+   * @throws Exception
+   */
+  public void testBranchSquashMerging() throws Exception{
+    final File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    
+    final String initialBranchName = gitAccess.getBranchInfo().getBranchName();
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
+    
+    //Make the first commit for the local repository on the main branch
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    
+    //------------- Checkout the other branch in the tree: LOCAL_BRANCH_NAME1 -------------
+    GitControllerBase mock = new GitController();
+    final BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    refreshSupport.call();
+    final GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    final GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
+    final String firstLeafPath = (String)firstLeaf.getUserObject();
+    assertTrue(firstLeafPath.contains(Constants.R_HEADS));
+    
+    String[] branchPath = firstLeafPath.split("/");
+    assertEquals(LOCAL_BRANCH_NAME1, branchPath[branchPath.length - 1]);
+    
+    refreshSupport.call();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
+    for (AbstractAction abstractAction : actionsForNode) {
+      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
+        abstractAction.actionPerformed(null);
+        break;
+      }
+    }
+    refreshSupport.call();
+    flushAWT();
+    sleep(300);
+    
+    assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
+    
+    // Change file on the secondary branch
+    setFileContent(file, "local content for merging");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Branch commit");
+    refreshSupport.call();
+    
+    final File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
+    file2.createNewFile();
+    setFileContent(file2, "squash content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    gitAccess.commit("Branch commit 2");
+    refreshSupport.call();
+    
+    // Move back to the main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
+    refreshSupport.call();
+    // Merge LocalBranch into main
+    final List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(
+        firstLeaf);
+    for (AbstractAction action : actionsForSecondaryBranch) {
+      if (action != null) {
+        String actionName = action.getValue(AbstractAction.NAME).toString();
+        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+          action.actionPerformed(null);
+          break;
+        }
+      }
+    }
+    flushAWT();
+    sleep(300);
+    
+    //Confirm merge dialog
+    final MergeBranchesDialog mergeBranchesDialog = (MergeBranchesDialog)findDialog(
+        translator.getTranslation(Tags.MERGE_BRANCHES));
+    mergeBranchesDialog.getSquashOption().setSelected(true);
+    JButton mergeOkButton = findFirstButton(mergeBranchesDialog, translator.getTranslation(Tags.MERGE));
+    mergeOkButton.doClick();
+    
+    sleep(200);
+    
+    final List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
+    assertEquals(2, commits.size());
+    for(CommitCharacteristics commit : commits) {
+      assertTrue(commit.getPlotCommit().getParentCount() < 2); // test if every commit has maximum one parent.
+    }
+    assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
+    assertEquals("squash content", TestUtil.read(file2.toURI().toURL()));
+
   }
   
   /**
@@ -166,6 +275,7 @@ public class BranchMergingTest extends GitTestBase {
     // Make the first commit for the local repository and create a new branch
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    refreshSupport.call();
     gitAccess.commit("First local commit on main.");
     
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
@@ -174,6 +284,7 @@ public class BranchMergingTest extends GitTestBase {
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
+    refreshSupport.call();
     
     // ------------- Checkout branch: LOCAL_BRANCH_NAME1  -------------
     gitAccess.setBranch(LOCAL_BRANCH_NAME1);
@@ -183,7 +294,9 @@ public class BranchMergingTest extends GitTestBase {
     setFileContent(file2, "local file 2 on new branch");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    refreshSupport.call();
     gitAccess.commit("Commit on secondary branch");
+    refreshSupport.call();
 
     // ------------- Move to the main branch and commit something there ---------------
     gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
@@ -192,7 +305,9 @@ public class BranchMergingTest extends GitTestBase {
     setFileContent(file2, "local file 2 modifications");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    refreshSupport.call();
     gitAccess.commit("2nd commit on main branch");
+    refreshSupport.call();
 
     // Merge secondary branch into main
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
@@ -200,7 +315,7 @@ public class BranchMergingTest extends GitTestBase {
     GitTreeNode secondaryBranchNode = (GitTreeNode) root.getFirstLeaf();
     String secondaryBranchPath = (String) secondaryBranchNode.getUserObject();
     assertTrue(secondaryBranchPath.contains(Constants.R_HEADS));
-    
+    refreshSupport.call();
     List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
     for (AbstractAction action : actionsForSecondaryBranch) {
       if (action != null) {
@@ -216,12 +331,15 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
+    flushAWT();
     sleep(200);
+    waitForScheduler();
 
     conflictMergeDialog = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
+    System.out.println(conflictMergeDialog);
     assertNotNull(conflictMergeDialog);
 
     assertTrue(TestUtil.read(file1.toURI().toURL()).
@@ -315,7 +433,7 @@ public class BranchMergingTest extends GitTestBase {
       
       //Confirm merge dialog
       JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
       mergeOkButton.doClick();
       
       sleep(200);
@@ -351,7 +469,7 @@ public class BranchMergingTest extends GitTestBase {
       
       //Confirm merge dialog
       mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
       mergeOkButton.doClick();
       
       sleep(200);
@@ -433,7 +551,7 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
     sleep(200);

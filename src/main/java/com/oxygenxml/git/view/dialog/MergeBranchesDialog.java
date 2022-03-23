@@ -30,6 +30,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 public class MergeBranchesDialog extends OKCancelDialog {
   
   /**
+   * Left indent for squash explanation.
+   */
+  private static final int LEFT_INDENT = new JCheckBox().getPreferredSize().width;
+  
+  /**
    * Preferred height for this dialog.
    */
   private static final int HEIGHT = 200;
@@ -37,7 +42,7 @@ public class MergeBranchesDialog extends OKCancelDialog {
   /**
    * Preferred width for this dialog.
    */
-  private static final int WIDTH = 600;
+  private static final int WIDTH = 500;
 
 	/**
 	 * Translator.
@@ -100,7 +105,7 @@ public class MergeBranchesDialog extends OKCancelDialog {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
-		gbc.weighty = 1;
+		gbc.weighty = 0;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.gridwidth = 2;
@@ -120,7 +125,7 @@ public class MergeBranchesDialog extends OKCancelDialog {
 		panel.add(squashOption, gbc);
 
 	  // Added squash info label
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, squashOption.getInsets().left, 0, 0);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, LEFT_INDENT , 0, 0);
 		gbc.gridx = 0;
 		gbc.gridwidth = 2;
 	  gbc.weightx = 1;
@@ -146,6 +151,16 @@ public class MergeBranchesDialog extends OKCancelDialog {
 	public boolean isSquashSelected() {
 	  return squashOption.isSelected();
 	}
+
+	/**
+	 * !!! Used for tests !!!
+	 * 
+	 * @return The squash check box.
+	 */
+  public JCheckBox getSquashOption() {
+    return squashOption;
+  }
+	
 	
 
 }
