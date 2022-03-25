@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.staging;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,7 +15,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,7 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,22 +132,6 @@ public class StagingPanel extends JPanel {
    */
   private BranchSelectionCombo branchSelectionCombo;
   
-  /**
-   * <code>true</code> if the push or pull operation is in progress. <code>false</code> if it has ended.
-   */
-  private AtomicBoolean pushPullInProgress = new AtomicBoolean(false);
-  /**
-   * Timer for updating cursor and status.
-   */
-  private Timer cursorTimer = new Timer(
-      1000,
-      e -> SwingUtilities.invokeLater(() -> {
-        if (pushPullInProgress.compareAndSet(true, true)) {
-          //Push/Pull process still running. Present a hint.
-          StagingPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        }
-      }));
-  
 
   /**
    * Constructor.
@@ -175,34 +156,21 @@ public class StagingPanel extends JPanel {
       
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
-        try {
-          if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
-            handlePushPullEvent((PushPullEvent) info, false);
-          }
-        } finally {
-          stopTimer();
-          SwingUtilities.invokeLater(() -> StagingPanel.this.setCursor(Cursor.getDefaultCursor()));
+        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+          handlePushPullEvent((PushPullEvent) info, false);
         }
       }
       
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
-        try {
-          if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
-            handlePushPullEvent((PushPullEvent) info, false);
-          }
-        } finally {
-          stopTimer();
-          SwingUtilities.invokeLater(() -> StagingPanel.this.setCursor(Cursor.getDefaultCursor()));
+        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+          handlePushPullEvent((PushPullEvent) info, false);
         }
       }
 
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
-          stopTimer();
-          pushPullInProgress.set(true);
-          cursorTimer.start();
           handlePushPullEvent((PushPullEvent) info, true);
         }
       }
@@ -693,12 +661,12 @@ public class StagingPanel extends JPanel {
     return gitActionsManager;
   }
   
-  /**
-   * Stops the timer that presents the commit in progress label.
-   */
-  private void stopTimer() {
-    pushPullInProgress.getAndSet(false);
-    cursorTimer.stop();
+ 
+  
+  @Override
+  public String toString() {
+    
+    return "This is Staging Panel";
   }
 
 }
