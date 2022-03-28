@@ -45,7 +45,7 @@ import com.oxygenxml.git.view.dialog.DetachedHeadDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.GitOperationListenerUtil;
+import com.oxygenxml.git.view.event.GitOperationUtil;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
@@ -290,7 +290,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		}
 		
 		viewInfo.setComponent(stagingPanel);
-		GitOperationListenerUtil.installMouseListener(gitController, stagingPanel); 
+		GitOperationUtil.installMouseBusyCursor(gitController, stagingPanel); 
 
 		gitController.addGitListener(new GitEventAdapter() {
 		  

@@ -10,17 +10,17 @@ import javax.swing.Timer;
 import com.oxygenxml.git.service.GitEventAdapter;
 
 /**
- * Contains usefully methods for git operation listeners.
+ * Contains usefully methods for git operation.
  * 
  * @author alex_smarandache
  *
  */
-public class GitOperationListenerUtil {
+public class GitOperationUtil {
 
   /**
    * Hidden constructor.
    */
-  private GitOperationListenerUtil() {
+  private GitOperationUtil() {
     // not needed
   }
 
@@ -30,7 +30,7 @@ public class GitOperationListenerUtil {
    * @param gitController The git controller.
    * @param component     The component to install the listener.
    */
-  public static void installMouseListener(final GitController gitController, JComponent component) {
+  public static void installMouseBusyCursor(final GitController gitController, JComponent component) {
     final AtomicBoolean operationProgress = new AtomicBoolean(false);
     final Timer cursorTimer = new Timer(
         1000,
