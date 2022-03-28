@@ -1,6 +1,5 @@
 package com.oxygenxml.git;
 
-import java.awt.Cursor;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -9,14 +8,11 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Repository;
@@ -49,6 +45,7 @@ import com.oxygenxml.git.view.dialog.DetachedHeadDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.event.GitOperationListenerUtil;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
@@ -164,23 +161,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	private GitActionsMenuBar menuBar;
 	
 	/**
-   * <code>true</code> if an operation is in progress. <code>false</code> if it has ended.
-   */
-  private AtomicBoolean operationProgress = new AtomicBoolean(false);
-  
-	/**
-   * Timer for updating cursor and status.
-   */
-  private final Timer cursorTimer = new Timer(
-      1000,
-      e -> SwingUtilities.invokeLater(() -> {
-        if (operationProgress.compareAndSet(true, true) && stagingPanel != null) {
-          //Operation process still running. Present a hint.
-          stagingPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        }
-      }));
-
-	/**
 	 * Customize the menus and add some Git actions.
 	 */
 	private MenusAndToolbarsContributorCustomizer menusAndToolbarsCustomizer = new MenusAndToolbarsContributorCustomizer() {
@@ -233,7 +213,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			AuthenticationInterceptor.install();
 
 			BlameManager.getInstance().install(gitController);
-			
 
 			// Add Git actions to the contextual menu of the Project view
 			ProjectMenuGitActionsProvider projectMenuGitActionsProvider = new ProjectMenuGitActionsProvider(
@@ -251,7 +230,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 						// The constants' values are defined in plugin.xml
 						if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
-							installCursorUpdater(viewInfo.getComponent());
 							customizeGitStagingView(viewInfo, gitActionsManager);
 						} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
 							customizeHistoryView(viewInfo);
@@ -295,42 +273,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	}
 
 	/**
-	 * When Git operations are running set a working cursor.
-	 * 
-	 * @param stagingViewComponent The staging view component on which to update the cursor. 
-	 */
-	private void installCursorUpdater(JComponent stagingViewComponent) {
-	  System.out.println(stagingViewComponent);
-		gitController.addGitListener(
-				// Set the proper cursor when operations start and end.
-				new GitEventAdapter() {
-					private Timer cursorTimer = new Timer(
-							1000,
-							e -> SwingUtilities.invokeLater(
-									() -> stagingViewComponent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
-									));
-					{
-						cursorTimer.setRepeats(false); // NOSONAR java:S1171
-					}
-
-					@Override
-					public void operationAboutToStart(GitEventInfo info) {
-						cursorTimer.restart();
-					}
-					@Override
-					public void operationSuccessfullyEnded(GitEventInfo info) {
-						cursorTimer.stop();
-						SwingUtilities.invokeLater(() -> stagingViewComponent.setCursor(Cursor.getDefaultCursor()));
-					}
-					@Override
-					public void operationFailed(GitEventInfo info, Throwable t) {
-						cursorTimer.stop();
-						SwingUtilities.invokeLater(() -> stagingViewComponent.setCursor(Cursor.getDefaultCursor()));
-					}
-				});
-	}
-
-	/**
 	 * Customize the Git Staging view.
 	 * 
 	 * @param viewInfo View information.
@@ -346,21 +288,19 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			
 			gitRefreshSupport.setStagingPanel(stagingPanel);
 		}
+		
 		viewInfo.setComponent(stagingPanel);
+		GitOperationListenerUtil.installMouseListener(gitController, stagingPanel); 
 
 		gitController.addGitListener(new GitEventAdapter() {
 		  
 		  @Override
       public void operationAboutToStart(GitEventInfo info) {
-        stopTimer();
-        operationProgress.set(true);
-        cursorTimer.start();
+		    // not needed
       }
 		  
 			@Override
 			public void operationSuccessfullyEnded(GitEventInfo info) {
-			  stopTimer();
-        SwingUtilities.invokeLater(() -> stagingPanel.setCursor(Cursor.getDefaultCursor()));
 				final GitOperation operation = info.getGitOperation();
 				if (operation == GitOperation.CHECKOUT
 						|| operation == GitOperation.CONTINUE_REBASE 
@@ -397,8 +337,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 			@Override
 			public void operationFailed(GitEventInfo info, Throwable t) {
-			  stopTimer();
-        SwingUtilities.invokeLater(() -> stagingPanel.setCursor(Cursor.getDefaultCursor()));
 				final GitOperation operation = info.getGitOperation();
 				if (operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.RESET_TO_COMMIT) {
 					gitRefreshSupport.call();
@@ -527,12 +465,5 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		return pluginWorkspaceAccess.isViewShowing(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW);
 	}
 	
-	 /**
-   * Stops the timer that presents the operation in progress.
-   */
-  private void stopTimer() {
-    operationProgress.getAndSet(false);
-    cursorTimer.stop();
-  }
 
 }
