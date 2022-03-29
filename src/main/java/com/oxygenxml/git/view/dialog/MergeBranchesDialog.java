@@ -80,8 +80,8 @@ public class MergeBranchesDialog extends OKCancelDialog {
 		
 		mergeInfo = UIUtil.createMessageArea(MessageFormat.format(
         TRANSLATOR.getTranslation(Tags.MERGE_INFO),
-        TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
-        TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
+        TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
+        TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
 		
 		squashInfo = UIUtil.createMessageArea(TRANSLATOR.getTranslation(Tags.SQUASH_MERGE_INFO));
 		
