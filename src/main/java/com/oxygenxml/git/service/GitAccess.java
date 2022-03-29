@@ -2333,7 +2333,7 @@ public class GitAccess {
       final MergeResult res = mergeCommand.call();
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
+          LOGGER.debug("We have conflicts here: {}", res.getConflicts());
         }
         final List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
         FileStatusDialog.showWarningMessage(
@@ -2342,7 +2342,7 @@ public class GitAccess {
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
+          LOGGER.debug("Failed because of this files: {}", res.getFailingPaths());
         }
         final List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
         FileStatusDialog.showErrorMessage(
