@@ -2351,8 +2351,10 @@ public class GitAccess {
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
       }
 
+      
       if(isSquash) {
-        commit(getRepository().readSquashCommitMsg());
+        final String squashMessage = getRepository().readSquashCommitMsg();
+        commit(squashMessage != null? squashMessage : "");
       }
       
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
