@@ -34,6 +34,7 @@ import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullCommand;
@@ -2292,30 +2293,68 @@ public class GitAccess {
    * @throws GitAPIException
    */
   public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException {
+    internalMerge(branchName, false);
+  }
+  
+  /**
+   * Squash and merge the given branch into the current branch.
+   * 
+   * @param branchName    The full name of the branch to be merged into the current one(e.g. refs/heads/dev).
+   * 
+   * @throws IOException
+   * @throws NoRepositorySelected
+   * @throws GitAPIException
+   */
+  public void squashAndMergeBranch(final String branchName) 
+      throws IOException, NoRepositorySelected, GitAPIException {
+     internalMerge(branchName, true);
+  }
+
+  /**
+   * Merge the given branch into the current branch.
+   * 
+   * @param branchName    The full name of the branch to be merged into the current one(e.g. refs/heads/dev).
+   * @param isSquashMerge <code>true</code> if is a squash commit. 
+   * 
+   * @throws IOException
+   * @throws NoRepositorySelected
+   * @throws GitAPIException
+   */
+  private void internalMerge(final String branchName, boolean isSquash)
+      throws IOException, NoRepositorySelected, GitAPIException {
     fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
     try {
-      ObjectId mergeBase = getRepository().resolve(branchName);
-      MergeResult res = git.merge().include(mergeBase).call();
+      final ObjectId mergeBase = getRepository().resolve(branchName);
+      final MergeCommand mergeCommand = git.merge().include(mergeBase);
+      if(isSquash) {
+        mergeCommand.setStrategy(MergeStrategy.RESOLVE).setSquash(isSquash).setCommit(true);
+      }
+     
+      final MergeResult res = mergeCommand.call();
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
+          LOGGER.debug("We have conflicts here: {}", res.getConflicts());
         }
-        List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
+        final List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
         FileStatusDialog.showWarningMessage(
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
             conflictingFiles,
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
+          LOGGER.debug("Failed because of this files: {}", res.getFailingPaths());
         }
-        List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
+        final List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
         FileStatusDialog.showErrorMessage(
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
             failingFiles,
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
       }
 
+      if(isSquash) {
+        commit(getRepository().readSquashCommitMsg());
+      }
+      
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
 
     } catch (RevisionSyntaxException | IOException | NoRepositorySelected e) {
@@ -2328,8 +2367,8 @@ public class GitAccess {
         e.getConflictingPaths(),
         TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
     }
+    
   }
-  
   
   /**
    * Stash List command.

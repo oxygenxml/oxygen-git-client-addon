@@ -1269,14 +1269,17 @@ public class Tags {
    * The tile in the warning File Status Dialog when there are merge conflicts
    */
   public static final String MERGE_CONFLICTS_TITLE = "Merge_Conflicts_Title";
+  
   /**
    * Merge {0} into {1}
    */
   public static final String MERGE_BRANCH1_INTO_BRANCH2 = "Merge_Branch1_Into_Branch2";
+  
   /**
    * Merge branches
    */
   public static final String MERGE_BRANCHES = "Merge_Branches";
+  
   /**
    * The question message on the merge branches pop up dialog
    * Are you sure ... from "{0}" to "{1}"?
@@ -1749,5 +1752,19 @@ public class Tags {
    */
   public static final String NO_REMOTE_EXCEPTION_MESSAGE = "No_Remote_Exception_Message";
   
+  /**
+   * The information about merge operation.
+   */
+  public static final String MERGE_INFO = "Merge_Info";
+  
+  /**
+   * The information about squash merge.
+   */
+  public static final String SQUASH_MERGE_INFO = "Squash_Merge_Info";
+  
+  /**
+   * Squash merge.
+   */
+  public static final String SQUASH_MERGE = "Squash_Merge";
 }
 

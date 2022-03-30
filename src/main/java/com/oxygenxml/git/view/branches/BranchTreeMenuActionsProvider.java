@@ -25,6 +25,7 @@ import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MergeBranchesDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
 
@@ -295,17 +296,16 @@ public class BranchTreeMenuActionsProvider {
               if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
               } else {
-                String questionMessage = MessageFormat.format(
-                    Translator.getInstance().getTranslation(Tags.MERGE_BRANCHES_QUESTION_MESSAGE),
-                    selectedBranch,
-                    currentBranch);
-
-                int answer = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES),
-                    questionMessage,
-                    TRANSLATOR.getTranslation(Tags.YES),
-                    TRANSLATOR.getTranslation(Tags.CANCEL));
-                if (answer == OKCancelDialog.RESULT_OK) {
-                  ctrl.getGitAccess().mergeBranch(nodePath);
+                final MergeBranchesDialog mergeDialog = new MergeBranchesDialog(currentBranch, 
+                    selectedBranch);
+              
+                if (mergeDialog.getResult() == OKCancelDialog.RESULT_OK) {
+                  if(mergeDialog.isSquashSelected()) {
+                    ctrl.getGitAccess().squashAndMergeBranch(nodePath);
+                  } else {
+                    ctrl.getGitAccess().mergeBranch(nodePath);
+                  }
+                  
                 }
               }
               return null;
@@ -314,8 +314,7 @@ public class BranchTreeMenuActionsProvider {
       }
     };
   }
-
-
+  
   /**
    * Treat the checkout conflict exception thrown for a newly created branch (when
    * the checkout is to be automatically performed after branch creation).
