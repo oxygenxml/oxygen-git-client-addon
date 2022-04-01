@@ -286,7 +286,7 @@ public class BranchTreeMenuActionsProvider {
         Translator.getInstance().getTranslation(Tags.MERGE_BRANCH1_INTO_BRANCH2),
         TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
         TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")
-    );
+    ) + "...";
 
     return new AbstractAction(mergeActionName) {
       @Override

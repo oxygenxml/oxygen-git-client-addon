@@ -28,19 +28,19 @@
 		<val lang="en_US">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="de_DE">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="de_DE">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="fr_FR">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="fr_FR">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="ja_JP">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="ja_JP">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="nl_NL">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="nl_NL">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="zh_CN">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="zh_CN">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
 	</key>
