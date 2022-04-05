@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -103,7 +102,6 @@ public class CommitAndStatusPanel extends JPanel {
           if (commitinProgress.compareAndSet(true, true)) {
             // Commit process still running. Present a hint.
             setStatusMessage(translator.getTranslation(Tags.COMMITTING) + "...");
-            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
           }
         }));
     
@@ -173,7 +171,6 @@ public class CommitAndStatusPanel extends JPanel {
       } finally {
         stopTimer();
         handleCommitEnded(commitSuccessful);
-        SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
         
         if (commitSuccessful && autoPushWhenCommittingToggle.isSelected()) {
           gitController.push();

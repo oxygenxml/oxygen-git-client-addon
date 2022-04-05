@@ -131,6 +131,7 @@ public class StagingPanel extends JPanel {
    * The branch selection panel.
    */
   private BranchSelectionCombo branchSelectionCombo;
+  
 
   /**
    * Constructor.
@@ -152,12 +153,14 @@ public class StagingPanel extends JPanel {
     createGUI(historyController);
 
     gitCtrl.addGitListener(new GitEventListener() {
+      
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
           handlePushPullEvent((PushPullEvent) info, false);
         }
       }
+      
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
@@ -656,6 +659,14 @@ public class StagingPanel extends JPanel {
    */
   public GitActionsManager getGitActionsManager() {
     return gitActionsManager;
+  }
+  
+ 
+  
+  @Override
+  public String toString() {
+    
+    return "This is Staging Panel";
   }
 
 }

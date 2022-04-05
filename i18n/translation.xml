@@ -36,7 +36,7 @@
 		<comment>Squash merge.</comment>
 		<val lang="en_US">Squash merge</val>
 		<val lang="de_DE">Squash merge</val>
-		<val lang="fr_FR">Squash merge</val>
+		<val lang="fr_FR">Fusion squash</val>
 		<val lang="ja_JP">Squash merge</val>
 		<val lang="nl_NL">Squash merge</val>
 		<val lang="zh_CN">Squash merge</val>
@@ -46,19 +46,19 @@
 		<val lang="en_US">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="de_DE">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="de_DE">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="fr_FR">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="fr_FR">Cette opération fusionnera sur la branche "{0}" toutes les modifications
+			effectuées sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}", 
+			et enregistrera le résultat dans un nouveau commit de fusion.</val>
+		<val lang="ja_JP">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="ja_JP">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="nl_NL">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
-		<val lang="nl_NL">his operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="zh_CN">his operation will merge on top of the "{0}" branch all the changes 
+		<val lang="zh_CN">This operation will merge on top of the "{0}" branch all the changes 
 		made on the "{1}" branch since it diverged from the "{0}" branch, 
 		and will record the result in a new merge commit.</val>
 	</key>
@@ -87,9 +87,9 @@
 		<val lang="de_DE">Operation failed. A possible cause is that this branch
 			is not associated with a remote or may be hidden by permission
 			settings.</val>
-		<val lang="fr_FR">Operation failed. A possible cause is that this branch
-			is not associated with a remote or may be hidden by permission
-			settings.</val>
+		<val lang="fr_FR">L'opération a échoué. Une cause possible est que cette branche
+			n'est pas associée à un remote ou qu'elle est cachée par les paramètres
+			d'autorisation.</val>
 		<val lang="ja_JP">Operation failed. A possible cause is that this branch
 			is not associated with a remote or may be hidden by permission
 			settings.</val>
