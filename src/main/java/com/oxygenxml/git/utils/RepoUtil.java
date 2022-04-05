@@ -21,10 +21,15 @@ import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.merge.SquashMessageFormatter;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.slf4j.Logger;
@@ -467,6 +472,37 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
         }
       }
     }
+  }
+  
+  /**
+   * Compute the message for a squash commit from the commit with the given ObjectId.
+   * 
+   * @param srcCommitId The source commit ObjectId.
+   * @param repo        The current repository.
+   * 
+   * @return            The computed message or <code>null</code>
+   * 
+   * @throws IOException
+   */
+  public static String computeSquashMessage(final ObjectId srcCommitId, final Repository repo) throws IOException {
+    
+    String squashMessage;
+    
+    try (RevWalk revWalk = new RevWalk(repo)) {
+      final Ref head = repo.exactRef(Constants.HEAD);
+      
+      // we know for now there is only one commit
+      final RevCommit srcCommit = revWalk.lookupCommit(srcCommitId);
+      final ObjectId headId = head.getObjectId();
+      final RevCommit headCommit = revWalk.lookupCommit(headId);      
+      final List<RevCommit> squashedCommits = RevWalkUtils.find(
+          revWalk, srcCommit, headCommit);
+      
+      squashMessage = new SquashMessageFormatter().format(
+          squashedCommits, head);
+    }
+  
+    return squashMessage;
   }
 
 }

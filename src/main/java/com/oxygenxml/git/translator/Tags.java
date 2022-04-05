@@ -1766,5 +1766,15 @@ public class Tags {
    * Squash merge.
    */
   public static final String SQUASH_MERGE = "Squash_Merge";
+  
+  /**
+   * Squash and commit message.
+   */
+  public static final String SQUASH_AND_COMMIT = "Squash_And_Commit";
+  
+  /**
+   * Name for squash and merge action. 
+   */
+  public static final String SQUASH_MERGE_ACTION_NAME = "Squash_Action_Name";
 }
 

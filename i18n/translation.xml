@@ -14,6 +14,24 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Squash_Action_Name">
+		<comment>Name for squash and merge action</comment>
+		<val lang="en_US">Squash merge "{0}" into "{1}"</val>
+		<val lang="de_DE">Squash merge "{0}" into "{1}"</val>
+		<val lang="fr_FR">Squash merge "{0}" into "{1}"</val>
+		<val lang="ja_JP">Squash merge "{0}" into "{1}"</val>
+		<val lang="nl_NL">Squash merge "{0}" into "{1}"</val>
+		<val lang="zh_CN">Squash merge "{0}" into "{1}"</val>
+	</key>
+	<key value="Squash_And_Commit">
+		<comment>Squash and commit.</comment>
+		<val lang="en_US">Squash and commit</val>
+		<val lang="de_DE">Squash and commit</val>
+		<val lang="fr_FR">Squash and commit</val>
+		<val lang="ja_JP">Squash and commit</val>
+		<val lang="nl_NL">Squash and commit</val>
+		<val lang="zh_CN">Squash and commit</val>
+	</key>
 	<key value="Squash_Merge">
 		<comment>Squash merge.</comment>
 		<val lang="en_US">Squash merge</val>
@@ -47,12 +65,18 @@
 	<key value="Squash_Merge_Info">
 		<comment>The information about squash merge.
 		</comment>
-		<val lang="en_US">All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="de_DE">All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="fr_FR">All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="ja_JP">All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="nl_NL">All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="zh_CN">All the changes will be combined into a single change producing a new commit.</val>
+		<val lang="en_US">This operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
+		<val lang="de_DE">This operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
+		<val lang="fr_FR">This operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
+		<val lang="ja_JP">This operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
+		<val lang="nl_NL">This operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
+		<val lang="zh_CN">This operation will merge on top of the "{0}" branch all the changes 
+		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
 	</key>
 	<key value="No_Remote_Exception_Message">
 		<comment>Message for exception that appears when a pull is executed

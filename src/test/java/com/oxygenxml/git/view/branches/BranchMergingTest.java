@@ -22,7 +22,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.dialog.MergeBranchesDialog;
+import com.oxygenxml.git.view.dialog.SquashMergeDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
@@ -140,7 +140,7 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
     mergeOkButton.doClick();
     
     sleep(200);
@@ -223,7 +223,7 @@ public class BranchMergingTest extends GitTestBase {
     for (AbstractAction action : actionsForSecondaryBranch) {
       if (action != null) {
         String actionName = action.getValue(AbstractAction.NAME).toString();
-        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
           action.actionPerformed(null);
           break;
         }
@@ -232,11 +232,10 @@ public class BranchMergingTest extends GitTestBase {
     flushAWT();
     sleep(300);
     
-    //Confirm merge dialog
-    final MergeBranchesDialog mergeBranchesDialog = (MergeBranchesDialog)findDialog(
-        translator.getTranslation(Tags.MERGE_BRANCHES));
-    mergeBranchesDialog.getSquashOption().setSelected(true);
-    JButton mergeOkButton = findFirstButton(mergeBranchesDialog, translator.getTranslation(Tags.MERGE));
+    final SquashMergeDialog squashMergeBranchesDialog = (SquashMergeDialog)findDialog(
+        translator.getTranslation(Tags.SQUASH_MERGE));
+    assertNotNull(squashMergeBranchesDialog);
+    JButton mergeOkButton = findFirstButton(squashMergeBranchesDialog, Tags.SQUASH_AND_COMMIT);
     mergeOkButton.doClick();
     
     sleep(200);
@@ -331,7 +330,7 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
     mergeOkButton.doClick();
     
     flushAWT();
@@ -433,7 +432,7 @@ public class BranchMergingTest extends GitTestBase {
       
       //Confirm merge dialog
       JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
+      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
       mergeOkButton.doClick();
       
       sleep(200);
@@ -469,7 +468,7 @@ public class BranchMergingTest extends GitTestBase {
       
       //Confirm merge dialog
       mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
+      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
       mergeOkButton.doClick();
       
       sleep(200);
@@ -551,7 +550,7 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
     mergeOkButton.doClick();
     
     sleep(200);
