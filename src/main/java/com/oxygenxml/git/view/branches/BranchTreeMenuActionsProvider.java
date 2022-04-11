@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.branches;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -28,6 +30,7 @@ import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
+import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -297,10 +300,9 @@ public class BranchTreeMenuActionsProvider {
               if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
               } else {
-                final SquashMergeDialog mergeDialog = new SquashMergeDialog(currentBranch, selectedBranch, 
+                final SquashMergeDialog squashMergeDialog = new SquashMergeDialog(currentBranch, selectedBranch, 
                     ctrl.getGitAccess().getRepository().resolve(selectedBranch));
-              
-                
+                squashMergeDialog.setVisible(true);
               }
               return null;
             },
@@ -351,7 +353,13 @@ public class BranchTreeMenuActionsProvider {
                     TRANSLATOR.getTranslation(Tags.YES),
                     TRANSLATOR.getTranslation(Tags.CANCEL));
                 if (answer == OKCancelDialog.RESULT_OK) {
-                  ctrl.getGitAccess().mergeBranch(nodePath);
+                  try {
+                    ctrl.getGitAccess().mergeBranch(nodePath);
+                  } catch (GitAPIException | IOException | NoRepositorySelected ex) {
+                    LOGGER.error(ex.getMessage(), ex);
+                    ExceptionHandlerUtil.handleMergeException(ex);
+                  }
+                  
                 }
               }
               return null;

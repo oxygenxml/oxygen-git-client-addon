@@ -26,6 +26,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
+import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -111,7 +112,6 @@ public class SquashMergeDialog extends OKCancelDialog {
 		this.setResizable(true);
 		this.pack();
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-		this.setVisible(true);
 	}
 	
 	/**
@@ -151,6 +151,7 @@ public class SquashMergeDialog extends OKCancelDialog {
       GitAccess.getInstance().squashAndMergeBranch(selectedBranch);
     } catch (GitAPIException | IOException | NoRepositorySelected e) {
       LOGGER.error(e.getMessage(), e);
+      ExceptionHandlerUtil.handleMergeException(e);
     }
     super.doOK();
   }

@@ -2359,16 +2359,10 @@ public class GitAccess {
       
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
 
-    } catch (RevisionSyntaxException | IOException | NoRepositorySelected e) {
+    } catch (CheckoutConflictException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
       throw e;
-    } catch (CheckoutConflictException e) {
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
-      FileStatusDialog.showWarningMessage(
-        TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
-        e.getConflictingPaths(),
-        TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
-    }
+    } 
     
   }
   
