@@ -2293,21 +2293,22 @@ public class GitAccess {
    * @throws GitAPIException
    */
   public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException {
-    internalMerge(branchName, false);
+    internalMerge(branchName, false, null);
   }
   
   /**
    * Squash and merge the given branch into the current branch.
    * 
    * @param branchName    The full name of the branch to be merged into the current one(e.g. refs/heads/dev).
+   * @param commitMessage The commit message.
    * 
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  public void squashAndMergeBranch(final String branchName) 
+  public void squashAndMergeBranch(final String branchName, final String commitMessage) 
       throws IOException, NoRepositorySelected, GitAPIException {
-     internalMerge(branchName, true);
+     internalMerge(branchName, true, commitMessage);
   }
 
   /**
@@ -2315,12 +2316,13 @@ public class GitAccess {
    * 
    * @param branchName    The full name of the branch to be merged into the current one(e.g. refs/heads/dev).
    * @param isSquashMerge <code>true</code> if is a squash commit. 
+   * @param message       The commit message for squashed commit.
    * 
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  private void internalMerge(final String branchName, boolean isSquash)
+  private void internalMerge(final String branchName, boolean isSquash, final String message)
       throws IOException, NoRepositorySelected, GitAPIException {
     fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
     try {
@@ -2353,8 +2355,7 @@ public class GitAccess {
 
       
       if(isSquash) {
-        final String squashMessage = getRepository().readSquashCommitMsg();
-        commit(squashMessage != null? squashMessage : "");
+        commit(message != null? message : "");
       }
       
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));

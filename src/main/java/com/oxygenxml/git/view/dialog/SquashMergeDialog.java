@@ -148,7 +148,7 @@ public class SquashMergeDialog extends OKCancelDialog {
   @Override
   protected void doOK() {
     try {
-      GitAccess.getInstance().squashAndMergeBranch(selectedBranch);
+      GitAccess.getInstance().squashAndMergeBranch(selectedBranch, commitMessageTextArea.getText());
     } catch (GitAPIException | IOException | NoRepositorySelected e) {
       LOGGER.error(e.getMessage(), e);
       ExceptionHandlerUtil.handleMergeException(e);
