@@ -27,6 +27,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
+import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -48,12 +49,12 @@ public class SquashMergeDialog extends OKCancelDialog {
   /**
    * Preferred height for this dialog.
    */
-  private static final int HEIGHT = 200;
+  private static final int HEIGHT = 250;
   
   /**
    * Preferred width for this dialog.
    */
-  private static final int WIDTH = 500;
+  private static final int WIDTH = 600;
 
 	/**
 	 * Translator.
@@ -107,7 +108,7 @@ public class SquashMergeDialog extends OKCancelDialog {
 		}
 		
 		createGUI();
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(HiDPIUtil.getHiDPIDimension(new Dimension(WIDTH, HEIGHT)));
 		
 		this.setResizable(true);
 		this.pack();
