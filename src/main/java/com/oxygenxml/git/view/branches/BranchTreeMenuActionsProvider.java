@@ -343,7 +343,7 @@ public class BranchTreeMenuActionsProvider {
                         TRANSLATOR.getTranslation(Tags.MERGE_INFO),
                         TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
                         TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")) 
-                    + " "
+                    + "\n\n"
                     + MessageFormat.format(TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES_QUESTION_MESSAGE),
                     TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
                     TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."));

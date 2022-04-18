@@ -49,12 +49,17 @@ public class SquashMergeDialog extends OKCancelDialog {
   /**
    * Preferred height for this dialog.
    */
-  private static final int HEIGHT = 250;
+  private static final int HEIGHT = 275;
   
   /**
    * Preferred width for this dialog.
    */
   private static final int WIDTH = 600;
+  
+  /**
+   * The top inset.
+   */
+  private static final int TOP_INSET = 11;
 
 	/**
 	 * Translator.
@@ -134,9 +139,11 @@ public class SquashMergeDialog extends OKCancelDialog {
 		panel.add(mergeInfo, gbc);
 		
 		gbc.gridy ++;
+		gbc.insets = new Insets(TOP_INSET, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
 		panel.add(new JLabel(TRANSLATOR.getTranslation(Tags.COMMIT_MESSAGE_LABEL) + ":"), gbc);
 
 		gbc.weighty = 1;
+		gbc.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
 		gbc.fill = GridBagConstraints.BOTH;
     gbc.gridy ++;
 		panel.add(new JScrollPane(commitMessageTextArea), gbc);
