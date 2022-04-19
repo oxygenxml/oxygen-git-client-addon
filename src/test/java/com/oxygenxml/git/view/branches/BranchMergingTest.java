@@ -140,7 +140,6 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    System.out.println(mergeOkDialog);
     JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
     mergeOkButton.doClick();
     
@@ -251,6 +250,231 @@ public class BranchMergingTest extends GitTestBase {
     assertEquals("squash content", TestUtil.read(file2.toURI().toURL()));
 
   }
+  
+  
+  /**
+   * <p><b>Description:</b>Tests squash and merge action case when we don't have new changes.</p>
+   * <p><b>Bug ID:</b> EXM-50356</p>
+   * 
+   * @author alex_smarandache
+   * 
+   * @throws Exception
+   */
+  public void testBranchSquashMergingWithoutChanges() throws Exception{
+    final File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    
+    final String initialBranchName = gitAccess.getBranchInfo().getBranchName();
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
+    
+    //Make the first commit for the local repository on the main branch
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    
+    //------------- Checkout the other branch in the tree: LOCAL_BRANCH_NAME1 -------------
+    GitControllerBase mock = new GitController();
+    final BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    refreshSupport.call();
+    final GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    final GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
+    final String firstLeafPath = (String)firstLeaf.getUserObject();
+    assertTrue(firstLeafPath.contains(Constants.R_HEADS));
+    
+    String[] branchPath = firstLeafPath.split("/");
+    assertEquals(LOCAL_BRANCH_NAME1, branchPath[branchPath.length - 1]);
+    
+    refreshSupport.call();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
+    for (AbstractAction abstractAction : actionsForNode) {
+      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
+        abstractAction.actionPerformed(null);
+        break;
+      }
+    }
+    refreshSupport.call();
+    flushAWT();
+    sleep(300);
+    
+    assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
+    
+    // Change file on the secondary branch
+    setFileContent(file, "local content for merging");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Branch commit");
+    refreshSupport.call();
+    
+    final File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
+    file2.createNewFile();
+    setFileContent(file2, "squash content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    gitAccess.commit("Branch commit 2");
+    refreshSupport.call();
+    
+    // Move back to the main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
+    refreshSupport.call();
+    // Merge LocalBranch into main
+    final List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(
+        firstLeaf);
+    for (AbstractAction action : actionsForSecondaryBranch) {
+      if (action != null) {
+        String actionName = action.getValue(AbstractAction.NAME).toString();
+        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
+          action.actionPerformed(null);
+          break;
+        }
+      }
+    }
+    flushAWT();
+    sleep(300);
+    
+    SquashMergeDialog squashMergeBranchesDialog = (SquashMergeDialog)findDialog(
+        translator.getTranslation(Tags.SQUASH_MERGE));
+    assertNotNull(squashMergeBranchesDialog);
+    JButton mergeOkButton = findFirstButton(squashMergeBranchesDialog, Tags.SQUASH_AND_COMMIT);
+    mergeOkButton.doClick();
+    
+    sleep(200);
+    
+    List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
+    assertEquals(2, commits.size());
+    for(CommitCharacteristics commit : commits) {
+      assertTrue(commit.getPlotCommit().getParentCount() < 2); // test if every commit has maximum one parent.
+    }
+    assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
+    assertEquals("squash content", TestUtil.read(file2.toURI().toURL()));
+    
+    for (AbstractAction action : actionsForSecondaryBranch) {
+      if (action != null) {
+        String actionName = action.getValue(AbstractAction.NAME).toString();
+        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
+          action.actionPerformed(null);
+          break;
+        }
+      }
+    }
+    flushAWT();
+    
+    squashMergeBranchesDialog = (SquashMergeDialog)findDialog(
+        translator.getTranslation(Tags.SQUASH_MERGE));
+    assertNotNull(squashMergeBranchesDialog);
+    mergeOkButton = findFirstButton(squashMergeBranchesDialog, Tags.SQUASH_AND_COMMIT);
+    mergeOkButton.doClick();
+    
+    flushAWT();
+    waitForScheduler();
+    
+    final JDialog squashWithoutNewChangesDialog = findDialog(translator.getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE));
+    assertNotNull(squashWithoutNewChangesDialog);
+    flushAWT();
+    final JButton okButton = findFirstButton(squashWithoutNewChangesDialog, Tags.OK);
+    okButton.doClick();
+    
+    commits = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
+    assertEquals(2, commits.size());
+    for(CommitCharacteristics commit : commits) {
+      assertTrue(commit.getPlotCommit().getParentCount() < 2); // test if every commit has maximum one parent.
+    }
+    assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
+    assertEquals("squash content", TestUtil.read(file2.toURI().toURL()));
+
+  }
+  
+  
+  /**
+   * <p><b>Description:</b>Tests squash and merge action case when we don't have new commits.</p>
+   * <p><b>Bug ID:</b> EXM-50356</p>
+   * 
+   * @author alex_smarandache
+   * 
+   * @throws Exception
+   */
+  public void testBranchSquashMergingWithoutCommits() throws Exception{
+    final File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    
+    final String initialBranchName = gitAccess.getBranchInfo().getBranchName();
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
+    
+    //Make the first commit for the local repository on the main branch
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    
+    //------------- Checkout the other branch in the tree: LOCAL_BRANCH_NAME1 -------------
+    GitControllerBase mock = new GitController();
+    final BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    refreshSupport.call();
+    final GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    final GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
+    final String firstLeafPath = (String)firstLeaf.getUserObject();
+    assertTrue(firstLeafPath.contains(Constants.R_HEADS));
+    
+    String[] branchPath = firstLeafPath.split("/");
+    assertEquals(LOCAL_BRANCH_NAME1, branchPath[branchPath.length - 1]);
+    
+    refreshSupport.call();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
+    for (AbstractAction abstractAction : actionsForNode) {
+      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
+        abstractAction.actionPerformed(null);
+        break;
+      }
+    }
+    refreshSupport.call();
+    flushAWT();
+    sleep(300);
+    
+    assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
+    
+    // Move back to the main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
+    refreshSupport.call();
+    // Merge LocalBranch into main
+    final List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(
+        firstLeaf);
+    for (AbstractAction action : actionsForSecondaryBranch) {
+      if (action != null) {
+        String actionName = action.getValue(AbstractAction.NAME).toString();
+        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
+          action.actionPerformed(null);
+          break;
+        }
+      }
+    }
+    flushAWT();
+    sleep(300);
+    
+    final JDialog noCommitsInSquashDialog = findDialog(
+        translator.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE));
+    assertNotNull(noCommitsInSquashDialog);
+    JButton mergeOkButton = findFirstButton(noCommitsInSquashDialog, Tags.CLOSE);
+    mergeOkButton.doClick();
+    
+    sleep(200);
+    
+    List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
+        HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
+    assertEquals(1, commits.size());
+    assertEquals("local content", TestUtil.read(file.toURI().toURL()));
+
+  }
+  
   
   /**
    * <p><b>Description:</b>Tests the branch merging. Conflict happens.</p>
