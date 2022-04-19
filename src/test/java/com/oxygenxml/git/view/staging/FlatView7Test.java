@@ -80,6 +80,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		assertEquals(
 				"<html>Push_to_create_and_track_remote_branch</html>",
 				toolbarPanel.getPushButton().getToolTipText());
+		assertEquals(1, toolbarPanel.getPushesAhead());
 		assertEquals(
 				"<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
 				branchesCombo.getToolTipText());

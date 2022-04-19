@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Push_to_create_and_track_remote_branch">
+		<comment>Tooltip message for the push button.</comment>
+		<val lang="en_US">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+		<val lang="de_DE">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+		<val lang="fr_FR">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+		<val lang="ja_JP">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+		<val lang="nl_NL">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+		<val lang="zh_CN">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+	</key>
 	<key value="Squash_Merge_Info">
 		<comment>The information about squash merge.
 		</comment>
@@ -2533,23 +2542,6 @@
 		<val lang="ja_JP">すべての資格情報をリセットする</val>
 		<val lang="nl_NL">Alle inloggegevens verwijderen</val>
 		<val lang="zh_CN">重置所有凭据</val>
-	</key>
-	<key value="Push_to_create_and_track_remote_branch">
-		<comment>Tooltip message for the push button.</comment>
-		<val lang="en_US">Create and track remote branch "{0}", and push changes
-			to it.</val>
-		<val lang="de_DE">Erstellt und trackt den Remote-Branch "{0}" und pusht
-			die Änderungen dort
-			hin.
-		</val>
-		<val lang="fr_FR">Créer et suivre la branche remote "{0}", et y effectuer
-			un push des
-			modifications.
-		</val>
-		<val lang="ja_JP">リモート分岐 "{0}" を作成および追跡し、変更をプッシュします。</val>
-		<val lang="nl_NL">Maak en volg externe branch "{0}", en push wijzigingen
-			er naartoe.</val>
-		<val lang="zh_CN">创建和跟踪远程分支“{0}”，并将更改推送到它</val>
 	</key>
 	<key value="Push_to_track_remote_branch">
 		<comment>Tooltip message for the push button.</comment>

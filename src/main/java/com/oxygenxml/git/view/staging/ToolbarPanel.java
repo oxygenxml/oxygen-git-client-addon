@@ -28,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -256,22 +257,7 @@ public class ToolbarPanel extends JPanel {
     }
       
     final boolean isPullMenuEnabled = isPullButtonEnabled();
-    final boolean isStashButtonEnabled = isStashButtonEnabled(); 
-    SwingUtilities.invokeLater(() -> {
-      /* for @pushButton, @historyButton, @showBranchesButton ---> 
-       * it is necessary to refresh, even if it has a single action, 
-       * because there are other code sequences that directly change their state by calling the setEnabled(false) method
-       */
-      pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
-      pullMenuButton.setEnabled(isPullMenuEnabled);
-      stashButton.setEnabled(isStashButtonEnabled);
-      historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
-      showBranchesButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
-      
-      pullMenuButton.repaint();
-      pushButton.repaint();
-      stashButton.repaint();
-    });
+    final boolean isStashButtonEnabled = isStashButtonEnabled();
 
     BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
@@ -332,6 +318,7 @@ public class ToolbarPanel extends JPanel {
                 commitsAheadMessage,
                 currentBranchName,
                 repo);
+        
         SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
 
         //  ===================== Pull button tooltip =====================
@@ -345,6 +332,22 @@ public class ToolbarPanel extends JPanel {
         SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
       }
       }
+    
+    SwingUtilities.invokeLater(() -> {
+      /* for @pushButton, @historyButton, @showBranchesButton ---> 
+       * it is necessary to refresh, even if it has a single action, 
+       * because there are other code sequences that directly change their state by calling the setEnabled(false) method
+       */
+      pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
+      pullMenuButton.setEnabled(isPullMenuEnabled);
+      stashButton.setEnabled(isStashButtonEnabled);
+      historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
+      showBranchesButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
+      
+      pullMenuButton.repaint();
+      pushButton.repaint();
+      stashButton.repaint();
+    });
 
     }
 
@@ -627,9 +630,10 @@ public class ToolbarPanel extends JPanel {
     } else {
       // No upstream branch defined in "config" and no remote branch
       // that has the same name as the local branch.
+      pushesAhead = 1;
       tooltipBuilder.append(MessageFormat.format(
               TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
-              currentBranchName));
+              Constants.DEFAULT_REMOTE_NAME + "/" + currentBranchName));
     }
   }
 
@@ -1015,5 +1019,14 @@ public class ToolbarPanel extends JPanel {
   private boolean isStashButtonEnabled() {
     return gitActionsManager.getListStashesAction().isEnabled() || 
         gitActionsManager.getStashChangesAction().isEnabled();
+  }
+  
+  /**
+   * Used for tests.
+   * 
+   * @return The number of pushes ahead.
+   */
+  public int getPushesAhead() {
+    return pushesAhead;
   }
 }
