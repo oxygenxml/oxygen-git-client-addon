@@ -106,6 +106,7 @@ import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -113,6 +114,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.utils.URIUtil;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
@@ -2325,6 +2327,7 @@ public class GitAccess {
   private void internalMerge(final String branchName, boolean isSquash, final String message)
       throws IOException, NoRepositorySelected, GitAPIException {
     fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+    
     try {
       final ObjectId mergeBase = getRepository().resolve(branchName);
       final MergeCommand mergeCommand = git.merge().include(mergeBase);
@@ -2342,6 +2345,7 @@ public class GitAccess {
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
             conflictingFiles,
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
+        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Failed because of this files: {}", res.getFailingPaths());
@@ -2351,16 +2355,24 @@ public class GitAccess {
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
             failingFiles,
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+      } else if(isSquash) {
+          fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+          final List<FileStatus> stagedFiles = getStagedFiles();
+          if(stagedFiles != null && !stagedFiles.isEmpty()) {
+            commit(message != null? message : "");
+          } else {
+            throw new NoFilesInSquashedCommitException(MessageFormat.format(
+                Translator.getInstance().getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_MESSAGE),
+                TextFormatUtil.shortenText(branchName, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
+          }
+      } else {
+        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       }
-
       
-      if(isSquash) {
-        commit(message != null? message : "");
-      }
-      
-      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
-
-    } catch (CheckoutConflictException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
+    } catch(NoFilesInSquashedCommitException e) {
+      throw e;
+    } catch (GitAPIException | IOException | NoRepositorySelected e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
       throw e;
     } 
@@ -2995,5 +3007,6 @@ public class GitAccess {
   public boolean repositoryHasConflicts() {
     return getStatus().repositoryHasConflicts();
   }
+  
 	
 }

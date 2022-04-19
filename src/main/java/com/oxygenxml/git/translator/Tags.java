@@ -1776,5 +1776,25 @@ public class Tags {
    * Name for squash and merge action. 
    */
   public static final String SQUASH_MERGE_ACTION_NAME = "Squash_Action_Name";
+  
+  /**
+   * Message when no changes could be added with squash and merge action.
+   */
+  public static final String SQUASH_NO_CHANGES_DETECTED_MESSAGE = "Squash_No_Changes_Message";
+  
+  /**
+   * Title for dialog when no changes could be added with squash and merge action.
+   */
+  public static final String SQUASH_NO_CHANGES_DETECTED_TITLE = "Squash_No_Changes_Title";
+  
+  /**
+   * Message when no commits could be added with squash and merge action.
+   */
+  public static final String SQUASH_NO_COMMITS_DETECTED_MESSAGE = "Squash_No_Commits_Message";
+  
+  /**
+   * Title for dialog when no commits could be added with squash and merge action.
+   */
+  public static final String SQUASH_NO_COMMITS_DETECTED_TITLE = "Squash_No_Commits_Title";
 }
 

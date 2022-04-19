@@ -81,6 +81,11 @@ public class SquashMergeDialog extends OKCancelDialog {
 	 */
 	private final JTextArea commitMessageTextArea = new JTextArea();
 	
+	/**
+	 * The default squash commit message.
+	 */
+	private static final String DEFAULT_SQUASH_COMMIT_MESSAGE = "Squashed commit of the following:\n";
+	
 
 	
 	/**
@@ -119,6 +124,15 @@ public class SquashMergeDialog extends OKCancelDialog {
 		this.pack();
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 	}
+
+	/**
+	 * @return <code>true</code> if a squash commit can be created.
+	 */
+  public boolean checkIfASquashCommitCanBeCreated() {
+    final String squashCommitMessage = commitMessageTextArea.getText();
+    return squashCommitMessage != null &&  !squashCommitMessage.isEmpty() &&
+        !squashCommitMessage.equals(DEFAULT_SQUASH_COMMIT_MESSAGE);
+  }
 	
 	/**
 	 * Adds to the dialog the labels and the text fields.

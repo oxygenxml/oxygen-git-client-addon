@@ -302,7 +302,15 @@ public class BranchTreeMenuActionsProvider {
               } else {
                 final SquashMergeDialog squashMergeDialog = new SquashMergeDialog(currentBranch, selectedBranch, 
                     ctrl.getGitAccess().getRepository().resolve(selectedBranch));
-                squashMergeDialog.setVisible(true);
+                if(squashMergeDialog.checkIfASquashCommitCanBeCreated()) {
+                  squashMergeDialog.setVisible(true);
+                } else {
+                  FileStatusDialog.showErrorMessage(TRANSLATOR.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE), 
+                      null, MessageFormat.format(
+                          Translator.getInstance().getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE),
+                          TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
+                }
+                
               }
               return null;
             },

@@ -14,6 +14,42 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Squash_No_Commits_Title">
+		<comment>Title for dialog when no commits could be added with squash and merge action.</comment>
+		<val lang="en_US">No commits detected</val>
+		<val lang="de_DE">No commits detected</val>
+		<val lang="fr_FR">No commits detected</val>
+		<val lang="ja_JP">No commits detected</val>
+		<val lang="nl_NL">No commits detected</val>
+		<val lang="zh_CN">No commits detected</val>
+	</key>
+	<key value="Squash_No_Commits_Message">
+		<comment>Message when no commits could be added with squash and merge action.</comment>
+		<val lang="en_US">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+		<val lang="de_DE">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+		<val lang="fr_FR">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+		<val lang="ja_JP">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+		<val lang="nl_NL">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+		<val lang="zh_CN">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+	</key>
+	<key value="Squash_No_Changes_Title">
+		<comment>Title for dialog when no changes could be added with squash and merge action.</comment>
+		<val lang="en_US">No changes detected</val>
+		<val lang="de_DE">No changes detected</val>
+		<val lang="fr_FR">No changes detected</val>
+		<val lang="ja_JP">No changes detected</val>
+		<val lang="nl_NL">No changes detected</val>
+		<val lang="zh_CN">No changes detected</val>
+	</key>
+	<key value="Squash_No_Changes_Message">
+		<comment>Message when no changes could be added with squash and merge action.</comment>
+		<val lang="en_US">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
+		<val lang="de_DE">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
+		<val lang="fr_FR">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
+		<val lang="ja_JP">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
+		<val lang="nl_NL">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
+		<val lang="zh_CN">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
+	</key>
 	<key value="Push_to_create_and_track_remote_branch">
 		<comment>Tooltip message for the push button.</comment>
 		<val lang="en_US">The current local branch is not published. Push to create a "{0}" remote branch.</val>
