@@ -129,17 +129,18 @@ public class BranchMergingTest extends GitTestBase {
     for (AbstractAction action : actionsForSecondaryBranch) {
       if (action != null) {
         String actionName = action.getValue(AbstractAction.NAME).toString();
-        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
           action.actionPerformed(null);
           break;
         }
       }
     }
     flushAWT();
-    sleep(300);
+    waitForScheduler();
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
+    System.out.println(mergeOkDialog);
     JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
     mergeOkButton.doClick();
     
@@ -319,7 +320,7 @@ public class BranchMergingTest extends GitTestBase {
     for (AbstractAction action : actionsForSecondaryBranch) {
       if (action != null) {
         String actionName = action.getValue(AbstractAction.NAME).toString();
-        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
           SwingUtilities.invokeLater(() -> action.actionPerformed(null));
           break;
         }
@@ -420,7 +421,7 @@ public class BranchMergingTest extends GitTestBase {
       for (AbstractAction action : actionsForNode) {
         if (action != null) {
           String actionName = action.getValue(AbstractAction.NAME).toString();
-          if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+          if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
             SwingUtilities.invokeLater(() -> action.actionPerformed(null));
             break;
           }
@@ -456,7 +457,7 @@ public class BranchMergingTest extends GitTestBase {
       for (AbstractAction action : actionsForNode) {
         if (action != null) {
           String actionName = action.getValue(AbstractAction.NAME).toString();
-          if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+          if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
             SwingUtilities.invokeLater(() -> action.actionPerformed(null));
             break;
           }
@@ -539,7 +540,7 @@ public class BranchMergingTest extends GitTestBase {
     for (AbstractAction action : actionsForSecondaryBranch) {
       if (action != null) {
         String actionName = action.getValue(AbstractAction.NAME).toString();
-        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
           SwingUtilities.invokeLater(() -> action.actionPerformed(null));
           break;
         }
@@ -579,7 +580,7 @@ public class BranchMergingTest extends GitTestBase {
     for (AbstractAction action : actionsForSecondaryBranch2) {
       if (action != null) {
         String actionName = action.getValue(AbstractAction.NAME).toString();
-        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
           SwingUtilities.invokeLater(() -> action.actionPerformed(null));
           break;
         }
