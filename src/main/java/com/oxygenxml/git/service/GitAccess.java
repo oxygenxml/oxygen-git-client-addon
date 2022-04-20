@@ -2294,7 +2294,7 @@ public class GitAccess {
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException {
+  public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
     internalMerge(branchName, false, null);
   }
   
@@ -2309,7 +2309,7 @@ public class GitAccess {
    * @throws GitAPIException
    */
   public void squashAndMergeBranch(final String branchName, final String commitMessage) 
-      throws IOException, NoRepositorySelected, GitAPIException {
+      throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
      internalMerge(branchName, true, commitMessage);
   }
 
@@ -2325,7 +2325,7 @@ public class GitAccess {
    * @throws GitAPIException
    */
   private void internalMerge(final String branchName, boolean isSquash, final String message)
-      throws IOException, NoRepositorySelected, GitAPIException {
+      throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
     fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
     
     try {
@@ -2362,7 +2362,7 @@ public class GitAccess {
           if(stagedFiles != null && !stagedFiles.isEmpty()) {
             commit(message != null? message : "");
           } else {
-            throw new NoFilesInSquashedCommitException(MessageFormat.format(
+            throw new NoChangesInSquashedCommitException(MessageFormat.format(
                 Translator.getInstance().getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_MESSAGE),
                 TextFormatUtil.shortenText(branchName, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
           }
@@ -2370,7 +2370,7 @@ public class GitAccess {
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       }
       
-    } catch(NoFilesInSquashedCommitException e) {
+    } catch(NoChangesInSquashedCommitException e) {
       throw e;
     } catch (GitAPIException | IOException | NoRepositorySelected e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);

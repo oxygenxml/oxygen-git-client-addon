@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -86,6 +87,11 @@ public class SquashMergeDialog extends OKCancelDialog {
 	 */
 	private static final String DEFAULT_SQUASH_COMMIT_MESSAGE = "Squashed commit of the following:\n";
 	
+	/**
+	 * The squash commit current message.
+	 */
+	private String squashCommitMessage;
+	
 
 	
 	/**
@@ -111,11 +117,12 @@ public class SquashMergeDialog extends OKCancelDialog {
 		
 		// This message computation should not affect the dialog
 		try {
-		  commitMessageTextArea.setText(RepoUtil.computeSquashMessage(sourceCommitObjectId, 
-          GitAccess.getInstance().getRepository()));
+		  squashCommitMessage = RepoUtil.computeSquashMessage(sourceCommitObjectId, 
+          GitAccess.getInstance().getRepository());
 		} catch (Exception expection) {
-		  commitMessageTextArea.setText("");
+		  squashCommitMessage = "";
 		}
+		commitMessageTextArea.setText(squashCommitMessage);
 		
 		createGUI();
 		setPreferredSize(HiDPIUtil.getHiDPIDimension(new Dimension(WIDTH, HEIGHT)));
@@ -128,8 +135,7 @@ public class SquashMergeDialog extends OKCancelDialog {
 	/**
 	 * @return <code>true</code> if a squash commit can be created.
 	 */
-  public boolean checkIfASquashCommitCanBeCreated() {
-    final String squashCommitMessage = commitMessageTextArea.getText();
+  private boolean checkIfASquashCommitCanBeCreated() {
     return squashCommitMessage != null &&  !squashCommitMessage.isEmpty() &&
         !squashCommitMessage.equals(DEFAULT_SQUASH_COMMIT_MESSAGE);
   }
@@ -171,11 +177,27 @@ public class SquashMergeDialog extends OKCancelDialog {
   protected void doOK() {
     try {
       GitAccess.getInstance().squashAndMergeBranch(selectedBranch, commitMessageTextArea.getText());
-    } catch (GitAPIException | IOException | NoRepositorySelected e) {
+    } catch (GitAPIException | IOException | NoRepositorySelected | NoChangesInSquashedCommitException e) {
       LOGGER.error(e.getMessage(), e);
       ExceptionHandlerUtil.handleMergeException(e);
     }
     super.doOK();
+  }
+  
+  /**
+   * Make the current dialog visible.
+   * 
+   * @throws NoChangesInSquashedCommitException When a squash command cannot be applied because between branches 
+   * are not new commits.
+   */
+  public void showDialog() throws NoChangesInSquashedCommitException {
+    if(checkIfASquashCommitCanBeCreated()) {
+      setVisible(true);
+    } else {
+      throw new NoChangesInSquashedCommitException(MessageFormat.format(
+          Translator.getInstance().getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE),
+          TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
+    }
   }
 	
 }

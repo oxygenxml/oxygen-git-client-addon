@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -302,13 +303,11 @@ public class BranchTreeMenuActionsProvider {
               } else {
                 final SquashMergeDialog squashMergeDialog = new SquashMergeDialog(currentBranch, selectedBranch, 
                     ctrl.getGitAccess().getRepository().resolve(selectedBranch));
-                if(squashMergeDialog.checkIfASquashCommitCanBeCreated()) {
-                  squashMergeDialog.setVisible(true);
-                } else {
+                try {
+                  squashMergeDialog.showDialog();
+                } catch(NoChangesInSquashedCommitException ex) {
                   FileStatusDialog.showErrorMessage(TRANSLATOR.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE), 
-                      null, MessageFormat.format(
-                          Translator.getInstance().getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE),
-                          TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
+                      null, ex.getMessage());
                 }
                 
               }
@@ -358,7 +357,7 @@ public class BranchTreeMenuActionsProvider {
                    
                 int answer = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES),
                     questionMessage,
-                    TRANSLATOR.getTranslation(Tags.YES),
+                    TRANSLATOR.getTranslation(Tags.MERGE),
                     TRANSLATOR.getTranslation(Tags.CANCEL));
                 if (answer == OKCancelDialog.RESULT_OK) {
                   try {
