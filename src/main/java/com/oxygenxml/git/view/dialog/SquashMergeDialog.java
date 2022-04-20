@@ -70,12 +70,12 @@ public class SquashMergeDialog extends OKCancelDialog {
 	/**
 	 * Squash info.
 	 */
-	private final String selectedBranch;
+	private String selectedBranch;
 	
 	/**
 	 * Merge info.
 	 */
-	private final JTextArea mergeInfo;
+	private final JTextArea mergeInfo = UIUtil.createMessageArea("");
 	
 	/**
 	 * The text area for commit message.
@@ -87,42 +87,17 @@ public class SquashMergeDialog extends OKCancelDialog {
 	 */
 	private static final String DEFAULT_SQUASH_COMMIT_MESSAGE = "Squashed commit of the following:\n";
 	
-	/**
-	 * The squash commit current message.
-	 */
-	private String squashCommitMessage;
-	
 
 	
 	/**
 	 * Constructor.
-	 *  
-	 * @param currentBranch          The current branch.
-	 * @param selectedBranch         The selected branch by user.
-	 * @param sourceCommitObjectId   The source commit object id.
 	 * 
 	 */
-	public SquashMergeDialog(final String currentBranch, final String selectedBranch, 
-	    final ObjectId sourceCommitObjectId) {
+	public SquashMergeDialog() {
 		super(
 				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 				TRANSLATOR.getTranslation(Tags.SQUASH_MERGE),
 				true);
-		
-		mergeInfo = UIUtil.createMessageArea(MessageFormat.format(
-        TRANSLATOR.getTranslation(Tags.SQUASH_MERGE_INFO),
-        TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
-        TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
-		this.selectedBranch = selectedBranch;
-		
-		// This message computation should not affect the dialog
-		try {
-		  squashCommitMessage = RepoUtil.computeSquashMessage(sourceCommitObjectId, 
-          GitAccess.getInstance().getRepository());
-		} catch (Exception expection) {
-		  squashCommitMessage = "";
-		}
-		commitMessageTextArea.setText(squashCommitMessage);
 		
 		createGUI();
 		setPreferredSize(HiDPIUtil.getHiDPIDimension(new Dimension(WIDTH, HEIGHT)));
@@ -133,9 +108,11 @@ public class SquashMergeDialog extends OKCancelDialog {
 	}
 
 	/**
+	 * @param squashCommitMessage The commit message.
+	 * 
 	 * @return <code>true</code> if a squash commit can be created.
 	 */
-  private boolean checkIfASquashCommitCanBeCreated() {
+  private boolean checkIfASquashCommitCanBeCreated(final String squashCommitMessage) {
     return squashCommitMessage != null &&  !squashCommitMessage.isEmpty() &&
         !squashCommitMessage.equals(DEFAULT_SQUASH_COMMIT_MESSAGE);
   }
@@ -185,19 +162,44 @@ public class SquashMergeDialog extends OKCancelDialog {
   }
   
   /**
-   * Make the current dialog visible.
+   * Show the dialog and initialize components.
+   *  
+   * @param currentBranch          The current branch.
+   * @param selectedBranch         The selected branch by user.
+   * @param sourceCommitObjectId   The source commit object id.
    * 
-   * @throws NoChangesInSquashedCommitException When a squash command cannot be applied because between branches 
-   * are not new commits.
+   * @throws NoChangesInSquashedCommitException When a squash command cannot be applied because between branches.
+   * 
    */
-  public void showDialog() throws NoChangesInSquashedCommitException {
-    if(checkIfASquashCommitCanBeCreated()) {
-      setVisible(true);
-    } else {
+  public void performSquashMerge(final String currentBranch, final String selectedBranch, 
+      final ObjectId sourceCommitObjectId) throws NoChangesInSquashedCommitException {
+    mergeInfo.setText(MessageFormat.format(
+        TRANSLATOR.getTranslation(Tags.SQUASH_MERGE_INFO),
+        TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
+        TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
+    this.selectedBranch = selectedBranch;
+    
+    // This message computation should not affect the dialog
+    String squashCommitMessage = null;
+    try {
+      squashCommitMessage = RepoUtil.computeSquashMessage(sourceCommitObjectId, 
+          GitAccess.getInstance().getRepository());
+    } catch (Exception expection) {
+      squashCommitMessage = "";
+    }
+    
+    if(!checkIfASquashCommitCanBeCreated(squashCommitMessage)) {
       throw new NoChangesInSquashedCommitException(MessageFormat.format(
           Translator.getInstance().getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE),
           TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
     }
+   
+    commitMessageTextArea.setText(squashCommitMessage);
+   
+    this.repaint();
+    this.pack();
+    this.setVisible(true);
   }
+
 	
 }

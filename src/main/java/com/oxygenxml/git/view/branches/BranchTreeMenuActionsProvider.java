@@ -301,10 +301,10 @@ public class BranchTreeMenuActionsProvider {
               if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
               } else {
-                final SquashMergeDialog squashMergeDialog = new SquashMergeDialog(currentBranch, selectedBranch, 
-                    ctrl.getGitAccess().getRepository().resolve(selectedBranch));
+                final SquashMergeDialog squashMergeDialog = new SquashMergeDialog();
                 try {
-                  squashMergeDialog.showDialog();
+                  squashMergeDialog.performSquashMerge(currentBranch, selectedBranch, 
+                      ctrl.getGitAccess().getRepository().resolve(selectedBranch));
                 } catch(NoChangesInSquashedCommitException ex) {
                   FileStatusDialog.showErrorMessage(TRANSLATOR.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE), 
                       null, ex.getMessage());
