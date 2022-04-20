@@ -97,7 +97,6 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 	private static final int MAXIMUM_REMOTE_ITEM_NO_OF_CHARACTERS = 60;
 	
 	
-	
 
 	/**
 	 * Constructor.
@@ -106,6 +105,8 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 				TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
+		
+		setOkButtonText(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH));
 		boolean existsRemotes = false;
 		final List<RemoteBranchItem> branchesToAdd = new ArrayList<>();
 		
@@ -164,6 +165,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 			getContentPane().add(createGUIPanel());
 
 			pack();
+			repaint();
 
 			JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
 					(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;

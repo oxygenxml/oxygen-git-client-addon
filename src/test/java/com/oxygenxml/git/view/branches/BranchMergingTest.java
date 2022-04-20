@@ -140,7 +140,7 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
     sleep(200);
@@ -555,7 +555,7 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
     flushAWT();
@@ -563,7 +563,6 @@ public class BranchMergingTest extends GitTestBase {
     waitForScheduler();
 
     conflictMergeDialog = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
-    System.out.println(conflictMergeDialog);
     assertNotNull(conflictMergeDialog);
 
     assertTrue(TestUtil.read(file1.toURI().toURL()).
@@ -657,7 +656,7 @@ public class BranchMergingTest extends GitTestBase {
       
       //Confirm merge dialog
       JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
       mergeOkButton.doClick();
       
       sleep(200);
@@ -693,7 +692,7 @@ public class BranchMergingTest extends GitTestBase {
       
       //Confirm merge dialog
       mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
       mergeOkButton.doClick();
       
       sleep(200);
@@ -775,7 +774,7 @@ public class BranchMergingTest extends GitTestBase {
     
     //Confirm merge dialog
     mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
     sleep(200);
@@ -813,6 +812,6 @@ public class BranchMergingTest extends GitTestBase {
     flushAWT();
     
     sleep(200);
-    assertEquals("Resolve_conflicts_first", errMsg[0]);
+    assertEquals(Tags.RESOLVE_CONFLICTS_FIRST, errMsg[0]);
   }
 }

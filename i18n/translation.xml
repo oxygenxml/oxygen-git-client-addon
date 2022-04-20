@@ -14,6 +14,24 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Set_WC">
+		<comment>Set WC message.</comment>
+		<val lang="en_US">Set working copy</val>
+		<val lang="de_DE">Set working copy</val>
+		<val lang="fr_FR">Set working copy</val>
+		<val lang="ja_JP">Set working copy</val>
+		<val lang="nl_NL">Set working copy</val>
+		<val lang="zh_CN">Set working copy</val>
+	</key>
+	<key value="Keep_Current_WC">
+		<comment>Keep current WC message.</comment>
+		<val lang="en_US">Keep current working copy</val>
+		<val lang="de_DE">Keep current working copy</val>
+		<val lang="fr_FR">Keep current working copy</val>
+		<val lang="ja_JP">Keep current working copy</val>
+		<val lang="nl_NL">Keep current working copy</val>
+		<val lang="zh_CN">Keep current working copy</val>
+	</key>
 	<key value="Squash_No_Commits_Title">
 		<comment>Title for dialog when no commits could be added with squash and merge action.</comment>
 		<val lang="en_US">No commits detected</val>
@@ -43,12 +61,12 @@
 	</key>
 	<key value="Squash_No_Changes_Message">
 		<comment>Message when no changes could be added with squash and merge action.</comment>
-		<val lang="en_US">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
-		<val lang="de_DE">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
-		<val lang="fr_FR">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
-		<val lang="ja_JP">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
-		<val lang="nl_NL">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
-		<val lang="zh_CN">The squash and merge command cannot be applied on the current branch because no new changes were detected on the "{0}" branch.</val>
+		<val lang="en_US">"{0}" has no new commits since its last squash and merge.</val>
+		<val lang="de_DE">"{0}" has no new commits since its last squash and merge.</val>
+		<val lang="fr_FR">"{0}" has no new commits since its last squash and merge.</val>
+		<val lang="ja_JP">"{0}" has no new commits since its last squash and merge.</val>
+		<val lang="nl_NL">"{0}" has no new commits since its last squash and merge.</val>
+		<val lang="zh_CN">"{0}" has no new commits since its last squash and merge.</val>
 	</key>
 	<key value="Push_to_create_and_track_remote_branch">
 		<comment>Tooltip message for the push button.</comment>

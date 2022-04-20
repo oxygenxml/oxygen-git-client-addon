@@ -1796,5 +1796,15 @@ public class Tags {
    * Title for dialog when no commits could be added with squash and merge action.
    */
   public static final String SQUASH_NO_COMMITS_DETECTED_TITLE = "Squash_No_Commits_Title";
+  
+  /**
+   * Keep current WC message.
+   */
+  public static final String KEEP_CURRENT_WC = "Keep_Current_WC";
+  
+  /**
+   * Set WC message.
+   */
+  public static final String SET_WC = "Set_WC";
 }
 
