@@ -23,7 +23,9 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.dialog.DialogPresenter;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
+import com.oxygenxml.git.view.dialog.internal.IDialogPresenter;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
@@ -227,7 +229,7 @@ public class BranchMergingTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  public void testBranchSquashMergingWithoutChanges() throws Exception{
+  public void testBranchSquashMergingWithoutChanges() throws Exception {
     final File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
     file.createNewFile();
     setFileContent(file, "local content");
@@ -306,6 +308,17 @@ public class BranchMergingTest extends GitTestBase {
     executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.SQUASH_MERGE_ACTION_NAME + "...");
     flushAWT();
     
+    final boolean[] dialogPresentedFlags = new boolean[1];
+    dialogPresentedFlags[0] = false;
+    DialogPresenter.getInstance().setPresenter(new IDialogPresenter() {
+      @Override
+      public void showWarningMessage(
+          final String title, 
+          final List<String> files, 
+          final String message) {
+        dialogPresentedFlags[0] = true;
+      }
+    });
     squashMergeBranchesDialog = (SquashMergeDialog)findDialog(
         translator.getTranslation(Tags.SQUASH_MERGE));
     assertNotNull(squashMergeBranchesDialog);
@@ -315,11 +328,7 @@ public class BranchMergingTest extends GitTestBase {
     flushAWT();
     waitForScheduler();
     
-    final JDialog squashWithoutNewChangesDialog = findDialog(translator.getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE));
-    assertNotNull(squashWithoutNewChangesDialog);
-    flushAWT();
-    final JButton okButton = findFirstButton(squashWithoutNewChangesDialog, Tags.OK);
-    okButton.doClick();
+    assertTrue(dialogPresentedFlags[0]);
     
     commits = GitAccess.getInstance().getCommitsCharacteristics(
         HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
