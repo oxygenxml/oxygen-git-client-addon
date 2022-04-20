@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.branches;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -101,16 +102,9 @@ public class BranchMergingTest extends GitTestBase {
     
     refreshSupport.call();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
-    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
-    for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
-        abstractAction.actionPerformed(null);
-        break;
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.CHECKOUT);
     refreshSupport.call();
     flushAWT();
-    sleep(300);
     
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
@@ -125,18 +119,8 @@ public class BranchMergingTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     // Merge LocalBranch into main
-    List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
-    for (AbstractAction action : actionsForSecondaryBranch) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
-          action.actionPerformed(null);
-          break;
-        }
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
     flushAWT();
-    waitForScheduler();
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
@@ -187,16 +171,10 @@ public class BranchMergingTest extends GitTestBase {
     
     refreshSupport.call();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
-    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
-    for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
-        abstractAction.actionPerformed(null);
-        break;
-      }
-    }
+   
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.CHECKOUT);
     refreshSupport.call();
     flushAWT();
-    sleep(300);
     
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
@@ -218,19 +196,8 @@ public class BranchMergingTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     // Merge LocalBranch into main
-    final List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(
-        firstLeaf);
-    for (AbstractAction action : actionsForSecondaryBranch) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
-          action.actionPerformed(null);
-          break;
-        }
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.SQUASH_MERGE_ACTION_NAME + "...");
     flushAWT();
-    sleep(300);
     
     final SquashMergeDialog squashMergeBranchesDialog = (SquashMergeDialog)findDialog(
         translator.getTranslation(Tags.SQUASH_MERGE));
@@ -290,16 +257,9 @@ public class BranchMergingTest extends GitTestBase {
     
     refreshSupport.call();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
-    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
-    for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
-        abstractAction.actionPerformed(null);
-        break;
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.CHECKOUT);
     refreshSupport.call();
     flushAWT();
-    sleep(300);
     
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
@@ -321,19 +281,10 @@ public class BranchMergingTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     // Merge LocalBranch into main
-    final List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(
-        firstLeaf);
-    for (AbstractAction action : actionsForSecondaryBranch) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
-          action.actionPerformed(null);
-          break;
-        }
-      }
-    }
+    
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), 
+        Tags.SQUASH_MERGE_ACTION_NAME + "...");
     flushAWT();
-    sleep(300);
     
     SquashMergeDialog squashMergeBranchesDialog = (SquashMergeDialog)findDialog(
         translator.getTranslation(Tags.SQUASH_MERGE));
@@ -352,15 +303,7 @@ public class BranchMergingTest extends GitTestBase {
     assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
     assertEquals("squash content", TestUtil.read(file2.toURI().toURL()));
     
-    for (AbstractAction action : actionsForSecondaryBranch) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
-          action.actionPerformed(null);
-          break;
-        }
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.SQUASH_MERGE_ACTION_NAME + "...");
     flushAWT();
     
     squashMergeBranchesDialog = (SquashMergeDialog)findDialog(
@@ -428,16 +371,9 @@ public class BranchMergingTest extends GitTestBase {
     
     refreshSupport.call();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
-    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
-    for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
-        abstractAction.actionPerformed(null);
-        break;
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.CHECKOUT);
     refreshSupport.call();
     flushAWT();
-    sleep(300);
     
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
@@ -446,19 +382,8 @@ public class BranchMergingTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     // Merge LocalBranch into main
-    final List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(
-        firstLeaf);
-    for (AbstractAction action : actionsForSecondaryBranch) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.SQUASH_MERGE_ACTION_NAME + "...").equals(actionName)) {
-          action.actionPerformed(null);
-          break;
-        }
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.SQUASH_MERGE_ACTION_NAME + "...");
     flushAWT();
-    sleep(300);
     
     final JDialog noCommitsInSquashDialog = findDialog(
         translator.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE));
@@ -540,18 +465,8 @@ public class BranchMergingTest extends GitTestBase {
     String secondaryBranchPath = (String) secondaryBranchNode.getUserObject();
     assertTrue(secondaryBranchPath.contains(Constants.R_HEADS));
     refreshSupport.call();
-    List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
-    for (AbstractAction action : actionsForSecondaryBranch) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
-          SwingUtilities.invokeLater(() -> action.actionPerformed(null));
-          break;
-        }
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
     flushAWT();
-    sleep(300);
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
@@ -640,16 +555,7 @@ public class BranchMergingTest extends GitTestBase {
       GitTreeNode root = (GitTreeNode) (branchManagementPanel.getTree().getModel().getRoot());
       GitTreeNode secondaryBranchNode = (GitTreeNode) root.getFirstLeaf();
       
-      List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
-      for (AbstractAction action : actionsForNode) {
-        if (action != null) {
-          String actionName = action.getValue(AbstractAction.NAME).toString();
-          if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
-            SwingUtilities.invokeLater(() -> action.actionPerformed(null));
-            break;
-          }
-        }
-      }
+      executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
       
       flushAWT();
       sleep(300);
@@ -676,16 +582,7 @@ public class BranchMergingTest extends GitTestBase {
       gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
       gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
 
-      actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
-      for (AbstractAction action : actionsForNode) {
-        if (action != null) {
-          String actionName = action.getValue(AbstractAction.NAME).toString();
-          if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
-            SwingUtilities.invokeLater(() -> action.actionPerformed(null));
-            break;
-          }
-        }
-      }
+      executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
       
       flushAWT();
       sleep(300);
@@ -759,18 +656,8 @@ public class BranchMergingTest extends GitTestBase {
     String secondaryBranchPath = (String) secondaryBranchNode.getUserObject();
     assertTrue(secondaryBranchPath.contains(Constants.R_HEADS));
     
-    List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
-    for (AbstractAction action : actionsForSecondaryBranch) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
-          SwingUtilities.invokeLater(() -> action.actionPerformed(null));
-          break;
-        }
-      }
-    }
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
     flushAWT();
-    sleep(300);
     
     //Confirm merge dialog
     mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
@@ -798,20 +685,25 @@ public class BranchMergingTest extends GitTestBase {
       }
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
-
-    List<AbstractAction> actionsForSecondaryBranch2 = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
-    for (AbstractAction action : actionsForSecondaryBranch2) {
-      if (action != null) {
-        String actionName = action.getValue(AbstractAction.NAME).toString();
-        if((Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...").equals(actionName)) {
-          SwingUtilities.invokeLater(() -> action.actionPerformed(null));
-          break;
-        }
-      }
-    }
+    
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
     flushAWT();
     
     sleep(200);
     assertEquals(Tags.RESOLVE_CONFLICTS_FIRST, errMsg[0]);
+  }
+  
+  
+  /**
+   * Perform the first action founded with the given name.
+   * 
+   * @param actions            List of all actions.
+   * @param searchedActionName The name of action to be executed.
+   */
+  private void executeActionByName(final List<AbstractAction> actions, final String searchedActionName) {
+    actions.stream()
+    .filter(a -> Objects.nonNull(a))
+    .filter(a -> searchedActionName.equals(a.getValue(AbstractAction.NAME).toString())).findFirst()
+    .ifPresent(a -> SwingUtilities.invokeLater(() -> a.actionPerformed(null)));
   }
 }
