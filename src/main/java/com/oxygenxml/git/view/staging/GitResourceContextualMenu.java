@@ -21,7 +21,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.staging.actions.DiscardAction;
@@ -31,6 +31,7 @@ import com.oxygenxml.git.view.staging.actions.StageUnstageResourceAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Contextual menu shown for staged/unstaged resources from the Git view
@@ -279,14 +280,14 @@ public class GitResourceContextualMenu extends JPopupMenu {
       public void actionPerformed(ActionEvent e) {
         try {
           if(FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
-						int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+						int answer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
 										TRANSLATOR.getTranslation(Tags.MARK_RESOLVED),
 										TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE),
 										TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY),
 										TRANSLATOR.getTranslation(Tags.CANCEL)
 										
 						);
-						if(answer == FileStatusDialog.RESULT_OK) {
+						if(answer == OKCancelDialog.RESULT_OK) {
 						  gitCtrl.asyncAddToIndex(allSelectedResources);
 						}
           } else {

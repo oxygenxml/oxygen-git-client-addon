@@ -15,6 +15,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.internal.MessageDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -89,7 +90,7 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
     panel.add(iconLabel, gbc);
 
     JTextArea textArea = UIUtil.createMessageArea("");
-    textArea.setDocument(new FileStatusDialog.CustomWrapDocument());
+    textArea.setDocument(new MessageDialog.CustomWrapDocument());
     textArea.setLineWrap(false);
     textArea.setText(
         MessageFormat.format(

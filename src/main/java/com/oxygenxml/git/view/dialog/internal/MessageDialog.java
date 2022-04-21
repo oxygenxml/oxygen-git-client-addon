@@ -65,7 +65,7 @@ public class MessageDialog extends OKCancelDialog {
   /**
    * Document with custom wrapping.
    */
-  static class CustomWrapDocument extends DefaultStyledDocument {
+  public static class CustomWrapDocument extends DefaultStyledDocument {
     /**
      * Maximum number of characters without a newline.
      */

@@ -29,7 +29,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.stash.StashCellRendersFactory;
 import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 
@@ -394,7 +394,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 					if(selectedRow >= 0) {
 						final String remoteName = (String)remotesModel.getValueAt(selectedRow, 
 								RemotesTableModel.REMOTE_COLUMN);
-						 int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+						 int answer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
 						            TRANSLATOR.getTranslation(Tags.DELETE_REMOTE),
 						            MessageFormat.format(
 						            		TRANSLATOR.getTranslation(Tags.DELETE_REMOTE_CONFIRMATION_MESSAGE),
@@ -606,7 +606,7 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 			protected void doOK() {
 				if(oldRemoteName == null || oldRemoteURL == null) {
 	                if(remotesModel.remoteAlreadyExists(remoteNameTF.getText())) {
-	                	int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+	                	int answer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
 					            TRANSLATOR.getTranslation(Tags.ADD_REMOTE),
 					            MessageFormat.format(
 					            		TRANSLATOR.getTranslation(Tags.REMOTE_ALREADY_EXISTS_CONFIRMATION_MESSAGE),

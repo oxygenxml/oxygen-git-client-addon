@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -51,7 +51,7 @@ public class SetRemoteAction extends BaseGitAbstractAction {
 				setRemote();
 			}
 		} else if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_BRANCHES_NOT_EXIST) {
-			FileStatusDialog.showErrorMessage(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), null, 
+		  MessagePresenterProvider.getPresenter().showErrorMessage(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), null, 
 					TRANSLATOR.getTranslation(Tags.NO_BRANCHES_FOUNDED));
 		}
 	}

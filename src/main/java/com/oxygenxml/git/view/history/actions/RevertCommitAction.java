@@ -14,7 +14,7 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -51,7 +51,7 @@ public class RevertCommitAction extends AbstractAction {
   @Override
   public void actionPerformed(ActionEvent e) {
     Translator translator = Translator.getInstance();
-    int result = FileStatusDialog.showQuestionMessage(
+    int result = MessagePresenterProvider.getPresenter().showQuestionMessage(
         translator.getTranslation(Tags.REVERT_COMMIT),
         translator.getTranslation(Tags.REVERT_COMMIT_CONFIRMATION), 
         translator.getTranslation(Tags.YES),

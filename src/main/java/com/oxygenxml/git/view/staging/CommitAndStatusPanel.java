@@ -59,7 +59,7 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -129,7 +129,7 @@ public class CommitAndStatusPanel extends JPanel {
               translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
         } else {
           if (commitMessageArea.getText().trim().isEmpty()) {
-            int userAnswer = FileStatusDialog.showWarningMessageWithConfirmation(
+            int userAnswer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
                 translator.getTranslation(Tags.NO_COMMIT_MESSAGE_TITLE),
                 translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG), 
                 translator.getTranslation(Tags.COMMIT_ANYWAY),

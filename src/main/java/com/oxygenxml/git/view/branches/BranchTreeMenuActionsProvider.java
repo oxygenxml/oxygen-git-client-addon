@@ -27,7 +27,6 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
@@ -356,7 +355,8 @@ public class BranchTreeMenuActionsProvider {
                     TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
                     TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."));
                    
-                int answer = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES),
+                int answer = MessagePresenterProvider.getPresenter().showQuestionMessage(
+                    TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES),
                     questionMessage,
                     TRANSLATOR.getTranslation(Tags.MERGE),
                     TRANSLATOR.getTranslation(Tags.CANCEL));
@@ -401,7 +401,7 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.DELETE) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_BRANCH),
+        if (MessagePresenterProvider.getPresenter().showQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_BRANCH),
             MessageFormat.format(TRANSLATOR.getTranslation(Tags.CONFIRMATION_MESSAGE_DELETE_BRANCH),
                 nodePath.substring(nodePath.contains("refs/heads/") ? "refs/heads/".length() : 0)),
             TRANSLATOR.getTranslation(Tags.YES), TRANSLATOR.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {

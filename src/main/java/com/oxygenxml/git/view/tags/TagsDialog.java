@@ -36,7 +36,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.history.actions.CheckoutCommitAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -362,7 +362,8 @@ public class TagsDialog extends OKCancelDialog {
 
     return e -> {
       
-      int result = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE),
+      int result = MessagePresenterProvider.getPresenter().showQuestionMessage(
+          TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE),
           TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_MESSAGE),
           TRANSLATOR.getTranslation(Tags.YES),
           TRANSLATOR.getTranslation(Tags.NO));

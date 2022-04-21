@@ -15,7 +15,7 @@ public class MessagePresenterProvider {
   /**
    * The dialog presenter.
    */
-  private  static IDialogPresenter internalDialogPresenter = new MessageDialogPresenter();
+  private static IDialogPresenter internalDialogPresenter = new MessageDialogPresenter();
 
   /**
    * Hidden constructor.
@@ -42,4 +42,5 @@ public class MessagePresenterProvider {
   public static void setPresenter(final IDialogPresenter newPresenter) {
     internalDialogPresenter = newPresenter;
   }
+  
 }

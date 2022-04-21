@@ -33,7 +33,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -265,7 +265,7 @@ public class DiffPresenter {
 			      if (diffClosedTimeStamp == diffStartedTimeStamp) {
 			        String message = isRebase ? TRANSLATOR.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
 			            : TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
-			        int response = FileStatusDialog.showWarningMessageWithConfirmation(
+			        int response = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
 			            TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
 			            message,
 			            TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY),

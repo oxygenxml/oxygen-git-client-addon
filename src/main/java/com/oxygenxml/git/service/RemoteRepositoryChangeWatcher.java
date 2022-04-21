@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
@@ -190,7 +190,7 @@ public class RemoteRepositoryChangeWatcher {
    * @param message The message to be displayed to the user
    */
   private void showNewCommitsInRemoteMessage(String message) {
-    if (FileStatusDialog.showInformationMessage(
+    if (MessagePresenterProvider.getPresenter().showInformationMessage(
         translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
         message,
         translator.getTranslation(Tags.PULL_CHANGES),

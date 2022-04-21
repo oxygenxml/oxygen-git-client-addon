@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -15,15 +16,14 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.RepoUtil;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.IDialogPresenter;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
 
 import junit.framework.TestCase;
@@ -40,7 +40,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @throws Exception
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(FileStatusDialog.class)
 @PowerMockIgnore({"javax.management.*", "javax.script.*",  "javax.xml.*", "org.xml.*"})
 public class GitAccessStashTest extends TestCase {
 
@@ -76,7 +75,14 @@ public class GitAccessStashTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, file2.getName()));
     gitAccess.commit("file test added");
    
-    PowerMockito.mockStatic(FileStatusDialog.class);
+    MessagePresenterProvider.setPresenter(new IDialogPresenter() {
+      @Override
+      public void showWarningMessage(
+          final String title, 
+          final List<String> files, 
+          final String message) {
+      }
+    });
     
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);

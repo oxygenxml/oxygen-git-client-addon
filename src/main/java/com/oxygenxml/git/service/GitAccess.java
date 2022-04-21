@@ -116,7 +116,7 @@ import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.utils.URIUtil;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
@@ -1564,7 +1564,7 @@ public class GitAccess {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
           Translator.getInstance().getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
     } else if (gitStatus.hasUncommittedChanges()) {
-      FileStatusDialog.showErrorMessage(
+      MessagePresenterProvider.getPresenter().showErrorMessage(
           Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
           new ArrayList<>(gitStatus.getUncommittedChanges()),
           Translator.getInstance().getTranslation(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
@@ -1576,7 +1576,7 @@ public class GitAccess {
         git.revert().include(revcom).call();
         Set<String> conflictingFiles = getConflictingFiles();
         if (!conflictingFiles.isEmpty()) {
-          FileStatusDialog.showWarningMessage(
+          MessagePresenterProvider.getPresenter().showWarningMessage(
               TRANSLATOR.getTranslation(Tags.REVERT_COMMIT),
               new ArrayList<>(conflictingFiles),
               TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS));
@@ -2341,7 +2341,7 @@ public class GitAccess {
           LOGGER.debug("We have conflicts here: {}", res.getConflicts());
         }
         final List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
-        FileStatusDialog.showWarningMessage(
+        MessagePresenterProvider.getPresenter().showWarningMessage(
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
             conflictingFiles,
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
@@ -2351,7 +2351,7 @@ public class GitAccess {
           LOGGER.debug("Failed because of this files: {}", res.getFailingPaths());
         }
         final List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
-        FileStatusDialog.showErrorMessage(
+        MessagePresenterProvider.getPresenter().showErrorMessage(
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
             failingFiles,
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
@@ -2487,14 +2487,14 @@ public class GitAccess {
     switch (status) {
       case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
         if(isPop) {
-          FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
+          MessagePresenterProvider.getPresenter().showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                   conflictingList,
                   TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
                           + " "
                           + TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT)
           );
         } else {
-          FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
+          MessagePresenterProvider.getPresenter().showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                   conflictingList,
                   TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
           );
@@ -2502,7 +2502,7 @@ public class GitAccess {
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
         break;
       case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
-        FileStatusDialog.showErrorMessage(
+        MessagePresenterProvider.getPresenter().showErrorMessage(
                 TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                 new ArrayList<>(getConflictingFiles()),
                 TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
@@ -2512,7 +2512,7 @@ public class GitAccess {
         LOGGER.error(exception.getMessage(), exception);
         break;
       case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
-        FileStatusDialog.showErrorMessage(
+        MessagePresenterProvider.getPresenter().showErrorMessage(
                 TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                 null,
                 TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
@@ -2522,7 +2522,7 @@ public class GitAccess {
         LOGGER.error(exception.getMessage(), exception);
         break;
       case CANNOT_START_BECAUSE_STAGED_FILES:
-        FileStatusDialog.showErrorMessage(
+        MessagePresenterProvider.getPresenter().showErrorMessage(
                 TRANSLATOR.getTranslation(Tags.APPLY_STASH),
                 null,
                 TRANSLATOR.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));

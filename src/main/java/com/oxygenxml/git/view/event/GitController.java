@@ -34,7 +34,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -126,7 +126,7 @@ public class GitController extends GitControllerBase {
   protected void showPullSuccessfulWithConflicts(PullResponse response) {
     List<String> conflictingFilesList = new ArrayList<>();
     conflictingFilesList.addAll(response.getConflictingFiles());
-    FileStatusDialog.showWarningMessage(
+    MessagePresenterProvider.getPresenter().showWarningMessage(
         translator.getTranslation(Tags.PULL_STATUS),
         conflictingFilesList,
         translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
@@ -143,7 +143,7 @@ public class GitController extends GitControllerBase {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
     }
-    FileStatusDialog.showWarningMessage(
+    MessagePresenterProvider.getPresenter().showWarningMessage(
         translator.getTranslation(Tags.PULL_STATUS), 
         filesWithChanges, 
         message);
