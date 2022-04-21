@@ -311,7 +311,7 @@ public class BranchMergingTest extends GitTestBase {
     
     final boolean[] dialogPresentedFlags = new boolean[1];
     dialogPresentedFlags[0] = false;
-    MessagePresenterProvider.getInstance().setPresenter(new IDialogPresenter() {
+    MessagePresenterProvider.setPresenter(new IDialogPresenter() {
       @Override
       public void showWarningMessage(
           final String title, 

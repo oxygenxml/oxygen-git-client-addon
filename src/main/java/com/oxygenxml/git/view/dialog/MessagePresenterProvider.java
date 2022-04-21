@@ -1,62 +1,45 @@
 package com.oxygenxml.git.view.dialog;
 
-import org.eclipse.jgit.annotations.NonNull;
-
+import com.oxygenxml.git.service.annotation.UsedForTests;
 import com.oxygenxml.git.view.dialog.internal.IDialogPresenter;
 import com.oxygenxml.git.view.dialog.internal.MessageDialogPresenter;
 
 /**
  * Used to provide a dialog presenter.
- * 
+ *
  * @author alex_smarandache
  *
  */
 public class MessagePresenterProvider {
 
   /**
-   * The internal @IDialogPresenter which gives the implementation to presents methods.
+   * The dialog presenter.
    */
-  private IDialogPresenter internalDialogPresenter;
-  
+  private  static IDialogPresenter internalDialogPresenter = new MessageDialogPresenter();
+
   /**
-   * The hidden constructor.
+   * Hidden constructor.
    */
   private MessagePresenterProvider() {
-    internalDialogPresenter = new MessageDialogPresenter();
-  }
-  
-  /**
-   * Helper class to manage the singleton instance.
-   *
-   * @author Alex_Smarandache
-   */
-  private static class DialogPresenterHelper {
-      static final MessagePresenterProvider INSTANCE = new MessagePresenterProvider();
+    // not needed
   }
 
   /**
-   * Get the unique instance.
+   * Get the presenter.
    *
-   * @return The instance.
+   * @return Dialog presenter.
    */
-  public static MessagePresenterProvider getInstance() {
-      return DialogPresenterHelper.INSTANCE;
-  }
-  
-  /**
-   * @return The dialog presenter.
-   */
-  public IDialogPresenter getPresenter() {
+  public static IDialogPresenter getPresenter() {
     return internalDialogPresenter;
   }
-  
+
   /**
-   * @param newPresenter The new dialog presenter.
+   * Set the new presenter for message dialog.
+   * 
+   * @param newPresenter The new dialog presenter. 
    */
-  public void setPresenter(@NonNull final IDialogPresenter newPresenter) {
-    if(newPresenter != null) {
-      this.internalDialogPresenter = newPresenter;
-    }
+  @UsedForTests
+  public static void setPresenter(final IDialogPresenter newPresenter) {
+    internalDialogPresenter = newPresenter;
   }
-  
 }

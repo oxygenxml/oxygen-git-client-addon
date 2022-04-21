@@ -689,7 +689,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   public void tearDown() throws Exception {
     super.tearDown();
     
-    MessagePresenterProvider.getInstance().setPresenter(new MessageDialogPresenter());
+    MessagePresenterProvider.setPresenter(new MessageDialogPresenter());
     
     // If there is a running task, wait for it.
     waitForScheduler();
