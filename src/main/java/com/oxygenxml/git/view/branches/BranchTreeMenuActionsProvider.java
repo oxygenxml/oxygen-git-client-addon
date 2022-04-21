@@ -27,8 +27,8 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
-import com.oxygenxml.git.view.dialog.DialogPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
@@ -307,7 +307,7 @@ public class BranchTreeMenuActionsProvider {
                   squashMergeDialog.performSquashMerge(currentBranch, selectedBranch, 
                       ctrl.getGitAccess().getRepository().resolve(selectedBranch));
                 } catch(NoChangesInSquashedCommitException ex) {
-                  DialogPresenter.getInstance().showErrorMessage(TRANSLATOR.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE), 
+                  MessagePresenterProvider.getInstance().getPresenter().showErrorMessage(TRANSLATOR.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE), 
                       null, ex.getMessage());
                 }
                 

@@ -23,7 +23,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.dialog.DialogPresenter;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
 import com.oxygenxml.git.view.dialog.internal.IDialogPresenter;
 import com.oxygenxml.git.view.event.GitController;
@@ -32,6 +32,7 @@ import com.oxygenxml.git.view.history.HistoryStrategy;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 /**
  * Test cases for the actions that can be done on a branch.
  * 
@@ -310,7 +311,7 @@ public class BranchMergingTest extends GitTestBase {
     
     final boolean[] dialogPresentedFlags = new boolean[1];
     dialogPresentedFlags[0] = false;
-    DialogPresenter.getInstance().setPresenter(new IDialogPresenter() {
+    MessagePresenterProvider.getInstance().setPresenter(new IDialogPresenter() {
       @Override
       public void showWarningMessage(
           final String title, 
