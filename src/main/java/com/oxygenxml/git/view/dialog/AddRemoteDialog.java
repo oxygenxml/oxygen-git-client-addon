@@ -60,6 +60,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 	public AddRemoteDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.ADD_REMOTE_DIALOG_TITLE), true);
+		setOkButtonText(translator.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH));
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		addInformationLabel(gbc);
