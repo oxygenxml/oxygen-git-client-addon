@@ -5,7 +5,6 @@ import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import com.oxygenxml.git.service.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -23,7 +22,6 @@ public class ExceptionHandlerUtil {
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
   
-  
   /**
    * Hidden constructor.  
    */
@@ -38,7 +36,7 @@ public class ExceptionHandlerUtil {
    */
   public static void handleMergeException(final Exception e) {
     if(e instanceof CheckoutConflictException) {
-      FileStatusDialog.showWarningMessage(
+      MessagePresenterProvider.getPresenter().showWarningMessage(
           TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
           ((CheckoutConflictException)e).getConflictingPaths(),
           TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
@@ -50,5 +48,5 @@ public class ExceptionHandlerUtil {
     }
   }
   
-  
+   
 }
