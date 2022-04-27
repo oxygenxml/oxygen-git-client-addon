@@ -293,6 +293,7 @@ public class OptionsManager {
             break;
           }
         }
+        
         credentials.add(uc);
         
         UserCredentialsList newUserCredentialsList = getOptions().getUserCredentialsList(); 
@@ -633,6 +634,7 @@ public class OptionsManager {
 
  /**
   * Set what to do when a repository is detected when opening an Oxygen project.
+
   *  
   * @param whatToDo What to do.
   */
@@ -662,5 +664,36 @@ public class OptionsManager {
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     getOptions().setUpdateSubmodulesOnPull(updateSubmodules);
   }
+  
+  /**
+   * Remove credentials from a given host. 
+   * The credentials will be removed for both, token and user + password authentication.
+   * @param host
+   */
+  private void removeHostCredentials(final String host)
+  {
+    final List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
+    if (getOptions().getUserCredentialsList().getCredentials() == null) {
+      for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
+        UserAndPasswordCredentials alreadyHere = iterator.next();
+        if (alreadyHere.getHost().equals(host)) {
+          iterator.remove();
+          break;
+        }
+      }
+    }
 
-}
+    final List<PersonalAccessTokenInfo> personalAccessTokens = 
+        new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+    if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) {
+      for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
+        PersonalAccessTokenInfo alreadyHere = iterator.next();
+        if (alreadyHere.getHost().equals(host)) {
+          iterator.remove();
+          break;
+        }
+      }
+    }
+  }
+
+  }
