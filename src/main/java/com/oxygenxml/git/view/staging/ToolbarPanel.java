@@ -44,6 +44,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.annotation.UsedForTests;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -70,6 +71,11 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  */
 public class ToolbarPanel extends JPanel {
 
+  /**
+   * Value for push ahead counter when the branch is not published.
+   */
+  private static final int NOT_PUBLISHED_BRANCH = -2;
+  
   /**
    * The git access.
    */
@@ -477,6 +483,8 @@ public class ToolbarPanel extends JPanel {
         String noOfPushesAheadString = "";
         if (pushesAhead > 0) {
           noOfPushesAheadString = "" + pushesAhead;
+        } else if(pushesAhead == NOT_PUBLISHED_BRANCH) {
+          noOfPushesAheadString = "+";
         }
         if (pushesAhead > MAX_SINGLE_DIGIT_NUMBER) {
           pushButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -630,7 +638,7 @@ public class ToolbarPanel extends JPanel {
     } else {
       // No upstream branch defined in "config" and no remote branch
       // that has the same name as the local branch.
-      pushesAhead = 1;
+      pushesAhead = NOT_PUBLISHED_BRANCH;
       tooltipBuilder.append(MessageFormat.format(
               TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
               Constants.DEFAULT_REMOTE_NAME + "/" + currentBranchName));
@@ -1021,12 +1029,11 @@ public class ToolbarPanel extends JPanel {
         gitActionsManager.getStashChangesAction().isEnabled();
   }
   
-  /**
-   * Used for tests.
-   * 
-   * @return The number of pushes ahead.
+  /** 
+   * @return <code>true</code> if the current branch is not published.
    */
-  public int getPushesAhead() {
-    return pushesAhead;
+  @UsedForTests
+  public boolean isBranchNotPublished() {
+    return pushesAhead == NOT_PUBLISHED_BRANCH;
   }
 }
