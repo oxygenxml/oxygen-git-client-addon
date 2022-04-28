@@ -77,7 +77,7 @@ public class UserCredentialsList implements ExternalPersistentObject {
   @Override
   public Object clone() {
     try {
-      UserCredentialsList clone =(UserCredentialsList) super.clone();
+      UserCredentialsList clone = (UserCredentialsList) super.clone();
       List<UserAndPasswordCredentials> cloneUserAndPass = new ArrayList<>();
       
       if (credentials != null) {

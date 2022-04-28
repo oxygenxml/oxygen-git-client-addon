@@ -253,10 +253,8 @@ public class OptionsManager {
       CredentialsType type = credentials.getType();
       if (type == CredentialsType.USER_AND_PASSWORD) {
         saveUserAndPasswordCredentials((UserAndPasswordCredentials) credentials);
-        savePersonalAccessToken(null);
       } else if (type == CredentialsType.PERSONAL_ACCESS_TOKEN) {
         savePersonalAccessToken((PersonalAccessTokenInfo) credentials);
-        saveUserAndPasswordCredentials(null);
       }
     } else {
       saveUserAndPasswordCredentials(null);
@@ -273,33 +271,28 @@ public class OptionsManager {
     if (userAndPasswordCredentials == null) {
       // Reset
       getOptions().setUserCredentialsList(new UserCredentialsList());
-      
+
     } else {
       String encryptedPassword = PluginWorkspaceProvider.getPluginWorkspace()
           .getUtilAccess().encrypt(userAndPasswordCredentials.getPassword());
-      
+
       UserAndPasswordCredentials uc = new UserAndPasswordCredentials();
       uc.setPassword(encryptedPassword);
       uc.setUsername(userAndPasswordCredentials.getUsername());
       uc.setHost(userAndPasswordCredentials.getHost());
 
-      List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
       if (getOptions().getUserCredentialsList().getCredentials() == null) {
-        for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
-          UserAndPasswordCredentials alreadyHere = iterator.next();
-          if (alreadyHere.getHost().equals(uc.getHost())) {
-            // Replace.
-            iterator.remove();
-            break;
-          }
-        }
-        
+        final List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
+        final List<PersonalAccessTokenInfo> personalAccessTokens = 
+            new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+        removeHostCredentials(uc.getHost(), credentials, personalAccessTokens);
+
         credentials.add(uc);
-        
+
         UserCredentialsList newUserCredentialsList = getOptions().getUserCredentialsList(); 
         newUserCredentialsList.setCredentials(credentials);
         getOptions().setUserCredentialsList(newUserCredentialsList);
-        
+
       } else {
         UserCredentialsList newUsrCredentialsList = getOptions().getUserCredentialsList(); 
         newUsrCredentialsList.setCredentials(Arrays.asList(uc));
@@ -317,31 +310,25 @@ public class OptionsManager {
     if (tokenInfo == null) {
       // Reset
       getOptions().setPersonalAccessTokensList(new PersonalAccessTokenInfoList());
-      
+
     } else {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       String encryptedToken = pluginWS.getUtilAccess().encrypt(tokenInfo.getTokenValue());
-      PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken);
+      PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken); 
       
-      List<PersonalAccessTokenInfo> personalAccessTokens = 
-          new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
-      if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) {
-        for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
-          PersonalAccessTokenInfo alreadyHere = iterator.next();
-          if (alreadyHere.getHost().equals(paTokenInfo.getHost())) {
-            // Replace.
-            iterator.remove();
-            break;
-          }
-        }
+      if(getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) { 
+        final List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
+        final List<PersonalAccessTokenInfo> personalAccessTokens = 
+            new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+        removeHostCredentials(paTokenInfo.getHost(), credentials, personalAccessTokens);
         personalAccessTokens.add(paTokenInfo);
-        
+
         PersonalAccessTokenInfoList newPersonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
         newPersonalAccessTokensList.setPersonalAccessTokens(personalAccessTokens);
         getOptions().setPersonalAccessTokensList(newPersonalAccessTokensList);
-        
+
       } else {
-        
+
         PersonalAccessTokenInfoList newPrsonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
         newPrsonalAccessTokensList.setPersonalAccessTokens(Arrays.asList(paTokenInfo));
         getOptions().setPersonalAccessTokensList(newPrsonalAccessTokensList);
@@ -668,11 +655,15 @@ public class OptionsManager {
   /**
    * Remove credentials from a given host. 
    * The credentials will be removed for both, token and user + password authentication.
-   * @param host
+   * 
+   * @param host                  The host to remove;
+   * @param credentials           The user + password credentials.
+   * @param personalAccessTokens  The token credentials.
    */
-  private void removeHostCredentials(final String host)
-  {
-    final List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
+  private void removeHostCredentials(final String host, 
+      final List<UserAndPasswordCredentials> credentials, 
+      final List<PersonalAccessTokenInfo> personalAccessTokens)
+  {  
     if (getOptions().getUserCredentialsList().getCredentials() == null) {
       for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
         UserAndPasswordCredentials alreadyHere = iterator.next();
@@ -682,9 +673,7 @@ public class OptionsManager {
         }
       }
     }
-
-    final List<PersonalAccessTokenInfo> personalAccessTokens = 
-        new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+    
     if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) {
       for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
         PersonalAccessTokenInfo alreadyHere = iterator.next();
