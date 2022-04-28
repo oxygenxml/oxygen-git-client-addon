@@ -579,6 +579,47 @@ public class TreeViewTest extends FlatViewTestBase {
     flushAWT();
     assertFalse(usButton.isEnabled());
   }
+  
+  
+  /**
+   * <p><b>Description:</b>Tests if the tree view stage only the selected file even if that file begins with the same string as other resources.</p>
+   * <p><b>Bug ID:</b> EXM-50370</p>
+   * 
+   * @author alex_smarandache
+   * 
+   * @throws Exception
+   */
+  public void testStageWhenFilesStartsWithTheSameString() throws Exception {
+    String localTestRepository = "target/test-resources/testStageUnstage_Folder_local";
+    String remoteTestRepository = "target/test-resources/testStageUnstage_Folder_remote";
+    
+    // Create a new test file.
+    new File(localTestRepository + "/folder").mkdirs();
+    new File(localTestRepository + "/folder2").mkdirs();
+    createNewFile(localTestRepository, "/folder/test.txt", "");
+    createNewFile(localTestRepository, "/folder2/test2.txt", "");
+    
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo , remoteRepo);
+    
+    // The newly created file is present in the model.
+    assertTreeModels("UNTRACKED, folder/test.txt\nUNTRACKED, folder2/test2.txt", "");
+
+    //---------------
+    // Stage.
+    //---------------
+    change(true, "folder");
+    assertTreeModels("UNTRACKED, folder2/test2.txt", "ADD, folder/test.txt");
+
+    //---------------
+    // Back to unStaged
+    //---------------
+    change(false, "folder");
+    assertTreeModels("UNTRACKED, folder2/test2.txt\nUNTRACKED, folder/test.txt", "");
+  }
 }
 
 

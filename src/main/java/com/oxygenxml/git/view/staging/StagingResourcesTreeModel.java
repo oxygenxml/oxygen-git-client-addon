@@ -199,7 +199,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	  for (String path : selectedPaths) {
 	    synchronized (filesStatuses) {
 	      for (FileStatus fileStatus : filesStatuses) {
-	        if (fileStatus.getFileLocation().startsWith(path)) {
+	        if (fileStatus.getFileLocation().startsWith(path + "/")) {
 	          containingPaths.add(new FileStatus(fileStatus));
 	        }
 	      }
