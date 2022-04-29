@@ -435,7 +435,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		setOkButtonText(Translator.getInstance().getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE));
+		setOkButtonText(Translator.getInstance().getTranslation(Tags.CLONE_REPO_MESSAGE_CAP));
 		
 		// "Repository URL" label
 		JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL) + ":");

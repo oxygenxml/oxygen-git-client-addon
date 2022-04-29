@@ -1805,6 +1805,27 @@ public class Tags {
   /**
    * Set WC message.
    */
-  public static final String SET_WC = "Set_WC";
+  public static final String CHANGE = "Change";
+  
+  /**
+   * Set(with update sense).
+   */
+  public static final String SET = "Set";
+
+  /**
+   * Set remote branch.
+   */
+  public static final String SET_REMOTE_BRANCH = "Set_Remote_Branch";
+  
+  /**
+   * En: Clone repository.
+   */
+  public static final String CLONE_REPO_MESSAGE_CAP = "Clone_Repo_Message_Cap";
+  
+  /**
+   * Text for track branch button.
+   */
+  public static final String TRACK_BRANCH = "Track branch";
+
 }
 

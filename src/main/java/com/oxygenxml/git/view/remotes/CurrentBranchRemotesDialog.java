@@ -106,7 +106,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 				TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
 				);
 		
-		setOkButtonText(TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH));
+		setOkButtonText(TRANSLATOR.getTranslation(Tags.TRACK_BRANCH));
 		boolean existsRemotes = false;
 		final List<RemoteBranchItem> branchesToAdd = new ArrayList<>();
 		

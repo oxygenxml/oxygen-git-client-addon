@@ -14,23 +14,59 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
-	<key value="Set_WC">
-		<comment>Set WC message.</comment>
-		<val lang="en_US">Set working copy</val>
-		<val lang="de_DE">Set working copy</val>
-		<val lang="fr_FR">Définir la copie de travail</val>
-		<val lang="ja_JP">Set working copy</val>
-		<val lang="nl_NL">Set working copy</val>
-		<val lang="zh_CN">Set working copy</val>
+	<key value="Set">
+		<comment>Set(with update sense).</comment>
+		<val lang="en_US">Set</val>
+		<val lang="de_DE">Set</val>
+		<val lang="fr_FR">Set</val>
+		<val lang="ja_JP">Set</val>
+		<val lang="nl_NL">Set</val>
+		<val lang="zh_CN">Set</val>
+	</key>
+	<key value="Set_Remote_Branch">
+		<comment>Set remote branch.</comment>
+		<val lang="en_US">Set remote branch</val>
+		<val lang="de_DE">Set remote branch</val>
+		<val lang="fr_FR">Set remote branch</val>
+		<val lang="ja_JP">Set remote branch</val>
+		<val lang="nl_NL">Set remote branch</val>
+		<val lang="zh_CN">Set remote branch</val>
+	</key>
+	<key value="Clone_Repo_Message_Cap">
+		<comment>Clone repository.</comment>
+		<val lang="en_US">Clone repository</val>
+		<val lang="de_DE">Clone repository</val>
+		<val lang="fr_FR">Clone repository</val>
+		<val lang="ja_JP">Clone repository</val>
+		<val lang="nl_NL">Clone repository</val>
+		<val lang="zh_CN">Clone repository</val>
+	</key>
+	<key value="Track_Branch_Button_Text">
+		<comment>Text for track branch button.</comment>
+		<val lang="en_US">Track branch</val>
+		<val lang="de_DE">Track branch</val>
+		<val lang="fr_FR">Track branch</val>
+		<val lang="ja_JP">Track branch</val>
+		<val lang="nl_NL">Track branch</val>
+		<val lang="zh_CN">Track branch</val>
+	</key>
+	<key value="Change">
+		<comment>Change</comment>
+		<val lang="en_US">Change</val>
+		<val lang="de_DE">Change</val>
+		<val lang="fr_FR">Change</val>
+		<val lang="ja_JP">Change</val>
+		<val lang="nl_NL">Change</val>
+		<val lang="zh_CN">Change</val>
 	</key>
 	<key value="Keep_Current_WC">
 		<comment>Keep current WC message.</comment>
-		<val lang="en_US">Keep current working copy</val>
-		<val lang="de_DE">Keep current working copy</val>
-		<val lang="fr_FR">Conserver la copie de travail actuelle</val>
-		<val lang="ja_JP">Keep current working copy</val>
-		<val lang="nl_NL">Keep current working copy</val>
-		<val lang="zh_CN">Keep current working copy</val>
+		<val lang="en_US">Keep current</val>
+		<val lang="de_DE">Keep current</val>
+		<val lang="fr_FR">Keep current</val>
+		<val lang="ja_JP">Keep current</val>
+		<val lang="nl_NL">Keep current</val>
+		<val lang="zh_CN">Keep current</val>
 	</key>
 	<key value="Squash_No_Commits_Title">
 		<comment>Title for dialog when no commits could be added with squash and merge action.</comment>

@@ -331,7 +331,7 @@ public class PanelRefresh implements GitRefreshSupport {
 						TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
 						projectDir),
 				new String[] {
-					  TRANSLATOR.getTranslation(Tags.SET_WC),
+					  TRANSLATOR.getTranslation(Tags.CHANGE),
 						TRANSLATOR.getTranslation(Tags.KEEP_CURRENT_WC)
 				},
 				new int[] { 0, 1 });
