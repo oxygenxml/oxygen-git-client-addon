@@ -116,5 +116,30 @@ public interface IDialogPresenter {
       final String cancelButtonName) {
     throw new UnsupportedOperationException();
   }
+  
+  /**
+   * Shows an information and gives the user 2 options.
+   * 
+   * @param title                  Dialog title.
+   * @param informationMessage     The information message to be presented.
+   * @param okButtonName           The name given to the button for answering
+   *                               affirmative to the question.
+   * @param cancelButtonName       The name given to the button for answering negative
+   *                               to the question.
+   * @param isOkButtonVisible      <code>true</code> if the ok button should be visible. 
+   * @param iscancelButtonVisible  <code>true</code> if the cancel button should be visible. 
+   *                         
+   * @return The option chosen by the user. {@link #RESULT_OK} or
+   *         {@link #RESULT_CANCEL}
+   */
+  public default int showInformationMessage(
+      final String title, 
+      final String informationMessage, 
+      final String okButtonName, 
+      final String cancelButtonName,
+      final boolean isOkButtonVisible,
+      final boolean isCancelButtonVisible) {
+    throw new UnsupportedOperationException();
+  }
 
 }

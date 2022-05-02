@@ -20,7 +20,13 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String title, 
       final List<String> files, 
       final String message) {
-    final MessageDialog dialog = new MessageDialog(Icons.ERROR_ICON,title, files, message, null, null, null);
+    final MessageDialog dialog = new MessageDialog(title)
+        .setIconPath(Icons.ERROR_ICON)
+        .setMessage(message)
+        .setCancelButtonVisible(false)
+        .setTargetFiles(files)
+        .build();
+    
     dialog.setResizable(files != null && !files.isEmpty());
     dialog.setMinimumSize(new Dimension(MessageDialog.WARN_MESSAGE_DLG_MINIMUM_WIDTH, MessageDialog.WARN_MESSAGE_DLG_MINIMUM_HEIGHT));
     dialog.getOkButton().setText(Translator.getInstance().getTranslation(Tags.CLOSE));
@@ -33,7 +39,13 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String title, 
       final List<String> files, 
       final String message) {
-    final MessageDialog dialog = new MessageDialog(Icons.WARNING_ICON,title, files, message, null, null, null);
+    final MessageDialog dialog = new MessageDialog(title)
+        .setIconPath(Icons.WARNING_ICON)
+        .setMessage(message)
+        .setCancelButtonVisible(false)
+        .setTargetFiles(files)
+        .build();
+   
     dialog.setResizable(files != null && !files.isEmpty());
     dialog.setMinimumSize(new Dimension(MessageDialog.WARN_MESSAGE_DLG_MINIMUM_WIDTH, MessageDialog.WARN_MESSAGE_DLG_MINIMUM_HEIGHT));
     dialog.pack();
@@ -46,14 +58,12 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String message,
       final String okButtonLabel,
       final String cancelButtonLabel) {
-    final MessageDialog dialog = new MessageDialog(
-        Icons.WARNING_ICON,
-        title, 
-        null, 
-        null,
-        message,
-        okButtonLabel,
-        cancelButtonLabel);
+    final MessageDialog dialog = new MessageDialog(title)
+        .setIconPath(Icons.WARNING_ICON)
+        .setQuestionMessage(message)
+        .setOkButtonName(okButtonLabel)
+        .setCancelButtonName(cancelButtonLabel)
+        .build();
     dialog.setVisible(true);
     return dialog.getResult();
   }
@@ -66,14 +76,14 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String questionMessage,
       final String okButtonName,
       final String cancelButtonName) {
-    final MessageDialog dialog = new MessageDialog(
-        Icons.QUESTION_ICON,
-        title,
-        files,
-        message,
-        questionMessage,
-        okButtonName,
-        cancelButtonName);
+    final MessageDialog dialog = new MessageDialog(title)
+        .setIconPath(Icons.QUESTION_ICON)
+        .setQuestionMessage(questionMessage)
+        .setOkButtonName(okButtonName)
+        .setCancelButtonName(cancelButtonName)
+        .setMessage(message)
+        .setTargetFiles(files)
+        .build();
     dialog.setVisible(true);  
     return dialog.getResult();
   }
@@ -84,14 +94,12 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String questionMessage,
       final String okButtonName,
       final String cancelButtonName) {
-    final MessageDialog dialog = new MessageDialog(
-        Icons.QUESTION_ICON,
-        title,
-        null,
-        null,
-        questionMessage,
-        okButtonName,
-        cancelButtonName);
+    final MessageDialog dialog = new MessageDialog(title)
+        .setIconPath(Icons.QUESTION_ICON)
+        .setQuestionMessage(questionMessage)
+        .setOkButtonName(okButtonName)
+        .setCancelButtonName(cancelButtonName)
+        .build();
     dialog.setVisible(true);
     return dialog.getResult();
   }
@@ -102,14 +110,33 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String informationMessage, 
       final String okButtonName, 
       final String cancelButtonName) {
-    final MessageDialog dialog = new MessageDialog(
-        Icons.INFO_ICON,
-        title,
-        null, 
-        null,
-        informationMessage,
-        okButtonName,
-        cancelButtonName);
+    final MessageDialog dialog = new MessageDialog(title)
+        .setIconPath(Icons.INFO_ICON)
+        .setMessage(informationMessage)
+        .setOkButtonName(okButtonName)
+        .setCancelButtonName(cancelButtonName)
+        .build();
+        
+    dialog.setVisible(true);
+    return dialog.getResult();
+  }
+  
+  @Override
+  public int showInformationMessage(
+      final String title, 
+      final String informationMessage, 
+      final String okButtonName, 
+      final String cancelButtonName,
+      final boolean isOkButtonVisible,
+      final boolean isCancelButtonVisible) {
+    final MessageDialog dialog = new MessageDialog(title)
+        .setIconPath(Icons.INFO_ICON)
+        .setMessage(informationMessage)
+        .setOkButtonName(okButtonName)
+        .setOkButtonVisible(isOkButtonVisible)
+        .setCancelButtonVisible(isCancelButtonVisible)
+        .setCancelButtonName(cancelButtonName)
+        .build();
     dialog.setVisible(true);
     return dialog.getResult();
   }

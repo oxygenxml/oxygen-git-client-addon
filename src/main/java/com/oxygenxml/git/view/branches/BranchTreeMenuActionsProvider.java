@@ -306,10 +306,9 @@ public class BranchTreeMenuActionsProvider {
                   squashMergeDialog.performSquashMerge(currentBranch, selectedBranch, 
                       ctrl.getGitAccess().getRepository().resolve(selectedBranch));
                 } catch(NoChangesInSquashedCommitException ex) {
-                  MessagePresenterProvider.getPresenter().showErrorMessage(TRANSLATOR.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE), 
-                      null, ex.getMessage());
+                  MessagePresenterProvider.getPresenter().showInformationMessage(
+                      Tags.SQUASH_MERGE, ex.getMessage(), null, null, true, false);   
                 }
-                
               }
               return null;
             },
