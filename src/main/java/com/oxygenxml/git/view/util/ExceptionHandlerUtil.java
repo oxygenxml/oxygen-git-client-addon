@@ -41,8 +41,9 @@ public class ExceptionHandlerUtil {
           ((CheckoutConflictException)e).getConflictingPaths(),
           TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
     } else if (e instanceof NoChangesInSquashedCommitException) {
-      MessagePresenterProvider.getPresenter().showWarningMessage(TRANSLATOR.getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE), 
-          null, e.getMessage());
+      MessagePresenterProvider.getPresenter().showInformationMessage(
+          TRANSLATOR.getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE), 
+          e.getMessage(), null, null, true, false);
     } else {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
