@@ -6,6 +6,7 @@ import java.util.List;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.internal.MessageDialog.MessageDialogBuilder;
 
 /**
  * Class to presents the @MessageDialog in a lot of different ways.
@@ -20,7 +21,7 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String title, 
       final List<String> files, 
       final String message) {
-    final MessageDialog dialog = new MessageDialog(title)
+    final MessageDialog dialog = new MessageDialogBuilder(title)
         .setIconPath(Icons.ERROR_ICON)
         .setMessage(message)
         .setCancelButtonVisible(false)
@@ -39,7 +40,7 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String title, 
       final List<String> files, 
       final String message) {
-    final MessageDialog dialog = new MessageDialog(title)
+    final MessageDialog dialog = new MessageDialogBuilder(title)
         .setIconPath(Icons.WARNING_ICON)
         .setMessage(message)
         .setCancelButtonVisible(false)
@@ -58,7 +59,7 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String message,
       final String okButtonLabel,
       final String cancelButtonLabel) {
-    final MessageDialog dialog = new MessageDialog(title)
+    final MessageDialog dialog = new MessageDialogBuilder(title)
         .setIconPath(Icons.WARNING_ICON)
         .setQuestionMessage(message)
         .setOkButtonName(okButtonLabel)
@@ -76,7 +77,7 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String questionMessage,
       final String okButtonName,
       final String cancelButtonName) {
-    final MessageDialog dialog = new MessageDialog(title)
+    final MessageDialog dialog = new MessageDialogBuilder(title)
         .setIconPath(Icons.QUESTION_ICON)
         .setQuestionMessage(questionMessage)
         .setOkButtonName(okButtonName)
@@ -94,7 +95,7 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String questionMessage,
       final String okButtonName,
       final String cancelButtonName) {
-    final MessageDialog dialog = new MessageDialog(title)
+    final MessageDialog dialog = new MessageDialogBuilder(title)
         .setIconPath(Icons.QUESTION_ICON)
         .setQuestionMessage(questionMessage)
         .setOkButtonName(okButtonName)
@@ -110,7 +111,7 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String informationMessage, 
       final String okButtonName, 
       final String cancelButtonName) {
-    final MessageDialog dialog = new MessageDialog(title)
+    final MessageDialog dialog = new MessageDialogBuilder(title)
         .setIconPath(Icons.INFO_ICON)
         .setMessage(informationMessage)
         .setOkButtonName(okButtonName)
@@ -129,7 +130,7 @@ public class MessageDialogPresenter implements IDialogPresenter {
       final String cancelButtonName,
       final boolean isOkButtonVisible,
       final boolean isCancelButtonVisible) {
-    final MessageDialog dialog = new MessageDialog(title)
+    final MessageDialog dialog = new MessageDialogBuilder(title)
         .setIconPath(Icons.INFO_ICON)
         .setMessage(informationMessage)
         .setOkButtonName(okButtonName)

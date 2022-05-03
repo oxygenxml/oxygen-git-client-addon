@@ -22,6 +22,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
+import org.eclipse.jgit.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,34 +129,42 @@ public class MessageDialog extends OKCancelDialog {
   /**
    * <code>True</code> if "Ok" button should be visible.
    */
-  private boolean isOkButtonVisible = true;
+  private boolean showOkButton = true;
   
   /**
    * <code>True</code> if "Cancel" button should be visible.
    */
-  private boolean isCancelButtonVisible = true;
+  private boolean showCancelButton = true;
   
   
   /**
    * Constructor.
    *
-   * @param title Dialog title.
+   * @param builder A builder that contains properties for this dialog.
    */
-  public MessageDialog(final String title) {
+  private MessageDialog(final MessageDialogBuilder builder) {
     super(
         PluginWorkspaceProvider.getPluginWorkspace() != null ? 
             (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
-        title,
+        builder.title,
         true);
+    
+    iconPath         = builder.iconPath;
+    targetFiles      = builder.targetFiles;
+    message          = builder.message;
+    questionMessage  = builder.questionMessage;
+    okButtonName     = builder.okButtonName;
+    cancelButtonName = builder.cancelButtonName;
+    showCancelButton = builder.isCancelButtonVisible;
+    showOkButton     = builder.isOkButtonVisible;
+    
+    createUI();
   }
 
   /**
-   * Build UI for current dialog.
-   * !!! Call this method after setting the values of all attributes you need in the current dialog.
-   * 
-   * @return The builded dialog.
+   * Creates UI for this dialog.
    */
-  public MessageDialog build() {
+  private void createUI() {
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
     // Icon
@@ -232,10 +241,10 @@ public class MessageDialog extends OKCancelDialog {
       gbc.gridy++;
     }
     
-    if (!isCancelButtonVisible || !isOkButtonVisible) {
+    if (!showCancelButton || !showOkButton) {
       // No question message. Hide Cancel button.
-      getCancelButton().setVisible(isCancelButtonVisible);
-      getOkButton().setVisible(isOkButtonVisible);
+      getCancelButton().setVisible(showCancelButton);
+      getOkButton().setVisible(showOkButton);
     } else {
       JTextArea textArea = UIUtil.createMessageArea("");
       textArea.setDocument(new CustomWrapDocument());
@@ -266,105 +275,177 @@ public class MessageDialog extends OKCancelDialog {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
     
-    return this;
   }
   
+ 
   /**
-   * Set path for the desired icon of this dialog.
+   * Builder for @MessageDialog.
    * 
-   * @param iconPath The icon path.
-   * 
-   * @return This dialog.
-   */
-  public MessageDialog setIconPath(final String iconPath) {
-    this.iconPath = iconPath;
-    System.out.println("this: " + this.iconPath + ", local: " + iconPath);
-    return this;
-  }
-  
-  /**
-   * Set message for this dialog.
-   * 
-   * @param message The dialog message.
-   * 
-   * @return This dialog.
-   */
-  public MessageDialog setMessage(final String message) {
-    this.message = message;
-    return this;
-  }
-
-  /**
-   * Set the new target files to be presented.
-   * 
-   * @param targetFiles The new files.
-   * 
-   * @return This dialog.
-   */
-  public MessageDialog setTargetFiles(final List<String> targetFiles) {
-    this.targetFiles = targetFiles;
-    return this;
-  }
-
-  /**
-   * Set the question message.
-   * 
-   * @param questionMessage The new question message.
+   * @author alex_smarandache
    *
-   * @return This dialog.
    */
-  public MessageDialog setQuestionMessage(String questionMessage) {
-    this.questionMessage = questionMessage;
-    return this;
-  }
+  public static final class MessageDialogBuilder {
+   
+    /**
+     * The dialog title dialog.
+     */
+    String title;
+    
+    /**
+     * Icon path for dialog.
+     */
+    String iconPath;
+    
+    /**
+     * Files that relate to the message.
+     */
+    List<String> targetFiles;
+    
+    /**
+     * The dialog message.
+     */
+    String message;
+    
+    /**
+     * The question message.
+     */
+    String questionMessage;
+    
+    /**
+     * Text for "Ok" button.
+     */
+    String okButtonName;
+    
+    /**
+     * Text for "Cancel" button.
+     */
+    String cancelButtonName;
+    
+    /**
+     * <code>True</code> if "Ok" button should be visible.
+     */
+    boolean isOkButtonVisible = true;
+    
+    /**
+     * <code>True</code> if "Cancel" button should be visible.
+     */
+    boolean isCancelButtonVisible = true;
+    
+    
+    /**
+     * Constructor.
+     * 
+     * @param title The title of the dialog.
+     */
+    public MessageDialogBuilder(@NonNull final String title) {
+      this.title = title;
+    }
+    
+    /**
+     * Set path for the desired icon of this dialog.
+     * 
+     * @param iconPath The icon path.
+     * 
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setIconPath(final String iconPath) {
+      this.iconPath = iconPath;
+      return this;
+    }
+    
+    /**
+     * Set message for this dialog.
+     * 
+     * @param message The dialog message.
+     * 
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setMessage(final String message) {
+      this.message = message;
+      return this;
+    }
 
-  /**
-   * Set name for ok button.
-   * 
-   * @param okButtonName The new name for ok button.
-   * 
-   * @return This dialog.
-   */
-  public MessageDialog setOkButtonName(final String okButtonName) {
-    this.okButtonName = okButtonName;
-    return this;
-  }
+    /**
+     * Set the new target files to be presented.
+     * 
+     * @param targetFiles The new files.
+     * 
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setTargetFiles(final List<String> targetFiles) {
+      this.targetFiles = targetFiles;
+      return this;
+    }
 
-  /**
-   * Set name for cancel button.
-   * 
-   * @param cancelButtonName The new name for cancel button.
-   * 
-   * @return This dialog.
-   */
-  public MessageDialog setCancelButtonName(final String cancelButtonName) {
-    this.cancelButtonName = cancelButtonName;
-    return this;
-  }
+    /**
+     * Set the question message.
+     * 
+     * @param questionMessage The new question message.
+     *
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setQuestionMessage(String questionMessage) {
+      this.questionMessage = questionMessage;
+      return this;
+    }
 
-  /**
-   * By default the value is <code>true</code>.
-   * 
-   * @param isOkButtonVisible <code>true</code> if the ok button should be visible.
-   * 
-   * @return This dialog.
-   */
-  public MessageDialog setOkButtonVisible(final boolean isOkButtonVisible) {
-    this.isOkButtonVisible = isOkButtonVisible;
-    return this;
-  }
+    /**
+     * Set name for ok button.
+     * 
+     * @param okButtonName The new name for ok button.
+     * 
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setOkButtonName(final String okButtonName) {
+      this.okButtonName = okButtonName;
+      return this;
+    }
 
-  /**
-   * By default the value is <code>true</code>.
-   * 
-   * @param isCancelButtonVisible <code>true</code> if the cancel button should be visible.
-   * 
-   * @return This dialog.
-   */
-  public MessageDialog setCancelButtonVisible(final boolean isCancelButtonVisible) {
-    this.isCancelButtonVisible = isCancelButtonVisible;
-    return this;
+    /**
+     * Set name for cancel button.
+     * 
+     * @param cancelButtonName The new name for cancel button.
+     * 
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setCancelButtonName(final String cancelButtonName) {
+      this.cancelButtonName = cancelButtonName;
+      return this;
+    }
+
+    /**
+     * By default the value is <code>true</code>.
+     * 
+     * @param isOkButtonVisible <code>true</code> if the ok button should be visible.
+     * 
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setOkButtonVisible(final boolean isOkButtonVisible) {
+      this.isOkButtonVisible = isOkButtonVisible;
+      return this;
+    }
+
+    /**
+     * By default the value is <code>true</code>.
+     * 
+     * @param isCancelButtonVisible <code>true</code> if the cancel button should be visible.
+     * 
+     * @return This dialog builder.
+     */
+    public MessageDialogBuilder setCancelButtonVisible(final boolean isCancelButtonVisible) {
+      this.isCancelButtonVisible = isCancelButtonVisible;
+      return this;
+    }
+    
+    /**
+     * Build a dialog with the set properties.
+     * 
+     * @return
+     */
+    public MessageDialog build() {
+      return new MessageDialog(this);
+    }
+    
   }
-  
   
 }
