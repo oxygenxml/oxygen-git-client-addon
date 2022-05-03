@@ -86,9 +86,10 @@ public class OptionsManager {
   
   /**
    * Init and get the options.
+   * 
    * @return The initialized options.
    */
-  private Options getOptions() {
+  protected Options getOptions() {
     if (options == null) {
       String home = System.getProperty("com.oxygenxml.editor.home.url");
       if (home == null) {
@@ -271,7 +272,6 @@ public class OptionsManager {
     if (userAndPasswordCredentials == null) {
       // Reset
       getOptions().setUserCredentialsList(new UserCredentialsList());
-
     } else {
       String encryptedPassword = PluginWorkspaceProvider.getPluginWorkspace()
           .getUtilAccess().encrypt(userAndPasswordCredentials.getPassword());
@@ -281,18 +281,13 @@ public class OptionsManager {
       uc.setUsername(userAndPasswordCredentials.getUsername());
       uc.setHost(userAndPasswordCredentials.getHost());
 
-      if (getOptions().getUserCredentialsList().getCredentials() == null) {
+      if (getOptions().getUserCredentialsList().getCredentials() != null) {
         final List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
         final List<PersonalAccessTokenInfo> personalAccessTokens = 
-            new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );
+            new ArrayList<>(  getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() );      
         removeHostCredentials(uc.getHost(), credentials, personalAccessTokens);
-
         credentials.add(uc);
-
-        UserCredentialsList newUserCredentialsList = getOptions().getUserCredentialsList(); 
-        newUserCredentialsList.setCredentials(credentials);
-        getOptions().setUserCredentialsList(newUserCredentialsList);
-
+        updateCredentailsInOptions(credentials, personalAccessTokens);
       } else {
         UserCredentialsList newUsrCredentialsList = getOptions().getUserCredentialsList(); 
         newUsrCredentialsList.setCredentials(Arrays.asList(uc));
@@ -315,7 +310,6 @@ public class OptionsManager {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       String encryptedToken = pluginWS.getUtilAccess().encrypt(tokenInfo.getTokenValue());
       PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken); 
-      
       if(getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) { 
         final List<UserAndPasswordCredentials> credentials = new ArrayList<>( getOptions().getUserCredentialsList().getCredentials());
         final List<PersonalAccessTokenInfo> personalAccessTokens = 
@@ -323,9 +317,7 @@ public class OptionsManager {
         removeHostCredentials(paTokenInfo.getHost(), credentials, personalAccessTokens);
         personalAccessTokens.add(paTokenInfo);
 
-        PersonalAccessTokenInfoList newPersonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
-        newPersonalAccessTokensList.setPersonalAccessTokens(personalAccessTokens);
-        getOptions().setPersonalAccessTokensList(newPersonalAccessTokensList);
+        updateCredentailsInOptions(credentials, personalAccessTokens);
 
       } else {
 
@@ -664,7 +656,7 @@ public class OptionsManager {
       final List<UserAndPasswordCredentials> credentials, 
       final List<PersonalAccessTokenInfo> personalAccessTokens)
   {  
-    if (getOptions().getUserCredentialsList().getCredentials() == null) {
+    if (credentials != null) {
       for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
         UserAndPasswordCredentials alreadyHere = iterator.next();
         if (alreadyHere.getHost().equals(host)) {
@@ -674,7 +666,7 @@ public class OptionsManager {
       }
     }
     
-    if (getOptions().getPersonalAccessTokensList().getPersonalAccessTokens() != null) {
+    if (personalAccessTokens != null) {
       for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
         PersonalAccessTokenInfo alreadyHere = iterator.next();
         if (alreadyHere.getHost().equals(host)) {
@@ -683,6 +675,24 @@ public class OptionsManager {
         }
       }
     }
+  }
+  
+  /**
+   * Update user's credentials in options manager. 
+   * 
+   * @param credentials           The user + password credentials.
+   * @param personalAccessTokens  The token credentials.
+   */
+  private void updateCredentailsInOptions(
+      final List<UserAndPasswordCredentials> credentials, 
+      final List<PersonalAccessTokenInfo> personalAccessTokens) {
+    PersonalAccessTokenInfoList newPersonalAccessTokensList = getOptions().getPersonalAccessTokensList(); 
+    newPersonalAccessTokensList.setPersonalAccessTokens(personalAccessTokens);
+    getOptions().setPersonalAccessTokensList(newPersonalAccessTokensList);
+
+    UserCredentialsList newUserCredentialsList = getOptions().getUserCredentialsList(); 
+    newUserCredentialsList.setCredentials(credentials);
+    getOptions().setUserCredentialsList(newUserCredentialsList);
   }
 
   }

@@ -38,11 +38,12 @@ public class UserCredentialsList implements ExternalPersistentObject {
 	 * @return The user credentials.
 	 */
 	public List<UserAndPasswordCredentials> getCredentials() {
-		return credentials != null ? new ArrayList<>(credentials) : null;
+		return credentials != null ? new ArrayList<>(credentials) : new ArrayList<>(0);
 	}
 
 	public void setCredentials(List<UserAndPasswordCredentials> credentials) {
-		this.credentials = credentials != null ? new ArrayList<>(credentials) : new ArrayList<>(0);
+		this.credentials = credentials != null ? 
+		    new ArrayList<>(credentials) : new ArrayList<>(0);
 	}
 
 	@Override
