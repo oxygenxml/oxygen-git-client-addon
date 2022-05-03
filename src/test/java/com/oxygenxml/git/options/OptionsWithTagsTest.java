@@ -11,6 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Used for testing the methods in OptionsWithTags
@@ -84,6 +90,117 @@ public class OptionsWithTagsTest {
     assertEquals("usrn3", credentialsListFromArray.getCredentials().get(2).getUsername());
     assertEquals("pass3", credentialsListFromArray.getCredentials().get(2).getPassword());
     assertEquals("host3", credentialsListFromArray.getCredentials().get(2).getHost());
+  }
+  
+  /**
+   * <p><b>Description:</b> Used to test if the credentials 
+   * for an already existing host are saved correctly.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50371</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */ 
+  @Test
+  public void testUpdateHostCredentials() throws Exception {
+    UtilAccess utilAccess = Mockito.mock(UtilAccess.class);
+    Mockito.when(utilAccess.encrypt(Mockito.any(String.class))).then((Answer<String>) 
+        invocation -> {
+      return invocation.getArgument(0, String.class);
+    });
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccess);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+   
+    for(int i = 1; i < 6; i++) {
+      PersonalAccessTokenInfo tokenInfo = new PersonalAccessTokenInfo("host" + i, "token" + i);
+      OptionsManager.getInstance().saveGitCredentials(tokenInfo);
+    }
+    UserAndPasswordCredentials uapc1 = new UserAndPasswordCredentials(
+        "usrn" + 2, "pass" + 2, "host" + 2);
+    UserAndPasswordCredentials uapc2 = new UserAndPasswordCredentials(
+        "usrn" + 4, "pass" + 4, "host" + 4);
+    OptionsManager.getInstance().saveGitCredentials(uapc1);
+    OptionsManager.getInstance().saveGitCredentials(uapc2);
+    
+    List<UserAndPasswordCredentials> credentials = new ArrayList<>(
+        OptionsManager.getInstance().getOptions().getUserCredentialsList()
+        .getCredentials());
+    List<PersonalAccessTokenInfo> personalAccessTokens = 
+        new ArrayList<>(OptionsManager.getInstance().getOptions()
+            .getPersonalAccessTokensList().getPersonalAccessTokens() );
+  
+    assertEquals(2, credentials.size());
+    assertEquals(3, personalAccessTokens.size());   
+    for(int i = 1; i < 6; i += 2) {
+      assertEquals("host" + i, personalAccessTokens.get(i / 2).getHost());
+      assertEquals("token" + i, personalAccessTokens.get(i / 2).getTokenValue());
+    }
+    for(int i = 4; i > 1; i -= 2) {
+      assertEquals("host" + i, credentials.get(i / 2 - 1).getHost());
+      assertEquals("pass" + i, credentials.get(i / 2 - 1).getPassword());
+      assertEquals("usrn" + i, credentials.get(i / 2 - 1).getUsername());
+    }
+    PersonalAccessTokenInfo tokenInfo = new PersonalAccessTokenInfo("host" + 3, "token_of_life");
+    OptionsManager.getInstance().saveGitCredentials(tokenInfo);
+    assertEquals("host3", personalAccessTokens.get(1).getHost());
+    assertEquals("token_of_life", personalAccessTokens.get(1).getTokenValue());
+  }
+  
+  /**
+   * <p><b>Description:</b> Used to test if the credentials are correctly reseted.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50371</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */ 
+  @Test
+  public void testResetCretentials() {
+    UtilAccess utilAccess = Mockito.mock(UtilAccess.class);
+    Mockito.when(utilAccess.encrypt(Mockito.any(String.class))).then((Answer<String>) 
+        invocation -> {
+      return invocation.getArgument(0, String.class);
+    });
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccess);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+   
+    for(int i = 1; i < 4; i++) {
+      PersonalAccessTokenInfo tokenInfo = new PersonalAccessTokenInfo("host" + i, "token" + i);
+      OptionsManager.getInstance().saveGitCredentials(tokenInfo);
+    }
+    
+    for(int i = 4; i < 8; i++) {
+      UserAndPasswordCredentials uapc = new UserAndPasswordCredentials(
+          "usrn" + i, "pass" + i, "host" + i);
+      OptionsManager.getInstance().saveGitCredentials(uapc);
+    }
+    
+    List<UserAndPasswordCredentials> credentials = new ArrayList<>(
+        OptionsManager.getInstance().getOptions().getUserCredentialsList()
+        .getCredentials());
+    List<PersonalAccessTokenInfo> personalAccessTokens = 
+        new ArrayList<>(OptionsManager.getInstance().getOptions()
+            .getPersonalAccessTokensList().getPersonalAccessTokens() );
+  
+    assertEquals(4, credentials.size());
+    assertEquals(3, personalAccessTokens.size());
+    
+    OptionsManager.getInstance().saveGitCredentials(null);
+    
+    credentials = new ArrayList<>(
+        OptionsManager.getInstance().getOptions().getUserCredentialsList()
+        .getCredentials());
+    personalAccessTokens = 
+        new ArrayList<>(OptionsManager.getInstance().getOptions()
+            .getPersonalAccessTokensList().getPersonalAccessTokens() );
+  
+    assertEquals(0, credentials.size());
+    assertEquals(0, personalAccessTokens.size());
+    
   }
 
   /**
