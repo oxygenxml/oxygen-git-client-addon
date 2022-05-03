@@ -14,6 +14,24 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Reject_Commit_On_Problems">
+		<comment>Label for reject commit on validation problems option.</comment>
+		<val lang="en_US">Reject commit on validation problems</val>
+		<val lang="de_DE">Reject commit on validation problems</val>
+		<val lang="fr_FR">Reject commit on validation problems</val>
+		<val lang="ja_JP">Reject commit on validation problems</val>
+		<val lang="nl_NL">Reject commit on validation problems</val>
+		<val lang="zh_CN">Reject commit on validation problems</val>
+	</key>
+	<key value="Validate_Before_Commit">
+		<comment>Label for validate files before commit option.</comment>
+		<val lang="en_US">Validate each file before commit</val>
+		<val lang="de_DE">Validate each file before commit</val>
+		<val lang="fr_FR">Validate each file before commit</val>
+		<val lang="ja_JP">Validate each file before commit</val>
+		<val lang="nl_NL">Validate each file before commit</val>
+		<val lang="zh_CN">Validate each file before commit</val>
+	</key>
 	<key value="Set">
 		<comment>Set(with update sense).</comment>
 		<val lang="en_US">Set</val>

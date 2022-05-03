@@ -1826,6 +1826,16 @@ public class Tags {
    * Text for track branch button.
    */
   public static final String TRACK_BRANCH = "Track branch";
+  
+  /**
+   * Label for validate files before commit option.
+   */
+  public static final String VALIDATE_BEFORE_COMMIT = "Validate_Before_Commit";
+  
+  /**
+   * Label for reject commit on validation problems option.
+   */
+  public static final String REJECT_COMMIT_ON_PROBLEMS = "Reject_Commit_On_Problems";
 
 }
 
