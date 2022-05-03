@@ -1825,7 +1825,7 @@ public class Tags {
   /**
    * Text for track branch button.
    */
-  public static final String TRACK_BRANCH = "Track branch";
+  public static final String TRACK_BRANCH = "Track_Branch_Button_Text";
 
 }
 
