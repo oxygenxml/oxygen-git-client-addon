@@ -29,14 +29,14 @@
 		<val lang="zh_CN">This operation will merge changes on top of the "{0}" branch.  
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
 	</key>
-	<key value="Set">
-		<comment>Set(with update sense).</comment>
-		<val lang="en_US">Set</val>
-		<val lang="de_DE">Set</val>
-		<val lang="fr_FR">Set</val>
-		<val lang="ja_JP">Set</val>
-		<val lang="nl_NL">Set</val>
-		<val lang="zh_CN">Set</val>
+	<key value="Set_Remote">
+		<comment>Set remote</comment>
+		<val lang="en_US">Set remote</val>
+		<val lang="de_DE">Set remote</val>
+		<val lang="fr_FR">Set remote</val>
+		<val lang="ja_JP">Set remote</val>
+		<val lang="nl_NL">Set remote</val>
+		<val lang="zh_CN">Set remote</val>
 	</key>
 	<key value="Set_Remote_Branch">
 		<comment>Set remote branch.</comment>

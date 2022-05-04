@@ -1808,9 +1808,9 @@ public class Tags {
   public static final String CHANGE = "Change";
   
   /**
-   * Set(with update sense).
+   * Set remote.
    */
-  public static final String SET = "Set";
+  public static final String SET_REMOTE = "Set_Remote";
 
   /**
    * Set remote branch.
