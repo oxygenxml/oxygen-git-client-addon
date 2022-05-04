@@ -1818,9 +1818,9 @@ public class Tags {
   public static final String SET_REMOTE_BRANCH = "Set_Remote_Branch";
   
   /**
-   * En: Clone repository.
+   * Clone.
    */
-  public static final String CLONE_REPO_MESSAGE_CAP = "Clone_Repo_Message_Cap";
+  public static final String CLONE = "Clone";
   
   /**
    * Text for track branch button.

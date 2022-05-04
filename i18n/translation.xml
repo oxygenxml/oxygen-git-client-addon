@@ -47,14 +47,14 @@
 		<val lang="nl_NL">Set remote branch</val>
 		<val lang="zh_CN">Set remote branch</val>
 	</key>
-	<key value="Clone_Repo_Message_Cap">
-		<comment>Clone repository.</comment>
-		<val lang="en_US">Clone repository</val>
-		<val lang="de_DE">Clone repository</val>
-		<val lang="fr_FR">Clone repository</val>
-		<val lang="ja_JP">Clone repository</val>
-		<val lang="nl_NL">Clone repository</val>
-		<val lang="zh_CN">Clone repository</val>
+	<key value="Clone">
+		<comment>Clone.</comment>
+		<val lang="en_US">Clone</val>
+		<val lang="de_DE">Clone</val>
+		<val lang="fr_FR">Clone</val>
+		<val lang="ja_JP">Clone</val>
+		<val lang="nl_NL">Clone</val>
+		<val lang="zh_CN">Clone</val>
 	</key>
 	<key value="Track_Branch_Button_Text">
 		<comment>Text for track branch button.</comment>
