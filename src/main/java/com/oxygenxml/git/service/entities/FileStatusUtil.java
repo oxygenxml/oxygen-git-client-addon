@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service.entities;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,6 +28,11 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.utils.FileUtil;
 
 /**
  * Class with usefully methods for files statues.
@@ -35,6 +41,11 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
  *
  */
 public class FileStatusUtil {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileStatusUtil.class);
 
 
   /**
@@ -43,8 +54,8 @@ public class FileStatusUtil {
   private FileStatusUtil() {
     // nothing.
   }
-  
 
+  
   /**
    * Computer files statues for specified tree walk and commit.
    *
@@ -207,6 +218,27 @@ public class FileStatusUtil {
 
     return toReturn;
   }
+  
+  
+  /**
+   * Computes a list of files statues URLs.
+   * 
+   * @param files The files.
+   * 
+   * @return The computed URLs.
+   */
+  public static List<URL> getFilesStatuesURL(@NonNull final List<FileStatus> files) {
+    final List<URL> filesURL = new ArrayList<>();
+    files.forEach(file -> {
+      try {
+        filesURL.add(FileUtil.getFileURL(file.getFileLocation()));
+      } catch (NoRepositorySelected e) {
+        LOGGER.debug(e.getMessage(), e);
+      }
+    });
+      
+    return filesURL;
+  }
 
   
   /**
@@ -286,6 +318,5 @@ public class FileStatusUtil {
     return collect;
   }
 
- 
   
 }
