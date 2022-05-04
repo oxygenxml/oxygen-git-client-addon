@@ -13,7 +13,7 @@
       </head>
       <body>
         <div>
-          <p> This add-on installs a built-in Git Client in Oxygen. It contributes multiple
+          <p> This add-on installs a Git Client in Oxygen. It contributes multiple
             side-views, each one specialized for various Git operations. The main one is called the
               <i>Git Staging</i> view. Using the Git Client add-on, various Git operations can be
             performed, such as committing changes into the local repository, pushing/pulling changes
