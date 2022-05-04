@@ -14,6 +14,21 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Merge_Info">
+		<comment>The information about merge operation.</comment>
+		<val lang="en_US">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="de_DE">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="fr_FR">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="ja_JP">TThis operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="nl_NL">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="zh_CN">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+	</key>
 	<key value="Set">
 		<comment>Set(with update sense).</comment>
 		<val lang="en_US">Set</val>
@@ -155,27 +170,6 @@
 		<val lang="ja_JP">Squash merge</val>
 		<val lang="nl_NL">Squash merge</val>
 		<val lang="zh_CN">Squash merge</val>
-	</key>
-	<key value="Merge_Info">
-		<comment>The information about merge operation.</comment>
-		<val lang="en_US">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="de_DE">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="fr_FR">Cette opération fusionnera sur la branche "{0}" toutes les modifications
-			effectuées sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}", 
-			et enregistrera le résultat dans un nouveau commit de fusion.</val>
-		<val lang="ja_JP">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="nl_NL">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="zh_CN">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
 	</key>
 	<key value="No_Remote_Exception_Message">
 		<comment>Message for exception that appears when a pull is executed
