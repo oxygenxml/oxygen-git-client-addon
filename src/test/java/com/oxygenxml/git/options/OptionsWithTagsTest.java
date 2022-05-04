@@ -151,20 +151,9 @@ public class OptionsWithTagsTest {
         .getCredentials());
     personalAccessTokens =  new ArrayList<>(OptionsManager.getInstance().getOptions()
             .getPersonalAccessTokensList().getPersonalAccessTokens() );
-    boolean tokenExist = false;
-    boolean userAndPassExist = false;
-    for(UserAndPasswordCredentials userCred : credentials) {
-      if("host3".equals(userCred.getHost())) {
-        userAndPassExist = true;
-      }
-    }
-    assertFalse(userAndPassExist);
-    for(PersonalAccessTokenInfo token : personalAccessTokens) {
-      if("host3".equals(token.getHost()) && "token_of_life".equals(token.getTokenValue())) {
-        tokenExist = true;
-      } 
-    }
-    assertTrue(tokenExist);
+    assertFalse(credentials.stream().anyMatch(c -> "host3".equals(c.getHost())));
+    assertTrue(personalAccessTokens.stream().anyMatch(
+        t -> "host3".equals(t.getHost()) && "token_of_life".equals(t.getTokenValue())));
   }
   
   /**
