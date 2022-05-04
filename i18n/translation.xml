@@ -14,6 +14,23 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Merge_Branches_Question_Message">
+		<comment>The question message on the merge branches pop up dialog
+		</comment>
+		<val lang="en_US">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="de_DE">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="fr_FR">Are you sure you want to merge "{0}" into
+			"{1}"?
+		</val>
+		<val lang="ja_JP">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="nl_NL">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="zh_CN">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+	</key>
 	<key value="Merge_Info">
 		<comment>The information about merge operation.</comment>
 		<val lang="en_US">This operation will merge changes on top of the "{0}" branch.  
@@ -1440,22 +1457,6 @@
 		<val lang="ja_JP">分岐をマージする</val>
 		<val lang="nl_NL">Vertakkingen samenvoegen</val>
 		<val lang="zh_CN">合并分支</val>
-	</key>
-	<key value="Merge_Branches_Question_Message">
-		<comment>The question message on the merge branches pop up dialog
-		</comment>
-		<val lang="en_US">Are you sure you want to add all changes from "{0}" to
-			"{1}"?</val>
-		<val lang="de_DE">Sind Sie sicher, dass Sie alle Änderungen von "{0}" nach
-			"{1}" hinzufügen wollen?</val>
-		<val lang="fr_FR">Etes-vous sûr de vouloir ajouter toutes les
-			modifications de "{0}" dans
-			"{1}"?
-		</val>
-		<val lang="ja_JP">"{0}" から "{1}" にすべての変更を追加しますか?</val>
-		<val lang="nl_NL">Weet u zeker dat u alle wijzigingen van "{0}" wilt
-			toevoegen aan "{1}"?</val>
-		<val lang="zh_CN">您确定要将所有更改从“{0}”添加到“{1}”吗?</val>
 	</key>
 	<key value="Open_the_working_copy_version_of">
 		<comment>Action name to open the working copy for a file at a given
