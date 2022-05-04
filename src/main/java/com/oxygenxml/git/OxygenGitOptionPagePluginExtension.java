@@ -174,7 +174,13 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     
     boolean updateSubmodules = OPTIONS_MANAGER.getUpdateSubmodulesOnPull();
     updateSubmodulesOnPull.setSelected(updateSubmodules);
+    
+    boolean validateFilesBeforeCommit = OPTIONS_MANAGER.isFilesValidatedBeforeCommit();
+    validateBeforeCommit.setSelected(validateFilesBeforeCommit);
 
+    boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
+    validateBeforeCommit.setSelected(rejectCommitOnProblems);
+    
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {
       case ASK_TO_SWITCH_TO_WC:
@@ -226,7 +232,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void apply(PluginWorkspace pluginWorkspace) {
     OPTIONS_MANAGER.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
     OPTIONS_MANAGER.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
-
+    OPTIONS_MANAGER.setValidateFilesBeforeCommit(validateBeforeCommit.isSelected());
+    OPTIONS_MANAGER.setRejectCommitOnValidationProblems(rejectCommitOnValidationProblems.isSelected());
     WhenRepoDetectedInProject whatToDo = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
     if (autoSwitchToWCRadio.isSelected()) {
       whatToDo = WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC;

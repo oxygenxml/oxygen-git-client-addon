@@ -239,5 +239,25 @@ public interface Options {
    * @param paTokensList the list of personal access token info items to set.
    */
   public void setPersonalAccessTokensList(PersonalAccessTokenInfoList paTokensList) ;
+  
+  /**
+   * @return <code>true</code> to validate files before commit.
+   */
+  public boolean getValidateFilesBeforeCommit() ;
+
+  /**
+   * @param updateSubmodules <code>true</code> to validate files before commit.
+   */
+  public void setValidateFilesBeforeCommit(final boolean validateFilesBeforeCommit) ;
+  
+  /**
+   * @return <code>true</code> to reject commit on validation problems.
+   */
+  public boolean getRejectCommitOnValidationProblems() ;
+
+  /**
+   * @param rejectCommitOnValidationProblems <code>true</code> to reject commit on validation problems.
+   */
+  public void setRejectCommitOnValidationProblems(final boolean rejectCommitOnValidationProblems) ;
 
 }

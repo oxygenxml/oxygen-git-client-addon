@@ -577,6 +577,34 @@ public class OptionsManager {
  }
  
  /**
+  * @param validateFilesBeforeCommit <code>true</code> if the files should be validates before commit.
+  */
+ public void setValidateFilesBeforeCommit(boolean validateFilesBeforeCommit) {
+   getOptions().setValidateFilesBeforeCommit(validateFilesBeforeCommit);
+ }
+
+ /**
+  * @return <code>true</code> if the files should be validates before commit.
+  */
+ public boolean isFilesValidatedBeforeCommit() {
+   return getOptions().getValidateFilesBeforeCommit();
+ }
+ 
+ /**
+  * @param rejectCommitOnValidationProblems <code>true</code> if the commit should be rejected on validation problems.
+  */
+ public void setRejectCommitOnValidationProblems(boolean rejectCommitOnValidationProblems) {
+   getOptions().setRejectCommitOnValidationProblems(rejectCommitOnValidationProblems);
+ }
+ 
+ /**
+  * @return <code>true</code> if the commit should be rejected on validation problems.
+  */
+ public boolean isCommitRejectedOnValidationProblems() {
+   return getOptions().getRejectCommitOnValidationProblems();
+ }
+ 
+ /**
   * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
   * checkout a newly created local branch.
   */
