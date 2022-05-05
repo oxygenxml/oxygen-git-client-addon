@@ -1837,5 +1837,14 @@ public class Tags {
    */
   public static final String REJECT_COMMIT_ON_PROBLEMS = "Reject_Commit_On_Problems";
 
+  /**
+   * Title for problems occurred on a pre-commit validation and presented by a dialog/view.
+   */
+  public static final String PRE_COMMIT_VALIDATION = "Pre_Commit_Validation";
+  
+  /**
+   * Displayed message when problems on validation are detected.
+   */
+  public static final String FAILED_COMMIT_VALIDATION_MESSAGE = "Failed_Commit_Validation_Message";
 }
 

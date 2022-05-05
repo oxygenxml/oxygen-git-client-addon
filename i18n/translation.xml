@@ -14,6 +14,24 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Failed_Commit_Validation_Message">
+		<comment>Displayed message when problems on validation are detected.</comment>
+		<val lang="en_US">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
+		<val lang="de_DE">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
+		<val lang="fr_FR">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
+		<val lang="ja_JP">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
+		<val lang="nl_NL">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
+		<val lang="zh_CN">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
+	</key>
+	<key value="Pre_Commit_Validation">
+		<comment>Title for problems occurred on a pre-commit validation and presented by a dialog/view.</comment>
+		<val lang="en_US">Git pre-commit validation</val>
+		<val lang="de_DE">Git pre-commit validation</val>
+		<val lang="fr_FR">Git pre-commit validation</val>
+		<val lang="ja_JP">Git pre-commit validation</val>
+		<val lang="nl_NL">Git pre-commit validation</val>
+		<val lang="zh_CN">Git pre-commit validation</val>
+	</key>
 	<key value="Reject_Commit_On_Problems">
 		<comment>Label for reject commit on validation problems option.</comment>
 		<val lang="en_US">Reject commit on validation problems</val>
