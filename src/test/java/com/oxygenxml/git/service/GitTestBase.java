@@ -71,7 +71,6 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
-import com.oxygenxml.git.view.dialog.internal.MessageDialogPresenter;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -688,8 +687,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
-    
-    MessagePresenterProvider.setPresenter(new MessageDialogPresenter());
+ 
+    MessagePresenterProvider.setBuilder(null);
     
     // If there is a running task, wait for it.
     waitForScheduler();

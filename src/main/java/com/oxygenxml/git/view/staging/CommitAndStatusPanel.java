@@ -60,6 +60,7 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -129,11 +130,12 @@ public class CommitAndStatusPanel extends JPanel {
               translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
         } else {
           if (commitMessageArea.getText().trim().isEmpty()) {
-            int userAnswer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
-                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_TITLE),
-                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG), 
-                translator.getTranslation(Tags.COMMIT_ANYWAY),
-                translator.getTranslation(Tags.CANCEL));
+            final int userAnswer = MessagePresenterProvider.getBuilder(
+                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_TITLE), DialogType.WARNING)
+                .setQuestionMessage(translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG))
+                .setOkButtonName(translator.getTranslation(Tags.COMMIT))
+                .setCancelButtonName(translator.getTranslation(Tags.CANCEL))
+                .buildAndShow().getResult();
             if (userAnswer == 1) {
               executeCommit();
             }else {

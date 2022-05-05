@@ -37,6 +37,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.history.actions.CheckoutCommitAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -362,13 +363,14 @@ public class TagsDialog extends OKCancelDialog {
 
     return e -> {
       
-      int result = MessagePresenterProvider.getPresenter().showQuestionMessage(
-          TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE),
-          TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_MESSAGE),
-          TRANSLATOR.getTranslation(Tags.YES),
-          TRANSLATOR.getTranslation(Tags.NO));
-      
-      if ( result == OKCancelDialog.RESULT_OK) {
+      final int result = MessagePresenterProvider.getBuilder(
+          TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE), DialogType.QUESTION)
+          .setQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_MESSAGE))
+          .setOkButtonName(TRANSLATOR.getTranslation(Tags.YES))
+          .setCancelButtonName(TRANSLATOR.getTranslation(Tags.NO))
+          .buildAndShow().getResult();
+          
+      if (result == OKCancelDialog.RESULT_OK) {
         deleteButton.setEnabled(false);
         pushButton.setEnabled(false);
         int selectedRow = (tagsTable.getSelectedRow());

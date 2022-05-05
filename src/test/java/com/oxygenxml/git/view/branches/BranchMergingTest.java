@@ -25,7 +25,9 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
-import com.oxygenxml.git.view.dialog.internal.IDialogPresenter;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.dialog.internal.MessageDialog;
+import com.oxygenxml.git.view.dialog.internal.MessageDialogBuilder;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
@@ -311,13 +313,12 @@ public class BranchMergingTest extends GitTestBase {
     
     final boolean[] dialogPresentedFlags = new boolean[1];
     dialogPresentedFlags[0] = false;
-    MessagePresenterProvider.setPresenter(new IDialogPresenter() {
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_branch_merging", DialogType.WARNING) {
       @Override
-      public void showWarningMessage(
-          final String title, 
-          final List<String> files, 
-          final String message) {
+      public MessageDialog buildAndShow() {
         dialogPresentedFlags[0] = true;
+        return Mockito.mock(MessageDialog.class);
       }
     });
     squashMergeBranchesDialog = (SquashMergeDialog)findDialog(

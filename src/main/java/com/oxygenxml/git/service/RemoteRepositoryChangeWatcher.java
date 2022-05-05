@@ -17,6 +17,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
@@ -190,11 +191,12 @@ public class RemoteRepositoryChangeWatcher {
    * @param message The message to be displayed to the user
    */
   private void showNewCommitsInRemoteMessage(String message) {
-    if (MessagePresenterProvider.getPresenter().showInformationMessage(
-        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
-        message,
-        translator.getTranslation(Tags.PULL_CHANGES),
-        translator.getTranslation(Tags.CLOSE)) == OKCancelDialog.RESULT_OK) {
+    if (MessagePresenterProvider.getBuilder(
+        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), DialogType.INFO)
+        .setMessage(message)
+        .setOkButtonName(translator.getTranslation(Tags.PULL_CHANGES))
+        .setCancelButtonName(translator.getTranslation(Tags.CLOSE))
+        .buildAndShow().getResult() == OKCancelDialog.RESULT_OK) {
       gitController.pull();
     }
   }

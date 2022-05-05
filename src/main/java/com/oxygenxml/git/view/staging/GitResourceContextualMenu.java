@@ -22,6 +22,7 @@ import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.staging.actions.DiscardAction;
@@ -280,13 +281,12 @@ public class GitResourceContextualMenu extends JPopupMenu {
       public void actionPerformed(ActionEvent e) {
         try {
           if(FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
-						int answer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
-										TRANSLATOR.getTranslation(Tags.MARK_RESOLVED),
-										TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE),
-										TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY),
-										TRANSLATOR.getTranslation(Tags.CANCEL)
-										
-						);
+						final int answer = MessagePresenterProvider.getBuilder(
+						    TRANSLATOR.getTranslation(Tags.MARK_RESOLVED), DialogType.WARNING)
+                .setQuestionMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE))
+                .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY))
+                .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
+                .buildAndShow().getResult();								
 						if(answer == OKCancelDialog.RESULT_OK) {
 						  gitCtrl.asyncAddToIndex(allSelectedResources);
 						}

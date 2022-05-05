@@ -1,8 +1,10 @@
 package com.oxygenxml.git.view.dialog;
 
+import org.eclipse.jgit.annotations.NonNull;
+
 import com.oxygenxml.git.service.annotation.UsedForTests;
-import com.oxygenxml.git.view.dialog.internal.IDialogPresenter;
-import com.oxygenxml.git.view.dialog.internal.MessageDialogPresenter;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.dialog.internal.MessageDialogBuilder;
 
 /**
  * Used to provide a dialog presenter.
@@ -13,9 +15,9 @@ import com.oxygenxml.git.view.dialog.internal.MessageDialogPresenter;
 public class MessagePresenterProvider {
 
   /**
-   * The dialog presenter.
+   * The dialog builder.
    */
-  private static IDialogPresenter internalDialogPresenter = new MessageDialogPresenter();
+  private static MessageDialogBuilder imposedBuilder;
 
   /**
    * Hidden constructor.
@@ -23,24 +25,29 @@ public class MessagePresenterProvider {
   private MessagePresenterProvider() {
     // not needed
   }
-
+  
   /**
-   * Get the presenter.
-   *
-   * @return Dialog presenter.
+   * Provide a builder for @MessageDialog.
+   * 
+   * @param title The title of the initial dialog.
+   * @param type  The type of new initial dialog.
+   * 
+   * @return the existing builder or a new instance if no builder is set.
    */
-  public static IDialogPresenter getPresenter() {
-    return internalDialogPresenter;
+  public static MessageDialogBuilder getBuilder(@NonNull final String title,
+      final @NonNull DialogType type) { 
+    return imposedBuilder != null ? 
+        imposedBuilder : new MessageDialogBuilder(title, type);
   }
 
   /**
-   * Set the new presenter for message dialog.
+   * Set the new builder for dialogs.
    * 
-   * @param newPresenter The new dialog presenter. 
+   * @param newBuilder The new dialogs builder. 
    */
   @UsedForTests
-  public static void setPresenter(final IDialogPresenter newPresenter) {
-    internalDialogPresenter = newPresenter;
+  public static void setBuilder(final MessageDialogBuilder newBuilder) {
+    imposedBuilder = newBuilder;
   }
   
 }
