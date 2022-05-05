@@ -9,6 +9,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -91,21 +92,24 @@ public class StashUtil {
   public static boolean dropStash(int stashToBeDropped) {
     boolean wasDropped = false;
 
-    int answer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
-            TRANSLATOR.getTranslation(Tags.DELETE_STASH),
-            TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION),
-            TRANSLATOR.getTranslation(Tags.YES),
-            TRANSLATOR.getTranslation(Tags.NO));
+    final int answer = MessagePresenterProvider.getBuilder(
+        TRANSLATOR.getTranslation(Tags.DELETE_STASH), DialogType.WARNING)
+        .setQuestionMessage(TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION))
+        .setOkButtonName(TRANSLATOR.getTranslation(Tags.YES))
+        .setCancelButtonName(TRANSLATOR.getTranslation(Tags.NO))
+        .buildAndShow().getResult();
+        
     if (OKCancelDialog.RESULT_OK == answer) {
       try {
         GIT_ACCESS.dropStash(stashToBeDropped);
         wasDropped = true;
       } catch (GitAPIException e) {
-        MessagePresenterProvider.getPresenter().showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.DELETE_STASH),
-                null,
-                TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_DELETED) + e.getMessage()
-        );
+        MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.DELETE_STASH), DialogType.ERROR)
+            .setMessage(TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_DELETED) + e.getMessage())
+            .setCancelButtonVisible(false)
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+            .buildAndShow();  
       }
     }
 
@@ -125,24 +129,27 @@ public class StashUtil {
   public static boolean clearStashes() {
     boolean wereDroppedAllStashes = false;
 
-    int answer = MessagePresenterProvider.getPresenter().showWarningMessageWithConfirmation(
-            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-            TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
-            TRANSLATOR.getTranslation(Tags.YES),
-            TRANSLATOR.getTranslation(Tags.NO));
+    final int answer = MessagePresenterProvider.getBuilder(
+        TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES), DialogType.WARNING)
+        .setQuestionMessage(TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE))
+        .setOkButtonName(TRANSLATOR.getTranslation(Tags.YES))
+        .setCancelButtonName(TRANSLATOR.getTranslation(Tags.NO))
+        .buildAndShow().getResult(); 
+       
     if (OKCancelDialog.RESULT_OK == answer) {
       try {
         GIT_ACCESS.dropAllStashes();
         wereDroppedAllStashes = true;
       } catch (GitAPIException e) {
-        MessagePresenterProvider.getPresenter().showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-                null,
-                TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_DELETED)
-        );
+        MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES), DialogType.ERROR)
+            .setMessage(TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_DELETED))
+            .setCancelButtonVisible(false)
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+            .buildAndShow(); 
       }
     }
-
+    
     return wereDroppedAllStashes;
   }
 

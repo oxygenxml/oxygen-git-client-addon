@@ -6,6 +6,7 @@ import com.oxygenxml.git.service.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -36,14 +37,17 @@ public class ExceptionHandlerUtil {
    */
   public static void handleMergeException(final Exception e) {
     if(e instanceof CheckoutConflictException) {
-      MessagePresenterProvider.getPresenter().showWarningMessage(
-          TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
-          ((CheckoutConflictException)e).getConflictingPaths(),
-          TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+      MessagePresenterProvider.getBuilder(
+          TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.WARNING)
+          .setTargetFiles(((CheckoutConflictException)e).getConflictingPaths())
+          .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
+          .setCancelButtonVisible(false)
+          .buildAndShow(); 
     } else if (e instanceof NoChangesInSquashedCommitException) {
-      MessagePresenterProvider.getPresenter().showInformationMessage(
-          TRANSLATOR.getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE), 
-          e.getMessage(), null, null, true, false);
+      MessagePresenterProvider.getBuilder(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE, DialogType.INFO)
+      .setCancelButtonVisible(false)
+      .setMessage(e.getMessage())
+      .buildAndShow();
     } else {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }

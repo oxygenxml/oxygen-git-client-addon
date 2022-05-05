@@ -32,14 +32,46 @@
 		<val lang="nl_NL">Validate each file before commit</val>
 		<val lang="zh_CN">Validate each file before commit</val>
 	</key>
-	<key value="Set">
-		<comment>Set(with update sense).</comment>
-		<val lang="en_US">Set</val>
-		<val lang="de_DE">Set</val>
-		<val lang="fr_FR">Set</val>
-		<val lang="ja_JP">Set</val>
-		<val lang="nl_NL">Set</val>
-		<val lang="zh_CN">Set</val>
+	<key value="Merge_Branches_Question_Message">
+		<comment>The question message on the merge branches pop up dialog
+		</comment>
+		<val lang="en_US">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="de_DE">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="fr_FR">Are you sure you want to merge "{0}" into
+			"{1}"?
+		</val>
+		<val lang="ja_JP">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="nl_NL">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+		<val lang="zh_CN">Are you sure you want to merge "{0}" into
+			"{1}"?</val>
+	</key>
+	<key value="Merge_Info">
+		<comment>The information about merge operation.</comment>
+		<val lang="en_US">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="de_DE">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="fr_FR">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="ja_JP">TThis operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="nl_NL">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="zh_CN">This operation will merge changes on top of the "{0}" branch.  
+		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+	</key>
+	<key value="Set_Remote">
+		<comment>Set remote</comment>
+		<val lang="en_US">Set remote</val>
+		<val lang="de_DE">Set remote</val>
+		<val lang="fr_FR">Set remote</val>
+		<val lang="ja_JP">Set remote</val>
+		<val lang="nl_NL">Set remote</val>
+		<val lang="zh_CN">Set remote</val>
 	</key>
 	<key value="Set_Remote_Branch">
 		<comment>Set remote branch.</comment>
@@ -50,14 +82,14 @@
 		<val lang="nl_NL">Set remote branch</val>
 		<val lang="zh_CN">Set remote branch</val>
 	</key>
-	<key value="Clone_Repo_Message_Cap">
-		<comment>Clone repository.</comment>
-		<val lang="en_US">Clone repository</val>
-		<val lang="de_DE">Clone repository</val>
-		<val lang="fr_FR">Clone repository</val>
-		<val lang="ja_JP">Clone repository</val>
-		<val lang="nl_NL">Clone repository</val>
-		<val lang="zh_CN">Clone repository</val>
+	<key value="Clone">
+		<comment>Clone.</comment>
+		<val lang="en_US">Clone</val>
+		<val lang="de_DE">Clone</val>
+		<val lang="fr_FR">Clone</val>
+		<val lang="ja_JP">Clone</val>
+		<val lang="nl_NL">Clone</val>
+		<val lang="zh_CN">Clone</val>
 	</key>
 	<key value="Track_Branch_Button_Text">
 		<comment>Text for track branch button.</comment>
@@ -173,27 +205,6 @@
 		<val lang="ja_JP">Squash merge</val>
 		<val lang="nl_NL">Squash merge</val>
 		<val lang="zh_CN">Squash merge</val>
-	</key>
-	<key value="Merge_Info">
-		<comment>The information about merge operation.</comment>
-		<val lang="en_US">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="de_DE">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="fr_FR">Cette opération fusionnera sur la branche "{0}" toutes les modifications
-			effectuées sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}", 
-			et enregistrera le résultat dans un nouveau commit de fusion.</val>
-		<val lang="ja_JP">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="nl_NL">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
-		<val lang="zh_CN">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch, 
-		and will record the result in a new merge commit.</val>
 	</key>
 	<key value="No_Remote_Exception_Message">
 		<comment>Message for exception that appears when a pull is executed
@@ -1464,22 +1475,6 @@
 		<val lang="ja_JP">分岐をマージする</val>
 		<val lang="nl_NL">Vertakkingen samenvoegen</val>
 		<val lang="zh_CN">合并分支</val>
-	</key>
-	<key value="Merge_Branches_Question_Message">
-		<comment>The question message on the merge branches pop up dialog
-		</comment>
-		<val lang="en_US">Are you sure you want to add all changes from "{0}" to
-			"{1}"?</val>
-		<val lang="de_DE">Sind Sie sicher, dass Sie alle Änderungen von "{0}" nach
-			"{1}" hinzufügen wollen?</val>
-		<val lang="fr_FR">Etes-vous sûr de vouloir ajouter toutes les
-			modifications de "{0}" dans
-			"{1}"?
-		</val>
-		<val lang="ja_JP">"{0}" から "{1}" にすべての変更を追加しますか?</val>
-		<val lang="nl_NL">Weet u zeker dat u alle wijzigingen van "{0}" wilt
-			toevoegen aan "{1}"?</val>
-		<val lang="zh_CN">您确定要将所有更改从“{0}”添加到“{1}”吗?</val>
 	</key>
 	<key value="Open_the_working_copy_version_of">
 		<comment>Action name to open the working copy for a file at a given

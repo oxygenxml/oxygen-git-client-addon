@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -23,7 +22,9 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
-import com.oxygenxml.git.view.dialog.internal.IDialogPresenter;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.dialog.internal.MessageDialog;
+import com.oxygenxml.git.view.dialog.internal.MessageDialogBuilder;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
 
 import junit.framework.TestCase;
@@ -75,12 +76,10 @@ public class GitAccessStashTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, file2.getName()));
     gitAccess.commit("file test added");
    
-    MessagePresenterProvider.setPresenter(new IDialogPresenter() {
-      @Override
-      public void showWarningMessage(
-          final String title, 
-          final List<String> files, 
-          final String message) {
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_stash", DialogType.WARNING) {
+      public MessageDialog buildAndShow() {
+        return Mockito.mock(MessageDialog.class);
       }
     });
     

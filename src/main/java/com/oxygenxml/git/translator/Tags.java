@@ -1808,9 +1808,9 @@ public class Tags {
   public static final String CHANGE = "Change";
   
   /**
-   * Set(with update sense).
+   * Set remote.
    */
-  public static final String SET = "Set";
+  public static final String SET_REMOTE = "Set_Remote";
 
   /**
    * Set remote branch.
@@ -1818,14 +1818,14 @@ public class Tags {
   public static final String SET_REMOTE_BRANCH = "Set_Remote_Branch";
   
   /**
-   * En: Clone repository.
+   * Clone.
    */
-  public static final String CLONE_REPO_MESSAGE_CAP = "Clone_Repo_Message_Cap";
+  public static final String CLONE = "Clone";
   
   /**
    * Text for track branch button.
    */
-  public static final String TRACK_BRANCH = "Track branch";
+  public static final String TRACK_BRANCH = "Track_Branch_Button_Text";
   
   /**
    * Label for validate files before commit option.

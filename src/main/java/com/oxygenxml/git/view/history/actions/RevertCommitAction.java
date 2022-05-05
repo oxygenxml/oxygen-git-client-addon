@@ -15,6 +15,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -51,11 +52,13 @@ public class RevertCommitAction extends AbstractAction {
   @Override
   public void actionPerformed(ActionEvent e) {
     Translator translator = Translator.getInstance();
-    int result = MessagePresenterProvider.getPresenter().showQuestionMessage(
-        translator.getTranslation(Tags.REVERT_COMMIT),
-        translator.getTranslation(Tags.REVERT_COMMIT_CONFIRMATION), 
-        translator.getTranslation(Tags.YES),
-        translator.getTranslation(Tags.NO));
+    final int result = MessagePresenterProvider.getBuilder(
+        translator.getTranslation(Tags.REVERT_COMMIT), DialogType.QUESTION)
+        .setQuestionMessage(translator.getTranslation(Tags.REVERT_COMMIT_CONFIRMATION))
+        .setOkButtonName(translator.getTranslation(Tags.YES))
+        .setCancelButtonName(translator.getTranslation(Tags.NO))
+        .buildAndShow().getResult();
+    
     if ( result == OKCancelDialog.RESULT_OK) {
       GitOperationScheduler.getInstance().schedule(() -> {
         try {

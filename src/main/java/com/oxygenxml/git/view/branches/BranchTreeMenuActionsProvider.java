@@ -30,6 +30,7 @@ import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
 
@@ -306,8 +307,11 @@ public class BranchTreeMenuActionsProvider {
                   squashMergeDialog.performSquashMerge(currentBranch, selectedBranch, 
                       ctrl.getGitAccess().getRepository().resolve(selectedBranch));
                 } catch(NoChangesInSquashedCommitException ex) {
-                  MessagePresenterProvider.getPresenter().showInformationMessage(
-                      Tags.SQUASH_MERGE, ex.getMessage(), null, null, true, false);   
+                  MessagePresenterProvider.getBuilder(
+                      TRANSLATOR.getTranslation(Tags.MARK_RESOLVED), DialogType.INFO)
+                      .setMessage(ex.getMessage())
+                      .setCancelButtonVisible(false)
+                      .buildAndShow();       
                 }
               }
               return null;
@@ -354,11 +358,13 @@ public class BranchTreeMenuActionsProvider {
                     TextFormatUtil.shortenText(currentBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."),
                     TextFormatUtil.shortenText(selectedBranch, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "..."));
                    
-                int answer = MessagePresenterProvider.getPresenter().showQuestionMessage(
-                    TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES),
-                    questionMessage,
-                    TRANSLATOR.getTranslation(Tags.MERGE),
-                    TRANSLATOR.getTranslation(Tags.CANCEL));
+                final int answer = MessagePresenterProvider.getBuilder(
+                    TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES), DialogType.QUESTION)
+                    .setQuestionMessage(questionMessage)
+                    .setOkButtonName(TRANSLATOR.getTranslation(Tags.MERGE))
+                    .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
+                    .buildAndShow().getResult();       
+                   
                 if (answer == OKCancelDialog.RESULT_OK) {
                   try {
                     ctrl.getGitAccess().mergeBranch(nodePath);
@@ -400,10 +406,14 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.DELETE) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (MessagePresenterProvider.getPresenter().showQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_BRANCH),
-            MessageFormat.format(TRANSLATOR.getTranslation(Tags.CONFIRMATION_MESSAGE_DELETE_BRANCH),
-                nodePath.substring(nodePath.contains("refs/heads/") ? "refs/heads/".length() : 0)),
-            TRANSLATOR.getTranslation(Tags.YES), TRANSLATOR.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
+        final int result = MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.DELETE_BRANCH), DialogType.QUESTION)
+            .setQuestionMessage(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CONFIRMATION_MESSAGE_DELETE_BRANCH),
+                nodePath.substring(nodePath.contains("refs/heads/") ? "refs/heads/".length() : 0)))
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.YES))
+            .setCancelButtonName(TRANSLATOR.getTranslation(Tags.NO))
+            .buildAndShow().getResult();
+        if (result == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(() -> {
             String branch = BranchesUtil.createBranchPath(nodePath,
                 BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);

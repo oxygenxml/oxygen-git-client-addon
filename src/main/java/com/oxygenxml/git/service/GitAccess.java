@@ -118,6 +118,7 @@ import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.utils.URIUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -1564,10 +1565,13 @@ public class GitAccess {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
           Translator.getInstance().getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
     } else if (gitStatus.hasUncommittedChanges()) {
-      MessagePresenterProvider.getPresenter().showErrorMessage(
-          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
-          new ArrayList<>(gitStatus.getUncommittedChanges()),
-          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+      MessagePresenterProvider.getBuilder(
+          TRANSLATOR.getTranslation(Tags.REVERT_COMMIT), DialogType.ERROR)
+          .setTargetFiles(new ArrayList<>(gitStatus.getUncommittedChanges()))
+          .setMessage(TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
+          .setCancelButtonVisible(false)
+          .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+          .buildAndShow();         
     } else {
       fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
       Repository repo = git.getRepository();
@@ -1576,10 +1580,12 @@ public class GitAccess {
         git.revert().include(revcom).call();
         Set<String> conflictingFiles = getConflictingFiles();
         if (!conflictingFiles.isEmpty()) {
-          MessagePresenterProvider.getPresenter().showWarningMessage(
-              TRANSLATOR.getTranslation(Tags.REVERT_COMMIT),
-              new ArrayList<>(conflictingFiles),
-              TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS));
+          MessagePresenterProvider.getBuilder(
+              TRANSLATOR.getTranslation(Tags.REVERT_COMMIT), DialogType.WARNING)
+              .setTargetFiles(new ArrayList<>(conflictingFiles))
+              .setMessage(TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS))
+              .setCancelButtonVisible(false)
+              .buildAndShow();         
         }
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
       } catch (GitAPIException | RevisionSyntaxException e) {
@@ -2341,20 +2347,25 @@ public class GitAccess {
           LOGGER.debug("We have conflicts here: {}", res.getConflicts());
         }
         final List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
-        MessagePresenterProvider.getPresenter().showWarningMessage(
-            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
-            conflictingFiles,
-            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
+        MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE), DialogType.WARNING)
+            .setTargetFiles(new ArrayList<>(conflictingFiles))
+            .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE))
+            .setCancelButtonVisible(false)
+            .buildAndShow(); 
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Failed because of this files: {}", res.getFailingPaths());
         }
         final List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
-        MessagePresenterProvider.getPresenter().showErrorMessage(
-            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
-            failingFiles,
-            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+        MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.ERROR)
+            .setTargetFiles(new ArrayList<>(failingFiles))
+            .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
+            .setCancelButtonVisible(false)
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+            .buildAndShow();  
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if(isSquash) {
           fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
@@ -2487,45 +2498,57 @@ public class GitAccess {
     switch (status) {
       case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
         if(isPop) {
-          MessagePresenterProvider.getPresenter().showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
-                  conflictingList,
-                  TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
-                          + " "
-                          + TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT)
-          );
+          MessagePresenterProvider.getBuilder(
+              TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
+              .setTargetFiles(conflictingList)
+              .setMessage(TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS))
+              .setCancelButtonVisible(false)
+              .buildAndShow();
+          
         } else {
-          MessagePresenterProvider.getPresenter().showWarningMessage(TRANSLATOR.getTranslation(Tags.APPLY_STASH),
-                  conflictingList,
-                  TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
-          );
+          MessagePresenterProvider.getBuilder(
+              TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
+              .setTargetFiles(conflictingList)
+              .setMessage(TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
+                  + " "
+                  + TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT))
+              .setCancelButtonVisible(false)
+              .buildAndShow();            
         }
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
         break;
       case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
-        MessagePresenterProvider.getPresenter().showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.APPLY_STASH),
-                new ArrayList<>(getConflictingFiles()),
-                TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
-                        + ". "
-                        + TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+        MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.ERROR)
+            .setTargetFiles(new ArrayList<>(getConflictingFiles()))
+            .setMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
+                + ". "
+                + TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST))
+            .setCancelButtonVisible(false)
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+            .buildAndShow();  
         fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);
         LOGGER.error(exception.getMessage(), exception);
         break;
       case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
-        MessagePresenterProvider.getPresenter().showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.APPLY_STASH),
-                null,
-                TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
-                        + ". "
-                        + TRANSLATOR.getTranslation(Tags.STASH_SOLUTIONS_TO_APPLY));
+        MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.ERROR)
+            .setMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
+                + ". "
+                + TRANSLATOR.getTranslation(Tags.STASH_SOLUTIONS_TO_APPLY))
+            .setCancelButtonVisible(false)
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+            .buildAndShow();     
         fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);
         LOGGER.error(exception.getMessage(), exception);
         break;
       case CANNOT_START_BECAUSE_STAGED_FILES:
-        MessagePresenterProvider.getPresenter().showErrorMessage(
-                TRANSLATOR.getTranslation(Tags.APPLY_STASH),
-                null,
-                TRANSLATOR.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
+        MessagePresenterProvider.getBuilder(
+            TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.ERROR)
+            .setMessage(TRANSLATOR.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES))
+            .setCancelButtonVisible(false)
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+            .buildAndShow();     
         fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);
         LOGGER.error(exception.getMessage(), exception);
         break;

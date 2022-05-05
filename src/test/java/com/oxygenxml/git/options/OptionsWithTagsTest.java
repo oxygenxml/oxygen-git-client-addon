@@ -1,6 +1,8 @@
 package com.oxygenxml.git.options;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -144,8 +146,14 @@ public class OptionsWithTagsTest {
     }
     PersonalAccessTokenInfo tokenInfo = new PersonalAccessTokenInfo("host" + 3, "token_of_life");
     OptionsManager.getInstance().saveGitCredentials(tokenInfo);
-    assertEquals("host3", personalAccessTokens.get(1).getHost());
-    assertEquals("token_of_life", personalAccessTokens.get(1).getTokenValue());
+    credentials = new ArrayList<>(
+        OptionsManager.getInstance().getOptions().getUserCredentialsList()
+        .getCredentials());
+    personalAccessTokens =  new ArrayList<>(OptionsManager.getInstance().getOptions()
+            .getPersonalAccessTokensList().getPersonalAccessTokens() );
+    assertFalse(credentials.stream().anyMatch(c -> "host3".equals(c.getHost())));
+    assertTrue(personalAccessTokens.stream().anyMatch(
+        t -> "host3".equals(t.getHost()) && "token_of_life".equals(t.getTokenValue())));
   }
   
   /**
