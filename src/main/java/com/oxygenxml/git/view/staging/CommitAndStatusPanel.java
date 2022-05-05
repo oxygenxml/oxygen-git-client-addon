@@ -52,12 +52,14 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepoNotInitializedException;
+import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
+import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
@@ -85,6 +87,11 @@ public class CommitAndStatusPanel extends JPanel {
    * Max number of characters for the previous messages. 
    */
   private static final int PREV_MESS_MAX_WIDTH = 100;
+  
+  /**
+   * The validation manager.
+   */
+  private static final ValidationManager VALIDATION_MANAGER = ValidationManager.getInstance();
   
   /**
    * Commit action.
@@ -160,10 +167,20 @@ public class CommitAndStatusPanel extends JPanel {
         cursorTimer.start();
 
         SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
+        boolean performCommit = true;
+        if(VALIDATION_MANAGER.validateFilesBeforeCommit() 
+            && !VALIDATION_MANAGER.validateFilesBeforeCommit(
+            FileStatusUtil.getFilesStatuesURL(GitAccess.getInstance().getStagedFiles())
+            )) {
+          performCommit = VALIDATION_MANAGER.showCommitFilesProblems();
+        } 
         
-        gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
-        
-        commitSuccessful = true;
+        if(performCommit) {
+          gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
+          commitSuccessful = true;
+        } else {
+          SwingUtilities.invokeLater(() -> commitButton.setEnabled(true));
+        }
         
       } catch (GitAPIException e1) {
         LOGGER.debug(e1.getMessage(), e1);
