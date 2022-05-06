@@ -31,6 +31,16 @@
 		<val lang="zh_CN">Are you sure you want to merge "{0}" into
 			"{1}"?</val>
 	</key>
+	<key value="Squash_Merge_Info">
+		<comment>The information about squash merge.
+		</comment>
+		<val lang="en_US">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="de_DE">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="fr_FR">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="ja_JP">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="nl_NL">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="zh_CN">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+	</key>
 	<key value="Merge_Info">
 		<comment>The information about merge operation.</comment>
 		<val lang="en_US">This operation will merge changes on top of the "{0}" branch.  
@@ -144,22 +154,6 @@
 		<val lang="ja_JP">The current local branch is not published. Push to create a "{0}" remote branch.</val>
 		<val lang="nl_NL">The current local branch is not published. Push to create a "{0}" remote branch.</val>
 		<val lang="zh_CN">The current local branch is not published. Push to create a "{0}" remote branch.</val>
-	</key>
-	<key value="Squash_Merge_Info">
-		<comment>The information about squash merge.
-		</comment>
-		<val lang="en_US">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="de_DE">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="fr_FR">Cette opération fusionnera au sommet de la branche "{0}" toutes les modifications
-			effectuées sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}". Toutes les modifications seront combinés en une seule modification produisant un nouveau commit.</val>
-		<val lang="ja_JP">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="nl_NL">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
-		<val lang="zh_CN">This operation will merge on top of the "{0}" branch all the changes 
-		made on the "{1}" branch since it diverged from the "{0}" branch. All the changes will be combined into a single change producing a new commit.</val>
 	</key>
 	<key value="Squash_Action_Name">
 		<comment>Name for squash and merge action</comment>
