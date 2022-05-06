@@ -16,12 +16,12 @@
 	</languageList>
 	<key value="Failed_Commit_Validation_Message">
 		<comment>Displayed message when problems on validation are detected.</comment>
-		<val lang="en_US">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
-		<val lang="de_DE">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
-		<val lang="fr_FR">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
-		<val lang="ja_JP">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
-		<val lang="nl_NL">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
-		<val lang="zh_CN">Some problems were detected in validating the files before committing. The results can be viewed in the "Results" view.</val>
+		<val lang="en_US">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="de_DE">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="fr_FR">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="ja_JP">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="nl_NL">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="zh_CN">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
 	</key>
 	<key value="Pre_Commit_Validation">
 		<comment>Title for problems occurred on a pre-commit validation and presented by a dialog/view.</comment>
