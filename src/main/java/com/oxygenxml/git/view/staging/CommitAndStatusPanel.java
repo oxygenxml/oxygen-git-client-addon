@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -53,6 +54,7 @@ import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
@@ -170,7 +172,11 @@ public class CommitAndStatusPanel extends JPanel {
         boolean performCommit = true;
         if(VALIDATION_MANAGER.validateFilesBeforeCommit() 
             && !VALIDATION_MANAGER.validateFilesBeforeCommit(
-            FileStatusUtil.getFilesStatuesURL(GitAccess.getInstance().getStagedFiles())
+            FileStatusUtil.getFilesStatuesURL(
+                GitAccess.getInstance().getStagedFiles().stream().filter(
+                    file -> file.getChangeType() != GitChangeType.REMOVED && 
+                    file.getChangeType() != GitChangeType.MISSING)
+                .collect(Collectors.toList()))
             )) {
           performCommit = VALIDATION_MANAGER.showCommitFilesProblems();
         } 
