@@ -80,7 +80,7 @@ public class ValidationManager {
   /**
    * @return <code>true</code> if the files can and should be validated before commit.
    */
-  public boolean validateFilesBeforeCommit() {
+  public boolean isPreCommitValidationEnabled() {
     return OPTIONS_MANAGER.isFilesValidatedBeforeCommit() && commitFilesValidator.isAvailable();
   }
   

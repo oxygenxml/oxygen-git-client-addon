@@ -170,7 +170,7 @@ public class CommitAndStatusPanel extends JPanel {
 
         SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
         boolean performCommit = true;
-        if(VALIDATION_MANAGER.validateFilesBeforeCommit() 
+        if(VALIDATION_MANAGER.isPreCommitValidationEnabled() 
             && !VALIDATION_MANAGER.validateFilesBeforeCommit(
             FileStatusUtil.getFilesStatuesURL(
                 GitAccess.getInstance().getStagedFiles().stream().filter(
