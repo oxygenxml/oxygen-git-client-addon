@@ -179,7 +179,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     validateBeforeCommit.setSelected(validateFilesBeforeCommit);
 
     boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
-    validateBeforeCommit.setSelected(rejectCommitOnProblems);
+    rejectCommitOnValidationProblems.setSelected(rejectCommitOnProblems);
     
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {
