@@ -111,7 +111,7 @@ public class ValidationManager {
       MessagePresenterProvider.getBuilder(TRANSLATOR.getTranslation(
           Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
       .setOkButtonVisible(false)
-      .setCancelButtonName(Translator.getInstance().getTranslation(Tags.CLOSE))
+      .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
       .setMessage(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE))
       .buildAndShow();
     } else {
@@ -119,7 +119,7 @@ public class ValidationManager {
           Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
       .setMessage(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE))
       .setOkButtonName(Tags.COMMIT_ANYWAY)
-      .setCancelButtonName(Translator.getInstance().getTranslation(Tags.CLOSE))
+      .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
       .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
     }
     

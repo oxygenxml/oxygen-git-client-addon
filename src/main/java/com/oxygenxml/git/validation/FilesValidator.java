@@ -111,6 +111,19 @@ public class FilesValidator implements IValidator {
     }
   }
 
+  /**
+   * Validate the given files and collect problems in internal collector.
+   * <br>
+   * You can access that collector through internal <code>getCollector()</code> method.
+   * <br>
+   * The collector is reseted on every call of this method.
+   * <br>
+   * If <code>isAvailable()</code> internal method returns <code>false</code>, this method will do nothing.
+   * <br>
+   * By default, this collector could have a filter to eliminate unnecessary problems.  
+   *
+   * @see ICollector
+   */
   @Override
   public void validate(final List<URL> files) {
     if(isAvailable()) {

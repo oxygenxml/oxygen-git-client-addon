@@ -35,8 +35,7 @@ public class ProblemsCollector implements ICollector {
           .collect(Collectors.toList()));
     } else {
       problems.addAll(Arrays.asList(dpis));
-    }
-    
+    }  
   }
 
   @Override
