@@ -21,7 +21,19 @@
             history of the repository resources, and more. The add-on also includes a built-in tool
             for comparing and merging changes. </p>
         </div>
-                <div>
+	<div>
+	  <h3>What's new in version 4.1.0</h3>
+          <ol>
+		  <li>Added a <b> Squash merge "SELECTED_BRANCH" into "CURRENT_BRANCH" </b> action in the context menu for local branches in <i> Git Branch Manager </i>. This will add all changes from "SELECTED_BRANCH" to "CURRENT_BRANCH" in a single new commit.</li>
+		  <li>If the local branch has not been published yet, the push button will be decorated with a <i>+</i> symbol and will have a tooltip to explain this.</li>
+		  <li>Some dialogues have been improved to make them easier to understand.</li>
+		  <li>Now, if an operation is in progress, the busy cursor will be displayed when hovering over <i>Git Staging</i> view.</li>
+		  <li>A better message is displayed now when pulling and the local branch doesn't track a remote.</li>	 
+		  <li>By default, commits will be presented for all branches (both remote and local), instead of the current branch.</li>
+		  <li>Bug fixes and performance improvements.<li>
+	  </ol>
+        </div>
+        <div>      
           <h3>What's new in version 4.0.2</h3>
           <ol>
             <li>Fixed an issue that made the <i>Pull(rebase)</i> action from the <i>Git Staging</i> view be disabled at all times.</li> 
