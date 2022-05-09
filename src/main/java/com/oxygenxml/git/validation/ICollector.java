@@ -33,5 +33,16 @@ public interface ICollector {
    * @return <code>true</code> if the collector is empty.
    */
   public boolean isEmpty();
+  
+  /**
+   * Set a filter to check if a problem should be collected.
+   * 
+   * @param filter The problems filter. 
+   */
+  public void setFilter(final IProblemFilter filter);
 
+  /**
+   * @return The current problem filter.
+   */
+  public IProblemFilter getFilter();
 }
