@@ -30,7 +30,7 @@
 		  <li>Now, if an operation is in progress, the busy cursor will be displayed when hovering over <i>Git Staging</i> view.</li>
 		  <li>A better message is displayed now when pulling and the local branch doesn't track a remote.</li>	 
 		  <li>By default, commits will be presented for all branches (both remote and local), instead of the current branch.</li>
-		  <li>Bug fixes and performance improvements.<li>
+		  <li>Bug fixes and performance improvements.</li>
 	  </ol>
         </div>
         <div>      
