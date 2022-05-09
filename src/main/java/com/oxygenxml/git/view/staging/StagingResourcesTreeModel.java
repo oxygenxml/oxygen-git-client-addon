@@ -199,8 +199,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	  for (String path : selectedPaths) {
 	    synchronized (filesStatuses) {
 	      for (FileStatus fileStatus : filesStatuses) {
-	        if (fileStatus.getFileLocation().startsWith(path + "/") || 
-	            fileStatus.getFileLocation().equals(path)) {
+	        if (includePath(path, fileStatus.getFileLocation())) {
 	          containingPaths.add(new FileStatus(fileStatus));
 	        }
 	      }
@@ -273,6 +272,25 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
     } else {
       gitController.asyncAddToIndex(filesToBeUpdated);
     }
+  }
+  
+  /**
+   * @param path            A file path.
+   * @param candidatePath   A candidate to be child or even the path.
+   * 
+   * @return <code>true</code> if the candidate path is equals or a child of the given path.
+   */
+  private boolean includePath(final String path, final String candidatePath) {
+    boolean toReturn = false;
+    final int pathLength = path.length();
+    final int candidatePathLength = candidatePath.length();
+    if(candidatePathLength == pathLength) {
+      toReturn = path.equals(candidatePath);
+    } else if(candidatePathLength > pathLength) {
+      toReturn = candidatePath.startsWith(path + "/");
+    }
+    
+    return toReturn;
   }
   
 }
