@@ -55,6 +55,10 @@ public class FilesValidator implements IValidator {
    */
   private boolean isValidatorServiceAvailable = true;
   
+  /**
+   * Used to filter problems to avoid exposing issues that are not related to validated files.
+   */
+  private IProblemFilter filter;
   
   /**
    * Constructor.
@@ -96,7 +100,9 @@ public class FilesValidator implements IValidator {
         }
       });
       validateMethod = validationUtilAccess.getClass().getMethod("validateResources", Iterator.class, boolean.class, valClass);
-
+      final String NOT_SUPPORTED_FILE = (String) Class.forName("ro.sync.exml.workspace.api.util.validation.ValidationProblemsCodes")
+          .getField("NOT_SUPPORTED_FILE_WARNING").get(null);
+      collector.setFilter(dpi -> NOT_SUPPORTED_FILE != null ? !NOT_SUPPORTED_FILE.equals(dpi.getErrorKey()) : true);
     } catch (Exception e) {
       if(LOGGER.isDebugEnabled()) {
         LOGGER.debug(e.getMessage(), e);
