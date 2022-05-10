@@ -2,7 +2,7 @@ package com.oxygenxml.git.view.dialog;
 
 import org.eclipse.jgit.annotations.NonNull;
 
-import com.oxygenxml.git.service.annotation.UsedForTests;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.dialog.internal.MessageDialogBuilder;
 
@@ -45,7 +45,7 @@ public class MessagePresenterProvider {
    * 
    * @param newBuilder The new dialogs builder. 
    */
-  @UsedForTests
+  @TestOnly
   public static void setBuilder(final MessageDialogBuilder newBuilder) {
     imposedBuilder = newBuilder;
   }

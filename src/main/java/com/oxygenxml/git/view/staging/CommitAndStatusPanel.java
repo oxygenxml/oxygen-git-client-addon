@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -53,8 +52,6 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepoNotInitializedException;
-import com.oxygenxml.git.service.entities.FileStatusUtil;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
@@ -89,11 +86,6 @@ public class CommitAndStatusPanel extends JPanel {
    * Max number of characters for the previous messages. 
    */
   private static final int PREV_MESS_MAX_WIDTH = 100;
-  
-  /**
-   * The validation manager.
-   */
-  private static final ValidationManager VALIDATION_MANAGER = ValidationManager.getInstance();
   
   /**
    * Commit action.
@@ -169,19 +161,8 @@ public class CommitAndStatusPanel extends JPanel {
         cursorTimer.start();
 
         SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
-        boolean performCommit = true;
-        if(VALIDATION_MANAGER.isPreCommitValidationEnabled() 
-            && !VALIDATION_MANAGER.validateFilesBeforeCommit(
-            FileStatusUtil.getFilesStatuesURL(
-                GitAccess.getInstance().getStagedFiles().stream().filter(
-                    file -> file.getChangeType() != GitChangeType.REMOVED && 
-                    file.getChangeType() != GitChangeType.MISSING)
-                .collect(Collectors.toList()))
-            )) {
-          performCommit = VALIDATION_MANAGER.showCommitFilesProblems();
-        } 
-        
-        if(performCommit) {
+         
+        if(ValidationManager.getInstance().checkCommitValid()) {
           gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
           commitSuccessful = true;
         } else {

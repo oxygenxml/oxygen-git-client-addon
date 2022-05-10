@@ -3,8 +3,13 @@ package com.oxygenxml.git.validation;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.annotation.TestOnly;
+import com.oxygenxml.git.service.entities.FileStatusUtil;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
@@ -73,6 +78,7 @@ public class ValidationManager {
   /**
    * @param filesValidator The new validator for files.
    */
+  @TestOnly
   public void setFilesValidator(final IValidator filesValidator) {
     this.commitFilesValidator = filesValidator;
   }
@@ -124,6 +130,31 @@ public class ValidationManager {
     }
     
     return toReturn;
+  }
+  
+  /**
+   * Check all staged files without missed or removed files.
+   * <br>
+   * If problems are detected, are presented for a user confirmation if the commit should be canceled or performed.
+   * 
+   * @see GitChangeType
+   * 
+   * @return <code>true</code> if the commit resources are valid to perform a commit.
+   */
+  public boolean checkCommitValid() {
+    boolean performCommit = true;
+    if(isPreCommitValidationEnabled() 
+        && !validateFilesBeforeCommit(
+        FileStatusUtil.getFilesStatuesURL(
+            GitAccess.getInstance().getStagedFiles().stream().filter(
+                file -> file.getChangeType() != GitChangeType.REMOVED && 
+                file.getChangeType() != GitChangeType.MISSING)
+            .collect(Collectors.toList()))
+        )) {
+      performCommit = showCommitFilesProblems();
+    }
+    
+    return performCommit;
   }
   
 }

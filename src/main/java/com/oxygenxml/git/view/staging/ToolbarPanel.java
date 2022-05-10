@@ -44,7 +44,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.RevCommitUtil;
-import com.oxygenxml.git.service.annotation.UsedForTests;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -1032,7 +1032,7 @@ public class ToolbarPanel extends JPanel {
   /** 
    * @return <code>true</code> if the current branch is not published.
    */
-  @UsedForTests
+  @TestOnly
   public boolean isBranchNotPublished() {
     return pushesAhead == NOT_PUBLISHED_BRANCH;
   }

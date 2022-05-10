@@ -3,7 +3,6 @@ package com.oxygenxml.git.validation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jgit.annotations.NonNull;
 
@@ -30,22 +29,17 @@ public class ProblemsCollector implements ICollector {
   @Override
   public void add(@NonNull final DocumentPositionedInfo[] dpis) {
     if(filter != null) {
-      problems.addAll(Arrays.asList(dpis).stream()
-          .filter(dpi -> filter.include(dpi))
-          .collect(Collectors.toList()));
+      Arrays.asList(dpis).stream()
+      .filter(dpi -> filter.include(dpi))
+      .forEach(problems::add);
     } else {
-      problems.addAll(Arrays.asList(dpis));
+      Arrays.stream(dpis).forEach(problems::add);
     }  
   }
 
   @Override
   public @NonNull DocumentPositionedInfo[] getAll() {
-    final DocumentPositionedInfo[] dpis = new DocumentPositionedInfo[problems.size()];
-    for(int i = 0; i < dpis.length; i++) {
-      dpis[i] = problems.get(i);
-    }
-
-    return dpis;
+    return problems.toArray(new DocumentPositionedInfo[problems.size()]);
   }
 
   @Override

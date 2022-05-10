@@ -18,6 +18,6 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @Target({ FIELD, METHOD})
-public @interface UsedForTests {
+public @interface TestOnly {
   // marker annotation with no members
 }

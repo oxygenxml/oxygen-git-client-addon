@@ -129,11 +129,7 @@ public class FilesValidator implements IValidator {
     if(isAvailable()) {
       collector.reset();
       try {
-        validateMethod.invoke(validationUtilAccess, new Object[] {
-            files.iterator(),
-            false,
-           problemsCollector
-        });
+        validateMethod.invoke(validationUtilAccess, files.iterator(), false, problemsCollector);
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
         LOGGER.error(e.getMessage(), e);
       }
