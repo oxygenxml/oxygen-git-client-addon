@@ -395,14 +395,39 @@ public class BranchMergingTest extends GitTestBase {
     // Merge LocalBranch into main
     executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.SQUASH_MERGE_ACTION_NAME + "...");
     flushAWT();
+    final int isDialogOk[] = new int[1];
+    isDialogOk[0] = 0;
     
-    final JDialog noCommitsInSquashDialog = findDialog(
-        translator.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE));
-    assertNotNull(noCommitsInSquashDialog);
-    JButton mergeOkButton = findFirstButton(noCommitsInSquashDialog, Tags.CLOSE);
-    mergeOkButton.doClick();
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        translator.getTranslation(Tags.SQUASH_MERGE), DialogType.INFO) {
+
+      @Override
+      public MessageDialogBuilder setTitle(String title) {
+        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_MERGE).equals(title) ? 1 : 0;
+        return super.setTitle(title);
+      }
+
+      @Override
+      public MessageDialogBuilder setType(DialogType type) {        
+        isDialogOk[0] += DialogType.INFO == type ? 1 : 0;
+        return super.setType(type);
+      }
+      
+      @Override
+      public MessageDialogBuilder setMessage(String message) {
+        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE).equals(message) ? 1 : 0;
+        return super.setMessage(message);
+      }
+      
+      @Override
+      public MessageDialog buildAndShow() {
+        isDialogOk[0]++;
+        return Mockito.mock(MessageDialog.class);
+      }
+    });
     
-    sleep(200);
+    sleep(300);
+    assertEquals(4, isDialogOk[0]);
     
     List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
         HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);

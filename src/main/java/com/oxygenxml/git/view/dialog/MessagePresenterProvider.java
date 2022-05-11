@@ -35,7 +35,11 @@ public class MessagePresenterProvider {
    * @return the existing builder or a new instance if no builder is set.
    */
   public static MessageDialogBuilder getBuilder(@NonNull final String title,
-      final @NonNull DialogType type) { 
+      final @NonNull DialogType type) {
+    if(imposedBuilder != null) {
+      imposedBuilder.setTitle(title);
+      imposedBuilder.setType(type);
+    }
     return imposedBuilder != null ? 
         imposedBuilder : new MessageDialogBuilder(title, type);
   }
