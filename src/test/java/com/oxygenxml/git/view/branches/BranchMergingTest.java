@@ -503,7 +503,7 @@ public class BranchMergingTest extends GitTestBase {
     refreshSupport.call();
     executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
     flushAWT();
-    
+    sleep(200);
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
     JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
