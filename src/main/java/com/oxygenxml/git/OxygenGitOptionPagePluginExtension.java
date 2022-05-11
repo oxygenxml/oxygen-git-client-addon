@@ -17,6 +17,7 @@ import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.components.SectionPane;
 
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -134,14 +135,22 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         Tags.UPDATE_SUBMODULES_ON_PULL));
     mainPanel.add(updateSubmodulesOnPull, constraints);
 
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.gridy ++;
+    constraints.weightx = 1;
+    mainPanel.add(new SectionPane(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION)), constraints);
+    
+    constraints.insets = new Insets(0, 0, 0, 0);
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.weightx = 0;
     // Option to validate files before commit
     constraints.gridy ++;
     validateBeforeCommit = new JCheckBox(
         TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_COMMIT));
     mainPanel.add(validateBeforeCommit, constraints);
     
-    // Option to reject commit when problems occurs
     constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
+    // Option to reject commit when problems occurs
     constraints.gridy ++;
     rejectCommitOnValidationProblems = new JCheckBox(
         TRANSLATOR.getTranslation(Tags.REJECT_COMMIT_ON_PROBLEMS));
