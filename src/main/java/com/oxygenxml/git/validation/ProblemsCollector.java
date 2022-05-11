@@ -56,10 +56,4 @@ public class ProblemsCollector implements ICollector {
   public void setFilter(final IProblemFilter filter) {
     this.filter = filter;
   }
-
-  @Override
-  public IProblemFilter getFilter() {
-    return filter;
-  }
-
 }

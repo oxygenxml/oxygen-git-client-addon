@@ -40,9 +40,4 @@ public interface ICollector {
    * @param filter The problems filter. 
    */
   public void setFilter(final IProblemFilter filter);
-
-  /**
-   * @return The current problem filter.
-   */
-  public IProblemFilter getFilter();
 }
