@@ -88,6 +88,7 @@ import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
+import ro.sync.exml.workspace.api.results.ResultsManager;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.ColorTheme;
@@ -427,11 +428,13 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     };
     
     gitInit();
-    
+    OptionsManager.getInstance().setValidateFilesBeforeCommit(false);
+    ResultsManager resultManager = Mockito.mock(ResultsManager.class);
     ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
     Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
+    Mockito.when(pluginWSMock.getResultsManager()).thenReturn(resultManager);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
     Mockito.doAnswer(new Answer<Object>() {
@@ -524,7 +527,6 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       }
     });
     
-//    PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName()
     Mockito.when(utilAccessMock.getFileName(Mockito.anyString())).thenAnswer(new Answer<String>() {
       @Override
       public String answer(InvocationOnMock invocation) throws Throwable {

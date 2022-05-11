@@ -24,7 +24,7 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 /**
  * Plugin option page extension.
  */
-public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtension{
+public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtension {
   
   /**
    * Inset value for nested/subordinated options. 
@@ -49,38 +49,57 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
      */
     DO_NOTHING
   }
+  
   /**
    * Page key.
    */
   public static final String KEY = "Git_client_plugin_preferences_page";
+  
+  /**
+   * If is selected, the files will be validated before commit.
+   */
+  private JCheckBox validateBeforeCommit;
+  
+  /**
+   * If is selected, the commit will be rejected if validation problems occurs.
+   */
+  private JCheckBox rejectCommitOnValidationProblems;
+  
   /**
    * Update submodules on pull.
    */
   private JCheckBox updateSubmodulesOnPull;
+  
   /**
    * CheckBox for the option to notify the user about new commits in the remote.
    */
   private JCheckBox notifyAboutRemoteCommitsCheckBox;
+  
   /**
    * The OptionsManager instance
    */
   private static final OptionsManager OPTIONS_MANAGER = OptionsManager.getInstance();
+  
   /**
    * The Translator instance
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
+  
   /**
    * Automatically switch to the new working copy when detecting a repo inside a project.
    */
   private JRadioButton autoSwitchToWCRadio;
+  
   /**
    * Ask if Oxygen should switch to the new working copy when detecting a repo inside a project.
    */
   private JRadioButton askToSwitchToWCRadio;
+  
   /**
    * Do nothing when detecting a repo inside a project.
    */
   private JRadioButton doNothingRadio;
+  
   
   /**
    * @see ro.sync.exml.plugin.option.OptionPagePluginExtension#init(ro.sync.exml.workspace.api.PluginWorkspace)
@@ -105,14 +124,32 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     constraints.weighty = 0;
     constraints.anchor = GridBagConstraints.LINE_START;
     constraints.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
-    notifyAboutRemoteCommitsCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.NOTIFY_ON_NEW_COMMITS));
+    notifyAboutRemoteCommitsCheckBox = new JCheckBox(
+        TRANSLATOR.getTranslation(Tags.NOTIFY_ON_NEW_COMMITS));
     mainPanel.add(notifyAboutRemoteCommitsCheckBox, constraints);
     
     // Option that notifies us when commits are detected in the remote branch
     constraints.gridy ++;
-    updateSubmodulesOnPull = new JCheckBox(TRANSLATOR.getTranslation(Tags.UPDATE_SUBMODULES_ON_PULL));
+    updateSubmodulesOnPull = new JCheckBox(TRANSLATOR.getTranslation(
+        Tags.UPDATE_SUBMODULES_ON_PULL));
     mainPanel.add(updateSubmodulesOnPull, constraints);
 
+    // Option to validate files before commit
+    constraints.gridy ++;
+    validateBeforeCommit = new JCheckBox(
+        TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_COMMIT));
+    mainPanel.add(validateBeforeCommit, constraints);
+    
+    // Option to reject commit when problems occurs
+    constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
+    constraints.gridy ++;
+    rejectCommitOnValidationProblems = new JCheckBox(
+        TRANSLATOR.getTranslation(Tags.REJECT_COMMIT_ON_PROBLEMS));
+    mainPanel.add(rejectCommitOnValidationProblems, constraints);
+    validateBeforeCommit.addItemListener(event -> {
+      rejectCommitOnValidationProblems.setEnabled(validateBeforeCommit.isSelected());
+    });
+    
     // Empty panel to take up the rest of the space
     constraints.gridx = 0;
     constraints.gridy ++;
@@ -137,7 +174,13 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     
     boolean updateSubmodules = OPTIONS_MANAGER.getUpdateSubmodulesOnPull();
     updateSubmodulesOnPull.setSelected(updateSubmodules);
+    
+    boolean validateFilesBeforeCommit = OPTIONS_MANAGER.isFilesValidatedBeforeCommit();
+    validateBeforeCommit.setSelected(validateFilesBeforeCommit);
 
+    boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
+    rejectCommitOnValidationProblems.setSelected(rejectCommitOnProblems);
+    
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {
       case ASK_TO_SWITCH_TO_WC:
@@ -189,7 +232,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void apply(PluginWorkspace pluginWorkspace) {
     OPTIONS_MANAGER.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
     OPTIONS_MANAGER.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
-
+    OPTIONS_MANAGER.setValidateFilesBeforeCommit(validateBeforeCommit.isSelected());
+    OPTIONS_MANAGER.setRejectCommitOnValidationProblems(rejectCommitOnValidationProblems.isSelected());
     WhenRepoDetectedInProject whatToDo = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
     if (autoSwitchToWCRadio.isSelected()) {
       whatToDo = WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC;
@@ -207,6 +251,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
     updateSubmodulesOnPull.setSelected(true);
     askToSwitchToWCRadio.setSelected(true);
+    validateBeforeCommit.setSelected(true);
+    rejectCommitOnValidationProblems.setSelected(false);
   }
 
   /**

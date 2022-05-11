@@ -1,6 +1,8 @@
 package com.oxygenxml.git.service.entities;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,6 +29,13 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.oxygenxml.git.protocol.GitRevisionURLHandler;
+import com.oxygenxml.git.protocol.VersionIdentifier;
+import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.utils.FileUtil;
 
 /**
  * Class with usefully methods for files statues.
@@ -35,6 +44,11 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
  *
  */
 public class FileStatusUtil {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileStatusUtil.class);
 
 
   /**
@@ -43,8 +57,8 @@ public class FileStatusUtil {
   private FileStatusUtil() {
     // nothing.
   }
-  
 
+  
   /**
    * Computer files statues for specified tree walk and commit.
    *
@@ -207,6 +221,53 @@ public class FileStatusUtil {
 
     return toReturn;
   }
+  
+  
+  /**
+   * Computes a list of files statues URLs.
+   * 
+   * @param files The files.
+   * 
+   * @return The computed URLs.
+   */
+  public static List<URL> getFilesStatuesURL(@NonNull final List<FileStatus> files) {
+    final List<URL> filesURL = new ArrayList<>();
+    files.forEach(file -> {
+      try {
+        filesURL.add(computeFileStatusURL(file));
+      } catch (NoRepositorySelected | MalformedURLException e) {
+        LOGGER.debug(e.getMessage(), e);
+      }
+    });
+      
+    return filesURL;
+  }
+  
+  /**
+   * Computes URL for the given file.
+   * 
+   * @param file File to compute URL.
+   * 
+   * @return Computed URL.
+   * 
+   * @throws MalformedURLException
+   * @throws NoRepositorySelected
+   */
+  public static URL computeFileStatusURL(final FileStatus file) throws MalformedURLException, NoRepositorySelected {
+    URL fileURL = null;
+    final String fileLocation = file.getFileLocation();
+    if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.CHANGED) {
+      // A file from the INDEX. We need a special URL to access it.
+      fileURL = GitRevisionURLHandler.encodeURL(
+          VersionIdentifier.INDEX_OR_LAST_COMMIT,
+          fileLocation);
+    } else {
+      // We must open a local copy.
+      fileURL = FileUtil.getFileURL(fileLocation);
+    }
+    
+    return fileURL;
+  }
 
   
   /**
@@ -286,6 +347,5 @@ public class FileStatusUtil {
     return collect;
   }
 
- 
   
 }

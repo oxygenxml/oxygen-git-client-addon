@@ -58,6 +58,7 @@ import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
+import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
@@ -160,10 +161,13 @@ public class CommitAndStatusPanel extends JPanel {
         cursorTimer.start();
 
         SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
-        
-        gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
-        
-        commitSuccessful = true;
+         
+        if(ValidationManager.getInstance().checkCommitValid()) {
+          gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
+          commitSuccessful = true;
+        } else {
+          SwingUtilities.invokeLater(() -> commitButton.setEnabled(true));
+        }
         
       } catch (GitAPIException e1) {
         LOGGER.debug(e1.getMessage(), e1);

@@ -14,6 +14,42 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Failed_Commit_Validation_Message">
+		<comment>Displayed message when problems on validation are detected.</comment>
+		<val lang="en_US">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="de_DE">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="fr_FR">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="ja_JP">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="nl_NL">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+		<val lang="zh_CN">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>
+	</key>
+	<key value="Pre_Commit_Validation">
+		<comment>Title for problems occurred on a pre-commit validation and presented by a dialog/view.</comment>
+		<val lang="en_US">Git pre-commit validation</val>
+		<val lang="de_DE">Git pre-commit validation</val>
+		<val lang="fr_FR">Git pre-commit validation</val>
+		<val lang="ja_JP">Git pre-commit validation</val>
+		<val lang="nl_NL">Git pre-commit validation</val>
+		<val lang="zh_CN">Git pre-commit validation</val>
+	</key>
+	<key value="Reject_Commit_On_Problems">
+		<comment>Label for reject commit on validation problems option.</comment>
+		<val lang="en_US">Reject commit on validation problems</val>
+		<val lang="de_DE">Reject commit on validation problems</val>
+		<val lang="fr_FR">Reject commit on validation problems</val>
+		<val lang="ja_JP">Reject commit on validation problems</val>
+		<val lang="nl_NL">Reject commit on validation problems</val>
+		<val lang="zh_CN">Reject commit on validation problems</val>
+	</key>
+	<key value="Validate_Before_Commit">
+		<comment>Label for validate files before commit option.</comment>
+		<val lang="en_US">Validate each file before commit</val>
+		<val lang="de_DE">Validate each file before commit</val>
+		<val lang="fr_FR">Validate each file before commit</val>
+		<val lang="ja_JP">Validate each file before commit</val>
+		<val lang="nl_NL">Validate each file before commit</val>
+		<val lang="zh_CN">Validate each file before commit</val>
+	</key>
 	<key value="Merge_Branches_Question_Message">
 		<comment>The question message on the merge branches pop up dialog
 		</comment>

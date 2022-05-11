@@ -12,15 +12,13 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxygenxml.git.protocol.GitRevisionURLHandler;
-import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.editor.EditorPageConstants;
@@ -92,17 +90,8 @@ public class OpenAction extends AbstractAction {
    * @throws NoRepositorySelected Unable to open.
    */
   private void openFile(FileStatus file) throws MalformedURLException, NoRepositorySelected {
-    URL fileURL = null;
-    String fileLocation = file.getFileLocation();
-    if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.CHANGED) {
-      // A file from the INDEX. We need a special URL to access it.
-      fileURL = GitRevisionURLHandler.encodeURL(
-          VersionIdentifier.INDEX_OR_LAST_COMMIT,
-          fileLocation);
-    } else {
-      // We must open a local copy.
-      fileURL = FileUtil.getFileURL(fileLocation);
-    }
+    URL fileURL = FileStatusUtil.computeFileStatusURL(file);
+    final String fileLocation = file.getFileLocation();
 
     boolean isProjectExt = false;
     int index = fileLocation.lastIndexOf('.');
