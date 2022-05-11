@@ -308,7 +308,7 @@ public class BranchTreeMenuActionsProvider {
                       ctrl.getGitAccess().getRepository().resolve(selectedBranch));
                 } catch(NoChangesInSquashedCommitException ex) {
                   MessagePresenterProvider.getBuilder(
-                      TRANSLATOR.getTranslation(Tags.MARK_RESOLVED), DialogType.INFO)
+                      TRANSLATOR.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_TITLE), DialogType.INFO)
                       .setMessage(ex.getMessage())
                       .setCancelButtonVisible(false)
                       .buildAndShow();       

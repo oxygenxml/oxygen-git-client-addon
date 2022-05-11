@@ -44,7 +44,8 @@ public class ExceptionHandlerUtil {
           .setCancelButtonVisible(false)
           .buildAndShow(); 
     } else if (e instanceof NoChangesInSquashedCommitException) {
-      MessagePresenterProvider.getBuilder(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE, DialogType.INFO)
+      MessagePresenterProvider.getBuilder(
+          TRANSLATOR.getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_TITLE), DialogType.INFO)
       .setCancelButtonVisible(false)
       .setMessage(e.getMessage())
       .buildAndShow();
