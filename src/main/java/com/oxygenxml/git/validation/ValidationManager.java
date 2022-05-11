@@ -91,6 +91,13 @@ public class ValidationManager {
   }
   
   /**
+   * @return <code>true</code> if the validation support is available(for Oxygen 25 and newer).
+   */
+  public boolean isAvailable() {
+    return commitFilesValidator.isAvailable();
+  }
+  
+  /**
    * Validate files before to commit.
    * 
    * @param files The files to be validated.

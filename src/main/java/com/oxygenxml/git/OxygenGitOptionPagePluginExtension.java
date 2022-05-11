@@ -17,6 +17,7 @@ import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.components.SectionPane;
 
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
@@ -135,30 +136,34 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         Tags.UPDATE_SUBMODULES_ON_PULL));
     mainPanel.add(updateSubmodulesOnPull, constraints);
 
-    // add validation section
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.gridy ++;
-    constraints.weightx = 1;
-    mainPanel.add(new SectionPane(TRANSLATOR.getTranslation(Tags.VALIDATION)), constraints);
+    // check if the validation support is available
+    if(ValidationManager.getInstance().isAvailable()) {
+      // add validation section
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.gridy ++;
+      constraints.weightx = 1;
+      mainPanel.add(new SectionPane(TRANSLATOR.getTranslation(Tags.VALIDATION)), constraints);
+      
+      // Option to validate files before commit
+      constraints.insets = new Insets(0, 0, 0, 0);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.weightx = 0;
+      constraints.gridy ++;
+      validateBeforeCommit = new JCheckBox(
+          TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_COMMIT));
+      mainPanel.add(validateBeforeCommit, constraints);
+      
+      constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
+      // Option to reject commit when problems occurs
+      constraints.gridy ++;
+      rejectCommitOnValidationProblems = new JCheckBox(
+          TRANSLATOR.getTranslation(Tags.REJECT_COMMIT_ON_PROBLEMS));
+      mainPanel.add(rejectCommitOnValidationProblems, constraints);
+      validateBeforeCommit.addItemListener(event -> {
+        rejectCommitOnValidationProblems.setEnabled(validateBeforeCommit.isSelected());
+      });
+    }
     
-    // Option to validate files before commit
-    constraints.insets = new Insets(0, 0, 0, 0);
-    constraints.fill = GridBagConstraints.NONE;
-    constraints.weightx = 0;
-    constraints.gridy ++;
-    validateBeforeCommit = new JCheckBox(
-        TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_COMMIT));
-    mainPanel.add(validateBeforeCommit, constraints);
-    
-    constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
-    // Option to reject commit when problems occurs
-    constraints.gridy ++;
-    rejectCommitOnValidationProblems = new JCheckBox(
-        TRANSLATOR.getTranslation(Tags.REJECT_COMMIT_ON_PROBLEMS));
-    mainPanel.add(rejectCommitOnValidationProblems, constraints);
-    validateBeforeCommit.addItemListener(event -> {
-      rejectCommitOnValidationProblems.setEnabled(validateBeforeCommit.isSelected());
-    });
     
     // Empty panel to take up the rest of the space
     constraints.gridx = 0;
@@ -185,12 +190,14 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     boolean updateSubmodules = OPTIONS_MANAGER.getUpdateSubmodulesOnPull();
     updateSubmodulesOnPull.setSelected(updateSubmodules);
     
-    boolean validateFilesBeforeCommit = OPTIONS_MANAGER.isFilesValidatedBeforeCommit();
-    validateBeforeCommit.setSelected(validateFilesBeforeCommit);
+    if(ValidationManager.getInstance().isAvailable()) {
+      boolean validateFilesBeforeCommit = OPTIONS_MANAGER.isFilesValidatedBeforeCommit();
+      validateBeforeCommit.setSelected(validateFilesBeforeCommit);
 
-    boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
-    rejectCommitOnValidationProblems.setSelected(rejectCommitOnProblems);
-    rejectCommitOnValidationProblems.setEnabled(validateFilesBeforeCommit);
+      boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
+      rejectCommitOnValidationProblems.setSelected(rejectCommitOnProblems);
+      rejectCommitOnValidationProblems.setEnabled(validateFilesBeforeCommit);
+    }
     
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {
