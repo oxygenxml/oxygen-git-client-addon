@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Validation">
+		<comment>Title for validation section</comment>
+		<val lang="en_US">Validation</val>
+		<val lang="de_DE">Validation</val>
+		<val lang="fr_FR">Validation</val>
+		<val lang="ja_JP">Validation</val>
+		<val lang="nl_NL">Validation</val>
+		<val lang="zh_CN">Validation</val>
+	</key>
 	<key value="Failed_Commit_Validation_Message">
 		<comment>Displayed message when problems on validation are detected.</comment>
 		<val lang="en_US">Encountered validation problems in the commit resources. The results can be viewed in the "Results" view.</val>

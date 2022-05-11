@@ -1846,5 +1846,10 @@ public class Tags {
    * Displayed message when problems on validation are detected.
    */
   public static final String FAILED_COMMIT_VALIDATION_MESSAGE = "Failed_Commit_Validation_Message";
+  
+  /**
+   * Title for validation section.
+   */
+  public static final String VALIDATION = "Validation";
 }
 

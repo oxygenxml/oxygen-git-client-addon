@@ -135,15 +135,16 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         Tags.UPDATE_SUBMODULES_ON_PULL));
     mainPanel.add(updateSubmodulesOnPull, constraints);
 
+    // add validation section
     constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.gridy ++;
     constraints.weightx = 1;
-    mainPanel.add(new SectionPane(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION)), constraints);
+    mainPanel.add(new SectionPane(TRANSLATOR.getTranslation(Tags.VALIDATION)), constraints);
     
+    // Option to validate files before commit
     constraints.insets = new Insets(0, 0, 0, 0);
     constraints.fill = GridBagConstraints.NONE;
     constraints.weightx = 0;
-    // Option to validate files before commit
     constraints.gridy ++;
     validateBeforeCommit = new JCheckBox(
         TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_COMMIT));
