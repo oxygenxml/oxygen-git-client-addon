@@ -498,14 +498,14 @@ public class TagBasedOptions implements Options {
   }
 
   @Override
-  public boolean getValidateMasterFilesBeforePush() {
+  public boolean getValidateMainFilesBeforePush() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(
-        OptionTags.VALIDATE_MASTER_FILES_BEFORE_PUSH, TRUE));
+        OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH, TRUE));
   }
 
   @Override
-  public void setValidateMasterFilesBeforePush(boolean validateMasterFilesBeforePush) {
-    wsOptionsStorage.setOption(OptionTags.VALIDATE_MASTER_FILES_BEFORE_PUSH, String.valueOf(validateMasterFilesBeforePush));    
+  public void setValidateMainFilesBeforePush(boolean validateMainFilesBeforePush) {
+    wsOptionsStorage.setOption(OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH, String.valueOf(validateMainFilesBeforePush));    
   }
 
   @Override

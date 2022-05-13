@@ -137,9 +137,9 @@ public class OptionTags {
   public static final String REJECT_COMMIT_ON_VALIDATION_PROBLEMS = "com.oxygenxml.git.validator.reject";
   
   /**
-   * The tag option for validate master files before push.
+   * The tag option for validate main files before push.
    */
-  public static final String VALIDATE_MASTER_FILES_BEFORE_PUSH = "com.oxygenxml.git.validator.push.validate";
+  public static final String VALIDATE_MAIN_FILES_BEFORE_PUSH = "com.oxygenxml.git.validator.push.validate";
   
   /**
    * The tag option for reject push on validation problems.

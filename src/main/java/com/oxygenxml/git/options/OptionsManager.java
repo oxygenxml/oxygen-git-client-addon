@@ -605,6 +605,34 @@ public class OptionsManager {
  }
  
  /**
+  * @param validateMainFilesBeforePush <code>true</code> if the main files should be validates before commit.
+  */
+ public void setValidateMainFilesBeforePush(boolean validateMainFilesBeforePush) {
+   getOptions().setValidateMainFilesBeforePush(validateMainFilesBeforePush);
+ }
+
+ /**
+  * @return <code>true</code> if the main files are validated before push.
+  */
+ public boolean isMainFilesValidatedBeforePush() {
+   return getOptions().getValidateMainFilesBeforePush();
+ }
+ 
+ /**
+  * @param rejectPushOnValidationProblems <code>true</code> if the push should be rejected on validation problems.
+  */
+ public void setRejectPushOnValidationProblems(boolean rejectPushOnValidationProblems) {
+   getOptions().setRejectPushOnValidationProblems(rejectPushOnValidationProblems);
+ }
+ 
+ /**
+  * @return <code>true</code> if the push should be rejected on validation problems.
+  */
+ public boolean isPushRejectedOnValidationProblems() {
+   return getOptions().getRejectPushOnValidationProblems();
+ }
+ 
+ /**
   * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
   * checkout a newly created local branch.
   */

@@ -261,14 +261,14 @@ public interface Options {
   public void setRejectCommitOnValidationProblems(final boolean rejectCommitOnValidationProblems) ;
 
   /**
-   * @return <code>true</code> to validate master files before push.
+   * @return <code>true</code> to validate main files before push.
    */
-  public boolean getValidateMasterFilesBeforePush() ;
+  public boolean getValidateMainFilesBeforePush() ;
 
   /**
-   * @param validateMasterFilesBeforePush <code>true</code> to validate master files before push.
+   * @param validateMainFilesBeforePush <code>true</code> to validate main files before push.
    */
-  public void setValidateMasterFilesBeforePush(final boolean validateMasterFilesBeforePush) ;
+  public void setValidateMainFilesBeforePush(final boolean validateMainFilesBeforePush) ;
   
   /**
    * @return <code>true</code> to reject push on validation problems.
