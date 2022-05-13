@@ -246,7 +246,7 @@ public interface Options {
   public boolean getValidateFilesBeforeCommit() ;
 
   /**
-   * @param updateSubmodules <code>true</code> to validate files before commit.
+   * @param validateFilesBeforeCommit <code>true</code> to validate files before commit.
    */
   public void setValidateFilesBeforeCommit(final boolean validateFilesBeforeCommit) ;
   
@@ -260,4 +260,23 @@ public interface Options {
    */
   public void setRejectCommitOnValidationProblems(final boolean rejectCommitOnValidationProblems) ;
 
+  /**
+   * @return <code>true</code> to validate master files before push.
+   */
+  public boolean getValidateMasterFilesBeforePush() ;
+
+  /**
+   * @param validateMasterFilesBeforePush <code>true</code> to validate master files before push.
+   */
+  public void setValidateMasterFilesBeforePush(final boolean validateMasterFilesBeforePush) ;
+  
+  /**
+   * @return <code>true</code> to reject push on validation problems.
+   */
+  public boolean getRejectPushOnValidationProblems() ;
+
+  /**
+   * @param rejectPushOnValidationProblems <code>true</code> to reject push on validation problems.
+   */
+  public void setRejectPushOnValidationProblems(final boolean rejectPushOnValidationProblems) ;
 }

@@ -127,7 +127,7 @@ public class OptionTags {
   public static final String HISTORY_STRATEGY = "com.oxygenxml.git.history.strategy";
 
   /**
-   * The tag option for validate file before commit.
+   * The tag option for validate files before commit.
    */
   public static final String VALIDATE_FILES_BEFORE_COMMIT = "com.oxygenxml.git.validator.validate";
   
@@ -135,5 +135,15 @@ public class OptionTags {
    * The tag option for reject commit on validation problems.
    */
   public static final String REJECT_COMMIT_ON_VALIDATION_PROBLEMS = "com.oxygenxml.git.validator.reject";
+  
+  /**
+   * The tag option for validate master files before push.
+   */
+  public static final String VALIDATE_MASTER_FILES_BEFORE_PUSH = "com.oxygenxml.git.validator.push.validate";
+  
+  /**
+   * The tag option for reject push on validation problems.
+   */
+  public static final String REJECT_PUSH_ON_VALIDATION_PROBLEMS = "com.oxygenxml.git.validator.push.reject";
 
 }

@@ -496,5 +496,27 @@ public class TagBasedOptions implements Options {
   public void setRejectCommitOnValidationProblems(boolean rejectCommitOnValidationProblems) {
     wsOptionsStorage.setOption(OptionTags.REJECT_COMMIT_ON_VALIDATION_PROBLEMS, String.valueOf(rejectCommitOnValidationProblems));
   }
+
+  @Override
+  public boolean getValidateMasterFilesBeforePush() {
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(
+        OptionTags.VALIDATE_MASTER_FILES_BEFORE_PUSH, TRUE));
+  }
+
+  @Override
+  public void setValidateMasterFilesBeforePush(boolean validateMasterFilesBeforePush) {
+    wsOptionsStorage.setOption(OptionTags.VALIDATE_MASTER_FILES_BEFORE_PUSH, String.valueOf(validateMasterFilesBeforePush));    
+  }
+
+  @Override
+  public boolean getRejectPushOnValidationProblems() {
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(
+        OptionTags.REJECT_COMMIT_ON_VALIDATION_PROBLEMS, FALSE));
+  }
+
+  @Override
+  public void setRejectPushOnValidationProblems(boolean rejectPushOnValidationProblems) {
+    wsOptionsStorage.setOption(OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS, String.valueOf(rejectPushOnValidationProblems));  
+  }
   
 }

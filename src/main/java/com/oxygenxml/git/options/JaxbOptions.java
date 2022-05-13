@@ -51,9 +51,19 @@ public class JaxbOptions implements Options {
 	private boolean validateFilesBeforeCommit = true;
 	
 	/**
-	 * <code>true</code> to reject commit on calidation problems.
+	 * <code>true</code> to reject commit on validation problems.
 	 */
 	private boolean rejectCommitOnValidationProblems = false;
+	
+	/**
+   * <code>true</code> to validate master files before push.
+   */
+  private boolean validateMasterFilesBeforePush = true;
+  
+  /**
+   * <code>true</code> to reject push on validation problems.
+   */
+  private boolean rejectPushOnValidationProblems = false;
 	
 	/**
 	 * The id from the last commit fetched.
@@ -417,6 +427,27 @@ public class JaxbOptions implements Options {
   }
   
   @Override
+  public boolean getValidateMasterFilesBeforePush() {
+    return validateMasterFilesBeforePush;
+  }
+
+  @Override
+  public void setValidateMasterFilesBeforePush(boolean validateMasterFilesBeforePush) {
+    this.validateMasterFilesBeforePush = validateMasterFilesBeforePush;
+    
+  }
+
+  @Override
+  public boolean getRejectPushOnValidationProblems() {
+    return rejectPushOnValidationProblems;
+  }
+
+  @Override
+  public void setRejectPushOnValidationProblems(boolean rejectPushOnValidationProblems) {
+    this.rejectPushOnValidationProblems = rejectPushOnValidationProblems;
+  }
+  
+  @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -433,6 +464,8 @@ public class JaxbOptions implements Options {
 		result = prime * result + (isCheckoutNewlyCreatedLocalBranch ? 1 : 0);
 	  result = prime * result + (validateFilesBeforeCommit ? 1 : 0);
     result = prime * result + (rejectCommitOnValidationProblems ? 1 : 0);
+    result = prime * result + (validateMasterFilesBeforePush ? 1 : 0);
+    result = prime * result + (rejectPushOnValidationProblems ? 1 : 0);
     result = prime * result + warnOnChangeCommitId.hashCode();
 		
 		return result;
@@ -451,6 +484,8 @@ public class JaxbOptions implements Options {
 	        && Equaler.verifyEquals(notifyAboutNewRemoteCommits, opt.isNotifyAboutNewRemoteCommits())
 	        && Equaler.verifyEquals(validateFilesBeforeCommit, opt.getValidateFilesBeforeCommit())
 	        && Equaler.verifyEquals(rejectCommitOnValidationProblems, opt.getRejectCommitOnValidationProblems())
+	        && Equaler.verifyEquals(validateMasterFilesBeforePush, opt.getValidateMasterFilesBeforePush())
+          && Equaler.verifyEquals(rejectPushOnValidationProblems, opt.getRejectPushOnValidationProblems())
 	        && Equaler.verifyEquals(isCheckoutNewlyCreatedLocalBranch, opt.isCheckoutNewlyCreatedLocalBranch)
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
@@ -475,7 +510,8 @@ public class JaxbOptions implements Options {
         + ", whenRepoDetectedInProject=" + whenRepoDetectedInProject + ", updateSubmodulesOnPull="
         + updateSubmodulesOnPull + ", isAutoPushWhenCommitting=" + isAutoPushWhenCommitting + 
         ", validateFilesBeforeCommit=" + validateFilesBeforeCommit + ", rejectCommitOnValidationProblems=" 
-        + rejectCommitOnValidationProblems+ "]";
+        + rejectCommitOnValidationProblems + ", validateMasterFilesBeforePush=" + validateMasterFilesBeforePush + 
+        ", rejectPushOnValidationProblems=" + rejectPushOnValidationProblems + "]";
   }
 
 }
