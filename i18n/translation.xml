@@ -155,15 +155,6 @@
 		<val lang="nl_NL">Keep current</val>
 		<val lang="zh_CN">Keep current</val>
 	</key>
-	<key value="Squash_No_Commits_Title">
-		<comment>Title for dialog when no commits could be added with squash and merge action.</comment>
-		<val lang="en_US">No commits detected</val>
-		<val lang="de_DE">No commits detected</val>
-		<val lang="fr_FR">Aucun commit détecté</val>
-		<val lang="ja_JP">No commits detected</val>
-		<val lang="nl_NL">No commits detected</val>
-		<val lang="zh_CN">No commits detected</val>
-	</key>
 	<key value="Squash_No_Commits_Message">
 		<comment>Message when no commits could be added with squash and merge action.</comment>
 		<val lang="en_US">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
@@ -3994,18 +3985,6 @@
 		<val lang="ja_JP">ja_JP_translation</val>
 		<val lang="nl_NL">Conflictoplossing</val>
 		<val lang="zh_CN">解决冲突</val>
-	</key>
-	<key value="Add_Remote_Dialog_Title">
-		<comment>The text displayed in the title for the dialog that appears
-			when you push while
-			having no remote set
-		</comment>
-		<val lang="en_US">Add Remote</val>
-		<val lang="de_DE">Remote hinzufügen</val>
-		<val lang="fr_FR">Ajouter remote</val>
-		<val lang="ja_JP">ja_JP_translation</val>
-		<val lang="nl_NL">Externe repository toevoegen</val>
-		<val lang="zh_CN">添加远程服务器</val>
 	</key>
 	<key value="Add_Remote_Dialog_Add_Remote_Repo_Label">
 		<comment>The text displayed in the dialog that appears near the text

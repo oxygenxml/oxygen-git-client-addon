@@ -496,12 +496,6 @@ public class Tags {
 	public static final String BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG = "Branch_switch_when_repo_in_conflict_error_msg";
 
 	/**
-	 * The text displayed in the title for the dialog that appears when you push
-	 * while having no remote set
-	 */
-	public static final String ADD_REMOTE_DIALOG_TITLE = "Add_Remote_Dialog_Title";
-
-	/**
 	 * The text displayed in the dialog that appears near the text field for
 	 * remote repo
 	 */
@@ -1791,11 +1785,6 @@ public class Tags {
    * Message when no commits could be added with squash and merge action.
    */
   public static final String SQUASH_NO_COMMITS_DETECTED_MESSAGE = "Squash_No_Commits_Message";
-  
-  /**
-   * Title for dialog when no commits could be added with squash and merge action.
-   */
-  public static final String SQUASH_NO_COMMITS_DETECTED_TITLE = "Squash_No_Commits_Title";
   
   /**
    * Keep current WC message.
