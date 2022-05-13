@@ -248,6 +248,8 @@ public class OptionsWithTagsTest {
         + "PERSONAL_ACCES_TOKENS_LIST\n"
         + "STASH_INCLUDE_UNTRACKED\n"
         + "CHECKOUT_COMMIT_SELECT_NEW_BRANCH\n"
-        + "HISTORY_STRATEGY", dump);
+        + "HISTORY_STRATEGY\n"
+        + "VALIDATE_FILES_BEFORE_COMMIT\n"
+        + "REJECT_COMMIT_ON_VALIDATION_PROBLEMS", dump);
   }
 }
