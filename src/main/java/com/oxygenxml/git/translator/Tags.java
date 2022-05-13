@@ -1840,5 +1840,20 @@ public class Tags {
    * Title for validation section.
    */
   public static final String VALIDATION = "Validation";
+  
+  /**
+   * Title for problems occurred on a pre-push validation and presented by a dialog/view.
+   */
+  public static final String PRE_PUSH_VALIDATION = "Pre_Push_Validation";
+  
+  /**
+   * Label for validate files before push option.
+   */
+  public static final String VALIDATE_BEFORE_PUSH = "Validate_Before_Push";
+  
+  /**
+   * Label for reject commit on validation problems option.
+   */
+  public static final String REJECT_PUSH_ON_PROBLEMS = "Reject_Push_On_Problems";
 }
 

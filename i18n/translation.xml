@@ -14,6 +14,33 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Reject_Push_On_Problems">
+		<comment>Label for reject push on validation problems option.</comment>
+		<val lang="en_US">Reject push on validation problems</val>
+		<val lang="de_DE">Reject push on validation problems</val>
+		<val lang="fr_FR">Reject push on validation problems</val>
+		<val lang="ja_JP">Reject push on validation problems</val>
+		<val lang="nl_NL">Reject push on validation problems</val>
+		<val lang="zh_CN">Reject push on validation problems</val>
+	</key>
+	<key value="Validate_Before_Push">
+		<comment>Label for validate files before commit option.</comment>
+		<val lang="en_US">Validate all main files from the project before push</val>
+		<val lang="de_DE">Validate all main files from the project before push</val>
+		<val lang="fr_FR">Validate all main files from the project before push</val>
+		<val lang="ja_JP">Validate all main files from the project before push</val>
+		<val lang="nl_NL">Validate all main files from the project before push</val>
+		<val lang="zh_CN">Validate all main files from the project before push</val>
+	</key>
+	<key value="Pre_Push_Validation">
+		<comment>Title for problems occurred on a pre-push validation and presented by a dialog/view.</comment>
+		<val lang="en_US">Git pre-push validation</val>
+		<val lang="de_DE">Git pre-push validation</val>
+		<val lang="fr_FR">Git pre-push validation</val>
+		<val lang="ja_JP">Git pre-push validation</val>
+		<val lang="nl_NL">Git pre-push validation</val>
+		<val lang="zh_CN">Git pre-push validation</val>
+	</key>
 	<key value="Validation">
 		<comment>Title for validation section</comment>
 		<val lang="en_US">Validation</val>
