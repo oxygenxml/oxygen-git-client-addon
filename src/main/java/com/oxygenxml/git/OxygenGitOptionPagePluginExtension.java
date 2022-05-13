@@ -148,49 +148,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
 
     // check if the validation support is available
     if(ValidationManager.getInstance().isAvailable()) {
-      // add validation section
-      constraints.fill = GridBagConstraints.HORIZONTAL;
-      constraints.gridy ++;
-      constraints.weightx = 1;
-      mainPanel.add(new SectionPane(TRANSLATOR.getTranslation(Tags.VALIDATION)), constraints);
-      
-      // Option to validate files before commit
-      constraints.insets = new Insets(0, 0, 0, 0);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.weightx = 0;
-      constraints.gridy ++;
-      validateBeforeCommit = new JCheckBox(
-          TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_COMMIT));
-      mainPanel.add(validateBeforeCommit, constraints);
-      
-      constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
-      // Option to reject commit when problems occurs
-      constraints.gridy ++;
-      rejectCommitOnValidationProblems = new JCheckBox(
-          TRANSLATOR.getTranslation(Tags.REJECT_COMMIT_ON_PROBLEMS));
-      mainPanel.add(rejectCommitOnValidationProblems, constraints);
-      validateBeforeCommit.addItemListener(event -> 
-          rejectCommitOnValidationProblems.setEnabled(validateBeforeCommit.isSelected()));
-      
-      // Option to validate files before push
-      constraints.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.weightx = 0;
-      constraints.gridy ++;
-      validateBeforePush = new JCheckBox(
-          TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_PUSH));
-      mainPanel.add(validateBeforePush, constraints);
-      
-      constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
-      // Option to reject push when problems occurs
-      constraints.gridy ++;
-      rejectPushOnValidationProblems = new JCheckBox(
-          TRANSLATOR.getTranslation(Tags.REJECT_PUSH_ON_PROBLEMS));
-      mainPanel.add(rejectPushOnValidationProblems, constraints);
-      validateBeforePush.addItemListener(event -> 
-      rejectPushOnValidationProblems.setEnabled(validateBeforePush.isSelected()));
+      addValidationSection(mainPanel, constraints);
     }
-    
     
     // Empty panel to take up the rest of the space
     constraints.gridx = 0;
@@ -205,6 +164,56 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     setOptionsInitialStates();
     
     return mainPanel;
+  }
+
+  /**
+   * Add the validation section on the preference page.
+   * 
+   * @param mainPanel   The panel to add this section.
+   * @param constraints The existing constraints in this panel.
+   */
+  private void addValidationSection(final JPanel mainPanel, final GridBagConstraints constraints) {
+    // add validation section
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.gridy ++;
+    constraints.weightx = 1;
+    mainPanel.add(new SectionPane(TRANSLATOR.getTranslation(Tags.VALIDATION)), constraints);
+    
+    // Option to validate files before commit
+    constraints.insets = new Insets(0, 0, 0, 0);
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.weightx = 0;
+    constraints.gridy ++;
+    validateBeforeCommit = new JCheckBox(
+        TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_COMMIT));
+    mainPanel.add(validateBeforeCommit, constraints);
+    
+    constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
+    // Option to reject commit when problems occurs
+    constraints.gridy ++;
+    rejectCommitOnValidationProblems = new JCheckBox(
+        TRANSLATOR.getTranslation(Tags.REJECT_COMMIT_ON_PROBLEMS));
+    mainPanel.add(rejectCommitOnValidationProblems, constraints);
+    validateBeforeCommit.addItemListener(event -> 
+        rejectCommitOnValidationProblems.setEnabled(validateBeforeCommit.isSelected()));
+    
+    // Option to validate files before push
+    constraints.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.weightx = 0;
+    constraints.gridy ++;
+    validateBeforePush = new JCheckBox(
+        TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_PUSH));
+    mainPanel.add(validateBeforePush, constraints);
+    
+    constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
+    // Option to reject push when problems occurs
+    constraints.gridy ++;
+    rejectPushOnValidationProblems = new JCheckBox(
+        TRANSLATOR.getTranslation(Tags.REJECT_PUSH_ON_PROBLEMS));
+    mainPanel.add(rejectPushOnValidationProblems, constraints);
+    validateBeforePush.addItemListener(event -> 
+    rejectPushOnValidationProblems.setEnabled(validateBeforePush.isSelected()));
   }
 
   /**
