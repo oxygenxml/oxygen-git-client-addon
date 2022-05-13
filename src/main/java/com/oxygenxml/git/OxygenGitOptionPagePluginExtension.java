@@ -63,6 +63,16 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   private JCheckBox validateBeforeCommit;
   
   /**
+   * If is selected, the push will be rejected if validation problems occurs.
+   */
+  private JCheckBox rejectPushOnValidationProblems;
+  
+  /**
+   * If is selected, the files will be validated before push.
+   */
+  private JCheckBox validateBeforePush;
+  
+  /**
    * If is selected, the commit will be rejected if validation problems occurs.
    */
   private JCheckBox rejectCommitOnValidationProblems;
@@ -159,9 +169,26 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
       rejectCommitOnValidationProblems = new JCheckBox(
           TRANSLATOR.getTranslation(Tags.REJECT_COMMIT_ON_PROBLEMS));
       mainPanel.add(rejectCommitOnValidationProblems, constraints);
-      validateBeforeCommit.addItemListener(event -> {
-        rejectCommitOnValidationProblems.setEnabled(validateBeforeCommit.isSelected());
-      });
+      validateBeforeCommit.addItemListener(event -> 
+          rejectCommitOnValidationProblems.setEnabled(validateBeforeCommit.isSelected()));
+      
+      // Option to validate files before push
+      constraints.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.weightx = 0;
+      constraints.gridy ++;
+      validateBeforePush = new JCheckBox(
+          TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_PUSH));
+      mainPanel.add(validateBeforePush, constraints);
+      
+      constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
+      // Option to reject push when problems occurs
+      constraints.gridy ++;
+      rejectPushOnValidationProblems = new JCheckBox(
+          TRANSLATOR.getTranslation(Tags.REJECT_PUSH_ON_PROBLEMS));
+      mainPanel.add(rejectPushOnValidationProblems, constraints);
+      validateBeforePush.addItemListener(event -> 
+      rejectPushOnValidationProblems.setEnabled(validateBeforePush.isSelected()));
     }
     
     
@@ -197,6 +224,13 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
       boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
       rejectCommitOnValidationProblems.setSelected(rejectCommitOnProblems);
       rejectCommitOnValidationProblems.setEnabled(validateFilesBeforeCommit);
+      
+      boolean validateMainFilesBeforePush = OPTIONS_MANAGER.isMainFilesValidatedBeforePush();
+      validateBeforePush.setSelected(validateMainFilesBeforePush);
+
+      boolean rejectPushOnProblems = OPTIONS_MANAGER.isPushRejectedOnValidationProblems();
+      rejectPushOnValidationProblems.setSelected(rejectPushOnProblems);
+      rejectPushOnValidationProblems.setEnabled(validateMainFilesBeforePush);
     }
     
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
@@ -252,6 +286,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     OPTIONS_MANAGER.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
     OPTIONS_MANAGER.setValidateFilesBeforeCommit(validateBeforeCommit.isSelected());
     OPTIONS_MANAGER.setRejectCommitOnValidationProblems(rejectCommitOnValidationProblems.isSelected());
+    OPTIONS_MANAGER.setValidateMainFilesBeforePush(validateBeforePush.isSelected());
+    OPTIONS_MANAGER.setRejectPushOnValidationProblems(rejectPushOnValidationProblems.isSelected());
     WhenRepoDetectedInProject whatToDo = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
     if (autoSwitchToWCRadio.isSelected()) {
       whatToDo = WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC;
@@ -271,6 +307,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     askToSwitchToWCRadio.setSelected(true);
     validateBeforeCommit.setSelected(true);
     rejectCommitOnValidationProblems.setSelected(false);
+    validateBeforePush.setSelected(true);
+    rejectPushOnValidationProblems.setSelected(false);
   }
 
   /**
