@@ -69,6 +69,13 @@ public class BranchMergingTest extends GitTestBase {
 
   }
   
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    
+    MessagePresenterProvider.setBuilder(null);
+  }
+  
   /**
    * <p><b>Description:</b>Tests the branch merging.</p>
    * <p><b>Bug ID:</b> EXM-43410</p>
@@ -353,6 +360,37 @@ public class BranchMergingTest extends GitTestBase {
    * @throws Exception
    */
   public void testBranchSquashMergingWithoutCommits() throws Exception{
+    final int isDialogOk[] = new int[1];
+    isDialogOk[0] = 0;
+    
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        translator.getTranslation(Tags.SQUASH_MERGE), DialogType.INFO) {
+
+      @Override
+      public MessageDialogBuilder setTitle(String title) {
+        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_MERGE).equals(title) ? 1 : 0;
+        return super.setTitle(title);
+      }
+
+      @Override
+      public MessageDialogBuilder setType(DialogType type) {        
+        isDialogOk[0] += DialogType.INFO == type ? 1 : 0;
+        return super.setType(type);
+      }
+      
+      @Override
+      public MessageDialogBuilder setMessage(String message) {
+        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE).equals(message) ? 1 : 0;
+        return super.setMessage(message);
+      }
+      
+      @Override
+      public MessageDialog buildAndShow() {
+        isDialogOk[0]++;
+        return Mockito.mock(MessageDialog.class);
+      }
+    });
+    
     final File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
     file.createNewFile();
     setFileContent(file, "local content");
@@ -395,36 +433,7 @@ public class BranchMergingTest extends GitTestBase {
     // Merge LocalBranch into main
     executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.SQUASH_MERGE_ACTION_NAME + "...");
     flushAWT();
-    final int isDialogOk[] = new int[1];
-    isDialogOk[0] = 0;
-    
-    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
-        translator.getTranslation(Tags.SQUASH_MERGE), DialogType.INFO) {
-
-      @Override
-      public MessageDialogBuilder setTitle(String title) {
-        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_MERGE).equals(title) ? 1 : 0;
-        return super.setTitle(title);
-      }
-
-      @Override
-      public MessageDialogBuilder setType(DialogType type) {        
-        isDialogOk[0] += DialogType.INFO == type ? 1 : 0;
-        return super.setType(type);
-      }
-      
-      @Override
-      public MessageDialogBuilder setMessage(String message) {
-        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE).equals(message) ? 1 : 0;
-        return super.setMessage(message);
-      }
-      
-      @Override
-      public MessageDialog buildAndShow() {
-        isDialogOk[0]++;
-        return Mockito.mock(MessageDialog.class);
-      }
-    });
+  
     
     sleep(300);
     assertEquals(4, isDialogOk[0]);
