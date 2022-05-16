@@ -18,6 +18,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -484,7 +485,8 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
    * 
    * @throws IOException
    */
-  public static String computeSquashMessage(final ObjectId srcCommitId, final Repository repo) throws IOException {
+  public static String computeSquashMessage(final ObjectId srcCommitId, final Repository repo) 
+      throws IOException {
     
     String squashMessage;
     
@@ -503,6 +505,32 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
     }
   
     return squashMessage;
+  }
+  
+  /**
+   * Compare a proposed file with current repository.
+   * 
+   * @param proposedFile The file to be compared.
+   * 
+   * @return <code>true</code> if the current repo is not <code>null</code> and is equals with the proposed file.
+   */
+  public static boolean isEqualsWithCurrentRepo(@Nullable final File proposedFile) {
+    boolean toReturn = false;
+    try {
+      File currentRepo = null;
+      if (GitAccess.getInstance().isRepoInitialized()) {
+        currentRepo = GitAccess.getInstance().getRepository().getDirectory().getParentFile();
+      }
+      if(currentRepo != null) {
+        toReturn = currentRepo.equals(detectRepositoryInProject(new File(proposedFile.toURI())));
+      }
+    } catch(NoRepositorySelected e) {
+      if(LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e.getMessage(), e);
+      }
+    }
+
+    return toReturn;
   }
 
 }

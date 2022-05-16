@@ -2417,7 +2417,7 @@ public class GitAccess {
    * 
    * @return The created stash.
    */
-  public RevCommit createStash(boolean includeUntrackedFiles, String description) {
+  @Nullable public RevCommit createStash(boolean includeUntrackedFiles, String description) {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
     RevCommit stash = null;
     try {
