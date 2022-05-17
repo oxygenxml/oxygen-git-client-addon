@@ -547,4 +547,45 @@ public class FileUtil {
     return toReturn;
   }
   
+  /**
+   * Get canonical path.
+   * 
+   * @param file A file. 
+   * 
+   * @return The canonical version of the file.
+   */
+  public static String getCanonicalPath(final File file) {
+    String repoPath;
+    try {
+      repoPath = file.getCanonicalPath();
+    } catch (IOException e) {
+      LOGGER.debug(e.getMessage(), e);
+      repoPath = file.getAbsolutePath();
+    }
+    return repoPath;
+  }
+  
+  /**
+   * Checks if the two files are equal.
+   * 
+   * @param first The first file.
+   * @param second The second file.
+   * 
+   * @return <code>true</code> if the files have the same paths.
+   */
+  public static boolean same(File first, File second) {
+    boolean same = false;
+
+    try {
+      first = first.getCanonicalFile();
+      second = second.getCanonicalFile();
+
+      same = first.equals(second); 
+    } catch (IOException e) {
+      LOGGER.error(e.getMessage(), e);
+    }
+
+    return same;
+  }
+  
 }
