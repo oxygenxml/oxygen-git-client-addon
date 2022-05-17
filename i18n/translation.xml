@@ -58,6 +58,7 @@
 		<val lang="ja_JP">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
 		<val lang="nl_NL">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
 		<val lang="zh_CN">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
+	</key>
 	<key value="Push_Anyway">
 		<comment>Push anyway</comment>
 		<val lang="en_US">Push anyway</val>
