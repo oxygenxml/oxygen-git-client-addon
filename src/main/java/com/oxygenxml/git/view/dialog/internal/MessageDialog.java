@@ -138,12 +138,12 @@ public class MessageDialog extends OKCancelDialog {
         UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, 
         10);
-    gbc.anchor = GridBagConstraints.NORTHWEST;
+    gbc.anchor = GridBagConstraints.WEST;
     gbc.weightx = 0;
     gbc.weighty = 0;
     gbc.gridx = 0;
     gbc.gridy = 0;
-    gbc.gridheight = 2;
+    gbc.gridheight = 1;
     panel.add(iconLabel, gbc);
     
     // Message
