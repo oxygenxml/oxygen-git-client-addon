@@ -1855,5 +1855,20 @@ public class Tags {
    * Label for reject commit on validation problems option.
    */
   public static final String REJECT_PUSH_ON_PROBLEMS = "Reject_Push_On_Problems";
+  
+  /**
+   * Push anyway.
+   */
+  public static final String PUSH_ANYWAY = "Push_Anyway";
+  
+  /**
+   * Displayed message when problems on validation are detected on push operation.
+   */
+  public static final String PUSH_VALIDATION_FAILED = "Failed_Push_Validation_Message";
+  
+  /**
+   * Displayed message when the push validation could be not performed because there are uncommited changes.
+   */
+  public static final String PUSH_VALIDATION_UNCOMMITED_CHANGES = "Push_Validation_Uncommited_Changes";
 }
 
