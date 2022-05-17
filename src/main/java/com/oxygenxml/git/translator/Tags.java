@@ -1870,5 +1870,20 @@ public class Tags {
    * Displayed message when the push validation could be not performed because there are uncommited changes.
    */
   public static final String PUSH_VALIDATION_UNCOMMITED_CHANGES = "Push_Validation_Uncommited_Changes";
+  
+  /**
+   * This message occurs when not the same project is loaded in "Project" View and Git Staging.
+   */
+  public static final String NOT_SAME_PROJECT_MESSAGE = "Not_Same_Project_Message";
+  
+  /**
+   * The message presented to the user when the git staging project has not a .xpr file.
+   */
+  public static final String NO_XPR_FILE_FOUND_MESSAGE = "No_XPR_File_In_Project_Message";
+  
+  /**
+   * Load.
+   */
+  public static final String LOAD = "Load";
 }
 

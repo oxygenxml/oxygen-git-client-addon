@@ -14,6 +14,33 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Not_Same_Project_Message">
+		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
+		<val lang="en_US">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
+		<val lang="de_DE">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
+		<val lang="fr_FR">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
+		<val lang="ja_JP">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
+		<val lang="nl_NL">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
+		<val lang="zh_CN">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
+	</key>
+	<key value="No_XPR_File_In_Project_Message">
+		<comment>The message presented to the user when the git staging project has not a .xpr file.</comment>
+		<val lang="en_US">The current project does not contain any ".xpr" files and thus cannot validate the project before push.</val>
+		<val lang="de_DE">The current project does not contain any ".xpr" files and thus cannot validate the project before push.</val>
+		<val lang="fr_FR">The current project does not contain any ".xpr" files and thus cannot validate the project before push.</val>
+		<val lang="ja_JP">The current project does not contain any ".xpr" files and thus cannot validate the project before push.</val>
+		<val lang="nl_NL">The current project does not contain any ".xpr" files and thus cannot validate the project before push.</val>
+		<val lang="zh_CN">The current project does not contain any ".xpr" files and thus cannot validate the project before push.</val>
+	</key>
+	<key value="Load">
+		<comment>Load</comment>
+		<val lang="en_US">Load</val>
+		<val lang="de_DE">Load</val>
+		<val lang="fr_FR">Load</val>
+		<val lang="ja_JP">Load</val>
+		<val lang="nl_NL">Load</val>
+		<val lang="zh_CN">Load</val>
+	</key>
 	<key value="Push_Validation_Uncommited_Changes">
 		<comment>Displayed message when the push validation could be not performed because there are uncommited changes.</comment>
 		<val lang="en_US">The current project cannot be validated because there are uncommited changes. Do you want to stash them and reapply them after the validation process?</val>
