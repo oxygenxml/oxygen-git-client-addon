@@ -417,7 +417,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    
+   
     // Create the unstaged resources panel
     refreshSupport = new PanelRefresh(null) {
       @Override
@@ -428,6 +428,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     };
     
     gitInit();
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(false);
     OptionsManager.getInstance().setValidateFilesBeforeCommit(false);
     ResultsManager resultManager = Mockito.mock(ResultsManager.class);
     ColorTheme colorTheme = Mockito.mock(ColorTheme.class);

@@ -1,6 +1,5 @@
 package com.oxygenxml.git.validation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
@@ -91,11 +90,10 @@ public class OxygenAPIWrapper {
   public Iterator<URL> getMainFileResourcesIterator() {
     try {
       return (Iterator<URL>) getMainFilesMethod.invoke(projectController);
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+    } catch (Exception e) {
       if(LOGGER.isDebugEnabled()) {
         LOGGER.debug(e.getMessage(), e);
       }          
-      e.printStackTrace();
       return Collections.emptyIterator();
     }
   }
