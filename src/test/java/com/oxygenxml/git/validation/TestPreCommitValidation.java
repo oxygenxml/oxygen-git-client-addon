@@ -131,7 +131,7 @@ public class TestPreCommitValidation extends GitTestBase {
         invocation -> {
           return true; 
         });
-    ValidationManager.getInstance().setFilesValidator(validator);
+    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
 
     // try to make a commit
     final CommitAndStatusPanel commitPanel = new CommitAndStatusPanel(new GitController(gitAccess));
@@ -211,7 +211,7 @@ public class TestPreCommitValidation extends GitTestBase {
           return collector;
         });
 
-    ValidationManager.getInstance().setFilesValidator(validator);
+    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
 
     // try to make a commit
     final CommitAndStatusPanel commitPanel = new CommitAndStatusPanel(new GitController(gitAccess));
@@ -299,7 +299,7 @@ public class TestPreCommitValidation extends GitTestBase {
           return collector;
         });
 
-    ValidationManager.getInstance().setFilesValidator(validator);
+    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
 
     // try to make a commit
     final CommitAndStatusPanel commitPanel = new CommitAndStatusPanel(new GitController(gitAccess));
