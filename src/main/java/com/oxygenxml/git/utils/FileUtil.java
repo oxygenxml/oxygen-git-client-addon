@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -586,6 +587,31 @@ public class FileUtil {
     }
 
     return same;
+  }
+  
+  /**
+   * Search a file by an extension.
+   * 
+   * @param file       The directory to search. 
+   * @param extension  The file extension.
+   * 
+   * @return The first file found with the given extension.
+   */
+  @Nullable public static File searchFileByExtension(final File file, final String extension) {
+    if (file.isDirectory()) {
+      File[] arr = file.listFiles();
+      for (File f : arr) {
+        File found = searchFileByExtension(f, extension);
+        if (found != null) {
+          return found;
+        }
+      }
+    } else {
+      if (file.getName().endsWith(extension)) {
+        return file;
+      }
+    }
+    return null;
   }
   
 }
