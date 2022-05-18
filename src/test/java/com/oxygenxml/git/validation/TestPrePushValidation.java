@@ -8,9 +8,17 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
+
+import ro.sync.document.DocumentPositionedInfo;
 
 /**
  * Contains tests for pre-push validation.
@@ -24,32 +32,32 @@ public class TestPrePushValidation extends GitTestBase {
    * The first local repository path.
    */
   private final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/local";
-  
+
   /**
    * A remote repository.
    */
   private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/remote";
-  
+
   /**
    * The second test repository path.
    */
   private final static String SECOND_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/local2";
-  
+
   /**
    * The first local repository.
    */
   private Repository firstLocalRepo;
-  
+
   /**
    * The remote repository
    */
   private Repository remoteRepo;
-  
+
   /**
    * The second local repository.
    */
   private Repository secondLocalRepo;
-  
+
   /**
    * The git access.
    */
@@ -75,7 +83,7 @@ public class TestPrePushValidation extends GitTestBase {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
+
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     final StoredConfig config = gitAccess.getRepository().getConfig();
     final RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
@@ -86,8 +94,53 @@ public class TestPrePushValidation extends GitTestBase {
 
   }
 
-  
-  
+  /**
+   * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
+   * is not enabled.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50426</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushValidationDisabled() throws Exception {
+    // Disable pre-push validation option 
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return false;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+
+    ValidationManager.getInstance().setPrePushFilesValidator(validator);
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("file test added");
+
+    push("", "");
+
+    assertEquals(firstLocalRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"),
+        remoteRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"));
+
+  }
+
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
