@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.event.GitController;
 
 /**
@@ -57,8 +59,12 @@ public class PushAction extends BaseGitAbstractAction {
 					LOGGER.debug("Push Button Clicked");
 				}
 
-				gitController.push();
-
+				GitOperationScheduler.getInstance().schedule(() -> {
+				  if(ValidationManager.getInstance().checkPushValid()) {
+				    gitController.push();
+				  }
+				});
+				
 			}
 		} catch (NoRepositorySelected e1) {
 			if(LOGGER.isDebugEnabled()) {
