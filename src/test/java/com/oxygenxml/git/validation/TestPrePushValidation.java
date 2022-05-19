@@ -374,13 +374,13 @@ public class TestPrePushValidation extends GitTestBase {
 
       @Override
       public MessageDialogBuilder setQuestionMessage(String questionMessage) {
-        dialogPresentedFlags[2] = dialogPresentedFlags[2] ? true : Tags.NOT_SAME_PROJECT_MESSAGE.equals(questionMessage);
+        dialogPresentedFlags[2] |= Tags.NOT_SAME_PROJECT_MESSAGE.equals(questionMessage);
         return super.setQuestionMessage(questionMessage);
       }
 
       @Override
       public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] = dialogPresentedFlags[1] ? true : Tags.LOAD.equals(okButtonName);
+        dialogPresentedFlags[1] |= Tags.LOAD.equals(okButtonName);
         return super.setOkButtonName(okButtonName);
       }
 
@@ -462,13 +462,13 @@ public class TestPrePushValidation extends GitTestBase {
      
       @Override
           public MessageDialogBuilder setQuestionMessage(String questionMessage) {
-            dialogPresentedFlags[2] = dialogPresentedFlags[2] ? true : Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES.equals(questionMessage);
+            dialogPresentedFlags[2] |= Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES.equals(questionMessage);
             return super.setQuestionMessage(questionMessage);
           }
       
       @Override
       public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] = dialogPresentedFlags[1] ? true : Tags.STASH.equals(okButtonName);
+        dialogPresentedFlags[1] |= Tags.STASH.equals(okButtonName);
         return super.setOkButtonName(okButtonName);
       }
 

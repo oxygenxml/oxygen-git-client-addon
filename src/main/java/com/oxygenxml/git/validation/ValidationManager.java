@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -311,15 +310,13 @@ public class ValidationManager {
    */
   private void removeStashIfNeeded(final Optional<RevCommit> stash) {
     stash.ifPresent(st -> 
-      GitOperationScheduler.getInstance().schedule(
-        () -> {
-          try {
-            GitAccess.getInstance().popStash(st.toObjectId().getName());
-          } catch (GitAPIException e) {
-            LOGGER.error(e.getMessage(), e);
-          }
-        })
-    );
+    {
+      try {
+        GitAccess.getInstance().popStash(st.toObjectId().getName());
+      } catch (GitAPIException e) {
+        LOGGER.error(e.getMessage(), e);
+      }
+    });
   }
 
   /**
