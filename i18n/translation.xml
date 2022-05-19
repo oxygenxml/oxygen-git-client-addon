@@ -16,12 +16,12 @@
 	</languageList>
 	<key value="Not_Same_Project_Message">
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
-		<val lang="en_US">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
-		<val lang="de_DE">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
-		<val lang="fr_FR">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
-		<val lang="ja_JP">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
-		<val lang="nl_NL">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
-		<val lang="zh_CN">The current working copy is not the same as the project loaded in "Project" View and thus cannot validate the project before push. Do you want to load the working copy in "Project" View?</val>
+		<val lang="en_US">The current working copy is different than the project loaded in the "Project" view and cannot be validated before the push process.\n\nDo you want to load the project from the "Project" view to be the current working copy?</val>
+		<val lang="de_DE">The current working copy is different than the project loaded in the "Project" view and cannot be validated before the push process.\n\nDo you want to load the project from the "Project" view to be the current working copy?</val>
+		<val lang="fr_FR">The current working copy is different than the project loaded in the "Project" view and cannot be validated before the push process.\n\nDo you want to load the project from the "Project" view to be the current working copy?</val>
+		<val lang="ja_JP">The current working copy is different than the project loaded in the "Project" view and cannot be validated before the push process.\n\nDo you want to load the project from the "Project" view to be the current working copy?</val>
+		<val lang="nl_NL">The current working copy is different than the project loaded in the "Project" view and cannot be validated before the push process.\n\nDo you want to load the project from the "Project" view to be the current working copy?</val>
+		<val lang="zh_CN">The current working copy is different than the project loaded in the "Project" view and cannot be validated before the push process.\n\nDo you want to load the project from the "Project" view to be the current working copy?</val>
 	</key>
 	<key value="No_XPR_File_In_Project_Message">
 		<comment>The message presented to the user when the git staging project has not a .xpr file.</comment>
@@ -43,12 +43,12 @@
 	</key>
 	<key value="Push_Validation_Uncommited_Changes">
 		<comment>Displayed message when the push validation could be not performed because there are uncommited changes.</comment>
-		<val lang="en_US">The current project cannot be validated because there are uncommited changes. Do you want to stash them and reapply them after the validation process?</val>
-		<val lang="de_DE">The current project cannot be validated because there are uncommited changes. Do you want to stash them and reapply them after the validation process?</val>
-		<val lang="fr_FR">The current project cannot be validated because there are uncommited changes. Do you want to stash them and reapply them after the validation process?</val>
-		<val lang="ja_JP">The current project cannot be validated because there are uncommited changes. Do you want to stash them and reapply them after the validation process?</val>
-		<val lang="nl_NL">The current project cannot be validated because there are uncommited changes. Do you want to stash them and reapply them after the validation process?</val>
-		<val lang="zh_CN">The current project cannot be validated because there are uncommited changes. Do you want to stash them and reapply them after the validation process?</val>
+		<val lang="en_US">The current project cannot be validated because there are uncommited changes.\nDo you want to stash them and reapply them after the validation process?</val>
+		<val lang="de_DE">The current project cannot be validated because there are uncommited changes.\nDo you want to stash them and reapply them after the validation process?</val>
+		<val lang="fr_FR">The current project cannot be validated because there are uncommited changes.\nDo you want to stash them and reapply them after the validation process?</val>
+		<val lang="ja_JP">The current project cannot be validated because there are uncommited changes.\nDo you want to stash them and reapply them after the validation process?</val>
+		<val lang="nl_NL">The current project cannot be validated because there are uncommited changes.\nDo you want to stash them and reapply them after the validation process?</val>
+		<val lang="zh_CN">The current project cannot be validated because there are uncommited changes.\nDo you want to stash them and reapply them after the validation process?</val>
 	</key>
 	<key value="Failed_Push_Validation_Message">
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
