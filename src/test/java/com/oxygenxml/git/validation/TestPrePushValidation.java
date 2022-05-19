@@ -17,8 +17,17 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.dialog.internal.MessageDialog;
+import com.oxygenxml.git.view.dialog.internal.MessageDialogBuilder;
 
 import ro.sync.document.DocumentPositionedInfo;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Contains tests for pre-push validation.
@@ -139,6 +148,96 @@ public class TestPrePushValidation extends GitTestBase {
     assertEquals(firstLocalRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"),
         remoteRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"));
 
+  }
+  
+  /**
+   * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
+   * is enabled and the push should not be rejected on validation problem and the not same project is loaded 
+   * in "Project" View and Git Staging.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50540</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushValidationWhenNotSameProjectOpened() throws Exception {
+
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+    
+    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final ProjectController projectController = Mockito.mock(ProjectController.class);
+    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
+        secondLocalRepo.getDirectory().toURI().toURL());
+    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        }); 
+
+    // Detects if the "Push anyway" button is available and the dialog is shows.
+    final boolean[] dialogPresentedFlags = new boolean[3];
+    dialogPresentedFlags[0] = false;
+    dialogPresentedFlags[1] = false;
+    dialogPresentedFlags[2] = false;
+
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_push", DialogType.ERROR) {
+     
+      @Override
+          public MessageDialogBuilder setQuestionMessage(String questionMessage) {
+            dialogPresentedFlags[2] = dialogPresentedFlags[2] ? true : Tags.NOT_SAME_PROJECT_MESSAGE.equals(questionMessage);
+            return super.setQuestionMessage(questionMessage);
+          }
+      
+      @Override
+      public MessageDialogBuilder setOkButtonName(String okButtonName) {
+        dialogPresentedFlags[1] = dialogPresentedFlags[1] ? true : Tags.LOAD.equals(okButtonName);
+        return super.setOkButtonName(okButtonName);
+      }
+
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogPresentedFlags[0] = true;
+        return dialog;
+      }
+    });
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+
+    ValidationManager.getInstance().setPrePushFilesValidator(validator);
+   
+    assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
+    assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
+    assertTrue(ValidationManager.getInstance().checkPushValid());
+    assertTrue(dialogPresentedFlags[0]);
+    assertTrue(dialogPresentedFlags[1]);
+    assertTrue(dialogPresentedFlags[2]);
   }
 
   @Override
