@@ -107,13 +107,16 @@ public class TestPrePushValidation extends GitTestBase {
    * <p><b>Description:</b> @OxygenAPIWrapper usefully only when the getMainFiles is not accessible.</p>
    * 
    * <p><b>Bug ID:</b> EXM-50426</p>
+   * 
+   * @see OxygenAPIWrapper
+   * @see FilesValidator
    *
    * @author Alex_Smarandache
    *
    */ 
   @Test
   public void testOxygenAPIWrapper() throws Exception {
-     assertFalse("This class must be removed because te API is already available.", 
+     assertFalse("The classes marked with @see must be refactorized because the API is already available.", 
          OxygenAPIWrapper.getInstance().isGetMainFilesAccessible());
   }
 
