@@ -124,21 +124,21 @@
 	</key>
 	<key value="Reject_Commit_On_Problems">
 		<comment>Label for reject commit on validation problems option.</comment>
-		<val lang="en_US">Reject commit on validation problems</val>
-		<val lang="de_DE">Reject commit on validation problems</val>
-		<val lang="fr_FR">Reject commit on validation problems</val>
-		<val lang="ja_JP">Reject commit on validation problems</val>
-		<val lang="nl_NL">Reject commit on validation problems</val>
-		<val lang="zh_CN">Reject commit on validation problems</val>
+		<val lang="en_US">Reject commit when validation problems occur</val>
+		<val lang="de_DE">Reject commit when validation problems occur</val>
+		<val lang="fr_FR">Reject commit when validation problems occur</val>
+		<val lang="ja_JP">Reject commit when validation problems occur</val>
+		<val lang="nl_NL">Reject commit when validation problems occur</val>
+		<val lang="zh_CN">Reject commit when validation problems occur</val>
 	</key>
 	<key value="Validate_Before_Commit">
 		<comment>Label for validate files before commit option.</comment>
-		<val lang="en_US">Validate each file before commit</val>
-		<val lang="de_DE">Validate each file before commit</val>
-		<val lang="fr_FR">Validate each file before commit</val>
-		<val lang="ja_JP">Validate each file before commit</val>
-		<val lang="nl_NL">Validate each file before commit</val>
-		<val lang="zh_CN">Validate each file before commit</val>
+		<val lang="en_US">Validate each file before committing</val>
+		<val lang="de_DE">Validate each file before committing</val>
+		<val lang="fr_FR">Validate each file before committing</val>
+		<val lang="ja_JP">Validate each file before committing</val>
+		<val lang="nl_NL">Validate each file before committing</val>
+		<val lang="zh_CN">Validate each file before committing</val>
 	</key>
 	<key value="Merge_Branches_Question_Message">
 		<comment>The question message on the merge branches pop up dialog
