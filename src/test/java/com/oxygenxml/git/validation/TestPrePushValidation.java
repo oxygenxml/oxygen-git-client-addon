@@ -245,6 +245,90 @@ public class TestPrePushValidation extends GitTestBase {
     assertTrue(dialogPresentedFlags[0]);
     assertFalse(dialogPresentedFlags[1]);
   }
+  
+  /**
+   * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
+   * is enabled and the push should not be rejected on validation problem.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50426</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushValidationWhenPushIsNotRejected() throws Exception {
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+    
+    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final ProjectController projectController = Mockito.mock(ProjectController.class);
+    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
+        firstLocalRepo.getDirectory().toURI().toURL());
+    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        }); 
+
+    // Detects if the "Push anyway" button is available and the dialog is shows.
+    final boolean[] dialogPresentedFlags = new boolean[2];
+    dialogPresentedFlags[0] = false;
+    dialogPresentedFlags[1] = false;
+
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_push", DialogType.ERROR) {
+
+      @Override
+      public MessageDialogBuilder setOkButtonName(String okButtonName) {
+        dialogPresentedFlags[1] = Tags.PUSH_ANYWAY.equals(okButtonName);
+        return super.setOkButtonName(okButtonName);
+      }
+
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogPresentedFlags[0] = true;
+        return dialog;
+      }
+    });
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return false;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+
+    ValidationManager.getInstance().setPrePushFilesValidator(validator);
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("file test added");
+   
+    assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
+    assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
+    assertTrue(ValidationManager.getInstance().checkPushValid());
+    assertTrue(dialogPresentedFlags[0]);
+    assertTrue(dialogPresentedFlags[1]);
+  }
 
   /**
    * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
