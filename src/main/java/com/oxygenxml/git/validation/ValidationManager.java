@@ -230,37 +230,51 @@ public class ValidationManager {
     final PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     if(isPrePushValidationEnabled() && pluginWorkspace instanceof StandalonePluginWorkspace) {
       final StandalonePluginWorkspace standalonePluginWorkspace = (StandalonePluginWorkspace)pluginWorkspace;
-      final URL currentProjectURL = standalonePluginWorkspace.getProjectManager().getCurrentProjectURL(); 
-      Optional<RevCommit> stash = Optional.empty();
-      try {
-        if(currentProjectURL == null ||!RepoUtil.isEqualsWithCurrentRepo(new File(currentProjectURL.toURI()))) {
-          performPush = treatNotSameProjectCase(standalonePluginWorkspace);
-        } 
-        
-        // treat case with validation could not be performed because there are uncommited changes.
-        if(performPush && GitAccess.getInstance().hasFilesChanged()) { 
-          performPush = MessagePresenterProvider
-              .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
-              .setQuestionMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES))
-              .setOkButtonName(TRANSLATOR.getTranslation(Tags.STASH))
-              .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
-          if(performPush) {
-            stash = Optional.ofNullable(GitAccess.getInstance().createStash(true, ""));
-          }
-        }
-        
-        if(performPush && !validateMainFilesBeforePush(CollectionsUtil.toList(
-            OxygenAPIWrapper.getInstance().getMainFileResourcesIterator()))) {
-          performPush = showPushFilesProblems(); 
-        }
-      } catch (URISyntaxException e) {
-        standalonePluginWorkspace.showErrorMessage(e.getMessage());
-        performPush = false;
-      } finally {
-        removeStashIfNeeded(stash);
-      }
+      performPush = validateProject(standalonePluginWorkspace);
     }   
 
+    return performPush;
+  }
+
+  /**
+   * Validate the current project opened in Git Staging.
+   *
+   * @param standalonePluginWorkspace The Standalone Plugin Workspace.
+   * 
+   * @return <code>true</code> if the push operation could be performed, <code>false</code> otherwise.
+   */
+  public boolean validateProject(final StandalonePluginWorkspace standalonePluginWorkspace) {
+    boolean performPush = true; 
+    final URL currentProjectURL = standalonePluginWorkspace.getProjectManager().getCurrentProjectURL(); 
+    Optional<RevCommit> stash = Optional.empty();
+    try {
+      if(currentProjectURL == null ||!RepoUtil.isEqualsWithCurrentRepo(new File(currentProjectURL.toURI()))) {
+        performPush = treatNotSameProjectCase(standalonePluginWorkspace);
+      } 
+      
+      // treat case with validation could not be performed because there are uncommited changes.
+      if(performPush && GitAccess.getInstance().hasFilesChanged()) { 
+        performPush = MessagePresenterProvider
+            .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
+            .setQuestionMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES))
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.STASH))
+            .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
+        if(performPush) {
+          stash = Optional.ofNullable(GitAccess.getInstance().createStash(true, ""));
+        }
+      }
+      
+      if(performPush && !validateMainFilesBeforePush(CollectionsUtil.toList(
+          OxygenAPIWrapper.getInstance().getMainFileResourcesIterator()))) {
+        performPush = showPushFilesProblems(); 
+      }
+    } catch (URISyntaxException e) {
+      standalonePluginWorkspace.showErrorMessage(e.getMessage());
+      performPush = false;
+    } finally {
+      removeStashIfNeeded(stash);
+    }
+    
     return performPush;
   }
 

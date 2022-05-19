@@ -104,6 +104,20 @@ public class TestPrePushValidation extends GitTestBase {
   }
 
   /**
+   * <p><b>Description:</b> @OxygenAPIWrapper usefully only when the getMainFiles is not accessible.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50426</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testOxygenAPIWrapper() throws Exception {
+     assertFalse("This class must be removed because te API is already available.", 
+         OxygenAPIWrapper.getInstance().isGetMainFilesAccessible());
+  }
+
+  /**
    * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
    * is not enabled.</p>
    * 
@@ -149,7 +163,7 @@ public class TestPrePushValidation extends GitTestBase {
         remoteRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"));
 
   }
-  
+
   /**
    * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
    * is enabled and the push should not be rejected on validation problem and the not same project is loaded 
@@ -162,10 +176,10 @@ public class TestPrePushValidation extends GitTestBase {
    */ 
   @Test
   public void testPrePushValidationWhenNotSameProjectOpened() throws Exception {
-
+    // Enable push validation and disable reject push option
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
-    
+
     final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     final ProjectController projectController = Mockito.mock(ProjectController.class);
     Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
@@ -188,13 +202,13 @@ public class TestPrePushValidation extends GitTestBase {
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_push", DialogType.ERROR) {
-     
+
       @Override
-          public MessageDialogBuilder setQuestionMessage(String questionMessage) {
-            dialogPresentedFlags[2] = dialogPresentedFlags[2] ? true : Tags.NOT_SAME_PROJECT_MESSAGE.equals(questionMessage);
-            return super.setQuestionMessage(questionMessage);
-          }
-      
+      public MessageDialogBuilder setQuestionMessage(String questionMessage) {
+        dialogPresentedFlags[2] = dialogPresentedFlags[2] ? true : Tags.NOT_SAME_PROJECT_MESSAGE.equals(questionMessage);
+        return super.setQuestionMessage(questionMessage);
+      }
+
       @Override
       public MessageDialogBuilder setOkButtonName(String okButtonName) {
         dialogPresentedFlags[1] = dialogPresentedFlags[1] ? true : Tags.LOAD.equals(okButtonName);
@@ -231,7 +245,7 @@ public class TestPrePushValidation extends GitTestBase {
         });
 
     ValidationManager.getInstance().setPrePushFilesValidator(validator);
-   
+
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());

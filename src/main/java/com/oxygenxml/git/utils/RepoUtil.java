@@ -18,7 +18,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
-import org.eclipse.jgit.annotations.Nullable;
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -514,7 +514,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
    * 
    * @return <code>true</code> if the current repo is not <code>null</code> and is equals with the proposed file.
    */
-  public static boolean isEqualsWithCurrentRepo(@Nullable final File proposedFile) {
+  public static boolean isEqualsWithCurrentRepo(@NonNull final File proposedFile) {
     boolean toReturn = false;
     try {
       File currentRepo = null;
