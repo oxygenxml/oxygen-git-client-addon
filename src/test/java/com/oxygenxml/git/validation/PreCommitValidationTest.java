@@ -230,6 +230,102 @@ public class PreCommitValidationTest extends GitTestBase {
     waitForScheduler();
     assertTrue(gitAccess.getStagedFiles().isEmpty());
   }
+  
+  /**
+   * <p><b>Description:</b> This test cover pre-commit validation behavior for case when this option
+   * is not enabled and reject commit option is disabled.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-47776</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testUnstagedFilesBlocksCommitValidation() throws Exception {
+    // Enable validate pre-commit option
+    OPTIONS_MANAGER.setValidateFilesBeforeCommit(true);
+    // Disable reject commit on validation problems option
+    OPTIONS_MANAGER.setRejectCommitOnValidationProblems(false);
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return false;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_CANCEL;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        }); 
+
+    // Detects if the "Commit anyway" button is available and the dialog is shows.
+    final boolean[] dialogPresentedFlags = new boolean[3];
+    dialogPresentedFlags[0] = false;
+    dialogPresentedFlags[1] = false;
+    dialogPresentedFlags[2] = false;
+
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_precommit", DialogType.WARNING) {
+
+      @Override
+      public MessageDialogBuilder setOkButtonVisible(final boolean isOkButtonVisible) {
+        dialogPresentedFlags[1] = !isOkButtonVisible;
+        return super.setOkButtonVisible(isOkButtonVisible);
+      }
+      
+      @Override
+          public MessageDialogBuilder setMessage(final String questionMessage) {
+            dialogPresentedFlags[2] = Tags.COMMIT_VALIDATION_UNSTAGED_FILES.equals(questionMessage);
+            return super.setQuestionMessage(questionMessage);
+          }
+
+      @Override
+      public MessageDialog buildAndShow() {
+        // a single dialog should be displayed, to show the error only and the commit would be rejected after this dialog.
+        dialogPresentedFlags[0] = !dialogPresentedFlags[0];
+        return dialog;
+      }
+    });
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+
+    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
+
+    File file = new File(LOCAL_REPO, "unsts.css");
+    file.createNewFile();
+    setFileContent(file, "* {}");
+    assertFalse(gitAccess.getUnstagedFiles().isEmpty());
+
+    // try to make a commit
+    final CommitAndStatusPanel commitPanel = new CommitAndStatusPanel(new GitController(gitAccess));
+    commitPanel.getCommitMessageArea().setText("commit test");
+    commitPanel.getCommitButton().doClick();
+    waitForScheduler();
+
+    // Test if the dialog were displayed and no files are commited
+    assertEquals(4, gitAccess.getStagedFiles().size());
+    assertTrue(dialogPresentedFlags[0]);
+    assertTrue(dialogPresentedFlags[1]);
+    assertTrue(dialogPresentedFlags[2]);
+  }
 
   /**
    * <p><b>Description:</b> This test cover pre-commit validation behavior for case when this option
