@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Commit_Validation_Unstaged_Files">
+		<comment>Displayed message when the commit validation could be not performed because there are unstaged files.</comment>
+		<val lang="en_US">The files cannot be validated because there are unstaged files.</val>
+		<val lang="de_DE">The files cannot be validated because there are unstaged files.</val>
+		<val lang="fr_FR">The files cannot be validated because there are unstaged files.</val>
+		<val lang="ja_JP">The files cannot be validated because there are unstaged files.</val>
+		<val lang="nl_NL">The files cannot be validated because there are unstaged files.</val>
+		<val lang="zh_CN">The files cannot be validated because there are unstaged files.</val>
+	</key>
 	<key value="Not_Same_Project_Message">
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The current working copy is different than the project loaded in the "Project" view and cannot be validated before the push process.\n\nDo you want to load the project from the "Project" view to be the current working copy?</val>

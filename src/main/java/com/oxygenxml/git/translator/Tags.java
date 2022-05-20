@@ -1885,5 +1885,10 @@ public class Tags {
    * Load.
    */
   public static final String LOAD = "Load";
+  
+  /**
+   * Displayed message when the commit validation could be not performed because there are unstaged files.
+   */
+  public static final String COMMIT_VALIDATION_UNSTAGED_FILES = "Commit_Validation_Unstaged_Files";
 }
 
