@@ -226,15 +226,18 @@ public class FileStatusUtil {
   /**
    * Computes a list of files statues URLs.
    * 
-   * @param files The files.
+   * @param files          The files.
+   * @param computeGitURLs <code>true</code> if the computed URL should be a git URL, <code>false</code> if the URL should be from the WC.
    * 
    * @return The computed URLs.
    */
-  public static List<URL> getFilesStatuesURL(@NonNull final List<FileStatus> files) {
+  public static List<URL> getFilesStatuesURL(@NonNull final List<FileStatus> files, 
+      final boolean computeGitURLs) {
     final List<URL> filesURL = new ArrayList<>();
     files.forEach(file -> {
       try {
-        filesURL.add(computeFileStatusURL(file));
+        filesURL.add(computeGitURLs ? computeFileStatusURL(file) :
+            FileUtil.getFileURL(file.getFileLocation()));
       } catch (NoRepositorySelected | MalformedURLException e) {
         LOGGER.debug(e.getMessage(), e);
       }
