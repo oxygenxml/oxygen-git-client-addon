@@ -80,7 +80,6 @@ public class FilesValidator implements IValidator {
   /**
    * Extract methods and classes needed, using reflexion.
    */
-  //TODO Rewrite this after set minimum Oxygen version 25.0 
   private void extractResources() {
     try {
       final PluginWorkspace pluginWorkspaceAccess = PluginWorkspaceProvider.getPluginWorkspace();
