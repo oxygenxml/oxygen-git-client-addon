@@ -194,15 +194,25 @@ public class ValidationManager {
    */
   public boolean checkCommitValid() {
     boolean performCommit = true;
-    if(isPreCommitValidationEnabled() 
-        && !validateFilesBeforeCommit(
-            FileStatusUtil.getFilesStatuesURL(
-                GitAccess.getInstance().getStagedFiles().stream().filter(
-                    file -> file.getChangeType() != GitChangeType.REMOVED && 
-                    file.getChangeType() != GitChangeType.MISSING)
-                .collect(Collectors.toList()))
-            )) {
-      performCommit = showCommitFilesProblems();
+    if(isPreCommitValidationEnabled()) {
+      if(!GitAccess.getInstance().getUnstagedFiles().isEmpty()) {     
+        performCommit = false;
+        MessagePresenterProvider
+        .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
+        .setOkButtonVisible(false)
+        .setMessage(TRANSLATOR.getTranslation(Tags.COMMIT_VALIDATION_UNSTAGED_FILES))
+        .buildAndShow();
+      }
+      if(performCommit && !validateFilesBeforeCommit(
+          FileStatusUtil.getFilesStatuesURL(
+              GitAccess.getInstance().getStagedFiles().stream().filter(
+                  file -> file.getChangeType() != GitChangeType.REMOVED && 
+                  file.getChangeType() != GitChangeType.MISSING)
+              .collect(Collectors.toList())
+              , false)
+          )) {
+        performCommit = showCommitFilesProblems();
+      }
     }
 
     return performCommit;
@@ -242,7 +252,7 @@ public class ValidationManager {
    * 
    * @return <code>true</code> if the push operation could be performed, <code>false</code> otherwise.
    */
-  public boolean validateProject(final StandalonePluginWorkspace standalonePluginWorkspace) {
+  private boolean validateProject(final StandalonePluginWorkspace standalonePluginWorkspace) {
     boolean performPush = true; 
     final URL currentProjectURL = standalonePluginWorkspace.getProjectManager().getCurrentProjectURL(); 
     Optional<RevCommit> stash = Optional.empty();

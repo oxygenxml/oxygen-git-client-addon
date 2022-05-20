@@ -198,11 +198,7 @@ public class MessageDialog extends OKCancelDialog {
       gbc.gridy++;
     }
     
-    if (!info.showCancelButton || !info.showOkButton) {
-      // No question message. Hide Cancel button.
-      getCancelButton().setVisible(info.showCancelButton);
-      getOkButton().setVisible(info.showOkButton);
-    } else {
+    if(info.questionMessage != null) {
       JTextArea textArea = UIUtil.createMessageArea("");
       textArea.setDocument(new CustomWrapDocument());
       textArea.setLineWrap(false);
@@ -214,7 +210,12 @@ public class MessageDialog extends OKCancelDialog {
       gbc.gridx = 1;
       gbc.gridheight = 1;
       panel.add(textArea, gbc);
-      
+    }
+    
+    if (!info.showCancelButton || !info.showOkButton) {
+      getCancelButton().setVisible(info.showCancelButton);
+      getOkButton().setVisible(info.showOkButton);
+    } else {  
       if(info.okButtonName != null && !info.okButtonName.isEmpty()) {
         setOkButtonText(info.okButtonName);
       }
