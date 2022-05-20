@@ -40,7 +40,7 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  * @author Alex_Smarandache
  *
  */
-public class RemoteVisualTests extends GitTestBase {
+public class RemoteVisualTest extends GitTestBase {
 
   private final static String LOCAL_REPO = "target/test-resources/GitAccessRemote/localRepository";
   private final static String REMOTE_REPO = "target/test-resources/GitAccessRemote/remoteRepository";

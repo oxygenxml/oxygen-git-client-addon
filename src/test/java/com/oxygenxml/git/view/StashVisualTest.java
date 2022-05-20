@@ -43,7 +43,7 @@ import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
  * @author Alex_Smarandache
  *
  */
-public class StashVisualTests extends GitTestBase {
+public class StashVisualTest extends GitTestBase {
 
   private final static String LOCAL_REPO = "target/test-resources/GitAccessStash/localRepository";
   private final static String REMOTE_REPO = "target/test-resources/GitAccessStash/remoteRepository";

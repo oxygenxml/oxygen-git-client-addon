@@ -35,7 +35,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author alex_smarandache
  *
  */
-public class TestPrePushValidation extends GitTestBase {
+public class PrePushValidationTest extends GitTestBase {
 
   /**
    * The first local repository path.

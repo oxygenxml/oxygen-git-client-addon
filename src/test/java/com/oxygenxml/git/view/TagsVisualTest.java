@@ -35,7 +35,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author gabriel_nedianu
  *
  */
-public class TagsVisualTests extends GitTestBase {
+public class TagsVisualTest extends GitTestBase {
 
   private final static String LOCAL_REPO = "target/test-resources/GitTags/localRepository";
   private final static String REMOTE_REPO = "target/test-resources/GitTags/remoteRepository";
