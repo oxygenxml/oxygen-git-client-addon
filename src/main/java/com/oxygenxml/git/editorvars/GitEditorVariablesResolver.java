@@ -78,7 +78,6 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   public GitEditorVariablesResolver(GitControllerBase ctrl) {
     this.gitController = ctrl;
     ctrl.addGitListener(gitEventListener);
-    initCacheIfNeeded();
   }
   
   /**
@@ -86,6 +85,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    */
   @Override
   public String resolveEditorVariables(String contentWithEditorVariables, String currentEditedFileURL) {
+    initCacheIfNeeded();
     contentWithEditorVariables = resolveBranchEditorVariables(contentWithEditorVariables);
     try {
       contentWithEditorVariables = resolveWorkingCopyEditorVariables(contentWithEditorVariables);
@@ -99,7 +99,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * Used to set initial values for cache if the repository is not initialized.
    */
   private void initCacheIfNeeded() {
-    if(!GitAccess.getInstance().isRepoInitialized()) {
+    if(editorVarsCache.isEmpty() && !GitAccess.getInstance().isRepoInitialized()) {
       final String selectedRepo = OptionsManager.getInstance().getSelectedRepository();
       if(selectedRepo != null && !selectedRepo.isEmpty()) {  
         try {
