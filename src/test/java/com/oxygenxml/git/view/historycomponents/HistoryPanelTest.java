@@ -57,7 +57,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     try {
 
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
-
+      GitAccess.getInstance().getStatusCache().resetCache();
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
 
       String dump = dumpHistory(commitsCharacteristics);
@@ -259,17 +259,6 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
   
 
   /**
-   * 
-   * TODO - pare sa fie ceva din resetarea cach-ului.
-   * com.oxygenxml.git.service.GitAccess.getCommitsCharacteristics(HistoryStrategy, String, RenameTracker)
-   * daca adaugam un resetCache 
-   * 
-   *  if (filePath == null && statusCache.getStatus().hasUncommittedChanges()) {
-        revisions.add(UNCOMMITED_CHANGES);
-      }
-      
-   * pare sa mearga
-   * 
    * Changing branches fires notification.
    * 
    * @throws Exception If it fails.
@@ -279,7 +268,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
 
     File wcTree = new File("target/gen/GitHistoryTest_testChangeBranchEvent");
     generateRepositoryAndLoad(script, wcTree);
-
+    GitAccess.getInstance().getStatusCache().resetCache();
     List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
         HistoryStrategy.CURRENT_BRANCH, 
         null, 
@@ -298,6 +287,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     assertEquals(
         expected, dump);
 
+    historyPanel.setCurrentStrategy(HistoryStrategy.CURRENT_BRANCH);
     historyPanel.showRepositoryHistory();
     waitForScheduler();
     flushAWT();
@@ -349,7 +339,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
 
     File wcTree = new File("target/gen/GitHistoryTest_testChangeBranchEvent");
     generateRepositoryAndLoad(script, wcTree);
-
+    GitAccess.getInstance().getStatusCache().resetCache();
     List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(
         HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
 

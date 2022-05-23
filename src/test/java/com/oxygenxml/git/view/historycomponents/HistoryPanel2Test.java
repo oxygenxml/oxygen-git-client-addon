@@ -35,7 +35,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     generateRepositoryAndLoad(
         getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
-  
+      GitAccess.getInstance().getStatusCache().resetCache();
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       String dump = dumpHistory(commitsCharacteristics, true);
       String expected =  
@@ -99,7 +99,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     generateRepositoryAndLoad(
         getClass().getClassLoader().getResource("scripts/history_script_follow_move.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowCopyRenames"));
-  
+      GitAccess.getInstance().getStatusCache().resetCache();
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       String dump = dumpHistory(commitsCharacteristics, true);
       String expected =  
@@ -160,7 +160,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     generateRepositoryAndLoad(
         getClass().getClassLoader().getResource("scripts/EXM-44300/script.txt"), 
         new File("target/gen/HistoryPanelTest/testActionsOnRenamedFile"));
-
+    GitAccess.getInstance().getStatusCache().resetCache();
     List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String dump = dumpHistory(commitsCharacteristics, true);
     String expected =  
@@ -212,7 +212,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     generateRepositoryAndLoad(
         getClass().getClassLoader().getResource("scripts/file_content_script.txt"), 
         new File("target/gen/HistoryPanelTest/testMultipleSelectionHistoryActions"));
-
+    GitAccess.getInstance().getStatusCache().resetCache();
     List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String dump = dumpHistory(commitsCharacteristics, true);
     String expected =  

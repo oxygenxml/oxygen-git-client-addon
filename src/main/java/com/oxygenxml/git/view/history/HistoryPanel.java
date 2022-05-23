@@ -69,6 +69,7 @@ import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -1100,6 +1101,17 @@ public class HistoryPanel extends JPanel {
   public JTable getHistoryTable() {
     return historyTable;
   }
+
+  /**
+   * Setter for current strategy to present commits.
+   * 
+   * @param currentStrategy The new strategy.
+   */
+  @TestOnly
+  public void setCurrentStrategy(final HistoryStrategy currentStrategy) {
+    this.currentStrategy = currentStrategy;
+  }
+  
   
 
 }

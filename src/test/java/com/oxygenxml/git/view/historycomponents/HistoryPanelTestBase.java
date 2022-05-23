@@ -17,10 +17,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.Ignore;
 import org.powermock.api.mockito.PowerMockito;
 
-import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -272,4 +270,5 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
     
     return actions.get(0);
   }
+ 
 }
