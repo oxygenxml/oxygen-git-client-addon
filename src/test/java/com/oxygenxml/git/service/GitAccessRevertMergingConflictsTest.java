@@ -171,7 +171,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     for (AbstractAction action : actionsForSecondaryBranch) {
       if (action != null) {
         String actionName = action.getValue(AbstractAction.NAME).toString();
-        if ("Merge_Branch1_Into_Branch2".equals(actionName)) {
+        if ((Tags.MERGE_BRANCH1_INTO_BRANCH2 + "...").equals(actionName)) {
           SwingUtilities.invokeLater(() -> action.actionPerformed(null));
           break;
         }
@@ -181,7 +181,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
 
     // Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     flushAWT();
     sleep(300);
