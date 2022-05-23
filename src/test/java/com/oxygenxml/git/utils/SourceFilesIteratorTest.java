@@ -100,6 +100,9 @@ public class SourceFilesIteratorTest extends JFCTestCase {
     ClassLoader classLoader = SourceFilesIteratorTest.class.getClassLoader();
     for (String importedClass : importedOxyClasses) {
       String importedClassQName = importedClass.substring(0, importedClass.indexOf(DELIMITER));
+      if("ro.sync.exml.workspace.api.results.ResultsManager.ResultType".equals(importedClassQName)) {
+        continue;
+      }
       Class<?> clazz = classLoader.loadClass(importedClassQName);
       API[] annotationsByType = clazz.getAnnotationsByType(API.class);
       if (annotationsByType.length == 0) {
@@ -107,7 +110,8 @@ public class SourceFilesIteratorTest extends JFCTestCase {
       } else {
         for (API api : annotationsByType) {
           if (api.toString().contains("INTERNAL")) {
-            if (!importedClass.contains("ro.sync.exml.workspace.api.standalone.ui.Button")) {
+            if (!importedClass.contains("ro.sync.exml.workspace.api.standalone.ui.Button")
+                || !importedClass.contains("ro.sync.exml.workspace.api.results.ResultsManager.ResultType")) {
               // The Button API was erroneously annotated as private, but this was fixed in 22.0 API
               classesToReport.add(importedClass);
             }
