@@ -212,17 +212,15 @@ public class MessageDialog extends OKCancelDialog {
       panel.add(textArea, gbc);
     }
     
-    if (!info.showCancelButton || !info.showOkButton) {
-      getCancelButton().setVisible(info.showCancelButton);
-      getOkButton().setVisible(info.showOkButton);
-    } else {  
-      if(info.okButtonName != null && !info.okButtonName.isEmpty()) {
-        setOkButtonText(info.okButtonName);
-      }
-      if(info.cancelButtonName != null && !info.cancelButtonName.isEmpty()) {
-        setCancelButtonText(info.cancelButtonName);
-      }      
+    getCancelButton().setVisible(info.showCancelButton);
+    getOkButton().setVisible(info.showOkButton);
+   
+    if(info.showOkButton && info.okButtonName != null && !info.okButtonName.isEmpty()) {
+      setOkButtonText(info.okButtonName);
     }
+    if(info.showCancelButton && info.cancelButtonName != null && !info.cancelButtonName.isEmpty()) {
+      setCancelButtonText(info.cancelButtonName);
+    }      
     
     getContentPane().add(panel);
     setResizable(info.targetFiles != null && info.targetFiles.isEmpty());
