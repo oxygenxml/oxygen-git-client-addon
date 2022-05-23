@@ -141,9 +141,9 @@ public class StashVisualTest extends GitTestBase {
       JButton doStashButton = findFirstButton(stashChangesDialog, Tags.STASH);
       assertNotNull(doStashButton);
       doStashButton.doClick();
+      flushAWT();
       refreshSupport.call();
       flushAWT();
-      
       assertFalse(stashChangesItem.isEnabled());
       
       // Test if the stash were created.
