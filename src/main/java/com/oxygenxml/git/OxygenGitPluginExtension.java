@@ -193,6 +193,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 		
+	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+    utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
+    
     gitRefreshSupport = new PanelRefresh(
         RemoteRepositoryChangeWatcher.createWatcher(pluginWS, gitController),
         () -> menuBar);
@@ -267,9 +270,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			pluginWorkspaceAccess.showErrorMessage(t.getMessage());
 			LOGGER.error(t.getMessage(), t);
 		}
-
-		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
-		utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
 	}
 
 	/**

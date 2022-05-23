@@ -3,14 +3,19 @@ package com.oxygenxml.git.editorvars;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -63,12 +68,17 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   
   /**
    * Constructor.
+   * <br>
+   * Note: Make sure that the options all loaded in @OptionsManager before call the constructor 
+   * for a good initialization if the repository is not opened yet.
+   * 
    * 
    * @param ctrl High level Git operations.
    */
   public GitEditorVariablesResolver(GitControllerBase ctrl) {
     this.gitController = ctrl;
     ctrl.addGitListener(gitEventListener);
+    initCacheIfNeeded();
   }
   
   /**
@@ -83,6 +93,35 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
       LOGGER.error(e.getMessage(), e);
     }
     return contentWithEditorVariables;
+  }
+
+  /**
+   * Used to set initial values for cache if the repository is not initialized.
+   */
+  private void initCacheIfNeeded() {
+    if(!GitAccess.getInstance().isRepoInitialized()) {
+      final String selectedRepo = OptionsManager.getInstance().getSelectedRepository();
+      if(selectedRepo != null && !selectedRepo.isEmpty()) {  
+        try {
+          final File gitDir = new File(selectedRepo);
+          final URL gitProjectURL = gitDir.toURI().toURL();
+          editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR, 
+              gitProjectURL.toExternalForm());
+          editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR, gitDir.getName());
+          final File repoPath = new File(selectedRepo + "/.git");
+          try(final Git git = Git.open(repoPath)) {
+            final Repository repo = git.getRepository();
+            final String fullNameBranch = repo.getFullBranch();
+            final String shortNameBranch = repo.getBranch();
+            editorVarsCache.put(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR, fullNameBranch); 
+            editorVarsCache.put(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR, shortNameBranch); 
+          } 
+        } catch (IOException e) {
+          LOGGER.error(e.getMessage(), e);      
+        }
+        editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR, selectedRepo); 
+      }
+    }    
   }
 
   /**
