@@ -700,29 +700,33 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     // wait for cache to clear
     waitForScheduler();
     
-    Repository currentRepo = GitAccess.getInstance().getRepository();
-    GitAccess.getInstance().cleanUp();
-    waitForScheduler();
-    
-    for (Repository repository : loadedRepos) {
-      // Remove the file system resources.
-      try {
-        // We already closed the repository currently opened in GitAccess. Closing it
-        // again writes an error in the console and can slow down the tests.
-        if (currentRepo != repository) {
-          repository.close();
+    try {
+      Repository currentRepo = GitAccess.getInstance().getRepository();
+      GitAccess.getInstance().cleanUp();
+      waitForScheduler();
+      
+      for (Repository repository : loadedRepos) {
+        // Remove the file system resources.
+        try {
+          // We already closed the repository currently opened in GitAccess. Closing it
+          // again writes an error in the console and can slow down the tests.
+          if (currentRepo != repository) {
+            repository.close();
+          }
+          waitForScheduler();
+          flushAWT();
+          deleteRepository(repository);
+          waitForScheduler();
+          flushAWT();
+        } catch (IOException e) {
+          System.err.println("Unable to delete: " + repository.getWorkTree().getAbsolutePath());
+          e.printStackTrace();
         }
-        waitForScheduler();
-        flushAWT();
-        deleteRepository(repository);
-        waitForScheduler();
-        flushAWT();
-      } catch (IOException e) {
-        System.err.println("Unable to delete: " + repository.getWorkTree().getAbsolutePath());
-        e.printStackTrace();
       }
+      loadedRepos.clear();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    loadedRepos.clear();
     
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
