@@ -1,7 +1,9 @@
   package com.oxygenxml.git.editorvars;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.eclipse.jgit.api.Git;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -97,4 +99,22 @@ public class GitEditorVariablesTest extends GitTestBase {
     assertEquals("- " + new File(LOCAL_TEST_REPOSITORY).toURI().toURL().toString() + " -", actual);
   }
 
+  /**
+   * <p><b>Description:</b> Tests if is OK to open the same repository on multiple times</p>
+   * <p><b>Bug ID:</b> EXM-50482</p>
+   *
+   * @author Alex_Smarandache
+   */ 
+  @Test
+  public void testSameRepositoryOpened() {
+    boolean isOk = true;
+    try(Git git1 = Git.open(new File(LOCAL_TEST_REPOSITORY))) {
+      try(Git git2 = Git.open(new File(LOCAL_TEST_REPOSITORY))) {     
+      } 
+    } catch (IOException e) {
+      isOk = false;
+    }
+    
+    assertTrue(isOk);
+  }
 }
