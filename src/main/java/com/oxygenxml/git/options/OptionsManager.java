@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
-import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
@@ -117,9 +116,7 @@ public class OptionsManager {
    * @param wsOptionsStorage Oxygen options storage API.
    */
   public void loadOptions(WSOptionsStorage wsOptionsStorage) {
-    if (options == null) {
-      options = OptionsLoader.loadOptions(wsOptionsStorage);
-    }
+    options = OptionsLoader.loadOptions(wsOptionsStorage);
   }
   
   /**
@@ -752,11 +749,4 @@ public class OptionsManager {
     getOptions().setUserCredentialsList(newUserCredentialsList);
   }
 
-  /**
-   * Used to reset all options.
-   */
-  @TestOnly
-  public void resetOptions() {
-    options = null;
-  }
-  }
+}

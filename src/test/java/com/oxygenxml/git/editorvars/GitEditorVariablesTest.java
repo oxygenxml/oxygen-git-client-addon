@@ -149,7 +149,6 @@ public class GitEditorVariablesTest extends GitTestBase {
           return OptionTags.SELECTED_REPOSITORY.equals(invocation.getArgument(0)) ? 
               fileRepo.getAbsolutePath() : "";
         });
-    OptionsManager.getInstance().resetOptions();
     OptionsManager.getInstance().loadOptions(optionsStorage);
     
     // Test editor variables
