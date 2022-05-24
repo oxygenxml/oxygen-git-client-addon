@@ -728,6 +728,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       e.printStackTrace();
     }
     
+    
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
     System.gc();

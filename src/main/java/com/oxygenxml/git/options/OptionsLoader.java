@@ -81,8 +81,6 @@ public class OptionsLoader {
     newOptions.setNotifyAboutNewRemoteCommits(oldOptions.isNotifyAboutNewRemoteCommits()) ;
     newOptions.setCheckoutNewlyCreatedLocalBranch(oldOptions.isCheckoutNewlyCreatedLocalBranch()) ;
 
-
-    
     newOptions.setSelectedRepository(oldOptions.getSelectedRepository()) ;
     newOptions.setUserCredentialsList(oldOptions.getUserCredentialsList()) ;
     newOptions.setCommitMessages(oldOptions.getCommitMessages()) ;

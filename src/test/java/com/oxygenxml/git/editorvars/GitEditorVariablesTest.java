@@ -5,11 +5,16 @@ import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.options.OptionTags;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.view.event.GitController;
 
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
 
 /**
@@ -29,7 +34,6 @@ public class GitEditorVariablesTest extends GitTestBase {
 
     // Create the local repository.
     createRepository(LOCAL_TEST_REPOSITORY);
-    GitAccess.getInstance().setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
 
   }
 
@@ -40,6 +44,7 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testShortBranchNameEditorVariable() throws Exception {
+    GitAccess.getInstance().setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     String actual = editorVariablesResolver.resolveEditorVariables(
         "- " + GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR + " -",
         null);
@@ -54,6 +59,7 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testFullBranchNameEditorVariable() throws Exception {
+    GitAccess.getInstance().setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     String actual = editorVariablesResolver.resolveEditorVariables(
         "- " + GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR + " -",
         null);
@@ -67,6 +73,7 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testWorkingCopyNameEditorVariable() throws Exception {
+    GitAccess.getInstance().setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     String actual = editorVariablesResolver.resolveEditorVariables(
         "- " +  GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR + " -",
         null);
@@ -80,6 +87,7 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testWorkingCopyPathEditorVariable() throws Exception {
+    GitAccess.getInstance().setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     String actual = editorVariablesResolver.resolveEditorVariables(
         "- " + GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR + " -",
         null);
@@ -93,6 +101,7 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testWorkingCopyURLEditorVariable() throws Exception {
+    GitAccess.getInstance().setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     String actual = editorVariablesResolver.resolveEditorVariables(
         "- " + GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR + " -",
         null);
@@ -116,5 +125,53 @@ public class GitEditorVariablesTest extends GitTestBase {
     }
     
     assertTrue(isOk);
+  }
+  
+  /**
+   * <p><b>Description:</b> Tests if the editor variables are loaded file even if the repository is not initialized.</p>
+   * <p><b>Bug ID:</b> EXM-50482</p>
+   *
+   * @author Alex_Smarandache
+   */ 
+  @Test
+  public void testNoRepoIsLoaded() throws IOException {
+    // Make sure if the repository is not initialized
+    editorVariablesResolver = new GitEditorVariablesResolver(new GitController());
+    GitAccess.getInstance().setGit(null);
+    assertFalse(GitAccess.getInstance().isRepoInitialized());
+    
+    // Mock the options to get LOCAL_TEST_REPOSITORY as the selected repository 
+    final File fileRepo = new File(LOCAL_TEST_REPOSITORY);
+    final WSOptionsStorage optionsStorage = Mockito.mock(WSOptionsStorage.class);
+    Mockito.when(optionsStorage.getOption(Mockito.any(String.class), Mockito.any(String.class)))
+    .then((Answer<String>) 
+        invocation -> {
+          return OptionTags.SELECTED_REPOSITORY.equals(invocation.getArgument(0)) ? 
+              fileRepo.getAbsolutePath() : "";
+        });
+    OptionsManager.getInstance().resetOptions();
+    OptionsManager.getInstance().loadOptions(optionsStorage);
+    
+    // Test editor variables
+    final String wcPath = editorVariablesResolver.resolveEditorVariables(
+        GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
+        null);
+    assertEquals(fileRepo.getAbsolutePath(), wcPath);
+    final String wcURL = editorVariablesResolver.resolveEditorVariables(
+        GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
+        null);
+    assertEquals(fileRepo.toURI().toURL().toExternalForm(), wcURL);
+    final String wcName = editorVariablesResolver.resolveEditorVariables(
+        GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
+        null);
+    assertEquals(fileRepo.getName(), wcName);
+    final String branchFullName = editorVariablesResolver.resolveEditorVariables(
+        GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
+        null);
+    assertEquals("refs/heads/main", branchFullName);
+    final String branchShortName = editorVariablesResolver.resolveEditorVariables(
+        GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
+        null);
+    assertEquals("main", branchShortName); 
   }
 }
