@@ -351,4 +351,21 @@ public class FileStatusUtil {
   }
 
   
+  /**
+   * Remove all files statues with the given extension.
+   * 
+   * @param files     The files.
+   * @param extension The extension.
+   * 
+   * @return The files without files with the given extension.
+   */
+  @NonNull 
+  public static List<FileStatus> removeFilesByExtension(@NonNull final List<FileStatus> files,
+      final String extension) {
+    if(extension != null && !extension.isEmpty()) {
+      files.removeIf(file -> file.getFileLocation() != null && file.getFileLocation().endsWith(extension));
+    }
+    return files;
+  }
+  
 }
