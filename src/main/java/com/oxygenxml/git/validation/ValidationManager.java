@@ -17,6 +17,7 @@ import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.annotation.TestOnly;
+import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -195,7 +196,7 @@ public class ValidationManager {
   public boolean checkCommitValid() {
     boolean performCommit = true;
     if(isPreCommitValidationEnabled()) {
-      if(!GitAccess.getInstance().getUnstagedFiles().isEmpty()) {     
+      if(!hasUncommitedChanges(false)) {     
         performCommit = false;
         MessagePresenterProvider
         .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
@@ -262,7 +263,7 @@ public class ValidationManager {
       } 
       
       // treat case with validation could not be performed because there are uncommited changes.
-      if(performPush && GitAccess.getInstance().hasFilesChanged()) { 
+      if(performPush && hasUncommitedChanges(true)) { 
         performPush = MessagePresenterProvider
             .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
             .setQuestionMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES))
@@ -356,6 +357,23 @@ public class ValidationManager {
           .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
     }
 
+    return toReturn;
+  }
+  
+  /**
+   * @param includeStagedFiles <code>true</code> if the staged files should be included.
+   * 
+   * @return <code>true</code> if there are uncommited changes without ".xpr" files.
+   */
+  private boolean hasUncommitedChanges(final boolean includeStagedFiles) {
+    final List<FileStatus> unstagedFiles = FileStatusUtil.removeFilesByExtension(
+        GitAccess.getInstance().getUnstagedFiles(), ".xpr");
+    boolean toReturn = !unstagedFiles.isEmpty();
+    if(includeStagedFiles && !toReturn) {
+      final List<FileStatus> stagedFiles = FileStatusUtil.removeFilesByExtension(
+          GitAccess.getInstance().getStagedFiles(), ".xpr");
+      toReturn = !stagedFiles.isEmpty();
+    }
     return toReturn;
   }
   
