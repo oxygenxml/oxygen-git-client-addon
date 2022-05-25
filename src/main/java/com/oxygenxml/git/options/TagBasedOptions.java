@@ -511,7 +511,7 @@ public class TagBasedOptions implements Options {
   @Override
   public boolean getRejectPushOnValidationProblems() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(
-        OptionTags.REJECT_COMMIT_ON_VALIDATION_PROBLEMS, FALSE));
+        OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS, FALSE));
   }
 
   @Override
