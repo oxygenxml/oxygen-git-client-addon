@@ -36,6 +36,10 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileUtil;
+import com.oxygenxml.git.validation.OxygenAPIWrapper;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Class with usefully methods for files statues.
@@ -368,4 +372,24 @@ public class FileStatusUtil {
     return files;
   }
   
+  /**
+   * Remove all unreachable files.
+   * A file is considered to be unreachable if is a binary resource or has an unmapped type. 
+   * 
+   * @param files
+   */
+  public static void removeUnreachableFiles(@NonNull final List<FileStatus> files) {
+    final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+    files.removeIf(f -> {
+      boolean toReturn = true;
+      try {
+        final URL fileURL = FileUtil.getFileURL(f.getFileLocation());
+        toReturn = utilAccess.isUnhandledBinaryResourceURL(fileURL) 
+            || OxygenAPIWrapper.getInstance().getContentType(fileURL.toExternalForm()) == null;
+      } catch (NoRepositorySelected e) {
+        LOGGER.error(e.getMessage(), e);
+      }
+      return toReturn;
+    });
+  }
 }
