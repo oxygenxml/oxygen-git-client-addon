@@ -48,7 +48,7 @@ public class JaxbOptions implements Options {
 	/**
 	 * <code>true</code> to validate files before commit.
 	 */
-	private boolean validateFilesBeforeCommit = true;
+	private boolean validateFilesBeforeCommit = false;
 	
 	/**
 	 * <code>true</code> to reject commit on validation problems.
@@ -58,7 +58,7 @@ public class JaxbOptions implements Options {
 	/**
    * <code>true</code> to validate main files before push.
    */
-  private boolean validateMainFilesBeforePush = true;
+  private boolean validateMainFilesBeforePush = false;
   
   /**
    * <code>true</code> to reject push on validation problems.

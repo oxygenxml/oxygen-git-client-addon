@@ -478,7 +478,7 @@ public class TagBasedOptions implements Options {
   @Override
   public boolean getValidateFilesBeforeCommit() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(
-        OptionTags.VALIDATE_FILES_BEFORE_COMMIT, TRUE));
+        OptionTags.VALIDATE_FILES_BEFORE_COMMIT, FALSE));
   }
 
   @Override
@@ -500,7 +500,7 @@ public class TagBasedOptions implements Options {
   @Override
   public boolean getValidateMainFilesBeforePush() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(
-        OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH, TRUE));
+        OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH, FALSE));
   }
 
   @Override

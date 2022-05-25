@@ -314,9 +314,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
     updateSubmodulesOnPull.setSelected(true);
     askToSwitchToWCRadio.setSelected(true);
-    validateBeforeCommit.setSelected(true);
+    validateBeforeCommit.setSelected(false);
     rejectCommitOnValidationProblems.setSelected(false);
-    validateBeforePush.setSelected(true);
+    validateBeforePush.setSelected(false);
     rejectPushOnValidationProblems.setSelected(false);
   }
 
