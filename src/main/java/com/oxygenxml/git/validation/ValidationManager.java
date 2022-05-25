@@ -351,7 +351,7 @@ public class ValidationManager {
     } else {
       toReturn = MessagePresenterProvider.getBuilder(TRANSLATOR.getTranslation(
           Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
-          .setMessage(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE))
+          .setMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED))
           .setOkButtonName(TRANSLATOR.getTranslation(Tags.PUSH_ANYWAY))
           .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
           .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;

@@ -61,12 +61,12 @@
 	</key>
 	<key value="Failed_Push_Validation_Message">
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
-		<val lang="en_US">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
-		<val lang="de_DE">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
-		<val lang="fr_FR">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
-		<val lang="ja_JP">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
-		<val lang="nl_NL">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
-		<val lang="zh_CN">Encountered validation problems in the project resources. The results can be viewed in the "Results" view.</val>
+		<val lang="en_US">Encountered validation problems in the project resources.\nThe problems can be viewed in the "Results" view.</val>
+		<val lang="de_DE">Encountered validation problems in the project resources.\nThe problems can be viewed in the "Results" view.</val>
+		<val lang="fr_FR">Encountered validation problems in the project resources.\nThe problems can be viewed in the "Results" view.</val>
+		<val lang="ja_JP">Encountered validation problems in the project resources.\nThe problems can be viewed in the "Results" view.</val>
+		<val lang="nl_NL">Encountered validation problems in the project resources.\nThe problems can be viewed in the "Results" view.</val>
+		<val lang="zh_CN">Encountered validation problems in the project resources.\nThe problems can be viewed in the "Results" view.</val>
 	</key>
 	<key value="Push_Anyway">
 		<comment>Push anyway</comment>
@@ -88,12 +88,12 @@
 	</key>
 	<key value="Validate_Before_Push">
 		<comment>Label for validate files before commit option.</comment>
-		<val lang="en_US">Validate all main files from the project before push</val>
-		<val lang="de_DE">Validate all main files from the project before push</val>
-		<val lang="fr_FR">Validate all main files from the project before push</val>
-		<val lang="ja_JP">Validate all main files from the project before push</val>
-		<val lang="nl_NL">Validate all main files from the project before push</val>
-		<val lang="zh_CN">Validate all main files from the project before push</val>
+		<val lang="en_US">Validate all files from the Project 'Main Files' folder before push</val>
+		<val lang="de_DE">Validate all files from the Project 'Main Files' folder before push</val>
+		<val lang="fr_FR">Validate all files from the Project 'Main Files' folder before push</val>
+		<val lang="ja_JP">Validate all files from the Project 'Main Files' folder before push</val>
+		<val lang="nl_NL">Validate all files from the Project 'Main Files' folder before push</val>
+		<val lang="zh_CN">Validate all files from the Project 'Main Files' folder before push</val>
 	</key>
 	<key value="Pre_Push_Validation">
 		<comment>Title for problems occurred on a pre-push validation and presented by a dialog/view.</comment>
@@ -115,12 +115,12 @@
 	</key>
 	<key value="Failed_Commit_Validation_Message">
 		<comment>Displayed message when problems on validation are detected.</comment>
-		<val lang="en_US">Validation problems were encountered in the resources to be committed. The results can be viewed in the Results area.</val>
-		<val lang="de_DE">Validation problems were encountered in the resources to be committed. The results can be viewed in the Results area.</val>
-		<val lang="fr_FR">Validation problems were encountered in the resources to be committed. The results can be viewed in the Results area.</val>
-		<val lang="ja_JP">Validation problems were encountered in the resources to be committed. The results can be viewed in the Results area.</val>
-		<val lang="nl_NL">Validation problems were encountered in the resources to be committed. The results can be viewed in the Results area.</val>
-		<val lang="zh_CN">Validation problems were encountered in the resources to be committed. The results can be viewed in the Results area.</val>
+		<val lang="en_US">Validation problems were encountered in the resources to be committed.\nThe problems can be viewed in the Results area.</val>
+		<val lang="de_DE">Validation problems were encountered in the resources to be committed.\nThe problems can be viewed in the Results area.</val>
+		<val lang="fr_FR">Validation problems were encountered in the resources to be committed.\nThe problems can be viewed in the Results area.</val>
+		<val lang="ja_JP">Validation problems were encountered in the resources to be committed.\nThe problems can be viewed in the Results area.</val>
+		<val lang="nl_NL">Validation problems were encountered in the resources to be committed.\nThe problems can be viewed in the Results area.</val>
+		<val lang="zh_CN">Validation problems were encountered in the resources to be committed.\nThe problems can be viewed in the Results area.</val>
 	</key>
 	<key value="Pre_Commit_Validation">
 		<comment>Title for problems occurred on a pre-commit validation and presented by a dialog/view.</comment>
