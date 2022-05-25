@@ -366,12 +366,12 @@ public class ValidationManager {
    * @return <code>true</code> if there are uncommited changes without ".xpr" files.
    */
   private boolean hasUncommitedChanges(final boolean includeStagedFiles) {
-    final List<FileStatus> unstagedFiles = FileStatusUtil.removeFilesByExtension(
-        GitAccess.getInstance().getUnstagedFiles(), ".xpr");
+    final List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
+    FileStatusUtil.removeUnreachableFiles(unstagedFiles);
     boolean toReturn = !unstagedFiles.isEmpty();
     if(includeStagedFiles && !toReturn) {
-      final List<FileStatus> stagedFiles = FileStatusUtil.removeFilesByExtension(
-          GitAccess.getInstance().getStagedFiles(), ".xpr");
+      final List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFiles();
+      FileStatusUtil.removeUnreachableFiles(stagedFiles);
       toReturn = !stagedFiles.isEmpty();
     }
     return toReturn;
