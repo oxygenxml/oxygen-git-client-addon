@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
@@ -531,6 +533,21 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
     }
 
     return toReturn;
+  }
+  
+  /**
+   * Used to extract the repository name for an URL.
+   * 
+   * @param url The repository URL.
+   * 
+   * @return The name of repository.
+   */
+  public static String extractRepositoryName(@NonNull final String url) {
+    final String corrected = Optional.ofNullable(url)
+        .filter(str -> str.endsWith("/"))
+        .map(str -> str.substring(0, str.length() - 1))
+        .orElse(url);
+    return Iterables.getLast(Splitter.on("/").splitToList(Splitter.on(Constants.DOT_GIT).splitToList(corrected).get(0)));
   }
 
 }
