@@ -1,5 +1,6 @@
 package com.oxygenxml.git.validation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * This class is a wrapper for some Oxygen APIs extracted using reflexion.
@@ -43,6 +45,16 @@ public class OxygenAPIWrapper {
    * <code>true</code> if the method to get main files is accessible.
    */
   private boolean isGetMainFilesAccessible = true;
+  
+  /**
+   * The util access.
+   */
+  private UtilAccess utilAccess;
+  
+  /**
+   * Get content type method.
+   */
+  private Method getContentTypeMethod;
 
   /**
    * Helper class to manage the singleton instance.
@@ -58,7 +70,7 @@ public class OxygenAPIWrapper {
    *
    * @return The instance.
    */
-  static OxygenAPIWrapper getInstance() {
+  public static OxygenAPIWrapper getInstance() {
     return SingletonHelper.INSTANCE;
   }
 
@@ -74,6 +86,9 @@ public class OxygenAPIWrapper {
       try {
         getMainFilesMethod = projectController.getClass().getMethod("getMainFileResourcesIterator");
         getMainFilesMethod.setAccessible(true);
+        utilAccess = pluginWorkspaceAccess.getUtilAccess();
+        Class<? extends UtilAccess> utilAccessClazz = utilAccess.getClass();
+        getContentTypeMethod = utilAccessClazz.getMethod("getContentType", String.class);
       } catch (NoSuchMethodException | SecurityException e) {
         if(LOGGER.isDebugEnabled()) {
           LOGGER.debug(e.getMessage(), e);
@@ -81,6 +96,8 @@ public class OxygenAPIWrapper {
         isGetMainFilesAccessible = false;
       }
     }
+    
+    // Object contentType = getContentTypeMethod.invoke(utilAccess, resournce.toExternalForm());
   }
 
   /**
@@ -105,4 +122,25 @@ public class OxygenAPIWrapper {
     return isGetMainFilesAccessible;
   }
   
+  /**
+   * Get the content type for the given URL. The content type is detected from the file extension based on the file extension 
+   * associations saved in the application preferences.<br> 
+   * 
+   * @param systemID The systemID to get the content type for.
+   * @return the content type string or <code>null</code> if there is no mapping. 
+   * The content type is returned as a mime type value, for example "text/xml" for XML documents
+   * 
+   * @since 24.0
+   */
+  public String getContentType(final String URL) {
+    String toReturn = null;
+    try {
+      toReturn = (String)getContentTypeMethod.invoke(utilAccess, URL);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      if(LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e.getMessage(), e);
+      }    
+    }
+    return toReturn;
+  }
 }
