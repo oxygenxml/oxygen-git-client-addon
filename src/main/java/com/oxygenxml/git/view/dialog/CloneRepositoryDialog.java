@@ -65,6 +65,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -641,8 +642,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	  if (sourceURL != null) {
 	    final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
 	    if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
-	      final File destFile = validateAndGetDestinationPath(new File(selectedDestPath));
+	      final File destFile = validateAndGetDestinationPath(new File(selectedDestPath), sourceURL.toString());
 	      if (destFile != null) {
+	        if(!destFile.exists()) {
+	          destFile.mkdir();
+	        }
 	        JFrame parentFrame = (JFrame) pluginWorkspace.getParentFrame();
           final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
 	        CloneWorker cloneWorker = new CloneWorker(
@@ -694,13 +698,16 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	 * @return The file where to clone the repository or <code>null</code>.
 	 */
 	@Nullable
-	private File validateAndGetDestinationPath(@NonNull File destFile) {
-		if (destFile.exists()) {
-			if (destFile.list().length > 0) {
-			  destFile = null;
-			  pluginWorkspace.showErrorMessage(
-			      translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
-			}
+	private File validateAndGetDestinationPath(@NonNull File destFile, @NonNull final String repositoryURL) {
+	  if (destFile.exists()) {
+	    if (destFile.list().length > 0) {
+	      destFile = new File(destFile, RepoUtil.extractRepositoryName(repositoryURL));
+	      if(destFile.exists() && destFile.list().length > 0) {
+	        destFile = null;
+	        pluginWorkspace.showErrorMessage(
+	            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
+	      }
+	    }
 		} else {
 			File tempFile = destFile.getParentFile();
 			while (tempFile != null) {
