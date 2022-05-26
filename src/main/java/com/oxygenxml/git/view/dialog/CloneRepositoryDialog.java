@@ -42,6 +42,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.annotations.NonNull;
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -639,8 +641,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	  if (sourceURL != null) {
 	    final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
 	    if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
-	      final File destFile = new File(selectedDestPath);
-	      if (isDestinationPathValid(destFile)) {
+	      final File destFile = validateAndGetDestinationPath(new File(selectedDestPath));
+	      if (destFile != null) {
 	        JFrame parentFrame = (JFrame) pluginWorkspace.getParentFrame();
           final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
 	        CloneWorker cloneWorker = new CloneWorker(
@@ -685,19 +687,19 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	}
 
 	/**
-	 * Check if the destination path is valid (for example, it does not yet exist).
+	 * Check if the destination path is valid (for example, it does not yet exist) and get the location to clone the repository.
 	 * 
 	 * @param destFile The destination.
 	 * 
-	 * @return <code>true</code> if the destination path is valid.
+	 * @return The file where to clone the repository or <code>null</code>.
 	 */
-	private boolean isDestinationPathValid(final File destFile) {
-	  boolean isDestPathValid = true;
+	@Nullable
+	private File validateAndGetDestinationPath(@NonNull File destFile) {
 		if (destFile.exists()) {
 			if (destFile.list().length > 0) {
+			  destFile = null;
 			  pluginWorkspace.showErrorMessage(
-			      translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));
-			  isDestPathValid = false;
+			      translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
 			}
 		} else {
 			File tempFile = destFile.getParentFile();
@@ -709,12 +711,12 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 				tempFile = tempFile.getParentFile();
 			}
 			if (tempFile == null) {
+			  destFile = null;
 			  pluginWorkspace.showErrorMessage(
 			      translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
-			  isDestPathValid = false;
 			}
 		}
-		return isDestPathValid;
+		return destFile;
 	}
 
 }
