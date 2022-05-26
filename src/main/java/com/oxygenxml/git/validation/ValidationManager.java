@@ -197,7 +197,7 @@ public class ValidationManager {
   public boolean checkCommitValid() {
     boolean performCommit = true;
     if(isPreCommitValidationEnabled()) {
-      if(!hasUncommitedChanges(false)) {     
+      if(hasUncommitedChanges(false)) {     
         performCommit = false;
         MessagePresenterProvider
         .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
