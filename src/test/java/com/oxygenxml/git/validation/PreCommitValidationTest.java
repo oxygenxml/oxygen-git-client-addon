@@ -244,8 +244,8 @@ public class PreCommitValidationTest extends GitTestBase {
   public void testUnstagedFilesBlocksCommitValidation() throws Exception {
     // Enable validate pre-commit option
     OPTIONS_MANAGER.setValidateFilesBeforeCommit(true);
-    // Disable reject commit on validation problems option
-    OPTIONS_MANAGER.setRejectCommitOnValidationProblems(false);
+    // Enable reject commit on validation problems option
+    OPTIONS_MANAGER.setRejectCommitOnValidationProblems(true);
 
     // Create a custom collector constructed to behave as if it contains validation problems
     final ICollector collector = Mockito.mock(ICollector.class);
@@ -284,12 +284,13 @@ public class PreCommitValidationTest extends GitTestBase {
       
       @Override
           public MessageDialogBuilder setMessage(final String questionMessage) {
-            dialogPresentedFlags[2] = Tags.COMMIT_VALIDATION_UNSTAGED_FILES.equals(questionMessage);
-            return super.setQuestionMessage(questionMessage);
+            dialogPresentedFlags[2] |= Tags.COMMIT_VALIDATION_UNSTAGED_FILES.equals(questionMessage);
+            return super.setMessage(questionMessage);
           }
 
       @Override
       public MessageDialog buildAndShow() {
+        new Exception().printStackTrace();
         // a single dialog should be displayed, to show the error only and the commit would be rejected after this dialog.
         dialogPresentedFlags[0] = !dialogPresentedFlags[0];
         return dialog;

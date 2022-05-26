@@ -1,6 +1,5 @@
 package com.oxygenxml.git.validation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
@@ -133,10 +132,10 @@ public class OxygenAPIWrapper {
    * @since 24.0
    */
   public String getContentType(final String URL) {
-    String toReturn = null;
+    String toReturn = "";
     try {
       toReturn = (String)getContentTypeMethod.invoke(utilAccess, URL);
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+    } catch (Exception e) {
       if(LOGGER.isDebugEnabled()) {
         LOGGER.debug(e.getMessage(), e);
       }    
