@@ -1867,6 +1867,11 @@ public class Tags {
   public static final String PUSH_VALIDATION_FAILED = "Failed_Push_Validation_Message";
   
   /**
+   * Displayed message when problems on validation are detected on push operation and a stash was been created.
+   */
+  public static final String PUSH_VALIDATION_FAILED_WITH_STASH = "Failed_Push_Validation_Message_With_Stash";
+  
+  /**
    * Displayed message when the push validation could be not performed because there are uncommited changes.
    */
   public static final String PUSH_VALIDATION_UNCOMMITED_CHANGES = "Push_Validation_Uncommited_Changes";

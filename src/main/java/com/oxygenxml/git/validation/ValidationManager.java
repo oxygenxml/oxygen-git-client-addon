@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -270,13 +271,17 @@ public class ValidationManager {
             .setOkButtonName(TRANSLATOR.getTranslation(Tags.STASH))
             .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
         if(performPush) {
-          stash = Optional.ofNullable(GitAccess.getInstance().createStash(true, ""));
+          stash = Optional.ofNullable(GitAccess.getInstance().createStash(true, 
+              TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION) + ": " + new Date()));
         }
       }
       
       if(performPush && !validateMainFilesBeforePush(CollectionsUtil.toList(
           OxygenAPIWrapper.getInstance().getMainFileResourcesIterator()))) {
-        performPush = showPushFilesProblems(); 
+        performPush = showPushFilesProblems(stash.isPresent()? 
+            TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED_WITH_STASH) :
+            TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED) );
+        stash = Optional.empty(); // don't apply the stash if problems were found
       }
     } catch (URISyntaxException e) {
       standalonePluginWorkspace.showErrorMessage(e.getMessage());
@@ -333,9 +338,11 @@ public class ValidationManager {
   /**
    * Show problems that occurs on last commit validation.
    * 
+   * @param message Message to presents the problems.
+   * 
    * @return <code>true</code> if the commit can be performed.
    */
-  public boolean showPushFilesProblems() {
+  public boolean showPushFilesProblems(final String message) {
     final List<DocumentPositionedInfo> problems = Arrays.asList(
         pushMainFilesValidator.getCollector().getAll());
     RESULT_MANAGER.setResults(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), 
@@ -346,12 +353,12 @@ public class ValidationManager {
           Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
       .setOkButtonVisible(false)
       .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
-      .setMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED))
+      .setMessage(message)
       .buildAndShow();
     } else {
       toReturn = MessagePresenterProvider.getBuilder(TRANSLATOR.getTranslation(
           Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
-          .setMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED))
+          .setMessage(message)
           .setOkButtonName(TRANSLATOR.getTranslation(Tags.PUSH_ANYWAY))
           .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
           .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
