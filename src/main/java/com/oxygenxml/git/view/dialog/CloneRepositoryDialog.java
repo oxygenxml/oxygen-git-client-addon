@@ -26,6 +26,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -67,6 +68,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -381,6 +383,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	 * Destination path combo box.
 	 */
 	private JComboBox<String> destinationPathCombo;
+	
+	/**
+	 * If is selected, a new directory will be auto-created if the files are not empty.
+	 */
+	private JCheckBox autoCreateDirectory;
 
 	/**
 	 * Label for displaying information.
@@ -531,10 +538,10 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		destinationPathCombo.setEditable(true);
 		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
 		if (!destinationPaths.isEmpty()) {
-		  for (String string : destinationPaths) {
-		    destinationPathCombo.addItem(string);
+		  for (String path : destinationPaths) {
+		    destinationPathCombo.addItem(path);
 		  }
-		  destinationPathCombo.setSelectedItem("");
+		  destinationPathCombo.setSelectedItem(0);
 		}
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -569,6 +576,25 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		gbc.gridx ++;
 		panel.add(browseButton, gbc);
 		
+		autoCreateDirectory = new JCheckBox() {
+		  @Override
+		  public javax.swing.JToolTip createToolTip() {
+		    return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+		  }
+		};
+		autoCreateDirectory.setSelected(true);
+		autoCreateDirectory.setText(translator.getTranslation(Tags.AUTO_CREATE_DIRECTORY_ON_CLONE));
+		autoCreateDirectory.setToolTipText(translator.getTranslation(Tags.AUTO_CREATE_DIRECTORY_ON_CLONE_TOOLTIP));
+	  gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.gridx = 0;
+    gbc.gridy ++;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    gbc.gridwidth = 3;
+    panel.add(autoCreateDirectory, gbc);
+    
 		// Information label shown when some problems occur
 		informationLabel = new JLabel();
 		informationLabel.setForeground(Color.RED);
@@ -700,30 +726,31 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	@Nullable
 	private File validateAndGetDestinationPath(@NonNull File destFile, @NonNull final String repositoryURL) {
 	  if (destFile.exists()) {
-	    if (destFile.list().length > 0) {
+	    if(autoCreateDirectory.isSelected()) {
 	      destFile = new File(destFile, RepoUtil.extractRepositoryName(repositoryURL));
-	      if(destFile.exists() && destFile.list().length > 0) {
-	        destFile = null;
-	        pluginWorkspace.showErrorMessage(
-	            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
-	      }
 	    }
-		} else {
-			File tempFile = destFile.getParentFile();
-			while (tempFile != null) {
-				if (tempFile.exists()) {
-					destFile.mkdirs();
-					break;
-				}
-				tempFile = tempFile.getParentFile();
-			}
-			if (tempFile == null) {
-			  destFile = null;
-			  pluginWorkspace.showErrorMessage(
-			      translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
-			}
-		}
-		return destFile;
+	    final String[] children  = destFile.list();
+	    if (children != null && children.length > 0) {
+	      destFile = null;
+	      pluginWorkspace.showErrorMessage(
+	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
+	    }
+	  } else {
+	    File tempFile = destFile.getParentFile();
+	    while (tempFile != null) {
+	      if (tempFile.exists()) {
+	        destFile.mkdirs();
+	        break;
+	      }
+	      tempFile = tempFile.getParentFile();
+	    }
+	    if (tempFile == null) {
+	      destFile = null;
+	      pluginWorkspace.showErrorMessage(
+	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+	    }
+	  }
+	  return destFile;
 	}
 
 }
