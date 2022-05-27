@@ -541,7 +541,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		  for (String path : destinationPaths) {
 		    destinationPathCombo.addItem(path);
 		  }
-		  destinationPathCombo.setSelectedItem(0);
+		  destinationPathCombo.setSelectedItem(destinationPaths.get(0));
 		}
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
