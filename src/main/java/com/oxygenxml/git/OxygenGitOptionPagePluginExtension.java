@@ -348,6 +348,10 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS,
         OptionTags.WHEN_REPO_DETECTED_IN_PROJECT,
         OptionTags.UPDATE_SUBMODULES_ON_PULL,
+        OptionTags.VALIDATE_FILES_BEFORE_COMMIT,
+        OptionTags.REJECT_COMMIT_ON_VALIDATION_PROBLEMS,
+        OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH,
+        OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS
     };
   }
 }
