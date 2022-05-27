@@ -57,6 +57,8 @@ import org.eclipse.jgit.transport.URIish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -267,20 +269,26 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	      checkConnectionTask.cancel();
 	    }
 	    checkConnectionTask = new TimerTask() {
-	      @Override
+        @Override
 	      public void run() {
 	        if (CloneRepositoryDialog.this.isShowing()
 	            && KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() == CloneRepositoryDialog.this) {
 
 	          try {
 	            final List<Ref> remoteBranches = new ArrayList<>();
+	            final String initialText = sourceUrlTextField.getText();
+	            final String sourceUrlAsText = initialText != null ?
+	                Iterables.getLast(Splitter.on(" ").splitToList(
+	                sourceUrlTextField.getText().trim())) : null;
+	            if(sourceUrlAsText != null && sourceUrlAsText.equals(previousURLText)) {
+	              return;
+	            }
 	            SwingUtilities.invokeLater(() -> {
-	              branchesComboBox.removeAllItems();
-	              setProgressVisible(true);
-	            });
-
-	            String sourceUrlAsText = sourceUrlTextField.getText();
+                branchesComboBox.removeAllItems();
+                setProgressVisible(true);
+              });
 	            boolean wasUrlProvided = sourceUrlAsText != null && !sourceUrlAsText.isEmpty();
+	            previousURLText = sourceUrlAsText;
 	            if (wasUrlProvided) {
 	              addBranches(remoteBranches, sourceUrlAsText);
 	            }
@@ -378,6 +386,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	 * Source URL text field.
 	 */
 	private JTextField sourceUrlTextField;
+	
+	/**
+   * Used to eliminate redundant branch processing.
+   */
+  private String previousURLText = null;
 
 	/**
 	 * Destination path combo box.
@@ -704,7 +717,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	  final String repoURLText = sourceUrlTextField.getText();
 	  if (repoURLText != null && !repoURLText.isEmpty()) {
 	    try {
-	      url = new URIish(repoURLText);
+	      url = new URIish(Iterables.getLast(Splitter.on(" ").splitToList(repoURLText.trim())));
 	    } catch (URISyntaxException e) {
         pluginWorkspace.showErrorMessage(
             translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
