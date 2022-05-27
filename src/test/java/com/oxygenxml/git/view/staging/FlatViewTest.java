@@ -400,12 +400,9 @@ public class FlatViewTest extends FlatViewTestBase {
     assertFalse(autoPushBtn.isSelected());
     
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
-    SwingUtilities.invokeAndWait(() -> {
-      stagingPanel.getCommitPanel().getCommitMessageArea().setText("Commit message");
-      stagingPanel.getCommitPanel().getCommitButton().doClick();
-      });
+    stagingPanel.getCommitPanel().getCommitMessageArea().setText("Commit message");
+    stagingPanel.getCommitPanel().getCommitButton().doClick();
     waitForScheluerBetter();
-    sleep(1000);
     flushAWT();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     
@@ -423,7 +420,6 @@ public class FlatViewTest extends FlatViewTestBase {
       stagingPanel.getCommitPanel().getCommitButton().doClick();
       });
     waitForScheluerBetter();
-    sleep(500);
     flushAWT();
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
   }
