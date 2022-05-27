@@ -374,12 +374,10 @@ public class ValidationManager {
    */
   private boolean hasUncommitedChanges(final boolean includeStagedFiles) {
     final List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
-    FileStatusUtil.removeUnreachableFiles(unstagedFiles);
-    boolean toReturn = !unstagedFiles.isEmpty();
+    boolean toReturn = unstagedFiles.stream().anyMatch(f -> !FileStatusUtil.isUnreachableFile(f));
     if(includeStagedFiles && !toReturn) {
       final List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFiles();
-      FileStatusUtil.removeUnreachableFiles(stagedFiles);
-      toReturn = !stagedFiles.isEmpty();
+      toReturn = stagedFiles.stream().anyMatch(f -> !FileStatusUtil.isUnreachableFile(f));
     }
     return toReturn;
   }

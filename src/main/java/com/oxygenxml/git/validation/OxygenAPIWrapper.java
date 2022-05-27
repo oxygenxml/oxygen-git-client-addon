@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.eclipse.jgit.annotations.NonNull;
 import org.slf4j.Logger;
@@ -33,17 +34,12 @@ public class OxygenAPIWrapper {
   /**
    * Get all main files from the current project opened in "Project" view.
    */
-  private Method getMainFilesMethod;
+  private Optional<Method> getMainFilesMethod = Optional.empty();
 
   /**
    * The project controller.
    */
   private ProjectController projectController;
-  
-  /**
-   * <code>true</code> if the method to get main files is accessible.
-   */
-  private boolean isGetMainFilesAccessible = true;
   
   /**
    * The util access.
@@ -53,7 +49,7 @@ public class OxygenAPIWrapper {
   /**
    * Get content type method.
    */
-  private Method getContentTypeMethod;
+  private Optional<Method> getContentTypeMethod = Optional.empty();
 
   /**
    * Helper class to manage the singleton instance.
@@ -83,20 +79,18 @@ public class OxygenAPIWrapper {
           (StandalonePluginWorkspace) pluginWorkspaceAccess;
       projectController = standalonePluginWorkspace.getProjectManager();
       try {
-        getMainFilesMethod = projectController.getClass().getMethod("getMainFileResourcesIterator");
-        getMainFilesMethod.setAccessible(true);
+        getMainFilesMethod = Optional.ofNullable(projectController.getClass()
+            .getMethod("getMainFileResourcesIterator"));
+        getMainFilesMethod.get().setAccessible(true);
         utilAccess = pluginWorkspaceAccess.getUtilAccess();
         Class<? extends UtilAccess> utilAccessClazz = utilAccess.getClass();
-        getContentTypeMethod = utilAccessClazz.getMethod("getContentType", String.class);
+        getContentTypeMethod = Optional.ofNullable(utilAccessClazz.getMethod("getContentType", String.class));
       } catch (NoSuchMethodException | SecurityException e) {
         if(LOGGER.isDebugEnabled()) {
           LOGGER.debug(e.getMessage(), e);
         }
-        isGetMainFilesAccessible = false;
       }
     }
-    
-    // Object contentType = getContentTypeMethod.invoke(utilAccess, resournce.toExternalForm());
   }
 
   /**
@@ -104,21 +98,24 @@ public class OxygenAPIWrapper {
    */
   @NonNull
   public Iterator<URL> getMainFileResourcesIterator() {
-    try {
-      return (Iterator<URL>) getMainFilesMethod.invoke(projectController);
-    } catch (Exception e) {
-      if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e.getMessage(), e);
-      }          
-      return Collections.emptyIterator();
+    if(getMainFilesMethod.isPresent()) {
+      try {
+        return (Iterator<URL>) getMainFilesMethod.get().invoke(projectController);
+      } catch (Exception e) {
+        if(LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e.getMessage(), e);
+        }          
+      }
     }
+   
+    return Collections.emptyIterator();
   }
 
   /**
    * @return <code>true</code> if the main files are accessible.
    */
   public boolean isGetMainFilesAccessible() {
-    return isGetMainFilesAccessible;
+    return getMainFilesMethod.isPresent();
   }
   
   /**
@@ -126,20 +123,25 @@ public class OxygenAPIWrapper {
    * associations saved in the application preferences.<br> 
    * 
    * @param systemID The systemID to get the content type for.
-   * @return the content type string or <code>null</code> if there is no mapping. 
+   * 
+   * @return the content type string Optional or an empty optional if there is no mapping. 
    * The content type is returned as a mime type value, for example "text/xml" for XML documents
    * 
    * @since 24.0
    */
-  public String getContentType(final String URL) {
-    String toReturn = "";
-    try {
-      toReturn = (String)getContentTypeMethod.invoke(utilAccess, URL);
-    } catch (Exception e) {
-      if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e.getMessage(), e);
-      }    
+  public Optional<String> getContentType(final String URL) {
+    Optional<String> toReturn = Optional.of(""); // for tests
+    if(getContentTypeMethod.isPresent()) {
+      try {
+        toReturn = Optional.ofNullable((String)getContentTypeMethod.get().invoke(utilAccess, URL));
+      } catch (Exception e) {
+        if(LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e.getMessage(), e);
+        }    
+      }
     }
+    
     return toReturn;
   }
+  
 }

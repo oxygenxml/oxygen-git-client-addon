@@ -373,23 +373,24 @@ public class FileStatusUtil {
   }
   
   /**
-   * Remove all unreachable files.
+   * Check if a file is unreachable.
+   * <br>
    * A file is considered to be unreachable if is a binary resource or has an unmapped type. 
    * 
-   * @param files
+   * @param file The file to be checked.
+   * 
+   * @return <code>true</code> if the file is unreachable.
    */
-  public static void removeUnreachableFiles(@NonNull final List<FileStatus> files) {
+  public static boolean isUnreachableFile(@NonNull FileStatus file) {
     final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
-    files.removeIf(f -> {
-      boolean toReturn = true;
-      try {
-        final URL fileURL = FileUtil.getFileURL(f.getFileLocation());
-        toReturn = utilAccess.isUnhandledBinaryResourceURL(fileURL) 
-            || OxygenAPIWrapper.getInstance().getContentType(fileURL.toExternalForm()) == null;
-      } catch (NoRepositorySelected e) {
-        LOGGER.error(e.getMessage(), e);
-      }
-      return toReturn;
-    });
+    try {
+      URL fileURL = FileUtil.getFileURL(file.getFileLocation());
+      return utilAccess.isUnhandledBinaryResourceURL(fileURL) 
+          || OxygenAPIWrapper.getInstance().getContentType(fileURL.toExternalForm()) == null;
+    } catch (NoRepositorySelected e) {
+      LOGGER.error(e.getMessage(), e);
+      return false;
+    }
+   
   }
 }
