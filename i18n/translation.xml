@@ -14,6 +14,24 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="End_Push_Validation_Progress">
+		<comment>End the push validation progress.</comment>
+		<val lang="en_US">Main files has been validated</val>
+		<val lang="de_DE">Main files has been validated</val>
+		<val lang="fr_FR">Main files has been validated</val>
+		<val lang="ja_JP">Main files has been validated</val>
+		<val lang="nl_NL">Main files has been validated</val>
+		<val lang="zh_CN">Main files has been validated</val>
+	</key>
+	<key value="Start_Push_Validation_Progress">
+		<comment>Start the push validation progress.</comment>
+		<val lang="en_US">Validate main files...</val>
+		<val lang="de_DE">Validate main files...</val>
+		<val lang="fr_FR">Validate main files...</val>
+		<val lang="ja_JP">Validate main files...</val>
+		<val lang="nl_NL">Validate main files...</val>
+		<val lang="zh_CN">Validate main files...</val>
+	</key>
 	<key value="Clone_Auto_Create_Directory_Tooltip">
 		<comment>The tooltip for auto-create directory on repository cloning.</comment>
 		<val lang="en_US">When this option is checked, a new directory will be created to clone the repository to it</val>

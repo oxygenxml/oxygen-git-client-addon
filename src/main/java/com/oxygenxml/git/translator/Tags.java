@@ -1906,5 +1906,14 @@ public class Tags {
    */
   public static final String AUTO_CREATE_DIRECTORY_ON_CLONE_TOOLTIP = "Clone_Auto_Create_Directory_Tooltip";
   
+  /**
+   * Start the push validation progress.
+   */
+  public static final String START_PUSH_VALIDATION_PROGRESS = "Start_Push_Validation_Progress";
+  
+  /**
+   * End the push validation progress.
+   */
+  public static final String END_PUSH_VALIDATION_PROGRESS = "End_Push_Validation_Progress";
 }
 
