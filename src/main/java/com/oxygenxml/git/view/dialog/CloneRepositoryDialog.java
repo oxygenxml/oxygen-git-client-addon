@@ -57,8 +57,6 @@ import org.eclipse.jgit.transport.URIish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -277,9 +275,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	          try {
 	            final List<Ref> remoteBranches = new ArrayList<>();
 	            final String initialText = sourceUrlTextField.getText();
-	            final String sourceUrlAsText = initialText != null ?
-	                Iterables.getLast(Splitter.on(" ").splitToList(
-	                sourceUrlTextField.getText().trim())) : null;
+	            final String sourceUrlAsText = initialText != null ? 
+	                RepoUtil.extractRepositoryURLFromCloneCommand(sourceUrlTextField.getText()) : null;
 	            if(sourceUrlAsText != null && sourceUrlAsText.equals(previousURLText)) {
 	              return;
 	            }
@@ -717,7 +714,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	  final String repoURLText = sourceUrlTextField.getText();
 	  if (repoURLText != null && !repoURLText.isEmpty()) {
 	    try {
-	      url = new URIish(Iterables.getLast(Splitter.on(" ").splitToList(repoURLText.trim())));
+	      url = new URIish(RepoUtil.extractRepositoryURLFromCloneCommand(repoURLText));
 	    } catch (URISyntaxException e) {
         pluginWorkspace.showErrorMessage(
             translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));

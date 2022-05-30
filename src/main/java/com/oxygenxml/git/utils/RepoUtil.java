@@ -549,5 +549,16 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
         .orElse(url);
     return Iterables.getLast(Splitter.on("/").splitToList(Splitter.on(Constants.DOT_GIT).splitToList(corrected).get(0)));
   }
+  
+  /**
+   * Used to extract a Git URL from a clone command. Ex: "git clone URL".
+   * 
+   * @param url The git clone command.
+   * 
+   * @return The extracted URL.
+   */
+  public static String extractRepositoryURLFromCloneCommand(@NonNull final String cloneCommand) {
+    return Iterables.getLast(Splitter.on(" ").splitToList(cloneCommand.trim()));
+  }
 
 }
