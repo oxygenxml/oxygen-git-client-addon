@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -91,8 +92,21 @@ public class PrePushValidation implements IPreOperationValidation {
 
   @Override
   public boolean isEnabled() {
-    return pushMainFilesValidator.isPresent() && OPTIONS_MANAGER.isMainFilesValidatedBeforePush() 
+    boolean isEnabled = pushMainFilesValidator.isPresent() 
+        && OPTIONS_MANAGER.isMainFilesValidatedBeforePush() 
         && pushMainFilesValidator.get().isAvailable();
+    if(isEnabled) {
+      try {
+        isEnabled = GitAccess.getInstance().getPushesAhead() > 0;
+      } catch (RepoNotInitializedException e) {
+        if(LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e.getMessage(), e);
+        }
+        isEnabled = false;
+      }
+    }
+    
+    return isEnabled; 
   }
 
   @Override

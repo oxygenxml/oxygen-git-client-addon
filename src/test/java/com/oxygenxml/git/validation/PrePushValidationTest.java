@@ -15,6 +15,7 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -244,8 +245,21 @@ public class PrePushValidationTest extends GitTestBase {
         invocation -> {
           return collector;
         });
+    
     ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
-        validator, null));
+        validator, null) {
+      @Override
+      public boolean isEnabled() {
+        boolean toReturn = super.isEnabled();
+        try {
+          toReturn |= !(GitAccess.getInstance().getPushesAhead() > 0);
+        } catch (RepoNotInitializedException e) {
+          toReturn = true;
+          e.printStackTrace();
+        }
+        return toReturn;
+      }
+    });
    
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
@@ -328,7 +342,19 @@ public class PrePushValidationTest extends GitTestBase {
         });
 
     ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
-        validator, null));
+        validator, null) {
+      @Override
+      public boolean isEnabled() {
+        boolean toReturn = super.isEnabled();
+        try {
+          toReturn |= !(GitAccess.getInstance().getPushesAhead() > 0);
+        } catch (RepoNotInitializedException e) {
+          toReturn = true;
+          e.printStackTrace();
+        }
+        return toReturn;
+      }
+    });
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
    
@@ -420,7 +446,20 @@ public class PrePushValidationTest extends GitTestBase {
         });
 
     ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
-        validator, null));
+        validator, null) {
+      @Override
+      public boolean isEnabled() {
+        boolean toReturn = super.isEnabled();
+        try {
+          toReturn |= !(GitAccess.getInstance().getPushesAhead() > 0);
+        } catch (RepoNotInitializedException e) {
+          toReturn = true;
+          e.printStackTrace();
+        }
+        return toReturn;
+      }
+    });
+    
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
@@ -507,8 +546,19 @@ public class PrePushValidationTest extends GitTestBase {
           return collector;
         });
     ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
-        validator, null));
-  
+        validator, null) {
+      @Override
+      public boolean isEnabled() {
+        boolean toReturn = super.isEnabled();
+        try {
+          toReturn |= !(GitAccess.getInstance().getPushesAhead() > 0);
+        } catch (RepoNotInitializedException e) {
+          toReturn = true;
+          e.printStackTrace();
+        }
+        return toReturn;
+      }
+    });
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(gitAccess.hasFilesChanged());
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
