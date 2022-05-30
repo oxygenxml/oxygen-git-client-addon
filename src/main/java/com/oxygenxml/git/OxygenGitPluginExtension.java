@@ -36,6 +36,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.LoggingUtil;
+import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.blame.BlameManager;
@@ -45,7 +46,7 @@ import com.oxygenxml.git.view.dialog.DetachedHeadDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.GitOperationUtil;
+import com.oxygenxml.git.view.event.OperationUtil;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
@@ -290,8 +291,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		}
 		
 		viewInfo.setComponent(stagingPanel);
-		GitOperationUtil.installMouseBusyCursor(gitController, stagingPanel); 
-
+		OperationUtil.installMouseBusyCursor(gitController, stagingPanel); 
+		if(ValidationManager.getInstance().isAvailable()) {
+		  OperationUtil.installMouseBusyCursor(ValidationManager.getInstance(), stagingPanel); 
+		}
+		
 		gitController.addGitListener(new GitEventAdapter() {
 		  
 		  @Override

@@ -38,6 +38,10 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
+import com.oxygenxml.git.validation.ValidationManager;
+import com.oxygenxml.git.validation.internal.IValidationOperationListener;
+import com.oxygenxml.git.validation.internal.ValidationOperationInfo;
+import com.oxygenxml.git.validation.internal.ValidationOperationType;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitController;
@@ -85,7 +89,7 @@ public class StagingPanel extends JPanel {
   /**
    * The tool bar panel used for the push and pull
    */
-  private ToolbarPanel toolbarPanel;
+  private Optional<ToolbarPanel> toolbarPanel = Optional.empty();
 
   /**
    * The working copy panel used for selecting and adding a working copy
@@ -175,6 +179,48 @@ public class StagingPanel extends JPanel {
         }
       }
     });
+    
+    installValidationListener();
+
+  }
+
+  /**
+   * Install listener for validation operations.
+   */
+  private void installValidationListener() {
+    ValidationManager.getInstance().addListener(new IValidationOperationListener() {
+
+      @Override
+      public void start(ValidationOperationInfo info) {
+        if(info.getOperation() == ValidationOperationType.PRE_PUSH_VALIDATION) {
+          toolbarPanel.ifPresent(toolbar -> toolbar.setButtonsEnabledState(false, true));
+          if(commitPanel != null) {
+            commitPanel.setStatusMessage(Translator.getInstance().getTranslation(
+                Tags.START_PUSH_VALIDATION_PROGRESS));
+          }
+        }
+      }
+
+      @Override
+      public void canceled(ValidationOperationInfo info) {
+        if(info.getOperation() == ValidationOperationType.PRE_PUSH_VALIDATION) {
+          toolbarPanel.ifPresent(ToolbarPanel::updateButtonsStates);
+        }
+      }
+
+      @Override
+      public void finished(ValidationOperationInfo info) {
+        if(info.getOperation() == ValidationOperationType.PRE_PUSH_VALIDATION) {
+          if(commitPanel != null) {
+            SwingUtilities.invokeLater(() -> {
+              commitPanel.setStatusMessage(Translator.getInstance().getTranslation(
+                  Tags.END_PUSH_VALIDATION_PROGRESS));
+            });
+          }
+          toolbarPanel.ifPresent(ToolbarPanel::updateButtonsStates);
+        }
+      }
+    });
   }
 
   /**
@@ -205,7 +251,7 @@ public class StagingPanel extends JPanel {
     workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
     branchSelectionCombo = new BranchSelectionCombo(gitController);
     commitPanel = new CommitAndStatusPanel(gitController);
-    toolbarPanel = createToolbar(gitActionsManager);
+    toolbarPanel = Optional.ofNullable(createToolbar(gitActionsManager));
     conflictButtonsPanel = new ConflictButtonsPanel(gitController);
 
     // adds the unstaged and the staged panels to a split pane
@@ -220,9 +266,7 @@ public class StagingPanel extends JPanel {
 
     // adds the panels to the staging panel using gird bag constraints
     GridBagConstraints gbc = new GridBagConstraints();
-    if (toolbarPanel != null) {
-      addToolbarPanel(gbc);
-    }
+    toolbarPanel.ifPresent(toolbar -> addToolbarPanel(gbc));
     addWorkingCopySelectionPanel(gbc);
     addBranchesCombo(gbc);
     addConflictButtonsPanel(gbc);
@@ -463,7 +507,7 @@ public class StagingPanel extends JPanel {
     gbc.weighty = 0;
     gbc.gridwidth = 2;
     gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
-    this.add(toolbarPanel, gbc);
+    this.add(toolbarPanel.get(), gbc);
   }
 
   /**
@@ -537,11 +581,7 @@ public class StagingPanel extends JPanel {
     });
   
     branchSelectionCombo.refresh();
-
-    if (toolbarPanel != null) {
-      toolbarPanel.updateButtonsStates();
-    }
-
+    toolbarPanel.ifPresent(ToolbarPanel::updateButtonsStates);
     gitActionsManager.refreshActionsStates();
   }
 
@@ -556,15 +596,9 @@ public class StagingPanel extends JPanel {
     workingCopySelectionPanel.getBrowseButton().setEnabled(false);
     workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
     branchSelectionCombo.setEnabled(false);
-
-    if (toolbarPanel != null) {
-      toolbarPanel.setButtonsEnabledState(false, true);
-    }
-
+    toolbarPanel.ifPresent(toolbar -> toolbar.setButtonsEnabledState(false, true));
     commitPanel.getCommitButton().setEnabled(false);
   }
-
-
 
   /**
    * @return <code>true</code> if panel has focus.
@@ -613,14 +647,14 @@ public class StagingPanel extends JPanel {
    * @return  The tool bar panel used for the push and pull
    */
   public ToolbarPanel getToolbarPanel() {
-    return toolbarPanel;
+    return toolbarPanel.isPresent() ? toolbarPanel.get() : null;
   }
 
   /**
    * @param toolbarPanel The new toolbar panel.
    */
-  void setToolbarPanelFromTests(ToolbarPanel toolbarPanel) {
-    this.toolbarPanel = toolbarPanel;
+  void setToolbarPanelFromTests(final ToolbarPanel toolbarPanel) {
+    this.toolbarPanel = Optional.ofNullable(toolbarPanel);
   }
 
   /**
@@ -634,8 +668,7 @@ public class StagingPanel extends JPanel {
    * Update states for toolar buttons.
    */
   public void updateToolbarsButtonsStates() {
-    // null from tests
-    Optional.ofNullable(toolbarPanel).ifPresent(ToolbarPanel::updateButtonsStates);
+    toolbarPanel.ifPresent(ToolbarPanel::updateButtonsStates);
   }
 
   /**
