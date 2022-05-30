@@ -19,6 +19,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
+import com.oxygenxml.git.validation.internal.FilesValidator;
 import com.oxygenxml.git.validation.internal.ICollector;
 import com.oxygenxml.git.validation.internal.IValidator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;

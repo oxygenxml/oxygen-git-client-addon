@@ -6,8 +6,10 @@ import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.validation.gitoperation.PreCommitValidation;
 import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
+import com.oxygenxml.git.validation.internal.FilesValidator;
 import com.oxygenxml.git.validation.internal.IPreOperationValidation;
 import com.oxygenxml.git.validation.internal.IValidationOperationListener;
+import com.oxygenxml.git.validation.internal.ProblemsCollector;
 import com.oxygenxml.git.validation.internal.ValidationListenersManager;
 
 /**

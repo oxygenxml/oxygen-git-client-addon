@@ -6,7 +6,20 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
 
+/**
+ * Contains methods usefully to validate before git operations.
+ * 
+ * @author alex_smarandache
+ *
+ */
 public class GitValidationUtil {
+  
+  /**
+   * Hidden constructor.
+   */
+  private GitValidationUtil() {
+    // not needed
+  }
 
   /**
    * @param includeStagedFiles <code>true</code> if the staged files should be included.

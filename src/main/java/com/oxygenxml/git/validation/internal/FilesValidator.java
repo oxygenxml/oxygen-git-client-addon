@@ -1,4 +1,4 @@
-package com.oxygenxml.git.validation;
+package com.oxygenxml.git.validation.internal;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -10,10 +10,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.oxygenxml.git.validation.internal.ICollector;
-import com.oxygenxml.git.validation.internal.IProblemFilter;
-import com.oxygenxml.git.validation.internal.IValidator;
 
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspace;
