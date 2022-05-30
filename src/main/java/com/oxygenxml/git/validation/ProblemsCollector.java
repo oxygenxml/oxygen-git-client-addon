@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.eclipse.jgit.annotations.NonNull;
 
+import com.oxygenxml.git.validation.internal.ICollector;
+import com.oxygenxml.git.validation.internal.IProblemFilter;
+
 import ro.sync.document.DocumentPositionedInfo;
 
 /**
