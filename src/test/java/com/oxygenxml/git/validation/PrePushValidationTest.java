@@ -18,6 +18,9 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
+import com.oxygenxml.git.validation.internal.ICollector;
+import com.oxygenxml.git.validation.internal.IValidator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.dialog.internal.MessageDialog;
@@ -117,7 +120,7 @@ public class PrePushValidationTest extends GitTestBase {
   @Test
   public void testOxygenAPIWrapper() throws Exception {
      assertFalse("The classes marked with @see must be refactorized because the API is already available.", 
-         OxygenAPIWrapper.getInstance().isGetMainFilesAccessible());
+         OxygenAPIWrapper.getInstance().isAvailable());
   }
 
   /**
@@ -156,7 +159,8 @@ public class PrePushValidationTest extends GitTestBase {
           return collector;
         });
 
-    ValidationManager.getInstance().setPrePushFilesValidator(validator);
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
 
@@ -239,8 +243,8 @@ public class PrePushValidationTest extends GitTestBase {
         invocation -> {
           return collector;
         });
-
-    ValidationManager.getInstance().setPrePushFilesValidator(validator);
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
    
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
@@ -322,7 +326,8 @@ public class PrePushValidationTest extends GitTestBase {
           return collector;
         });
 
-    ValidationManager.getInstance().setPrePushFilesValidator(validator);
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
    
@@ -413,8 +418,8 @@ public class PrePushValidationTest extends GitTestBase {
           return collector;
         });
 
-    ValidationManager.getInstance().setPrePushFilesValidator(validator);
-
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
@@ -500,9 +505,9 @@ public class PrePushValidationTest extends GitTestBase {
         invocation -> {
           return collector;
         });
-
-    ValidationManager.getInstance().setPrePushFilesValidator(validator);
-   
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
+  
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(gitAccess.hasFilesChanged());
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
