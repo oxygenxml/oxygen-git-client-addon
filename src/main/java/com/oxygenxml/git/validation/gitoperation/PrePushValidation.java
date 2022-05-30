@@ -105,7 +105,6 @@ public class PrePushValidation implements IPreOperationValidation {
         isEnabled = false;
       }
     }
-    
     return isEnabled; 
   }
 
