@@ -1,4 +1,4 @@
-package com.oxygenxml.git.validation;
+package com.oxygenxml.git.validation.internal;
 
 import org.eclipse.jgit.annotations.NonNull;
 
