@@ -84,33 +84,47 @@ public class PreCommitValidation implements IPreOperationValidation {
   public boolean checkValid() {
     boolean performCommit = true;
     if(isEnabled()) {
-      listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutStartOperation(
+      performCommit = validateFilesBeforeCommit();
+    }
+    
+    return performCommit;
+  }
+
+  /**
+   * Validates files to be commited.
+   * 
+   * @return <code>true</code> if the commit could be performed.
+   */
+  private boolean validateFilesBeforeCommit() {
+    boolean performCommit = true;
+    listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutStartOperation(
+        new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
+    
+    if(GitValidationUtil.hasUncommitedChanges(false)) {     
+      performCommit = false;
+      MessagePresenterProvider
+      .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
+      .setOkButtonVisible(false)
+      .setMessage(TRANSLATOR.getTranslation(Tags.COMMIT_VALIDATION_UNSTAGED_FILES))
+      .buildAndShow();
+    }
+    
+    if(performCommit) {
+      if(!validateFilesBeforeCommit(
+          FileStatusUtil.getFilesStatuesURL(
+              GitAccess.getInstance().getStagedFiles().stream().filter(
+                  file -> file.getChangeType() != GitChangeType.REMOVED && 
+                  file.getChangeType() != GitChangeType.MISSING)
+              .collect(Collectors.toList())
+              , false)
+          )) {
+        performCommit = showCommitFilesProblems();
+      }
+      listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutFinishedOperation(
           new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
-      if(GitValidationUtil.hasUncommitedChanges(false)) {     
-        performCommit = false;
-        MessagePresenterProvider
-        .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
-        .setOkButtonVisible(false)
-        .setMessage(TRANSLATOR.getTranslation(Tags.COMMIT_VALIDATION_UNSTAGED_FILES))
-        .buildAndShow();
-      }
-      if(performCommit) {
-        if(!validateFilesBeforeCommit(
-            FileStatusUtil.getFilesStatuesURL(
-                GitAccess.getInstance().getStagedFiles().stream().filter(
-                    file -> file.getChangeType() != GitChangeType.REMOVED && 
-                    file.getChangeType() != GitChangeType.MISSING)
-                .collect(Collectors.toList())
-                , false)
-            )) {
-          performCommit = showCommitFilesProblems();
-        }
-        listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutFinishedOperation(
-            new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
-      } else {
-        listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutCanceledOperation(
-            new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
-      }
+    } else {
+      listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutCanceledOperation(
+          new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
     }
     
     return performCommit;
