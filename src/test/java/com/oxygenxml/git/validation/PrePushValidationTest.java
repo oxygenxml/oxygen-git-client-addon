@@ -568,6 +568,99 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(dialogPresentedFlags[2]);
   }
 
+  /**
+   * <p><b>Description:</b> If we don't have any push ahead, let's not validate the project before the push.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50639</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushValidationWhenNoPushesAhead() throws Exception {
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+    
+    StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final ProjectController projectController = Mockito.mock(ProjectController.class);
+    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
+        secondLocalRepo.getDirectory().toURI().toURL());
+    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        }); 
+
+    // Detects if the "Stash" button is available and the dialog is shows.
+    final boolean[] dialogPresentedFlags = new boolean[3];
+    dialogPresentedFlags[0] = false;
+    dialogPresentedFlags[1] = false;
+    dialogPresentedFlags[2] = false;
+
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_push", DialogType.ERROR) {
+     
+      @Override
+          public MessageDialogBuilder setQuestionMessage(String questionMessage) {
+            dialogPresentedFlags[2] |= Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES.equals(questionMessage);
+            return super.setQuestionMessage(questionMessage);
+          }
+      
+      @Override
+      public MessageDialogBuilder setOkButtonName(String okButtonName) {
+        dialogPresentedFlags[1] |= Tags.STASH.equals(okButtonName);
+        return super.setOkButtonName(okButtonName);
+      }
+
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogPresentedFlags[0] = true;
+        return dialog;
+      }
+    });
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+    int noOfPushes = 0;
+    try {
+      noOfPushes = GitAccess.getInstance().getPushesAhead();
+    } catch (Exception e){
+      noOfPushes = -1;
+    }
+    assertFalse(noOfPushes > 0);
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
+    assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
+    assertFalse(ValidationManager.getInstance().isPrePushValidationEnabled());
+    assertTrue(ValidationManager.getInstance().checkPushValid());
+    assertFalse(dialogPresentedFlags[0]);
+    assertFalse(dialogPresentedFlags[1]);
+    assertFalse(dialogPresentedFlags[2]);
+  }
+  
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
