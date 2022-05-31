@@ -26,7 +26,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -68,7 +67,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
-import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -231,6 +229,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	   * Timer task for checking the connection to the repository (source) URL.
 	   */
 	  private TimerTask checkConnectionTask;
+	  
 	  /**
 	   * Reference comparator (for branch names).
 	   */
@@ -280,7 +279,10 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	            if(sourceUrlAsText != null && sourceUrlAsText.equals(previousURLText)) {
 	              return;
 	            }
+              final String path = destinationPathUpdater.updateDestinationPath(
+                  sourceUrlAsText, (String)destinationPathCombo.getSelectedItem());
 	            SwingUtilities.invokeLater(() -> {
+	              destinationPathCombo.setSelectedItem(path);
                 branchesComboBox.removeAllItems();
                 setProgressVisible(true);
               });
@@ -320,6 +322,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	          }
 	        }
 	      }
+
+      
 
 	      /**
 	       * Add the remote branches for the given URL to the given list.
@@ -385,6 +389,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	private JTextField sourceUrlTextField;
 	
 	/**
+	 * Updater for destination path.
+	 */
+	private DestinationPathUpdater  destinationPathUpdater = new DestinationPathUpdater();
+	
+	/**
    * Used to eliminate redundant branch processing.
    */
   private String previousURLText = null;
@@ -393,11 +402,6 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	 * Destination path combo box.
 	 */
 	private JComboBox<String> destinationPathCombo;
-	
-	/**
-	 * If is selected, a new directory will be auto-created if the files are not empty.
-	 */
-	private JCheckBox autoCreateDirectory;
 
 	/**
 	 * Label for displaying information.
@@ -562,13 +566,22 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 
 		// Browse action
 		Action browseButtonAction = new AbstractAction() {
-			@Override
-      public void actionPerformed(ActionEvent e) {
-				File directory = PLUGIN_WORKSPACE.chooseDirectory();
-				if (directory != null) {
-					destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
-				}
-			}
+		  @Override
+		  public void actionPerformed(ActionEvent e) {
+		    File directory = PLUGIN_WORKSPACE.chooseDirectory();
+		    if (directory != null) {
+		      final String initialText = sourceUrlTextField.getText();
+		      final String sourceUrlAsText = initialText != null ? 
+		          RepoUtil.extractRepositoryURLFromCloneCommand(sourceUrlTextField.getText()) : null;
+		          SwingUtilities.invokeLater(() -> {
+		            destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
+		            if(sourceUrlAsText != null) {
+		              destinationPathCombo.setSelectedItem(destinationPathUpdater
+		                  .updateDestinationPath(sourceUrlAsText, (String)destinationPathCombo.getSelectedItem()));
+		            }
+		          });
+		    }
+		  }
 		};
 		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
 		browseButton.setIcon(Icons.getIcon(Icons.FILE_CHOOSER_ICON));
@@ -584,25 +597,6 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		gbc.gridx ++;
 		panel.add(browseButton, gbc);
 		
-		autoCreateDirectory = new JCheckBox() {
-		  @Override
-		  public javax.swing.JToolTip createToolTip() {
-		    return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-		  }
-		};
-		autoCreateDirectory.setSelected(true);
-		autoCreateDirectory.setText(translator.getTranslation(Tags.AUTO_CREATE_DIRECTORY_ON_CLONE));
-		autoCreateDirectory.setToolTipText(translator.getTranslation(Tags.AUTO_CREATE_DIRECTORY_ON_CLONE_TOOLTIP));
-	  gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.gridx = 0;
-    gbc.gridy ++;
-    gbc.weightx = 1;
-    gbc.weighty = 0;
-    gbc.gridwidth = 3;
-    panel.add(autoCreateDirectory, gbc);
-    
 		// Information label shown when some problems occur
 		informationLabel = new JLabel();
 		informationLabel.setForeground(Color.RED);
@@ -734,9 +728,6 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	@Nullable
 	private File validateAndGetDestinationPath(@NonNull File destFile, @NonNull final String repositoryURL) {
 	  if (destFile.exists()) {
-	    if(autoCreateDirectory.isSelected()) {
-	      destFile = new File(destFile, RepoUtil.extractRepositoryName(repositoryURL));
-	    }
 	    final String[] children  = destFile.list();
 	    if (children != null && children.length > 0) {
 	      destFile = null;
@@ -759,6 +750,38 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	    }
 	  }
 	  return destFile;
+	}
+	
+	/**
+	 * Update destination path with current repository.
+	 * 
+	 * @author alex_smarandache
+	 *
+	 */
+	private final class DestinationPathUpdater
+	{
+	  /**
+	   * The previous repository.
+	   */
+	  private String previousRepositoryName;
+	  
+	  /**
+	   * Update the destination path with the current repository.
+	   * 
+	   * @param repositoryURL The new repository URL.
+	   * @param destination   The initial destination path.
+	   * 
+	   * @return The new DestinationPath
+	   */
+	  public String updateDestinationPath(final String repositoryURL, String destination) {
+      if(previousRepositoryName != null && destination != null && destination.endsWith(previousRepositoryName)) {
+        destination = destination.substring(0, destination.length() - previousRepositoryName.length());
+      }
+      previousRepositoryName = RepoUtil.extractRepositoryName(repositoryURL);
+      return previousRepositoryName != null && !previousRepositoryName.isEmpty() ?
+          new File(destination, previousRepositoryName).getPath() : destination;
+    }
+	  
 	}
 
 }
