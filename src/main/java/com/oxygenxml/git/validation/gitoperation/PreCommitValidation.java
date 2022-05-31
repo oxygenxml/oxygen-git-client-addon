@@ -153,7 +153,7 @@ public class PreCommitValidation implements IPreOperationValidation {
    */
   private boolean showCommitFilesProblems() {
     final List<DocumentPositionedInfo> problems = Arrays.asList(
-        commitFilesValidator.get().getCollector().getAll()); 
+        commitFilesValidator.get().getCollector().getAll()); // NOSONAR Already verified before call this method in @isAvailable.
     RESULT_MANAGER.setResults(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION), 
         problems, ResultType.PROBLEM);
     boolean toReturn = false;

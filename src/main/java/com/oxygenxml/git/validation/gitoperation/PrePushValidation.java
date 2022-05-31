@@ -227,7 +227,7 @@ public class PrePushValidation implements IPreOperationValidation {
    */
   public boolean showPushFilesProblems(final String message) {
     final List<DocumentPositionedInfo> problems = Arrays.asList(
-        pushMainFilesValidator.get().getCollector().getAll());
+        pushMainFilesValidator.get().getCollector().getAll()); // NOSONAR Already verified before call this method in @isAvailable.
     RESULT_MANAGER.setResults(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), 
         problems, ResultType.PROBLEM);
     boolean toReturn = false;
