@@ -32,24 +32,6 @@
 		<val lang="nl_NL">Validate main files...</val>
 		<val lang="zh_CN">Validate main files...</val>
 	</key>
-	<key value="Clone_Auto_Create_Directory_Tooltip">
-		<comment>The tooltip for auto-create directory on repository cloning.</comment>
-		<val lang="en_US">When this option is checked, a new directory will be created to clone the repository to it</val>
-		<val lang="de_DE">When this option is checked, a new directory will be created to clone the repository to it</val>
-		<val lang="fr_FR">When this option is checked, a new directory will be created to clone the repository to it</val>
-		<val lang="ja_JP">When this option is checked, a new directory will be created to clone the repository to it</val>
-		<val lang="nl_NL">When this option is checked, a new directory will be created to clone the repository to it</val>
-		<val lang="zh_CN">When this option is checked, a new directory will be created to clone the repository to it</val>
-	</key>
-	<key value="Clone_Auto_Create_Directory">
-		<comment>The label for auto-create directory on repository cloning.</comment>
-		<val lang="en_US">Create new directory inside the destination path</val>
-		<val lang="de_DE">Create new directory inside the destination path</val>
-		<val lang="fr_FR">Create new directory inside the destination path</val>
-		<val lang="ja_JP">Create new directory inside the destination path</val>
-		<val lang="nl_NL">Create new directory inside the destination path</val>
-		<val lang="zh_CN">Create new directory inside the destination path</val>
-	</key>
 	<key value="Failed_Push_Validation_Message_With_Stash">
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
 		<val lang="en_US">Encountered validation problems in the project resources and the stash was not reapplied.\nYou can view and apply it at any time using the "List stashes" action, but it is recommended to solve the problems reported before.\nThe problems can be viewed in the "Results" view.</val>
