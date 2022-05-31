@@ -1,4 +1,4 @@
-package com.oxygenxml.git.validation;
+package com.oxygenxml.git.validation.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;

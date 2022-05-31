@@ -204,37 +204,4 @@ public class RepoUtilTest extends GitTestBase {
     assertEquals(gitDir.getAbsolutePath(), detectRepositoryInProject.getAbsolutePath());
   } 
   
-  /**
-   * Description: Tests if the extracted repository name is correct.
-   * <br>
-   * EXM-50538
-   * 
-   * @author alex_smarandache 
-   * 
-   * @throws Exception
-   */
-  public void testExtractRepositoryName() throws Exception {
-    assertEquals("project", RepoUtil.extractRepositoryName("https://github/oxygen/project"));
-    assertEquals("project", RepoUtil.extractRepositoryName("https://github/oxygen/project/"));
-    assertEquals("project", RepoUtil.extractRepositoryName("https://github/oxygen/project.git"));
-    assertEquals("project", RepoUtil.extractRepositoryName("https://github/oxygen/project.git/"));
-  }
-  
-  /**
-   * Description: Tests if the extracted repository URL from git clone command is correct.
-   * <br>
-   * EXM-50507
-   * 
-   * @author alex_smarandache 
-   * 
-   * @throws Exception
-   */
-  public void testExtractRepositoryURLFromCloneCommand() throws Exception {
-    assertEquals("https://github/oxygen/project", RepoUtil.extractRepositoryURLFromCloneCommand(
-        "git clone https://github/oxygen/project"));
-    assertEquals("https://github/oxygen/project", RepoUtil.extractRepositoryURLFromCloneCommand(
-        "git clone https://github/oxygen/project     "));
-    assertEquals("https://github/oxygen/project", RepoUtil.extractRepositoryURLFromCloneCommand(
-        "   git clone https://github/oxygen/project     "));
-  }
 }

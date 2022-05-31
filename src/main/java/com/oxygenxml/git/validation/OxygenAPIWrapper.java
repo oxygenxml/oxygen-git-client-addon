@@ -114,7 +114,7 @@ public class OxygenAPIWrapper {
   /**
    * @return <code>true</code> if the main files are accessible.
    */
-  public boolean isGetMainFilesAccessible() {
+  public boolean isAvailable() {
     return getMainFilesMethod.isPresent();
   }
   

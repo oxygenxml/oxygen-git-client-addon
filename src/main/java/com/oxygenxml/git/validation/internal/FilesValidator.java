@@ -1,4 +1,4 @@
-package com.oxygenxml.git.validation;
+package com.oxygenxml.git.validation.internal;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

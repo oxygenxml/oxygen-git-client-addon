@@ -180,7 +180,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
           shouldBreak = true;
         } else if (cause instanceof InvalidRemoteException) {
           // Invalid remote
-          SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
+          SwingUtilities.invokeLater(() -> PLUGIN_WORKSPACE.showErrorMessage(
               translator.getTranslation(Tags.INVALID_REMOTE)
               + ": " 
               + sourceUrl));
@@ -197,7 +197,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
               message += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
             }
             final String fMsg = message;
-            SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(fMsg));
+            SwingUtilities.invokeLater(() -> PLUGIN_WORKSPACE.showErrorMessage(fMsg));
             shouldBreak = true;
           }
         }
@@ -310,7 +310,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	            if (cause instanceof NotSupportedException) {
 	              showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
 	            } else {
-	              pluginWorkspace.showErrorMessage(e.getMessage());
+	              PLUGIN_WORKSPACE.showErrorMessage(e.getMessage());
 	              if (LOGGER.isDebugEnabled())  {
 	                LOGGER.debug(e.getMessage(), e);
 	              }
@@ -417,7 +417,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
   /**
    * Plugin workspace access.
    */
-  private PluginWorkspace pluginWorkspace;
+  private static final PluginWorkspace PLUGIN_WORKSPACE = PluginWorkspaceProvider.getPluginWorkspace();
 
   /**
    * Loading label with animated GIF.
@@ -433,10 +433,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	 * Constructor.
 	 */
 	public CloneRepositoryDialog() {
-		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		super((JFrame) PLUGIN_WORKSPACE.getParentFrame(),
 		    translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
-		
-		pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
 
 		createGUI();
 
@@ -444,7 +442,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		this.setResizable(true);
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.pack();
-		this.setLocationRelativeTo((JFrame) pluginWorkspace.getParentFrame());
+		this.setLocationRelativeTo((JFrame) PLUGIN_WORKSPACE.getParentFrame());
 		this.setVisible(true);
 	}
 
@@ -566,7 +564,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 		Action browseButtonAction = new AbstractAction() {
 			@Override
       public void actionPerformed(ActionEvent e) {
-				File directory = pluginWorkspace.chooseDirectory();
+				File directory = PLUGIN_WORKSPACE.chooseDirectory();
 				if (directory != null) {
 					destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
 				}
@@ -683,7 +681,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	        if(!destFile.exists()) {
 	          destFile.mkdir();
 	        }
-	        JFrame parentFrame = (JFrame) pluginWorkspace.getParentFrame();
+	        JFrame parentFrame = (JFrame) PLUGIN_WORKSPACE.getParentFrame();
           final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
 	        CloneWorker cloneWorker = new CloneWorker(
 	            progressDialog,
@@ -697,7 +695,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	        areValid = true;
 	      }
 	    } else {
-	      pluginWorkspace.showErrorMessage(
+	      PLUGIN_WORKSPACE.showErrorMessage(
 	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
 	    }
 	  }
@@ -716,11 +714,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	    try {
 	      url = new URIish(RepoUtil.extractRepositoryURLFromCloneCommand(repoURLText));
 	    } catch (URISyntaxException e) {
-        pluginWorkspace.showErrorMessage(
+        PLUGIN_WORKSPACE.showErrorMessage(
             translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
       }
 	  } else {
-	    pluginWorkspace.showErrorMessage(
+	    PLUGIN_WORKSPACE.showErrorMessage(
 	        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
 	  }
 	  return url;
@@ -742,7 +740,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	    final String[] children  = destFile.list();
 	    if (children != null && children.length > 0) {
 	      destFile = null;
-	      pluginWorkspace.showErrorMessage(
+	      PLUGIN_WORKSPACE.showErrorMessage(
 	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
 	    }
 	  } else {
@@ -756,7 +754,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	    }
 	    if (tempFile == null) {
 	      destFile = null;
-	      pluginWorkspace.showErrorMessage(
+	      PLUGIN_WORKSPACE.showErrorMessage(
 	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
 	    }
 	  }

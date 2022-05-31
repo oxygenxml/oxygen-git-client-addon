@@ -1,4 +1,4 @@
-package com.oxygenxml.git.validation;
+package com.oxygenxml.git.validation.internal;
 
 import java.net.URL;
 import java.util.List;

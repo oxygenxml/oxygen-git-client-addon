@@ -13,6 +13,9 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.validation.gitoperation.PreCommitValidation;
+import com.oxygenxml.git.validation.internal.ICollector;
+import com.oxygenxml.git.validation.internal.IValidator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.dialog.internal.MessageDialog;
@@ -131,7 +134,8 @@ public class PreCommitValidationTest extends GitTestBase {
         invocation -> {
           return true; 
         });
-    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
+    ValidationManager.getInstance().setPreCommitValidator(new PreCommitValidation(validator, 
+        null));
 
     // try to make a commit
     final CommitAndStatusPanel commitPanel = new CommitAndStatusPanel(new GitController(gitAccess));
@@ -210,8 +214,8 @@ public class PreCommitValidationTest extends GitTestBase {
         invocation -> {
           return collector;
         });
-
-    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
+    ValidationManager.getInstance().setPreCommitValidator(new PreCommitValidation(validator, 
+        null));
 
     // try to make a commit
     final CommitAndStatusPanel commitPanel = new CommitAndStatusPanel(new GitController(gitAccess));
@@ -308,7 +312,8 @@ public class PreCommitValidationTest extends GitTestBase {
           return collector;
         });
 
-    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
+    ValidationManager.getInstance().setPreCommitValidator(new PreCommitValidation(validator, 
+        null));
 
     File file = new File(LOCAL_REPO, "unsts.css");
     file.createNewFile();
@@ -396,7 +401,8 @@ public class PreCommitValidationTest extends GitTestBase {
           return collector;
         });
 
-    ValidationManager.getInstance().setPreCommitFilesValidator(validator);
+    ValidationManager.getInstance().setPreCommitValidator(new PreCommitValidation(validator, 
+        null));
 
     // try to make a commit
     final CommitAndStatusPanel commitPanel = new CommitAndStatusPanel(new GitController(gitAccess));
