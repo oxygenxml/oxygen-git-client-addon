@@ -14,6 +14,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -29,7 +30,6 @@ import com.oxygenxml.git.validation.internal.ValidationOperationInfo;
 import com.oxygenxml.git.validation.internal.ValidationOperationType;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
-import com.oxygenxml.git.view.util.CollectionsUtil;
 
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -152,7 +152,7 @@ public class PrePushValidation implements IPreOperationValidation {
       }
 
       if(performPush) {
-        if(!validateMainFilesBeforePush(CollectionsUtil.toList(
+        if(!validateMainFilesBeforePush(ImmutableList.copyOf(
             OxygenAPIWrapper.getInstance().getMainFileResourcesIterator()))) {
           performPush = showPushFilesProblems(stash.isPresent()? 
               TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED_WITH_STASH) :
