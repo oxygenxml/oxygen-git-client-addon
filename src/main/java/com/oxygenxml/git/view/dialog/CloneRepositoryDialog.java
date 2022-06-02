@@ -56,6 +56,7 @@ import org.eclipse.jgit.transport.URIish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -758,7 +759,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	 * @author alex_smarandache
 	 *
 	 */
-	private final class DestinationPathUpdater
+	@VisibleForTesting
+	public static final class DestinationPathUpdater
 	{
 	  /**
 	   * The previous repository.
