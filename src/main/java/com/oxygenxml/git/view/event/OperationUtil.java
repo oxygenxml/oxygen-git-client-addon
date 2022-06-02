@@ -1,6 +1,9 @@
 package com.oxygenxml.git.view.event;
 
 import java.awt.Cursor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JComponent;
@@ -19,7 +22,8 @@ import com.oxygenxml.git.validation.internal.ValidationOperationInfo;
  *
  */
 public class OperationUtil {
-
+  
+  private static final Map<JComponent, IValidationOperationListener> VALIDATION_LISTENERS = new HashMap<>();
   /**
    * Hidden constructor.
    */
@@ -29,15 +33,23 @@ public class OperationUtil {
 
   /**
    * Install a mouse listener to change mouse cursor when an operation is too long.
+   * <br>
+   * If the component has already a listener installed, this will be replaced with a new one.
    * 
    * @param validationManager The manager responsible with validation.
    * @param component     The component to install the listener.
    */
   public static void installMouseBusyCursor(final ValidationManager validationManager, 
       final JComponent component) {
+    final Optional<IValidationOperationListener> componentListener = Optional.ofNullable(
+        VALIDATION_LISTENERS.get(component));
+    componentListener.ifPresent(listener -> {
+      validationManager.removeListener(listener);
+      VALIDATION_LISTENERS.remove(component);
+    });
+    
     final OperationTimer cursorTimer = new OperationTimer(new AtomicBoolean(false), component);
-
-    validationManager.addListener(new IValidationOperationListener() {
+    final IValidationOperationListener newComponentListener = new IValidationOperationListener() {
       
       @Override
       public void start(ValidationOperationInfo info) {
@@ -53,7 +65,9 @@ public class OperationUtil {
       public void finished(ValidationOperationInfo info) {
         cursorTimer.stopOperationProgress();
       }
-    });
+    };
+    VALIDATION_LISTENERS.put(component, newComponentListener);
+    validationManager.addListener(newComponentListener);
   }
   
   /**

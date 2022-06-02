@@ -131,14 +131,14 @@ public class ValidationManager {
   /** 
    * @param commitPreValidation The new pre-commit validator.
    */
-  public void setCommitPreValidation(IPreOperationValidation commitPreValidation) {
+  public void setCommitPreValidation(final IPreOperationValidation commitPreValidation) {
     this.commitPreValidation = commitPreValidation;
   }
 
   /**
    * @param pushPreValidation The new pre-push validator.
    */
-  public void setPushPreValidation(IPreOperationValidation pushPreValidation) {
+  public void setPushPreValidation(final IPreOperationValidation pushPreValidation) {
     this.pushPreValidation = pushPreValidation;
   }
 
@@ -147,9 +147,17 @@ public class ValidationManager {
    * 
    * @param listener The listener to be added.
    */
-  public void addListener(IValidationOperationListener listener) {
+  public void addListener(final IValidationOperationListener listener) {
     this.listeners.addListener(listener);
   }
- 
+  
+  /**
+   * Remove the given validation listener.
+   * 
+   * @param listener The listener to be removed.
+   */
+  public void removeListener(final IValidationOperationListener listener) {
+    this.listeners.removeListener(listener);
+  } 
   
 }

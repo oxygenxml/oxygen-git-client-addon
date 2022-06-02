@@ -136,6 +136,11 @@ public class StagingPanel extends JPanel {
    */
   private BranchSelectionCombo branchSelectionCombo;
   
+  /**
+   * The validation listener.
+   */
+  private IValidationOperationListener validationListener;
+  
 
   /**
    * Constructor.
@@ -180,7 +185,9 @@ public class StagingPanel extends JPanel {
       }
     });
     
-    installValidationListener();
+    if(ValidationManager.getInstance().isAvailable()) {
+      installValidationListener(); 
+    }
 
   }
 
@@ -188,7 +195,21 @@ public class StagingPanel extends JPanel {
    * Install listener for validation operations.
    */
   private void installValidationListener() {
-    ValidationManager.getInstance().addListener(new IValidationOperationListener() {
+    if(validationListener == null) {
+      validationListener = createValidationListener();
+    } else {
+      ValidationManager.getInstance().removeListener(validationListener);
+    }
+    ValidationManager.getInstance().addListener(validationListener);
+  }
+  
+  /**
+   * Create a validation operation listener.
+   * 
+   * @return The created listener.
+   */
+  private IValidationOperationListener createValidationListener() {
+    return new IValidationOperationListener() {
 
       @Override
       public void start(ValidationOperationInfo info) {
@@ -220,7 +241,7 @@ public class StagingPanel extends JPanel {
           toolbarPanel.ifPresent(ToolbarPanel::updateButtonsStates);
         }
       }
-    });
+    };
   }
 
   /**
