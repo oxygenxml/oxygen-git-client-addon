@@ -149,7 +149,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 			try {
 			  // TODO Strange...when done is called, the entire processing should be done.
 				get();
-				OptionsManager.getInstance().saveDestinationPath(destFile.getAbsolutePath());
+				OptionsManager.getInstance().saveDestinationPath(destFile.getParent());
 			} catch (InterruptedException e) {
 				if (LOGGER.isDebugEnabled()) {
 				  LOGGER.debug(e.getMessage(), e);
