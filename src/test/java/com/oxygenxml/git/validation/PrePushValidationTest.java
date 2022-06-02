@@ -567,6 +567,21 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(dialogPresentedFlags[1]);
     assertTrue(dialogPresentedFlags[2]);
   }
+  
+  /**
+   * <p><b>Description:</b> Tests the default options for pre-push validation.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50586</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushtValidationDefaultValue() {
+    assertFalse(OptionsManager.getInstance().isMainFilesValidatedBeforePush());
+    assertFalse(OptionsManager.getInstance().isPushRejectedOnValidationProblems());
+  }
+
 
   /**
    * <p><b>Description:</b> If we don't have any push ahead, let's not validate the project before the push.</p>

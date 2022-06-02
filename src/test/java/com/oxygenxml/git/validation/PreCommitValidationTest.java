@@ -113,6 +113,20 @@ public class PreCommitValidationTest extends GitTestBase {
         "");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "invalid.dita"));    
   }
+  
+  /**
+   * <p><b>Description:</b> Tests the default options for pre-commit validation.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50586</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPreCommitValidationDefaultValue() {
+    assertFalse(OPTIONS_MANAGER.isFilesValidatedBeforeCommit());
+    assertFalse(OPTIONS_MANAGER.isCommitRejectedOnValidationProblems());
+  }
 
   /**
    * <p><b>Description:</b> This test cover pre-commit validation behavior for case when this option
