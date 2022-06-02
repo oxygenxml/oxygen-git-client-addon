@@ -728,10 +728,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	 */
 	@Nullable
 	private File validateAndGetDestinationPath(@NonNull File destFile, @NonNull final String repositoryURL) {
+	  boolean isValid = true; 
 	  if (destFile.exists()) {
 	    final String[] children  = destFile.list();
 	    if (children != null && children.length > 0) {
-	      destFile = null;
+	      isValid = false;
 	      PLUGIN_WORKSPACE.showErrorMessage(
 	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
 	    }
@@ -745,12 +746,12 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	      tempFile = tempFile.getParentFile();
 	    }
 	    if (tempFile == null) {
-	      destFile = null;
+	      isValid = false;
 	      PLUGIN_WORKSPACE.showErrorMessage(
 	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
 	    }
 	  }
-	  return destFile;
+	  return isValid ? destFile : null;
 	}
 	
 	/**
