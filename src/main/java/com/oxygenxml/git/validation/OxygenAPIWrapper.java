@@ -85,8 +85,10 @@ public class OxygenAPIWrapper {
           getMainFilesMethod.get().setAccessible(true);
         }
         utilAccess = pluginWorkspaceAccess.getUtilAccess();
-        Class<? extends UtilAccess> utilAccessClazz = utilAccess.getClass();
-        getContentTypeMethod = Optional.ofNullable(utilAccessClazz.getMethod("getContentType", String.class));
+        if(utilAccess != null) {
+          Class<? extends UtilAccess> utilAccessClazz = utilAccess.getClass();
+          getContentTypeMethod = Optional.ofNullable(utilAccessClazz.getMethod("getContentType", String.class));
+        }
       } catch (NoSuchMethodException | SecurityException e) {
         if(LOGGER.isDebugEnabled()) {
           LOGGER.debug(e.getMessage(), e);
