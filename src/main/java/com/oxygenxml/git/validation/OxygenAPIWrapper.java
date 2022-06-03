@@ -79,9 +79,11 @@ public class OxygenAPIWrapper {
           (StandalonePluginWorkspace) pluginWorkspaceAccess;
       projectController = standalonePluginWorkspace.getProjectManager();
       try {
-        getMainFilesMethod = Optional.ofNullable(projectController.getClass()
-            .getMethod("getMainFileResourcesIterator"));
-        getMainFilesMethod.get().setAccessible(true);
+        if(projectController != null) {
+          getMainFilesMethod = Optional.ofNullable(projectController.getClass()
+              .getMethod("getMainFileResourcesIterator"));
+          getMainFilesMethod.get().setAccessible(true);
+        }
         utilAccess = pluginWorkspaceAccess.getUtilAccess();
         Class<? extends UtilAccess> utilAccessClazz = utilAccess.getClass();
         getContentTypeMethod = Optional.ofNullable(utilAccessClazz.getMethod("getContentType", String.class));
