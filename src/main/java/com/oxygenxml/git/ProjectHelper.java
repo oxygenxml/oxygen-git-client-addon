@@ -1,7 +1,9 @@
 package com.oxygenxml.git;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import javax.swing.JComboBox;
 
@@ -22,6 +24,8 @@ import com.oxygenxml.git.view.staging.StagingPanel;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 
 /**
  * Contains methods for projects processing.
@@ -157,8 +161,9 @@ public class ProjectHelper {
   private boolean createNewRepoIfUserAgrees(String projectDir, String projectName) {
     boolean repoChanged = false;
     // Fast check to see if this is actually not a Git repository.
-    if (!OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
-      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+    final OptionsManager optionsManager = OptionsManager.getInstance();
+    if (!optionsManager.getProjectsTestedForGit().contains(projectDir)) {
+      StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       int response = pluginWS.showConfirmDialog(
           TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
           MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
@@ -170,7 +175,19 @@ public class ProjectHelper {
       if (response == 0) {
         try {
           gitAccess.createNewRepository(projectDir);
-          OptionsManager.getInstance().saveDestinationPath(projectName);
+          
+          // save destination path in options if no one were saved.
+          if(!optionsManager.getDestinationPaths().isEmpty()) {
+            final Optional<ProjectController> projectManager = Optional.ofNullable(pluginWS.getProjectManager());
+            projectManager.ifPresent(pm -> {
+              try {
+                optionsManager.saveDestinationPath(new File(pm.getCurrentProjectURL().toURI()).getParent());
+              } catch (URISyntaxException e) {
+                LOGGER.error(e.getMessage(), e);
+              }
+            });
+          }
+          
           repoChanged = true;
         } catch (IllegalStateException | GitAPIException e) {
           LOGGER.debug(e.getMessage(),  e);
