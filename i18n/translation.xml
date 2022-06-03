@@ -16,21 +16,21 @@
 	</languageList>
 	<key value="End_Push_Validation_Progress">
 		<comment>End the push validation progress.</comment>
-		<val lang="en_US">Main files has been validated</val>
-		<val lang="de_DE">Main files has been validated</val>
-		<val lang="fr_FR">Main files has been validated</val>
-		<val lang="ja_JP">Main files has been validated</val>
-		<val lang="nl_NL">Main files has been validated</val>
-		<val lang="zh_CN">Main files has been validated</val>
+		<val lang="en_US">Validation finished</val>
+		<val lang="de_DE">Validation finished</val>
+		<val lang="fr_FR">Validation finished</val>
+		<val lang="ja_JP">Validation finished</val>
+		<val lang="nl_NL">Validation finished</val>
+		<val lang="zh_CN">Validation finished</val>
 	</key>
 	<key value="Start_Push_Validation_Progress">
 		<comment>Start the push validation progress.</comment>
-		<val lang="en_US">Validate main files...</val>
-		<val lang="de_DE">Validate main files...</val>
-		<val lang="fr_FR">Validate main files...</val>
-		<val lang="ja_JP">Validate main files...</val>
-		<val lang="nl_NL">Validate main files...</val>
-		<val lang="zh_CN">Validate main files...</val>
+		<val lang="en_US">Validation in progress</val>
+		<val lang="de_DE">Validation in progress</val>
+		<val lang="fr_FR">Validation in progress</val>
+		<val lang="ja_JP">Validation in progress</val>
+		<val lang="nl_NL">Validation in progress</val>
+		<val lang="zh_CN">Validation in progress</val>
 	</key>
 	<key value="Failed_Push_Validation_Message_With_Stash">
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
