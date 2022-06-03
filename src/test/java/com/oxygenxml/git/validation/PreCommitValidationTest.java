@@ -1,6 +1,7 @@
 package com.oxygenxml.git.validation;
 
 import java.io.File;
+import java.net.URL;
 
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
@@ -24,7 +25,11 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.CommitAndStatusPanel;
 
 import ro.sync.document.DocumentPositionedInfo;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.results.ResultsManager;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Contains tests for commit validation.
@@ -264,7 +269,17 @@ public class PreCommitValidationTest extends GitTestBase {
     OPTIONS_MANAGER.setValidateFilesBeforeCommit(true);
     // Enable reject commit on validation problems option
     OPTIONS_MANAGER.setRejectCommitOnValidationProblems(true);
-
+    
+    final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+    Mockito.when(utilAccessMock.isUnhandledBinaryResourceURL(Mockito.any(URL.class))).then((Answer<Boolean>) 
+        invocation -> {
+          return false;
+        });
+    final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    final ResultsManager resultManager = Mockito.mock(ResultsManager.class);
+    Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
+    Mockito.when(pluginWSMock.getResultsManager()).thenReturn(resultManager);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     // Create a custom collector constructed to behave as if it contains validation problems
     final ICollector collector = Mockito.mock(ICollector.class);
     Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
@@ -308,7 +323,6 @@ public class PreCommitValidationTest extends GitTestBase {
 
       @Override
       public MessageDialog buildAndShow() {
-        new Exception().printStackTrace();
         // a single dialog should be displayed, to show the error only and the commit would be rejected after this dialog.
         dialogPresentedFlags[0] = !dialogPresentedFlags[0];
         return dialog;

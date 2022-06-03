@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.annotations.NonNull;
@@ -384,10 +385,10 @@ public class FileStatusUtil {
   public static boolean isUnreachableFile(@NonNull FileStatus file) {
     final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     try {
-      URL fileURL = FileUtil.getFileURL(file.getFileLocation());
+      final URL fileURL = FileUtil.getFileURL(file.getFileLocation());
       return utilAccess.isUnhandledBinaryResourceURL(fileURL) 
-          || OxygenAPIWrapper.getInstance().getContentType(fileURL.toExternalForm()) == null;
-    } catch (NoRepositorySelected e) {
+          || Objects.isNull(OxygenAPIWrapper.getInstance().getContentType(fileURL.toExternalForm()));
+    } catch (Throwable e) {
       LOGGER.error(e.getMessage(), e);
       return false;
     }

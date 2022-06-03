@@ -8,6 +8,8 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -22,6 +24,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableSet;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
 import com.oxygenxml.git.constants.Icons;
@@ -104,7 +107,26 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * Manages Push/Pull actions.
 	 */
 	private GitController gitController = new GitController();
-
+	
+	private static final Set<GitOperation> GIT_OPERATIONS_WITH_REQUIRED_REFRESH = ImmutableSet.of(
+	    GitOperation.CHECKOUT, 
+	    GitOperation.CONTINUE_REBASE, 
+	    GitOperation.RESET_TO_COMMIT, 
+	    GitOperation.OPEN_WORKING_COPY, 
+	    GitOperation.MERGE, 
+	    GitOperation.COMMIT, 
+	    GitOperation.REVERT_COMMIT, 
+	    GitOperation.STASH_CREATE,
+	    GitOperation.STASH_DROP,
+	    GitOperation.UPDATE_CONFIG_FILE,
+	    GitOperation.STASH_POP,
+	    GitOperation.CHECKOUT_FILE,
+	    GitOperation.CHECKOUT_COMMIT,
+	    GitOperation.CREATE_TAG,
+	    GitOperation.DELETE_TAG,
+	    GitOperation.DISCARD
+	);
+	
 	/**
 	 * Window listener used to call the refresh command when the Oxygen window is activated
 	 */
@@ -279,24 +301,34 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * @param viewInfo View information.
 	 */
 	private void customizeGitStagingView(final ViewInfo viewInfo, final GitActionsManager gitActionsManager) {
-		boolean shouldRecreateStagingPanel = stagingPanel == null;
+		boolean shouldRecreateStagingPanel = Objects.isNull(stagingPanel);
 		if (shouldRecreateStagingPanel) {
 			stagingPanel = new StagingPanel(
 					gitRefreshSupport,
 					gitController,
 					OxygenGitPluginExtension.this,
 					gitActionsManager);
-			
+			OperationUtil.installMouseBusyCursor(gitController, stagingPanel); 
+	    if(ValidationManager.getInstance().isAvailable()) {
+	      OperationUtil.installMouseBusyCursor(ValidationManager.getInstance(), stagingPanel); 
+	    }
 			gitRefreshSupport.setStagingPanel(stagingPanel);
+			installGitOperationsListener();
 		}
 		
 		viewInfo.setComponent(stagingPanel);
-		OperationUtil.installMouseBusyCursor(gitController, stagingPanel); 
-		if(ValidationManager.getInstance().isAvailable()) {
-		  OperationUtil.installMouseBusyCursor(ValidationManager.getInstance(), stagingPanel); 
-		}
-		
-		gitController.addGitListener(new GitEventAdapter() {
+	
+		gitRefreshSupport.call();
+
+		viewInfo.setIcon(Icons.getIcon(Icons.GIT_ICON));
+		viewInfo.setTitle(translator.getTranslation(Tags.GIT_STAGING));
+	}
+
+	/**
+	 * Install a listener for git operations.
+	 */
+  private void installGitOperationsListener() {
+    gitController.addGitListener(new GitEventAdapter() {
 		  
 		  @Override
       public void operationAboutToStart(GitEventInfo info) {
@@ -306,27 +338,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			@Override
 			public void operationSuccessfullyEnded(GitEventInfo info) {
 				final GitOperation operation = info.getGitOperation();
-				if (operation == GitOperation.CHECKOUT
-						|| operation == GitOperation.CONTINUE_REBASE 
-						|| operation == GitOperation.RESET_TO_COMMIT
-						|| operation == GitOperation.OPEN_WORKING_COPY
-						|| operation == GitOperation.MERGE
-						|| operation == GitOperation.COMMIT
-						|| operation == GitOperation.REVERT_COMMIT 
-						|| operation == GitOperation.STASH_CREATE
-						|| operation == GitOperation.STASH_DROP
-						|| operation == GitOperation.STASH_APPLY
-						|| operation == GitOperation.UPDATE_CONFIG_FILE
-						|| operation == GitOperation.STASH_POP
-						|| operation == GitOperation.CHECKOUT_FILE
-						|| operation == GitOperation.CHECKOUT_COMMIT
-						|| operation == GitOperation.CREATE_TAG
-						|| operation == GitOperation.DELETE_TAG
-						|| operation == GitOperation.DISCARD) {
+				if (GIT_OPERATIONS_WITH_REQUIRED_REFRESH.contains(operation)) {
 					gitRefreshSupport.call();
-
-					if (operation == GitOperation.CHECKOUT
-							|| operation == GitOperation.MERGE) {
+					if (operation == GitOperation.CHECKOUT || operation == GitOperation.MERGE) { // this operation need a super-refresh
 						try {
 							FileUtil.refreshProjectView();
 						} catch (NoRepositorySelected e) {
@@ -347,12 +361,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 				}
 			}
 		});
-
-		gitRefreshSupport.call();
-
-		viewInfo.setIcon(Icons.getIcon(Icons.GIT_ICON));
-		viewInfo.setTitle(translator.getTranslation(Tags.GIT_STAGING));
-	}
+  }
 
 	/**
 	 * Treat detached HEAD.

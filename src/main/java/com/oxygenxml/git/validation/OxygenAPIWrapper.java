@@ -89,7 +89,7 @@ public class OxygenAPIWrapper {
           Class<? extends UtilAccess> utilAccessClazz = utilAccess.getClass();
           getContentTypeMethod = Optional.ofNullable(utilAccessClazz.getMethod("getContentType", String.class));
         }
-      } catch (NoSuchMethodException | SecurityException e) {
+      } catch (Throwable e) {
         if(LOGGER.isDebugEnabled()) {
           LOGGER.debug(e.getMessage(), e);
         }
@@ -105,7 +105,7 @@ public class OxygenAPIWrapper {
     if(getMainFilesMethod.isPresent()) {
       try {
         return (Iterator<URL>) getMainFilesMethod.get().invoke(projectController);
-      } catch (Exception e) {
+      } catch (Throwable e) {
         if(LOGGER.isDebugEnabled()) {
           LOGGER.debug(e.getMessage(), e);
         }          
@@ -128,24 +128,18 @@ public class OxygenAPIWrapper {
    * 
    * @param systemID The systemID to get the content type for.
    * 
-   * @return the content type string Optional or an empty optional if there is no mapping. 
+   * @return the content type string or null if there is no mapping. 
    * The content type is returned as a mime type value, for example "text/xml" for XML documents
    * 
    * @since 24.0
    */
-  public Optional<String> getContentType(final String URL) {
-    Optional<String> toReturn = Optional.of(""); // for tests
-    if(getContentTypeMethod.isPresent()) {
-      try {
-        toReturn = Optional.ofNullable((String)getContentTypeMethod.get().invoke(utilAccess, URL));
-      } catch (Exception e) {
-        if(LOGGER.isDebugEnabled()) {
-          LOGGER.debug(e.getMessage(), e);
-        }    
-      }
+  public String getContentType(final String systemID) throws Throwable {
+    if(!getContentTypeMethod.isPresent()) {
+      throw new Exception("Method is not available");
     }
-    
-    return toReturn;
+    final Object invokeResult =  getContentTypeMethod.get().invoke(utilAccess, systemID);
+    return Optional.ofNullable(invokeResult).filter(
+        val -> val.getClass().isAssignableFrom(String.class)).map(String.class::cast).orElse(null);
   }
   
 }
