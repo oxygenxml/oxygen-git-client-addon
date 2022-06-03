@@ -37,6 +37,11 @@ public class CloneRepositoryTest {
         "https://github.com/p2", new File(newDestination).getAbsolutePath());
     newDestination = new File("folder/my_workspace/p2").getAbsolutePath();
     assertEquals(newDestination, proposedDest);
+    // test same location again
+    proposedDest = pathUpdater.updateDestinationPath(
+        "https://github.com/p2", new File(newDestination).getAbsolutePath());
+    newDestination = new File("folder/my_workspace/p2").getAbsolutePath();
+    assertEquals(newDestination, proposedDest);
   }
   
 }

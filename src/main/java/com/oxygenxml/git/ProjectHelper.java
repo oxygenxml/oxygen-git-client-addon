@@ -170,6 +170,7 @@ public class ProjectHelper {
       if (response == 0) {
         try {
           gitAccess.createNewRepository(projectDir);
+          OptionsManager.getInstance().saveDestinationPath(projectName);
           repoChanged = true;
         } catch (IllegalStateException | GitAPIException e) {
           LOGGER.debug(e.getMessage(),  e);
