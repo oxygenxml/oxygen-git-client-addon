@@ -161,8 +161,8 @@ public class CommitAndStatusPanel extends JPanel {
         cursorTimer.start();
 
         SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
-         
-        if(ValidationManager.getInstance().checkCommitValid()) {
+        final boolean isPreCommitEnaled = ValidationManager.getInstance().isPreCommitValidationEnabled();  
+        if(!isPreCommitEnaled || ValidationManager.getInstance().checkCommitValid()) {
           gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
           commitSuccessful = true;
         } else {
