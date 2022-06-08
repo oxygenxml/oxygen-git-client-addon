@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -64,6 +65,7 @@ import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -77,15 +79,15 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:MaximumInheritanceDepth
 
-	/**
-	 * Logger for logging.
-	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(CloneRepositoryDialog.class);
-	
-	/**
-	 * The default branch marker.
-	 */
-	private static final Ref DEFAULT_BRANCH_MARKER = new ObjectIdRef(Storage.NEW, "DEFAULT_BRANCH", null, -1) {
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(CloneRepositoryDialog.class);
+  
+  /**
+   * The default branch marker.
+   */
+  private static final Ref DEFAULT_BRANCH_MARKER = new ObjectIdRef(Storage.NEW, "DEFAULT_BRANCH", null, -1) {
     @Override
     public boolean isPeeled() {
       return false;
@@ -96,80 +98,80 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     }
   };
 
-	/**
-	 * Clone worker.
-	 */
-	private class CloneWorker extends SwingWorker<Void, Void> {
-	  
-	  /**
-	   * The progress dialog for the cloning operation.
-	   */
+  /**
+   * Clone worker.
+   */
+  private class CloneWorker extends SwingWorker<Void, Void> {
+    
+    /**
+     * The progress dialog for the cloning operation.
+     */
     private final ProgressDialog progressDialog;
     /**
      * Repository (source) URL.
      */
-		private final URIish sourceUrl;
-		/**
-		 * Destination file.
-		 */
-		private final File destFile;
-		/**
-		 * The branch to checkout.
-		 */
+    private final URIish sourceUrl;
+    /**
+     * Destination file.
+     */
+    private final File destFile;
+    /**
+     * The branch to checkout.
+     */
     private Ref branch;
 
-		/**
-		 * Constructor.
-		 * 
-		 * @param progressDialog The progress dialog for the cloning operation.
-		 * @param sourceUrl      Repository (source) URL.
-		 * @param destFile       Destination file.
-		 * @param branch         The branch to checkout.
-		 */
-		private CloneWorker(ProgressDialog progressDialog, URIish sourceUrl, File destFile, Ref branch) {
-			this.progressDialog = progressDialog;
-			this.sourceUrl = sourceUrl;
-			this.destFile = destFile;
+    /**
+     * Constructor.
+     * 
+     * @param progressDialog The progress dialog for the cloning operation.
+     * @param sourceUrl      Repository (source) URL.
+     * @param destFile       Destination file.
+     * @param branch         The branch to checkout.
+     */
+    private CloneWorker(ProgressDialog progressDialog, URIish sourceUrl, File destFile, Ref branch) {
+      this.progressDialog = progressDialog;
+      this.sourceUrl = sourceUrl;
+      this.destFile = destFile;
       this.branch = branch;
-		}
+    }
 
-		@Override
-		protected Void doInBackground() throws Exception {
-			CloneRepositoryDialog.this.setVisible(false);
-			GitAccess.getInstance().clone(
-			    sourceUrl,
-			    destFile,
-			    progressDialog,
-			    branch != null && branch != DEFAULT_BRANCH_MARKER ? branch.getName() : null);
-			progressDialog.dispose();
-			return null;
-		}
+    @Override
+    protected Void doInBackground() throws Exception {
+      CloneRepositoryDialog.this.setVisible(false);
+      GitAccess.getInstance().clone(
+          sourceUrl,
+          destFile,
+          progressDialog,
+          branch != null && branch != DEFAULT_BRANCH_MARKER ? branch.getName() : null);
+      progressDialog.dispose();
+      return null;
+    }
 
-		@Override
-		protected void done() {
-			try {
-			  // TODO Strange...when done is called, the entire processing should be done.
-				get();
-				OptionsManager.getInstance().saveDestinationPath(destFile.getParent());
-			} catch (InterruptedException e) {
-				if (LOGGER.isDebugEnabled()) {
-				  LOGGER.debug(e.getMessage(), e);
-				}
-				Thread.currentThread().interrupt();
-			} catch (ExecutionException e) {
-			  LOGGER.debug(e.getMessage(), e);
-			  
-				progressDialog.dispose();
+    @Override
+    protected void done() {
+      try {
+        // TODO Strange...when done is called, the entire processing should be done.
+        get();
+        OptionsManager.getInstance().saveDestinationPath(destFile.getParent());
+      } catch (InterruptedException e) {
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e.getMessage(), e);
+        }
+        Thread.currentThread().interrupt();
+      } catch (ExecutionException e) {
+        LOGGER.debug(e.getMessage(), e);
+        
+        progressDialog.dispose();
 
-	      treatExecutionExceptionCause(e);
-			}
-		}
+        treatExecutionExceptionCause(e);
+      }
+    }
 
-		/**
-		 * Treat exception's cause.
-		 * 
-		 * @param e The exception.
-		 */
+    /**
+     * Treat exception's cause.
+     * 
+     * @param e The exception.
+     */
     private void treatExecutionExceptionCause(ExecutionException e) {
       Throwable cause = e.getCause();
       while (cause != null) {
@@ -208,9 +210,9 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
       }
     }
 
-		/**
-		 * Clean the destination directory.
-		 */
+    /**
+     * Clean the destination directory.
+     */
     private void cleanDestDir() {
       try {
         FileUtils.cleanDirectory(destFile);
@@ -220,118 +222,118 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
         }
       }
     }
-	}
-	
-	/**
-	 * Listens to insertions in / deletions from the source (repository) URL text field.
-	 */
-	private transient DocumentListener sourceUrlTextFieldDocListener = new DocumentListener() {
-	  /**
-	   * Timer task for checking the connection to the repository (source) URL.
-	   */
-	  private TimerTask checkConnectionTask;
-	  
-	  /**
-	   * Reference comparator (for branch names).
-	   */
-	  private Comparator<Ref> refComparator = (o1, o2) -> {
-	    int toReturn = 0;
-	    if (o1 != null && o2 != null) {
-	      String name1 = getBranchShortName(o1);
-	      String name2 = getBranchShortName(o2);
-	      toReturn = name1.compareTo(name2);
-	    }
-	    return toReturn;
-	  };
+  }
+  
+  /**
+   * Listens to insertions in / deletions from the source (repository) URL text field.
+   */
+  private transient DocumentListener sourceUrlTextFieldDocListener = new DocumentListener() {
+    /**
+     * Timer task for checking the connection to the repository (source) URL.
+     */
+    private TimerTask checkConnectionTask;
+    
+    /**
+     * Reference comparator (for branch names).
+     */
+    private Comparator<Ref> refComparator = (o1, o2) -> {
+      int toReturn = 0;
+      if (o1 != null && o2 != null) {
+        String name1 = getBranchShortName(o1);
+        String name2 = getBranchShortName(o2);
+        toReturn = name1.compareTo(name2);
+      }
+      return toReturn;
+    };
 
-	  @Override
-	  public void removeUpdate(DocumentEvent e) {
-	    checkURLConnection();
-	  }
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+      checkURLConnection();
+    }
 
-	  @Override
-	  public void insertUpdate(DocumentEvent e) {
-	    checkURLConnection();
-	  }
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+      checkURLConnection();
+    }
 
-	  @Override
-	  public void changedUpdate(DocumentEvent e) {
-	    // Nothing to do here
-	  }
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+      // Nothing to do here
+    }
 
-	  /**
-	   * Check the connection to the repository (source) URL.
-	   */
-	  private void checkURLConnection() {
-	    if (checkConnectionTask != null) {
-	      checkConnectionTask.cancel();
-	    }
-	    checkConnectionTask = new TimerTask() {
+    /**
+     * Check the connection to the repository (source) URL.
+     */
+    private void checkURLConnection() {
+      if (checkConnectionTask != null) {
+        checkConnectionTask.cancel();
+      }
+      checkConnectionTask = new TimerTask() {
         @Override
-	      public void run() {
-	        if (CloneRepositoryDialog.this.isShowing()
-	            && KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() == CloneRepositoryDialog.this) {
+        public void run() {
+          if (CloneRepositoryDialog.this.isShowing()
+              && KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() == CloneRepositoryDialog.this) {
 
-	          try {
-	            final List<Ref> remoteBranches = new ArrayList<>();
-	            final String initialText = sourceUrlTextField.getText();
-	            final String sourceUrlAsText = initialText != null ? 
-	                RepoUtil.extractRepositoryURLFromCloneCommand(sourceUrlTextField.getText()) : null;
-	            if(sourceUrlAsText != null && sourceUrlAsText.equals(previousURLText)) {
-	              return;
-	            }
+            try {
+              final List<Ref> remoteBranches = new ArrayList<>();
+              final String initialText = sourceUrlTextField.getText();
+              final String sourceUrlAsText = initialText != null ? 
+                  RepoUtil.extractRepositoryURLFromCloneCommand(sourceUrlTextField.getText()) : null;
+              if(sourceUrlAsText != null && sourceUrlAsText.equals(previousURLText)) {
+                return;
+              }
               final String path = destinationPathUpdater.updateDestinationPath(
                   sourceUrlAsText, (String)destinationPathCombo.getSelectedItem());
-	            SwingUtilities.invokeLater(() -> {
-	              destinationPathCombo.setSelectedItem(path);
+              SwingUtilities.invokeLater(() -> {
+                destinationPathCombo.setSelectedItem(path);
                 branchesComboBox.removeAllItems();
                 setProgressVisible(true);
               });
-	            boolean wasUrlProvided = sourceUrlAsText != null && !sourceUrlAsText.isEmpty();
-	            previousURLText = sourceUrlAsText;
-	            if (wasUrlProvided) {
-	              addBranches(remoteBranches, sourceUrlAsText);
-	            }
+              boolean wasUrlProvided = sourceUrlAsText != null && !sourceUrlAsText.isEmpty();
+              previousURLText = sourceUrlAsText;
+              if (wasUrlProvided) {
+                addBranches(remoteBranches, sourceUrlAsText);
+              }
 
-	            SwingUtilities.invokeLater(() -> {
-	              boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
-	              if (shouldEnableBranchesCombo) {
-	                branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
-	                for (Ref ref : remoteBranches) {
-	                  branchesComboBox.addItem(ref);
-	                }
-	              }
-	              branchesComboBox.setEnabled(shouldEnableBranchesCombo);
-	              if (wasUrlProvided) {
-	                // If we have branches, then we didn't have any problems.
-	                // Hide the information label. Otherwise, show it.
-	                informationLabel.setVisible(!shouldEnableBranchesCombo);
-	              }
-	            });
-	          } catch (JGitInternalException e) {
-	            Throwable cause = e.getCause();
-	            if (cause instanceof NotSupportedException) {
-	              showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
-	            } else {
-	              PLUGIN_WORKSPACE.showErrorMessage(e.getMessage());
-	              if (LOGGER.isDebugEnabled())  {
-	                LOGGER.debug(e.getMessage(), e);
-	              }
-	            }
-	          } finally {
-	            SwingUtilities.invokeLater(() -> setProgressVisible(false));
-	          }
-	        }
-	      }
+              SwingUtilities.invokeLater(() -> {
+                boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
+                if (shouldEnableBranchesCombo) {
+                  branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
+                  for (Ref ref : remoteBranches) {
+                    branchesComboBox.addItem(ref);
+                  }
+                }
+                branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+                if (wasUrlProvided) {
+                  // If we have branches, then we didn't have any problems.
+                  // Hide the information label. Otherwise, show it.
+                  informationLabel.setVisible(!shouldEnableBranchesCombo);
+                }
+              });
+            } catch (JGitInternalException e) {
+              Throwable cause = e.getCause();
+              if (cause instanceof NotSupportedException) {
+                showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+              } else {
+                PLUGIN_WORKSPACE.showErrorMessage(e.getMessage());
+                if (LOGGER.isDebugEnabled())  {
+                  LOGGER.debug(e.getMessage(), e);
+                }
+              }
+            } finally {
+              SwingUtilities.invokeLater(() -> setProgressVisible(false));
+            }
+          }
+        }
 
       
 
-	      /**
-	       * Add the remote branches for the given URL to the given list.
-	       * 
-	       * @param remoteBranches  The list to be populated.
-	       * @param sourceUrlAsText The remote URL as text.
-	       */
+        /**
+         * Add the remote branches for the given URL to the given list.
+         * 
+         * @param remoteBranches  The list to be populated.
+         * @param sourceUrlAsText The remote URL as text.
+         */
         private void addBranches(final List<Ref> remoteBranches, String sourceUrlAsText) {
           try {
             URIish sourceURL = new URIish(sourceUrlAsText);
@@ -351,11 +353,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
           }
         }
 
-	      /**
-	       * Show/hide the progress circle for branch retrieval.
-	       * 
-	       * @param shouldShow <code>true</code> to show the progress circle.
-	       */
+        /**
+         * Show/hide the progress circle for branch retrieval.
+         * 
+         * @param shouldShow <code>true</code> to show the progress circle.
+         */
         private void setProgressVisible(boolean shouldShow) {
           if (loadingLabel != null) {
             JRootPane rootPane = getRootPane();
@@ -374,49 +376,49 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
             branchesComboBox.repaint();
           }
         }
-	    };
-	    checkRepoURLConTimer.schedule(checkConnectionTask, 500);
-	  }
-	};
+      };
+      checkRepoURLConTimer.schedule(checkConnectionTask, 500);
+    }
+  };
 
-	/**
-	 * The translator for the messages that are displayed in this dialog
-	 */
-	private static Translator translator = Translator.getInstance();
+  /**
+   * The translator for the messages that are displayed in this dialog
+   */
+  private static Translator translator = Translator.getInstance();
 
-	/**
-	 * Source URL text field.
-	 */
-	private JTextField sourceUrlTextField;
-	
-	/**
-	 * Updater for destination path.
-	 */
-	private DestinationPathUpdater  destinationPathUpdater = new DestinationPathUpdater();
-	
-	/**
+  /**
+   * Source URL text field.
+   */
+  private JTextField sourceUrlTextField;
+  
+  /**
+   * Updater for destination path.
+   */
+  private DestinationPathUpdater  destinationPathUpdater = new DestinationPathUpdater();
+  
+  /**
    * Used to eliminate redundant branch processing.
    */
   private String previousURLText = null;
 
-	/**
-	 * Destination path combo box.
-	 */
-	private JComboBox<String> destinationPathCombo;
+  /**
+   * Destination path combo box.
+   */
+  private JComboBox<String> destinationPathCombo;
 
-	/**
-	 * Label for displaying information.
-	 */
-	private JLabel informationLabel;
-	
-	/**
-	 * Timer for checking the connection to the repository (source) URL.
-	 */
-	private transient Timer checkRepoURLConTimer = new Timer("Check Repo URL Connection Daemon", false);
+  /**
+   * Label for displaying information.
+   */
+  private JLabel informationLabel;
+  
+  /**
+   * Timer for checking the connection to the repository (source) URL.
+   */
+  private transient Timer checkRepoURLConTimer = new Timer("Check Repo URL Connection Daemon", false);
 
-	/**
-	 * The combo box containing the remote branches for a given repository URL.
-	 */
+  /**
+   * The combo box containing the remote branches for a given repository URL.
+   */
   private JComboBox<Ref> branchesComboBox;
   
   /**
@@ -433,62 +435,62 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
    * Load icon.
    */
   private Icon loadIcon;
-	
-	/**
-	 * Constructor.
-	 */
-	public CloneRepositoryDialog() {
-		super((JFrame) PLUGIN_WORKSPACE.getParentFrame(),
-		    translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
+  
+  /**
+   * Constructor.
+   */
+  public CloneRepositoryDialog() {
+    super((JFrame) PLUGIN_WORKSPACE.getParentFrame(),
+        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
 
-		createGUI();
+    createGUI();
 
-		this.setMinimumSize(new Dimension(475, 160));
-		this.setResizable(true);
-		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		this.pack();
-		this.setLocationRelativeTo((JFrame) PLUGIN_WORKSPACE.getParentFrame());
-		this.setVisible(true);
-	}
+    this.setMinimumSize(new Dimension(475, 160));
+    this.setResizable(true);
+    this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    this.pack();
+    this.setLocationRelativeTo((JFrame) PLUGIN_WORKSPACE.getParentFrame());
+    this.setVisible(true);
+  }
 
-	/**
-	 * Create the graphical user interface.
-	 */
-	private void createGUI() {
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
+  /**
+   * Create the graphical user interface.
+   */
+  private void createGUI() {
+    JPanel panel = new JPanel(new GridBagLayout());
+    GridBagConstraints gbc = new GridBagConstraints();
 
-		setOkButtonText(Translator.getInstance().getTranslation(Tags.CLONE));
-		
-		// "Repository URL" label
-		JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL) + ":");
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		panel.add(lblURL, gbc);
+    setOkButtonText(Translator.getInstance().getTranslation(Tags.CLONE));
 
-		// Repository URL input text field
-		sourceUrlTextField = new TextField();
-		sourceUrlTextField.setPreferredSize(new Dimension(350, sourceUrlTextField.getPreferredSize().height));
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridx ++;
-		gbc.gridwidth = 2;
-		panel.add(sourceUrlTextField, gbc);
-		// Add document listener for URL validation and remote branch retrieval
-		sourceUrlTextField.getDocument().addDocumentListener(sourceUrlTextFieldDocListener);
+    // "Repository URL" label
+    JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL) + ":");
+    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    panel.add(lblURL, gbc);
 
-		// "Checkout branch" label
-		JLabel branchesLabel = new JLabel(translator.getTranslation(Tags.CHECKOUT_BRANCH) + ":");
+    // Repository URL input text field
+    sourceUrlTextField = new TextField();
+    sourceUrlTextField.setPreferredSize(new Dimension(350, sourceUrlTextField.getPreferredSize().height));
+    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    gbc.gridx ++;
+    gbc.gridwidth = 2;
+    panel.add(sourceUrlTextField, gbc);
+    // Add document listener for URL validation and remote branch retrieval
+    sourceUrlTextField.getDocument().addDocumentListener(sourceUrlTextFieldDocListener);
+
+    // "Checkout branch" label
+    JLabel branchesLabel = new JLabel(translator.getTranslation(Tags.CHECKOUT_BRANCH) + ":");
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.WEST;
@@ -499,7 +501,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     gbc.gridy ++;
     gbc.gridwidth = 1;
     panel.add(branchesLabel, gbc);
-    
+
     // Branches combo box
     branchesComboBox = new JComboBox<>();
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -514,269 +516,305 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     branchesComboBox.setEnabled(false);
     branchesComboBox.setRenderer(
         new DefaultListCellRenderer() { // NOSONAR squid:MaximumInheritanceDepth
-      @Override
-      public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-          boolean cellHasFocus) {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        if (value != null) {
-          if (value == DEFAULT_BRANCH_MARKER) {
-            label.setText("<Default branch>");
-          } else {
-            label.setText(getBranchShortName((Ref) value));
+          @Override
+          public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+              boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value != null) {
+              if (value == DEFAULT_BRANCH_MARKER) {
+                label.setText("<Default branch>");
+              } else {
+                label.setText(getBranchShortName((Ref) value));
+              }
+            }
+            return label;
           }
-        }
-        return label;
-      }
-    });
-    
+        });
+
     // Loading icon
     loadIcon = Icons.getIcon(Icons.LOADING_ICON);
-    
+
     // "Destination path" label
-		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.gridx = 0;
-		gbc.gridy ++;
-		gbc.gridwidth = 1;
-		panel.add(lblPath, gbc);
+    JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
+    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.gridx = 0;
+    gbc.gridy ++;
+    gbc.gridwidth = 1;
+    panel.add(lblPath, gbc);
 
-		// Destination path combo
-		destinationPathCombo = new JComboBox<>();
-		UndoRedoSupportInstaller.installManager(((JTextComponent) destinationPathCombo.getEditor().getEditorComponent()));
-		destinationPathCombo.setEditable(true);
-		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
-		if (!destinationPaths.isEmpty()) {
-		  for (String path : destinationPaths) {
-		    destinationPathCombo.addItem(path);
-		  }
-		  destinationPathCombo.setSelectedItem(destinationPaths.get(0));
-		}
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridx ++;
-		panel.add(destinationPathCombo, gbc);
+    // Destination path combo
+    destinationPathCombo = new JComboBox<>();
+    UndoRedoSupportInstaller.installManager(((JTextComponent) destinationPathCombo.getEditor().getEditorComponent()));
+    destinationPathCombo.setEditable(true);
+    List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
+    Optional<File> startingDir = getStartingDirFromWC();
+    if (!destinationPaths.isEmpty()) {
+      for (String path : destinationPaths) {
+        destinationPathCombo.addItem(path);
+      }
+      final String initialDestinationPath = destinationPaths.get(0);
+      destinationPathCombo.setSelectedItem(initialDestinationPath);
+      if(!startingDir.isPresent()) {
+        startingDir = Optional.ofNullable(new File(initialDestinationPath));
+      }
+    }
+    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    gbc.gridx ++;
+    panel.add(destinationPathCombo, gbc);
 
-		// Browse action
-		Action browseButtonAction = new AbstractAction() {
-		  @Override
-		  public void actionPerformed(ActionEvent e) {
-		    File directory = PLUGIN_WORKSPACE.chooseDirectory();
-		    if (directory != null) {
-		      final String initialText = sourceUrlTextField.getText();
-		      final String sourceUrlAsText = initialText != null ? 
-		          RepoUtil.extractRepositoryURLFromCloneCommand(sourceUrlTextField.getText()) : null;
-		          SwingUtilities.invokeLater(() -> {
-		            destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
-		            if(sourceUrlAsText != null) {
-		              destinationPathCombo.setSelectedItem(destinationPathUpdater
-		                  .updateDestinationPath(sourceUrlAsText, (String)destinationPathCombo.getSelectedItem()));
-		            }
-		          });
-		    }
-		  }
-		};
-		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
-		browseButton.setIcon(Icons.getIcon(Icons.FILE_CHOOSER_ICON));
-		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
-		browseButton.setOpaque(false);
+    final Action browseButtonAction = createBrowseAction(startingDir);
+    final ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
+    browseButton.setIcon(Icons.getIcon(Icons.FILE_CHOOSER_ICON));
+    browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
+    browseButton.setOpaque(false);
 
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.gridx ++;
-		panel.add(browseButton, gbc);
-		
-		// Information label shown when some problems occur
-		informationLabel = new JLabel();
-		informationLabel.setForeground(Color.RED);
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy ++;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridwidth = 3;
-		panel.add(informationLabel, gbc);
+    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.gridx ++;
+    panel.add(browseButton, gbc);
 
-		this.add(panel, BorderLayout.NORTH);
-	}
-	
-	/**
-	 * Show info message in the dialog.
-	 * 
-	 * @param message The message.
-	 */
-	private void showInfoMessage(String message) {
-	  SwingUtilities.invokeLater(() -> {
-	    informationLabel.setText(message);
-	    informationLabel.setVisible(true);
-	    pack();
-	  });
-	  setMinimumSize(getSize());
-	}
+    // Information label shown when some problems occur
+    informationLabel = new JLabel();
+    informationLabel.setForeground(Color.RED);
+    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridx = 0;
+    gbc.gridy ++;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    gbc.gridwidth = 3;
+    panel.add(informationLabel, gbc);
 
-	/**
-	 * 
-	 * Get a branch short name.
-	 * 
-	 * @param ref The current reference from which to get the name.
-	 * 
-	 * @return the name or an empty string.
-	 */
-	private String getBranchShortName(Ref ref) {
-	  String name = "";
-	  if (ref != null) {
-	    name = ref.getName();
-	    int indexOf = name.indexOf("heads/");
-	    if (indexOf != -1) {
-	      name = name.substring(indexOf + "heads/".length());
-	    }
-	  }
-	  return name;
-	  
-	}
+    this.add(panel, BorderLayout.NORTH);
+  }
 
-	/**
-	 * @see ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog.doOK()
-	 */
-	@Override
-	protected void doOK() {
-		if (areSourceAndDestValid()) {
-		  super.doOK();
-		}
-	}
-	
-	/**
-	 * Validate the source URL and the destination path.
-	 * 
-	 * @return <code>true</code> if bothe the source URL and the destination path are valid.
-	 */
-	private boolean areSourceAndDestValid() {
-	  boolean areValid = false;
-	  URIish sourceURL = getAndValidateSourceURL();
-	  if (sourceURL != null) {
-	    final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
-	    if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
-	      final File destFile = validateAndGetDestinationPath(new File(selectedDestPath), sourceURL.toString());
-	      if (destFile != null) {
-	        if(!destFile.exists()) {
-	          destFile.mkdir();
-	        }
-	        JFrame parentFrame = (JFrame) PLUGIN_WORKSPACE.getParentFrame();
+  /**
+   * @return The parent of current WC or an empty Optional.
+   */
+  private Optional<File> getStartingDirFromWC() {
+    Optional<File> startingDir = Optional.empty();
+    if(GitAccess.getInstance().isRepoInitialized()) {
+      try {
+        final Optional<File> wcFile = Optional.ofNullable(GitAccess.getInstance().getWorkingCopy());
+        if(wcFile.isPresent()) {
+          startingDir = Optional.ofNullable(wcFile.get().getParentFile());
+        }
+      } catch (NoRepositorySelected e1) {
+        if(LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e1.getMessage(), e1);
+        }
+      }
+    }
+    return startingDir;
+  }
+
+  /**
+   * Create browse folder action.
+   * 
+   * @param startingDir The starting directory optional. If it is not present, the default browse will be called. 
+   * 
+   * @return The action created.
+   */
+  private Action createBrowseAction(final Optional<File> startingDir) {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        final File directory = startingDir.isPresent() ?
+            PLUGIN_WORKSPACE.chooseDirectory(startingDir.get()) : PLUGIN_WORKSPACE.chooseDirectory();
+            if (directory != null) {
+              final String initialText = sourceUrlTextField.getText();
+              final String sourceUrlAsText = initialText != null ? 
+                  RepoUtil.extractRepositoryURLFromCloneCommand(sourceUrlTextField.getText()) : null;
+                  SwingUtilities.invokeLater(() -> {
+                    destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
+                    if(sourceUrlAsText != null) {
+                      destinationPathCombo.setSelectedItem(destinationPathUpdater
+                          .updateDestinationPath(sourceUrlAsText, (String)destinationPathCombo.getSelectedItem()));
+                    }
+                  });
+            }
+      }
+    };
+  }
+  
+  /**
+   * Show info message in the dialog.
+   * 
+   * @param message The message.
+   */
+  private void showInfoMessage(String message) {
+    SwingUtilities.invokeLater(() -> {
+      informationLabel.setText(message);
+      informationLabel.setVisible(true);
+      pack();
+    });
+    setMinimumSize(getSize());
+  }
+
+  /**
+   * 
+   * Get a branch short name.
+   * 
+   * @param ref The current reference from which to get the name.
+   * 
+   * @return the name or an empty string.
+   */
+  private String getBranchShortName(Ref ref) {
+    String name = "";
+    if (ref != null) {
+      name = ref.getName();
+      int indexOf = name.indexOf("heads/");
+      if (indexOf != -1) {
+        name = name.substring(indexOf + "heads/".length());
+      }
+    }
+    return name;
+    
+  }
+
+  /**
+   * @see ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog.doOK()
+   */
+  @Override
+  protected void doOK() {
+    if (areSourceAndDestValid()) {
+      super.doOK();
+    }
+  }
+  
+  /**
+   * Validate the source URL and the destination path.
+   * 
+   * @return <code>true</code> if bothe the source URL and the destination path are valid.
+   */
+  private boolean areSourceAndDestValid() {
+    boolean areValid = false;
+    URIish sourceURL = getAndValidateSourceURL();
+    if (sourceURL != null) {
+      final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
+      if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
+        final File destFile = validateAndGetDestinationPath(new File(selectedDestPath), sourceURL.toString());
+        if (destFile != null) {
+          if(!destFile.exists()) {
+            destFile.mkdir();
+          }
+          JFrame parentFrame = (JFrame) PLUGIN_WORKSPACE.getParentFrame();
           final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
-	        CloneWorker cloneWorker = new CloneWorker(
-	            progressDialog,
-	            sourceURL,
-	            destFile,
-	            (Ref) branchesComboBox.getSelectedItem());
+          CloneWorker cloneWorker = new CloneWorker(
+              progressDialog,
+              sourceURL,
+              destFile,
+              (Ref) branchesComboBox.getSelectedItem());
           cloneWorker.execute();
-	        // Make sure we present the dialog after this one is closed.
-	        // TODO There is a progress dialog support in Java. Maybe is better to use that.
-	        SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
-	        areValid = true;
-	      }
-	    } else {
-	      PLUGIN_WORKSPACE.showErrorMessage(
-	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
-	    }
-	  }
-	  return areValid;
-	}
-	
-	/**
-	 * Get the repository/source URL.
-	 * 
-	 * @return the URL or <code>null</code> if the provided text is invalid.
-	 */
-	private URIish getAndValidateSourceURL() {
-	  URIish url = null;
-	  final String repoURLText = sourceUrlTextField.getText();
-	  if (repoURLText != null && !repoURLText.isEmpty()) {
-	    try {
-	      url = new URIish(RepoUtil.extractRepositoryURLFromCloneCommand(repoURLText));
-	    } catch (URISyntaxException e) {
+          // Make sure we present the dialog after this one is closed.
+          // TODO There is a progress dialog support in Java. Maybe is better to use that.
+          SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
+          areValid = true;
+        }
+      } else {
+        PLUGIN_WORKSPACE.showErrorMessage(
+            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+      }
+    }
+    return areValid;
+  }
+  
+  /**
+   * Get the repository/source URL.
+   * 
+   * @return the URL or <code>null</code> if the provided text is invalid.
+   */
+  private URIish getAndValidateSourceURL() {
+    URIish url = null;
+    final String repoURLText = sourceUrlTextField.getText();
+    if (repoURLText != null && !repoURLText.isEmpty()) {
+      try {
+        url = new URIish(RepoUtil.extractRepositoryURLFromCloneCommand(repoURLText));
+      } catch (URISyntaxException e) {
         PLUGIN_WORKSPACE.showErrorMessage(
             translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
       }
-	  } else {
-	    PLUGIN_WORKSPACE.showErrorMessage(
-	        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
-	  }
-	  return url;
-	}
+    } else {
+      PLUGIN_WORKSPACE.showErrorMessage(
+          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+    }
+    return url;
+  }
 
-	/**
-	 * Check if the destination path is valid (for example, it does not yet exist) and get the location to clone the repository.
-	 * 
-	 * @param destFile The destination.
-	 * 
-	 * @return The file where to clone the repository or <code>null</code>.
-	 */
-	@Nullable
-	private File validateAndGetDestinationPath(@NonNull File destFile, @NonNull final String repositoryURL) {
-	  boolean isValid = true; 
-	  if (destFile.exists()) {
-	    final String[] children  = destFile.list();
-	    if (children != null && children.length > 0) {
-	      isValid = false;
-	      PLUGIN_WORKSPACE.showErrorMessage(
-	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
-	    }
-	  } else {
-	    File tempFile = destFile.getParentFile();
-	    while (tempFile != null) {
-	      if (tempFile.exists()) {
-	        destFile.mkdirs();
-	        break;
-	      }
-	      tempFile = tempFile.getParentFile();
-	    }
-	    if (tempFile == null) {
-	      isValid = false;
-	      PLUGIN_WORKSPACE.showErrorMessage(
-	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
-	    }
-	  }
-	  return isValid ? destFile : null;
-	}
-	
-	/**
-	 * Update destination path with current repository.
-	 * 
-	 * @author alex_smarandache
-	 *
-	 */
-	@VisibleForTesting
-	public static final class DestinationPathUpdater
-	{
-	  /**
-	   * The previous repository.
-	   */
-	  private String previousRepositoryName;
-	  
-	  /**
-	   * Update the destination path with the current repository.
-	   * 
-	   * @param repositoryURL The new repository URL.
-	   * @param destination   The initial destination path.
-	   * 
-	   * @return The new DestinationPath
-	   */
-	  public String updateDestinationPath(final String repositoryURL, String destination) {
+  /**
+   * Check if the destination path is valid (for example, it does not yet exist) and get the location to clone the repository.
+   * 
+   * @param destFile The destination.
+   * 
+   * @return The file where to clone the repository or <code>null</code>.
+   */
+  @Nullable
+  private File validateAndGetDestinationPath(@NonNull File destFile, @NonNull final String repositoryURL) {
+    boolean isValid = true; 
+    if (destFile.exists()) {
+      final String[] children  = destFile.list();
+      if (children != null && children.length > 0) {
+        isValid = false;
+        PLUGIN_WORKSPACE.showErrorMessage(
+            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
+      }
+    } else {
+      File tempFile = destFile.getParentFile();
+      while (tempFile != null) {
+        if (tempFile.exists()) {
+          destFile.mkdirs();
+          break;
+        }
+        tempFile = tempFile.getParentFile();
+      }
+      if (tempFile == null) {
+        isValid = false;
+        PLUGIN_WORKSPACE.showErrorMessage(
+            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+      }
+    }
+    return isValid ? destFile : null;
+  }
+  
+  /**
+   * Update destination path with current repository.
+   * 
+   * @author alex_smarandache
+   *
+   */
+  @VisibleForTesting
+  public static final class DestinationPathUpdater
+  {
+    /**
+     * The previous repository.
+     */
+    private String previousRepositoryName;
+    
+    /**
+     * Update the destination path with the current repository.
+     * 
+     * @param repositoryURL The new repository URL.
+     * @param destination   The initial destination path.
+     * 
+     * @return The new DestinationPath
+     */
+    public String updateDestinationPath(final String repositoryURL, String destination) {
       if(previousRepositoryName != null && destination != null && destination.endsWith(previousRepositoryName)) {
         destination = destination.substring(0, destination.length() - previousRepositoryName.length());
       }
@@ -784,7 +822,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
       return previousRepositoryName != null && !previousRepositoryName.isEmpty() ?
           new File(destination, previousRepositoryName).getPath() : destination;
     }
-	  
-	}
+    
+  }
 
 }
