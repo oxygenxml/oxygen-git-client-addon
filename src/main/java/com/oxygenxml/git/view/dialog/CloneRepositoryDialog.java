@@ -35,6 +35,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
+import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
@@ -69,7 +70,9 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -182,7 +185,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
         } else if (cause instanceof InvalidRemoteException) {
           // Invalid remote
           SwingUtilities.invokeLater(() -> PLUGIN_WORKSPACE.showErrorMessage(
-              translator.getTranslation(Tags.INVALID_REMOTE)
+              TRANSLATOR.getTranslation(Tags.INVALID_REMOTE)
               + ": " 
               + sourceUrl));
           shouldBreak = true;
@@ -190,12 +193,12 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
           // Invalid credentials
           String lowercaseMsg = cause.getMessage().toLowerCase();
           if (lowercaseMsg.contains(AuthUtil.NOT_AUTHORIZED)) {
-            String message = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
+            String message = TRANSLATOR.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
             CredentialsBase creds = OptionsManager.getInstance().getGitCredentials(sourceUrl.getHost());
             if (creds.getType() == CredentialsType.USER_AND_PASSWORD) {
-              message += translator.getTranslation(Tags.CHECK_CREDENTIALS);
+              message += TRANSLATOR.getTranslation(Tags.CHECK_CREDENTIALS);
             } else if (creds.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-              message += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
+              message += TRANSLATOR.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
             }
             final String fMsg = message;
             SwingUtilities.invokeLater(() -> PLUGIN_WORKSPACE.showErrorMessage(fMsg));
@@ -313,7 +316,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
             } catch (JGitInternalException e) {
               Throwable cause = e.getCause();
               if (cause instanceof NotSupportedException) {
-                showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+                showInfoMessage(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
               } else {
                 PLUGIN_WORKSPACE.showErrorMessage(e.getMessage());
                 if (LOGGER.isDebugEnabled())  {
@@ -346,7 +349,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
               Collections.sort(remoteBranches, refComparator);
             }
           } catch (URISyntaxException e) {
-            showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+            showInfoMessage(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
             if (LOGGER.isDebugEnabled()) {
               LOGGER.debug(e.getMessage(), e);
             }
@@ -384,7 +387,17 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
   /**
    * The translator for the messages that are displayed in this dialog
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
+  
+  /**
+   * The maximum length of an error message displayed in information label.
+   */
+  public static final int ERROR_MESSAGE_MAX_LENGTH = 125;
+  
+  /**
+   * Three dots constant.
+   */
+  public static final String THREE_DOTS = "...";
 
   /**
    * Source URL text field.
@@ -441,7 +454,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
    */
   public CloneRepositoryDialog() {
     super((JFrame) PLUGIN_WORKSPACE.getParentFrame(),
-        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
+        TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
 
     createGUI();
 
@@ -463,7 +476,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     setOkButtonText(Translator.getInstance().getTranslation(Tags.CLONE));
 
     // "Repository URL" label
-    JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL) + ":");
+    JLabel lblURL = new JLabel(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL) + ":");
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.WEST;
@@ -490,7 +503,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     sourceUrlTextField.getDocument().addDocumentListener(sourceUrlTextFieldDocListener);
 
     // "Checkout branch" label
-    JLabel branchesLabel = new JLabel(translator.getTranslation(Tags.CHECKOUT_BRANCH) + ":");
+    JLabel branchesLabel = new JLabel(TRANSLATOR.getTranslation(Tags.CHECKOUT_BRANCH) + ":");
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.WEST;
@@ -535,7 +548,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     loadIcon = Icons.getIcon(Icons.LOADING_ICON);
 
     // "Destination path" label
-    JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
+    JLabel lblPath = new JLabel(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.WEST;
@@ -575,7 +588,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     final Action browseButtonAction = createBrowseAction(startingDir);
     final ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
     browseButton.setIcon(Icons.getIcon(Icons.FILE_CHOOSER_ICON));
-    browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
+    browseButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
     browseButton.setOpaque(false);
 
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -588,7 +601,18 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     panel.add(browseButton, gbc);
 
     // Information label shown when some problems occur
-    informationLabel = new JLabel();
+    informationLabel = new JLabel() {
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+      
+      @Override
+      public void setText(String text) {
+        setToolTipText(text != null && !text.isEmpty() ? text : null);
+        super.setText(TextFormatUtil.shortenText(text, ERROR_MESSAGE_MAX_LENGTH, 0, THREE_DOTS));
+      }
+    };
     informationLabel.setForeground(Color.RED);
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -729,7 +753,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
         }
       } else {
         PLUGIN_WORKSPACE.showErrorMessage(
-            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+            TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
       }
     }
     return areValid;
@@ -748,11 +772,11 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
         url = new URIish(RepoUtil.extractRepositoryURLFromCloneCommand(repoURLText));
       } catch (URISyntaxException e) {
         PLUGIN_WORKSPACE.showErrorMessage(
-            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+            TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
       }
     } else {
       PLUGIN_WORKSPACE.showErrorMessage(
-          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+          TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
     }
     return url;
   }
@@ -772,7 +796,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
       if (children != null && children.length > 0) {
         isValid = false;
         PLUGIN_WORKSPACE.showErrorMessage(
-            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
+            TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));  
       }
     } else {
       File tempFile = destFile.getParentFile();
@@ -786,7 +810,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
       if (tempFile == null) {
         isValid = false;
         PLUGIN_WORKSPACE.showErrorMessage(
-            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+            TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
       }
     }
     return isValid ? destFile : null;

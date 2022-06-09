@@ -14,6 +14,24 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Cannot_Open_Git_Upload_Pack">
+		<comment>Error message when cannot open git-upload-pack.</comment>
+		<val lang="en_US">Cannot open git-upload-pack.</val>
+		<val lang="de_DE">Cannot open git-upload-pack.</val>
+		<val lang="fr_FR">Cannot open git-upload-pack.</val>
+		<val lang="ja_JP">Cannot open git-upload-pack.</val>
+		<val lang="nl_NL">Cannot open git-upload-pack.</val>
+		<val lang="zh_CN">Cannot open git-upload-pack.</val>
+	</key>
+	<key value="Domain_Name_Does_Not_Exist">
+		<comment>Error message when domain name doesn't exist.</comment>
+		<val lang="en_US">The domain name does not exist. This means that the hostname presented in the URL cannot be resolved. Check if the address is correct.</val>
+		<val lang="de_DE">Push anyway</val>
+		<val lang="fr_FR">Push anyway</val>
+		<val lang="ja_JP">Push anyway</val>
+		<val lang="nl_NL">Push anyway</val>
+		<val lang="zh_CN">Push anyway</val>
+	</key>
 	<key value="End_Push_Validation_Progress">
 		<comment>End the push validation progress.</comment>
 		<val lang="en_US">Validation finished</val>

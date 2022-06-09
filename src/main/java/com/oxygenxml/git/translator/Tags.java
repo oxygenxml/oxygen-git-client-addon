@@ -1905,5 +1905,16 @@ public class Tags {
    * End the push validation progress.
    */
   public static final String END_PUSH_VALIDATION_PROGRESS = "End_Push_Validation_Progress";
+  
+  /**
+   * Error message when cannot open git-upload-pack.
+   */
+  public static final String CANNOT_OPEN_GIT_UPLOAD_PACK = "Cannot_Open_Git_Upload_Pack";
+  
+  /**
+   * Error message when domain name doesn't exist.
+   */
+  public static final String DOMAIN_NAME_DOES_NOT_EXIST = "Domain_Name_Does_Not_Exist";
+  
 }
 

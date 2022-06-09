@@ -4,6 +4,7 @@ import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,8 @@ public class AuthUtil {
    * Part of the exception message shown when a specific authentication type is not supported.
    */
   public static final String AUTHENTICATION_NOT_SUPPORTED = "authentication not supported";
+  
+  public static final String GIT_UPLOAD_PACK = "git-upload-pack";
   
   /**
    * Hidden constructor.
@@ -161,6 +164,11 @@ public class AuthUtil {
         }
       } else {
         LOGGER.error(ex.getMessage(), ex);
+      }
+    } else if (ex instanceof TransportException) {
+      if (excMessPresenter != null) {
+        excMessPresenter.presentMessage(TRANSLATOR.getTranslation(
+            ex.getMessage().contains(GIT_UPLOAD_PACK) ? Tags.CANNOT_OPEN_GIT_UPLOAD_PACK : Tags.DOMAIN_NAME_DOES_NOT_EXIST)); 
       }
     } else {
       // "Unhandled" exception
