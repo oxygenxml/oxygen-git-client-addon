@@ -239,6 +239,7 @@ public class GitAccess {
 		ProgressMonitor progressMonitor = createCloneProgressMonitor(progressDialog);
 		if (progressDialog != null) {
 		  progressDialog.setNote("Initializing...");
+		  progressMonitor.beginTask("Initializing", 0);
 		}
 		
     CloneCommand cloneCommand = 
@@ -792,7 +793,6 @@ public class GitAccess {
         }
         shouldStopTryingLogin = true;
       } catch (TransportException ex) {
-        
         LOGGER.debug(ex.getMessage(), ex);
         
         boolean retryLogin = AuthUtil.handleAuthException(
