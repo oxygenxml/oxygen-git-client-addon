@@ -46,7 +46,7 @@ public class PreCommitValidation implements IPreOperationValidation {
    * The commit files validator.
    */
   private final Optional<IValidator> commitFilesValidator;
-  
+
   /**
    * The translator for the messages that are displayed in this panel
    */
@@ -56,7 +56,7 @@ public class PreCommitValidation implements IPreOperationValidation {
    * Manager for options.
    */
   private static final OptionsManager OPTIONS_MANAGER = OptionsManager.getInstance();
-  
+
   /**
    * The result manager.
    */
@@ -87,7 +87,7 @@ public class PreCommitValidation implements IPreOperationValidation {
     if(isEnabled()) {
       performCommit = validateFilesBeforeCommit();
     }
-    
+
     return performCommit;
   }
 
@@ -100,34 +100,21 @@ public class PreCommitValidation implements IPreOperationValidation {
     boolean performCommit = true;
     listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutStartOperation(
         new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
-    
-    if(GitValidationUtil.hasUncommitedChanges(false)) {     
-      performCommit = false;
-      MessagePresenterProvider
-      .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
-      .setOkButtonVisible(false)
-      .setMessage(TRANSLATOR.getTranslation(Tags.COMMIT_VALIDATION_UNSTAGED_FILES))
-      .buildAndShow();
+
+    if(!validateFilesBeforeCommit(
+        FileStatusUtil.getFilesStatuesURL(
+            GitAccess.getInstance().getStagedFiles().stream().filter(
+                file -> file.getChangeType() != GitChangeType.REMOVED && 
+                file.getChangeType() != GitChangeType.MISSING)
+            .collect(Collectors.toList())
+            , false)
+        )) {
+      performCommit = showCommitFilesProblems();
     }
-    
-    if(performCommit) {
-      if(!validateFilesBeforeCommit(
-          FileStatusUtil.getFilesStatuesURL(
-              GitAccess.getInstance().getStagedFiles().stream().filter(
-                  file -> file.getChangeType() != GitChangeType.REMOVED && 
-                  file.getChangeType() != GitChangeType.MISSING)
-              .collect(Collectors.toList())
-              , false)
-          )) {
-        performCommit = showCommitFilesProblems();
-      }
-      listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutFinishedOperation(
-          new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
-    } else {
-      listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutCanceledOperation(
-          new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
-    }
-    
+
+    listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutFinishedOperation(
+        new ValidationOperationInfo(ValidationOperationType.PRE_COMMIT_VALIDATION)));
+
     return performCommit;
   }
 
@@ -146,7 +133,7 @@ public class PreCommitValidation implements IPreOperationValidation {
     }
     return toReturn;
   }
-  
+
   /**
    * Show problems that occurs on last commit validation.
    * 

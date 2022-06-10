@@ -255,16 +255,15 @@ public class PreCommitValidationTest extends GitTestBase {
   }
   
   /**
-   * <p><b>Description:</b> This test cover pre-commit validation behavior for case when this option
-   * is not enabled and reject commit option is disabled.</p>
+   * <p><b>Description:</b> This test cover pre-commit validation behavior for case when the unstaged files don't blocks the pre-commit validation</p>
    * 
-   * <p><b>Bug ID:</b> EXM-47776</p>
+   * <p><b>Bug ID:</b> EXM-50700</p>
    *
    * @author Alex_Smarandache
    *
    */ 
   @Test
-  public void testUnstagedFilesBlocksCommitValidation() throws Exception {
+  public void testUnstagedFilesDontBlocksCommitValidation() throws Exception {
     // Enable validate pre-commit option
     OPTIONS_MANAGER.setValidateFilesBeforeCommit(true);
     // Enable reject commit on validation problems option
@@ -358,7 +357,7 @@ public class PreCommitValidationTest extends GitTestBase {
     assertEquals(4, gitAccess.getStagedFiles().size());
     assertTrue(dialogPresentedFlags[0]);
     assertTrue(dialogPresentedFlags[1]);
-    assertTrue(dialogPresentedFlags[2]);
+    assertFalse(dialogPresentedFlags[2]);
   }
 
   /**
