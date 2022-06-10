@@ -32,7 +32,7 @@ public class CloneRepositoryAction extends AlwaysEnabledAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		new CloneRepositoryDialog();
+		new CloneRepositoryDialog().setVisible(true);
 	}
 	
 }

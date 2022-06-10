@@ -15,7 +15,6 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JToolTip;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.RoundedLineBorder;
+import com.oxygenxml.git.view.components.Label;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -268,7 +268,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
       for (String name : nameForLabelList) {
         final RoundedLineBorder border = new RoundedLineBorder(null, lineSize, LABEL_BORDER_CORNER_SIZE, true);
-        final JLabel label = new JLabel(name.length() > MAX_BRANCH_OR_TAG_NAME_LENGTH ? 
+        final JLabel label = new Label(name.length() > MAX_BRANCH_OR_TAG_NAME_LENGTH ? 
             (name.substring(0, MAX_BRANCH_OR_TAG_NAME_LENGTH - "...".length()) + "...") 
             : name) {
 
@@ -276,11 +276,6 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
           protected void paintComponent(Graphics g) {
             border.fillBorder(this, g, 0, 0, getWidth(), getHeight());
             super.paintComponent(g);
-          }
-
-          @Override
-          public JToolTip createToolTip() {
-            return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
           }
         };
         if (name.equals(currentBranchName)) {

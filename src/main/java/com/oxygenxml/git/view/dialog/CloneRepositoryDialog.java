@@ -66,6 +66,7 @@ import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -462,7 +463,6 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     this.pack();
     this.setLocationRelativeTo((JFrame) PLUGIN_WORKSPACE.getParentFrame());
-    this.setVisible(true);
   }
 
   /**
@@ -622,6 +622,14 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     this.add(panel, BorderLayout.NORTH);
   }
 
+  /**
+   * @return The information label.
+   */
+  @TestOnly
+  public JLabel getInformationLabel() {
+    return informationLabel;
+  }
+  
   /**
    * @return The parent of current WC or an empty Optional.
    */

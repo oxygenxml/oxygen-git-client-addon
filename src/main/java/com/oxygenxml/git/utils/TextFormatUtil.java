@@ -46,7 +46,7 @@ public class TextFormatUtil {
       final int lastCharactersToKeep, 
       final String addBetweenCharacters) {
 	  String toReturn = text;
-	  if(text.length() > (firstCharactersToKeep + lastCharactersToKeep)) {
+	  if(text != null && text.length() > (firstCharactersToKeep + lastCharactersToKeep)) {
 		  toReturn = text.substring(0, firstCharactersToKeep) + addBetweenCharacters + text.substring(text.length() - lastCharactersToKeep, text.length());
 	  }
 	  return toReturn;
