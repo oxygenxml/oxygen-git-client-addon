@@ -35,7 +35,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
-import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
@@ -72,7 +71,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
-import com.oxygenxml.git.view.util.UIUtil;
+import com.oxygenxml.git.view.components.Label;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -573,7 +572,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
       final String initialDestinationPath = destinationPaths.get(0);
       destinationPathCombo.setSelectedItem(initialDestinationPath);
       if(!startingDir.isPresent()) {
-        startingDir = Optional.ofNullable(new File(initialDestinationPath));
+        startingDir = Optional.of(new File(initialDestinationPath));
       }
     }
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -601,12 +600,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     panel.add(browseButton, gbc);
 
     // Information label shown when some problems occur
-    informationLabel = new JLabel() {
-      @Override
-      public JToolTip createToolTip() {
-        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
-      }
-      
+    informationLabel = new Label() {
       @Override
       public void setText(String text) {
         setToolTipText(text != null && !text.isEmpty() ? text : null);
@@ -635,10 +629,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     Optional<File> startingDir = Optional.empty();
     if(GitAccess.getInstance().isRepoInitialized()) {
       try {
-        final Optional<File> wcFile = Optional.ofNullable(GitAccess.getInstance().getWorkingCopy());
-        if(wcFile.isPresent()) {
-          startingDir = Optional.ofNullable(wcFile.get().getParentFile());
-        }
+        startingDir = Optional.ofNullable(GitAccess.getInstance().getWorkingCopy().getParentFile());
       } catch (NoRepositorySelected e1) {
         if(LOGGER.isDebugEnabled()) {
           LOGGER.debug(e1.getMessage(), e1);

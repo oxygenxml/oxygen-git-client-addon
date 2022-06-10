@@ -29,7 +29,10 @@ public class TextFormatUtil {
   /**
    * Shorten text.
    * <br><br>
-   * For example, for ("hamburger", 2, 3, "...") -> ha...ger.
+   * For examples:
+   * ("hamburger", 2, 3, "...") -> ha...ger.
+   * ("ham", 2, 3, "...") -> ham.
+   * ("ham", 5, 0, "...") -> ham.
    * 
    * @param text                       Text to shorten.
    * @param firstCharactersToKeep      Index for the first characters to keep in shorten text.
