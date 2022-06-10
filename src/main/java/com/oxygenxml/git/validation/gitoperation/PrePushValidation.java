@@ -3,6 +3,7 @@ package com.oxygenxml.git.validation.gitoperation;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -154,9 +155,10 @@ public class PrePushValidation implements IPreOperationValidation {
       if(performPush) {
         if(!validateMainFilesBeforePush(ImmutableList.copyOf(
             OxygenAPIWrapper.getInstance().getMainFileResourcesIterator()))) {
-          performPush = showPushFilesProblems(stash.isPresent()? 
-              TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED_WITH_STASH) :
-                TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_FAILED) );
+          performPush = showPushFilesProblems(MessageFormat.format(TRANSLATOR.getTranslation(
+              stash.isPresent()? Tags.PUSH_VALIDATION_FAILED_WITH_STASH : Tags.PUSH_VALIDATION_FAILED), 
+              TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION)));
+              
           stash = Optional.empty(); // don't apply the stash if problems were found
         }
         listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutFinishedOperation(

@@ -60,7 +60,8 @@ public class PushAction extends BaseGitAbstractAction {
 				}
 
 				GitOperationScheduler.getInstance().schedule(() -> {
-				  if(ValidationManager.getInstance().checkPushValid()) {
+				  if(!ValidationManager.getInstance().isPrePushValidationEnabled() 
+				      || ValidationManager.getInstance().checkPushValid()) {
 				    gitController.push();
 				  }
 				});

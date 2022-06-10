@@ -1,6 +1,7 @@
 package com.oxygenxml.git.validation.gitoperation;
 
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -162,12 +163,14 @@ public class PreCommitValidation implements IPreOperationValidation {
           Tags.PRE_COMMIT_VALIDATION), DialogType.ERROR)
       .setOkButtonVisible(false)
       .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
-      .setMessage(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE))
+      .setMessage(MessageFormat.format(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE), 
+          TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION)))
       .buildAndShow();
     } else {
       toReturn = MessagePresenterProvider.getBuilder(TRANSLATOR.getTranslation(
           Tags.PRE_COMMIT_VALIDATION), DialogType.WARNING)
-          .setMessage(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE))
+          .setMessage(MessageFormat.format(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE), 
+              TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION)))
           .setOkButtonName(Tags.COMMIT_ANYWAY)
           .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
           .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
