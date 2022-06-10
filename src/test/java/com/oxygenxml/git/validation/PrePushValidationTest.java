@@ -134,16 +134,11 @@ public class PrePushValidationTest extends GitTestBase {
   
   @Override
   public void tearDown() throws Exception {
-    super.tearDown();
-
     gitAccess.closeRepo();
-    flushAWT();
     firstLocalRepo.close();
-    flushAWT();
     remoteRepo.close();
-    flushAWT();
     secondLocalRepo.close();
-    flushAWT();
+    
     try {
       File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
       FileUtils.deleteDirectory(dirToDelete);
@@ -157,6 +152,8 @@ public class PrePushValidationTest extends GitTestBase {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    
+    super.tearDown();
   }
   
   /**

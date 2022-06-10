@@ -142,12 +142,12 @@
 	</key>
 	<key value="Validate_Before_Push">
 		<comment>Label for validate files before commit option.</comment>
-		<val lang="en_US">Validate all files from the Project 'Main Files' folder before push</val>
-		<val lang="de_DE">Validate all files from the Project 'Main Files' folder before push</val>
-		<val lang="fr_FR">Validate all files from the Project 'Main Files' folder before push</val>
-		<val lang="ja_JP">Validate all files from the Project 'Main Files' folder before push</val>
-		<val lang="nl_NL">Validate all files from the Project 'Main Files' folder before push</val>
-		<val lang="zh_CN">Validate all files from the Project 'Main Files' folder before push</val>
+		<val lang="en_US">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="de_DE">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="fr_FR">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="ja_JP">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="nl_NL">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="zh_CN">Validate all files from the project's "Main Files" folder before pushing</val>
 	</key>
 	<key value="Pre_Push_Validation">
 		<comment>Title for problems occurred on a pre-push validation and presented by a dialog/view.</comment>
