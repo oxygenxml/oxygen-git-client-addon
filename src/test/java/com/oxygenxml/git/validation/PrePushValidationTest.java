@@ -142,13 +142,10 @@ public class PrePushValidationTest extends GitTestBase {
     try {
       File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
       FileUtils.deleteDirectory(dirToDelete);
-      flushAWT();
       dirToDelete = new File(REMOTE_TEST_REPOSITORY);
       FileUtils.deleteDirectory(dirToDelete);
-      flushAWT();
       dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
       FileUtils.deleteDirectory(dirToDelete);
-      flushAWT();
     } catch (IOException e) {
       e.printStackTrace();
     }
