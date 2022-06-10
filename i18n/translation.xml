@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Stash_And_Continue">
+		<comment>En: Stash and continue.</comment>
+		<val lang="en_US">Stash and continue</val>
+		<val lang="de_DE">Stash and continue</val>
+		<val lang="fr_FR">Stash and continue</val>
+		<val lang="ja_JP">Stash and continue</val>
+		<val lang="nl_NL">Stash and continue</val>
+		<val lang="zh_CN">Stash and continue</val>
+	</key>
 	<key value="Cannot_Open_Git_Upload_Pack">
 		<comment>Error message when cannot open git-upload-pack.</comment>
 		<val lang="en_US">Cannot open git-upload-pack.</val>

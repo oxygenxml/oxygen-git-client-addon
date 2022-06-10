@@ -143,7 +143,7 @@ public class PrePushValidation implements IPreOperationValidation {
         performPush = MessagePresenterProvider
             .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
             .setQuestionMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES))
-            .setOkButtonName(TRANSLATOR.getTranslation(Tags.STASH))
+            .setOkButtonName(TRANSLATOR.getTranslation(Tags.STASH_AND_CONTINUE))
             .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
         if(performPush) {
           stash = Optional.ofNullable(GitAccess.getInstance().createStash(true, 
@@ -196,7 +196,12 @@ public class PrePushValidation implements IPreOperationValidation {
       if(performPush) {
         standalonePluginWorkspace.getProjectManager().loadProject(currentProjectXprFile.get());
       } else {
-        standalonePluginWorkspace.showErrorMessage(TRANSLATOR.getTranslation(Tags.NO_XPR_FILE_FOUND_MESSAGE));
+        MessagePresenterProvider 
+        .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
+        .setMessage(TRANSLATOR.getTranslation(Tags.NO_XPR_FILE_FOUND_MESSAGE))
+        .setOkButtonVisible(false)
+        .setCancelButtonName(Tags.CLOSE)
+        .buildAndShow();
       }
     }
     return performPush;

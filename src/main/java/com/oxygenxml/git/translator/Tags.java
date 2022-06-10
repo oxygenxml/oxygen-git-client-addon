@@ -1916,5 +1916,10 @@ public class Tags {
    */
   public static final String DOMAIN_NAME_DOES_NOT_EXIST = "Domain_Name_Does_Not_Exist";
   
+  /**
+   * En: Stash and continue.
+   */
+  public static final String STASH_AND_CONTINUE = "Stash_And_Continue";
+  
 }
 

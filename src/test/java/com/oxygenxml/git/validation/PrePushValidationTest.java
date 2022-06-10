@@ -528,7 +528,7 @@ public class PrePushValidationTest extends GitTestBase {
       
       @Override
       public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] |= Tags.STASH.equals(okButtonName);
+        dialogPresentedFlags[1] |= Tags.STASH_AND_CONTINUE.equals(okButtonName);
         return super.setOkButtonName(okButtonName);
       }
 
