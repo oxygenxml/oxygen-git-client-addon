@@ -59,7 +59,7 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
-import com.oxygenxml.git.view.components.Label;
+import com.oxygenxml.git.view.components.ApplicationLabel;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
@@ -577,7 +577,7 @@ public class CommitAndStatusPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		statusLabel = new Label() {
+		statusLabel = new ApplicationLabel() {
 		  @Override
 		  public void setText(String text) {
 		    super.setText(text);

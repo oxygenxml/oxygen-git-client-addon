@@ -10,7 +10,7 @@ import org.junit.Test;
  * @author Alex_Smarandache
  *
  */
-public class TextFormatUtilText {
+public class TextFormatUtilTest {
 
   
  /**

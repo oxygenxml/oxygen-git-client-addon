@@ -72,7 +72,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
-import com.oxygenxml.git.view.components.Label;
+import com.oxygenxml.git.view.components.ApplicationLabel;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -600,7 +600,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     panel.add(browseButton, gbc);
 
     // Information label shown when some problems occur
-    informationLabel = new Label() {
+    informationLabel = new ApplicationLabel() {
       @Override
       public void setText(String text) {
         setToolTipText(text != null && !text.isEmpty() ? text : null);

@@ -1,5 +1,7 @@
 package com.oxygenxml.git.utils;
 
+import org.eclipse.jgit.annotations.Nullable;
+
 /**
  * Contains utils methods to format the text.
  * 
@@ -41,7 +43,7 @@ public class TextFormatUtil {
    * 
    * @return The computed text.
    */
-  public static String shortenText(final String text, 
+  public static String shortenText(@Nullable final String text, 
       final int firstCharactersToKeep, 
       final int lastCharactersToKeep, 
       final String addBetweenCharacters) {
