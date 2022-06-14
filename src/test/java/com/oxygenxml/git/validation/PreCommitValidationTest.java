@@ -316,7 +316,7 @@ public class PreCommitValidationTest extends GitTestBase {
       
       @Override
           public MessageDialogBuilder setMessage(final String questionMessage) {
-            dialogPresentedFlags[2] |= Tags.COMMIT_VALIDATION_UNSTAGED_FILES.equals(questionMessage);
+            dialogPresentedFlags[2] |= !Tags.FAILED_COMMIT_VALIDATION_MESSAGE.equals(questionMessage);
             return super.setMessage(questionMessage);
           }
 
