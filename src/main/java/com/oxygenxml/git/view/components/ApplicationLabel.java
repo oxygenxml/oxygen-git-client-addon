@@ -6,9 +6,7 @@ import javax.swing.JToolTip;
 import com.oxygenxml.git.view.util.UIUtil;
 
 /**
- * Custom implementation over JLabel.
- * <br>
- * The default tooltip is replaced with a Multiline Tooltip.
+ * A label with several functionalities for a better integration with Oxygen(Multiline tool tip).
  * 
  * @author alex_smarandache
  *
@@ -35,7 +33,7 @@ public class ApplicationLabel extends JLabel {
    * of the label's display area.
    */
   public ApplicationLabel() {
-      super();
+      super("", null, LEADING);
   }
   
   /**

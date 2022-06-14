@@ -268,10 +268,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
       for (String name : nameForLabelList) {
         final RoundedLineBorder border = new RoundedLineBorder(null, lineSize, LABEL_BORDER_CORNER_SIZE, true);
-        final String shortenBranchName = name.length() > MAX_BRANCH_OR_TAG_NAME_LENGTH ? 
+        final JLabel label = new ApplicationLabel(name.length() > MAX_BRANCH_OR_TAG_NAME_LENGTH ? 
             (name.substring(0, MAX_BRANCH_OR_TAG_NAME_LENGTH - "...".length()) + "...") 
-            : name;
-        final JLabel label = new ApplicationLabel(shortenBranchName) {
+            : name) {
 
           @Override
           protected void paintComponent(Graphics g) {

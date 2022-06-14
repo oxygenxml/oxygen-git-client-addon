@@ -165,10 +165,10 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				PrintWriter printWriter = new PrintWriter(temp);
 				printWriter.println(commit);
 				printWriter.close();
-				return new ReadAheadInputStream(new FileInputStream(temp));
+				return new FileInputStream(temp);
 			}
 			
-			return new ReadAheadInputStream(GitAccess.getInstance().getInputStream(fileObject));
+			return GitAccess.getInstance().getInputStream(fileObject);
 		}
 
 		/**
