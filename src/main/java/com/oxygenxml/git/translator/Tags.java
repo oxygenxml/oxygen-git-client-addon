@@ -1907,9 +1907,9 @@ public class Tags {
   public static final String CANNOT_OPEN_GIT_UPLOAD_PACK = "Cannot_Open_Git_Upload_Pack";
   
   /**
-   * Error message when domain name doesn't exist.
+   * Error message for a transport exception.
    */
-  public static final String DOMAIN_NAME_DOES_NOT_EXIST = "Domain_Name_Does_Not_Exist";
+  public static final String TRANSPORT_EXCEPTION_POSSIBLE_CAUSES = "Transport_Exception_Possible_Causes";
   
   /**
    * En: Stash and continue.

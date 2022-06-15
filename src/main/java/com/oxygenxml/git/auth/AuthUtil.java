@@ -2,6 +2,7 @@ package com.oxygenxml.git.auth;
 
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -166,10 +167,7 @@ public class AuthUtil {
         LOGGER.error(ex.getMessage(), ex);
       }
     } else if (ex instanceof TransportException) {
-      if (excMessPresenter != null) {
-        excMessPresenter.presentMessage(TRANSLATOR.getTranslation(
-            ex.getMessage().contains(GIT_UPLOAD_PACK) ? Tags.CANNOT_OPEN_GIT_UPLOAD_PACK : Tags.DOMAIN_NAME_DOES_NOT_EXIST)); 
-      }
+      treatTransportException((TransportException)ex, excMessPresenter);
     } else {
       // "Unhandled" exception
       if (excMessPresenter != null) {
@@ -182,6 +180,24 @@ public class AuthUtil {
     }
     
     return tryAgainOutside;
+  }
+
+  /**
+   * Treats an exception caused by transport operation failed.
+   * 
+   * @param ex               The exception.
+   * @param excMessPresenter The presenter for this exception.
+   */
+  private static void treatTransportException(final TransportException ex, 
+      @Nullable final AuthExceptionMessagePresenter excMessPresenter) {
+    if (excMessPresenter != null) {
+      if(ex.getMessage().contains(GIT_UPLOAD_PACK)) {
+        excMessPresenter.presentMessage(TRANSLATOR.getTranslation(Tags.CANNOT_OPEN_GIT_UPLOAD_PACK));
+      } else {
+        excMessPresenter.presentMessage(TRANSLATOR.getTranslation(Tags.TRANSPORT_EXCEPTION_POSSIBLE_CAUSES)); 
+      }
+    }
+    LOGGER.error(ex.getMessage(), ex);
   }
 
   /**

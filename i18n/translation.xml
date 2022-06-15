@@ -32,14 +32,14 @@
 		<val lang="nl_NL">Cannot open git-upload-pack.</val>
 		<val lang="zh_CN">Cannot open git-upload-pack.</val>
 	</key>
-	<key value="Domain_Name_Does_Not_Exist">
-		<comment>Error message when domain name doesn't exist.</comment>
-		<val lang="en_US">The domain name does not exist. This means that the hostname presented in the URL cannot be resolved. Check if the address is correct.</val>
-		<val lang="de_DE">The domain name does not exist. This means that the hostname presented in the URL cannot be resolved. Check if the address is correct.</val>
-		<val lang="fr_FR">The domain name does not exist. This means that the hostname presented in the URL cannot be resolved. Check if the address is correct.</val>
-		<val lang="ja_JP">The domain name does not exist. This means that the hostname presented in the URL cannot be resolved. Check if the address is correct.</val>
-		<val lang="nl_NL">The domain name does not exist. This means that the hostname presented in the URL cannot be resolved. Check if the address is correct.</val>
-		<val lang="zh_CN">The domain name does not exist. This means that the hostname presented in the URL cannot be resolved. Check if the address is correct.</val>
+	<key value="Transport_Exception_Possible_Causes">
+		<comment>Error message for a transport exception.</comment>
+		<val lang="en_US">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="de_DE">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="fr_FR">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="ja_JP">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="nl_NL">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="zh_CN">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
 	</key>
 	<key value="End_Push_Validation_Progress">
 		<comment>End the push validation progress.</comment>
