@@ -180,6 +180,10 @@ public class Icons {
    * Stash icon.
    */
   public static final String STASH_ICON = "/images/GitStash16.png";
+  /**
+   * Info small icon.
+   */
+  public static final String INFO_SMALL_ICON = "/images/Info12.png";
   
   /**
    * Get icon.
