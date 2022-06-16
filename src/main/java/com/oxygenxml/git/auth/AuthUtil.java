@@ -61,7 +61,11 @@ public class AuthUtil {
    */
   public static final String AUTHENTICATION_NOT_SUPPORTED = "authentication not supported";
   
+  /**
+   * Git upload pack.
+   */
   public static final String GIT_UPLOAD_PACK = "git-upload-pack";
+  
   
   /**
    * Hidden constructor.
