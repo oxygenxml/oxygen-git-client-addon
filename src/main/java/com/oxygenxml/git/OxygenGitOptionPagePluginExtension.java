@@ -11,8 +11,11 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
 import javax.xml.bind.annotation.XmlEnum;
 
+import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
@@ -122,6 +125,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     
     // Repo detected in project settings
     GridBagConstraints constraints = new GridBagConstraints();
+    constraints.gridwidth = 2;
     constraints.gridx = 0;
     constraints.gridy = 0;
     constraints.weightx = 0;
@@ -206,14 +210,30 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         TRANSLATOR.getTranslation(Tags.VALIDATE_BEFORE_PUSH));
     mainPanel.add(validateBeforePush, constraints);
     
-    constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
     // Option to reject push when problems occurs
+    constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
     constraints.gridy ++;
     rejectPushOnValidationProblems = new JCheckBox(
         TRANSLATOR.getTranslation(Tags.REJECT_PUSH_ON_PROBLEMS));
     mainPanel.add(rejectPushOnValidationProblems, constraints);
     validateBeforePush.addItemListener(event -> 
     rejectPushOnValidationProblems.setEnabled(validateBeforePush.isSelected()));
+    
+    // Add information about pre-push validation
+    constraints.insets = new Insets(rejectPushOnValidationProblems.getInsets().top, NESTED_OPTION_INSET + 
+        rejectPushOnValidationProblems.getInsets().left, 0, UIConstants.COMPONENT_RIGHT_PADDING);
+    constraints.gridy ++;
+    constraints.gridwidth = 1;
+    constraints.anchor = GridBagConstraints.NORTHWEST;
+    mainPanel.add(new JLabel(Icons.getIcon(Icons.INFO_SMALL_ICON)), constraints);
+    final JTextArea prePushValidInfo = new JTextArea(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION_INFO));
+    prePushValidInfo.setLineWrap(true);
+    prePushValidInfo.setWrapStyleWord(true);
+    constraints.insets = new Insets(rejectPushOnValidationProblems.getInsets().top, 0, 0, 0);
+    constraints.gridx ++;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1;
+    mainPanel.add(prePushValidInfo, constraints);
   }
 
   /**
