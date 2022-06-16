@@ -1916,5 +1916,10 @@ public class Tags {
    */
   public static final String STASH_AND_CONTINUE = "Stash_And_Continue";
   
+  /**
+   * Informations about pre-push validation.
+   */
+  public static final String PRE_PUSH_VALIDATION_INFO = "PrePush_Validation_Info";
+  
 }
 

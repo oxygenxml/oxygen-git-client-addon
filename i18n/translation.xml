@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="PrePush_Validation_Info">
+		<comment>Informations about pre-push validation.</comment>
+		<val lang="en_US">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
+		<val lang="de_DE">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
+		<val lang="fr_FR">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
+		<val lang="ja_JP">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
+		<val lang="nl_NL">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
+		<val lang="zh_CN">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
+	</key>
 	<key value="Stash_And_Continue">
 		<comment>En: Stash and continue.</comment>
 		<val lang="en_US">Stash and continue</val>
