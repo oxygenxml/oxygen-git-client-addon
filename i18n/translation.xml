@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Main_Files_Support_Not_Enabled">
+		<comment>This message appears when Main files support is not enabled.</comment>
+		<val lang="en_US">For the current project, Main files support is not enabled or there are no files to validate. For push before validation to work optimally, Main Files support must be enabled and files must be added properly to the 'Main files' folder. A validation scenario should also be set up for them as the validation will be based on it.</val>
+		<val lang="de_DE">For the current project, Main files support is not enabled or there are no files to validate. For push before validation to work optimally, Main Files support must be enabled and files must be added properly to the 'Main files' folder. A validation scenario should also be set up for them as the validation will be based on it.</val>
+		<val lang="fr_FR">For the current project, Main files support is not enabled or there are no files to validate. For push before validation to work optimally, Main Files support must be enabled and files must be added properly to the 'Main files' folder. A validation scenario should also be set up for them as the validation will be based on it.</val>
+		<val lang="ja_JP">For the current project, Main files support is not enabled or there are no files to validate. For push before validation to work optimally, Main Files support must be enabled and files must be added properly to the 'Main files' folder. A validation scenario should also be set up for them as the validation will be based on it.</val>
+		<val lang="nl_NL">For the current project, Main files support is not enabled or there are no files to validate. For push before validation to work optimally, Main Files support must be enabled and files must be added properly to the 'Main files' folder. A validation scenario should also be set up for them as the validation will be based on it.</val>
+		<val lang="zh_CN">For the current project, Main files support is not enabled or there are no files to validate. For push before validation to work optimally, Main Files support must be enabled and files must be added properly to the 'Main files' folder. A validation scenario should also be set up for them as the validation will be based on it.</val>
+	</key>
 	<key value="PrePush_Validation_Info">
 		<comment>Informations about pre-push validation.</comment>
 		<val lang="en_US">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>

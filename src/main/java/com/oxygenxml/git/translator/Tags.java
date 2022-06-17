@@ -1921,5 +1921,10 @@ public class Tags {
    */
   public static final String PRE_PUSH_VALIDATION_INFO = "PrePush_Validation_Info";
   
+  /**
+   * This message appears when Main files support is not enabled.
+   */
+  public static final String MAIN_FILES_SUPPORT_NOT_ENABLED = "Main_Files_Support_Not_Enabled";
+  
 }
 
