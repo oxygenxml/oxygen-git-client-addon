@@ -138,6 +138,12 @@ public class PrePushValidation implements IPreOperationValidation {
       if(currentProjectURL == null ||!RepoUtil.isEqualsWithCurrentRepo(new File(currentProjectURL.toURI()))) {
         performPush = treatNotSameProjectCase(standalonePluginWorkspace);
       } 
+      
+      List<URL> mainFiles = null; 
+      if(performPush) {
+        mainFiles = checkMainFilesSupport();
+        performPush = !mainFiles.isEmpty();
+      }
 
       // treat case with validation could not be performed because there are uncommited changes.
       if(performPush && GitValidationUtil.hasUncommitedChanges(true)) { 
@@ -153,8 +159,7 @@ public class PrePushValidation implements IPreOperationValidation {
       }
 
       if(performPush) {
-        if(!validateMainFilesBeforePush(ImmutableList.copyOf(
-            OxygenAPIWrapper.getInstance().getMainFileResourcesIterator()))) {
+        if(!validateMainFilesBeforePush(mainFiles)) {
           performPush = showPushFilesProblems(MessageFormat.format(TRANSLATOR.getTranslation(
               stash.isPresent()? Tags.PUSH_VALIDATION_FAILED_WITH_STASH : Tags.PUSH_VALIDATION_FAILED), 
               TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION)));
@@ -176,6 +181,25 @@ public class PrePushValidation implements IPreOperationValidation {
     }
 
     return performPush;
+  }
+
+  /**
+   * Check if the main files support is enabled and configured.
+   * 
+   * @return The list of Main files for current project.
+   */
+  private List<URL> checkMainFilesSupport() {
+    final List<URL> mainFiles = ImmutableList.copyOf(
+        OxygenAPIWrapper.getInstance().getMainFileResourcesIterator());
+    if(mainFiles.isEmpty()) {
+      MessagePresenterProvider
+      .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
+      .setMessage(TRANSLATOR.getTranslation(Tags.MAIN_FILES_SUPPORT_NOT_ENABLED))
+      .setOkButtonVisible(false)
+      .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+      .buildAndShow();
+    }
+    return mainFiles;
   }
 
   /**
