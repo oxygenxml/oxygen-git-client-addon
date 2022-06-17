@@ -2,6 +2,9 @@ package com.oxygenxml.git.validation;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -130,10 +133,15 @@ public class PrePushValidationTest extends GitTestBase {
     
     pushOneFileToRemote(FIRST_LOCAL_TEST_REPOSITORY, "test_second_local.txt", "hellllo");
     flushAWT();
+    
+    List<URL> urls = new ArrayList<>();
+    urls.add(new File(FIRST_LOCAL_TEST_REPOSITORY).toURI().toURL());
+    OxygenAPIWrapper.getInstance().setCustomMainFiles(urls);
   }
   
   @Override
   public void tearDown() throws Exception {
+    OxygenAPIWrapper.getInstance().setCustomMainFiles(null);
     gitAccess.closeRepo();
     firstLocalRepo.close();
     remoteRepo.close();
@@ -673,4 +681,92 @@ public class PrePushValidationTest extends GitTestBase {
     assertFalse(dialogPresentedFlags[2]);
   }
 
+  /**
+   * <p><b>Description:</b> This test cover pre-push validation behavior for case when the Main files support is disabled or no files are in Main files.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-50660</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushValidationWhenNoMainFilesSupport() throws Exception {
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+    // Disable main files support
+    OxygenAPIWrapper.getInstance().setCustomMainFiles(null);
+    commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
+    StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final ProjectController projectController = Mockito.mock(ProjectController.class);
+    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
+        secondLocalRepo.getDirectory().toURI().toURL());
+    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        }); 
+
+    // Detects if the "Stash" button is available and the dialog is shows.
+    final boolean[] dialogPresentedFlags = new boolean[3];
+    dialogPresentedFlags[0] = false;
+    dialogPresentedFlags[1] = false;
+    dialogPresentedFlags[2] = false;
+
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_push", DialogType.ERROR) {
+     
+      @Override
+          public MessageDialogBuilder setMessage(String questionMessage) {
+            dialogPresentedFlags[2] |= Tags.MAIN_FILES_SUPPORT_NOT_ENABLED.equals(questionMessage);
+            return super.setQuestionMessage(questionMessage);
+          }
+      
+      @Override
+      public MessageDialogBuilder setCancelButtonName(String okButtonName) {
+        dialogPresentedFlags[1] |= Tags.CLOSE.equals(okButtonName);
+        return super.setOkButtonName(okButtonName);
+      }
+
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogPresentedFlags[0] = true;
+        return dialog;
+      }
+    });
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
+    assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
+    assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
+    assertFalse(ValidationManager.getInstance().checkPushValid());
+    assertTrue(dialogPresentedFlags[0]);
+    assertTrue(dialogPresentedFlags[1]);
+    assertTrue(dialogPresentedFlags[2]);
+  }
+  
 }
