@@ -2,12 +2,15 @@ package com.oxygenxml.git.view.dialog.internal;
 
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * Contains necessary information for a @MessageDialog construction.
  * 
  * @author alex_smarandache
  *
  */
+ @VisibleForTesting
  public class DialogInfo {
  
   /**
@@ -54,4 +57,21 @@ import java.util.List;
    * <code>True</code> if "Cancel" button should be visible.
    */
   boolean showCancelButton = true;
+
+  @Override
+  public String toString() {
+    final StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("title = ").append(title).append('\n')
+    .append("iconPath = ").append(iconPath).append('\n')
+    .append("targetFiles = ").append(targetFiles).append('\n')
+    .append("message = ").append(message).append('\n')
+    .append("questionMessage = ").append(questionMessage).append('\n')
+    .append("okButtonName = ").append(okButtonName).append('\n')
+    .append("cancelButtonName = ").append(cancelButtonName).append('\n')
+    .append("showOkButton = ").append(showOkButton).append('\n')
+    .append("showCancelButton = ").append(showCancelButton);
+    
+    return strBuilder.toString();
+  }
+   
 }

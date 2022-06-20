@@ -68,6 +68,11 @@ public class MessageDialog extends OKCancelDialog {
   public static final int WARN_MESSAGE_DLG_MINIMUM_HEIGHT = 150;
   
   /**
+   * String value for this class.
+   */
+  private final String toStringValue;
+  
+  /**
    * Document with custom wrapping.
    */
   public static class CustomWrapDocument extends DefaultStyledDocument {
@@ -113,6 +118,7 @@ public class MessageDialog extends OKCancelDialog {
             (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
             info.title,
         true);
+    toStringValue = info.toString();
     createUI(info);
   }
 
@@ -230,6 +236,11 @@ public class MessageDialog extends OKCancelDialog {
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }  
+  }
+ 
+  @Override
+  public String toString() {
+    return toStringValue;
   }
   
 }

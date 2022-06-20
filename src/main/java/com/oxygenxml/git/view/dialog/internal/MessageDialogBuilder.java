@@ -15,7 +15,7 @@ public class MessageDialogBuilder {
   /**
    * Contains informations about the future dialog that will be created.
    */
-  private DialogInfo dialogInfo;
+  protected DialogInfo dialogInfo;
   
   
   /**
