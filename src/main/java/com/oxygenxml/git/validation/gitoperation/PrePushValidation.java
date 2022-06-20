@@ -4,11 +4,13 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -29,6 +31,7 @@ import com.oxygenxml.git.validation.internal.IValidator;
 import com.oxygenxml.git.validation.internal.ValidationListenersManager;
 import com.oxygenxml.git.validation.internal.ValidationOperationInfo;
 import com.oxygenxml.git.validation.internal.ValidationOperationType;
+import com.oxygenxml.git.validation.internal.exception.MainFilesNotAvailableException;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 
@@ -138,11 +141,9 @@ public class PrePushValidation implements IPreOperationValidation {
       if(currentProjectURL == null ||!RepoUtil.isEqualsWithCurrentRepo(new File(currentProjectURL.toURI()))) {
         performPush = treatNotSameProjectCase(standalonePluginWorkspace);
       } 
-      
-      List<URL> mainFiles = null; 
+      final List<URL> mainFiles = new ArrayList<>(); 
       if(performPush) {
-        mainFiles = checkMainFilesSupport();
-        performPush = !mainFiles.isEmpty();
+        performPush = tryToAddMainFiles(mainFiles); 
       }
 
       // treat case with validation could not be performed because there are uncommited changes.
@@ -163,7 +164,7 @@ public class PrePushValidation implements IPreOperationValidation {
           performPush = showPushFilesProblems(MessageFormat.format(TRANSLATOR.getTranslation(
               stash.isPresent()? Tags.PUSH_VALIDATION_FAILED_WITH_STASH : Tags.PUSH_VALIDATION_FAILED), 
               TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION)));
-              
+
           stash = Optional.empty(); // don't apply the stash if problems were found
         }
         listenersManager.ifPresent(listeners -> listeners.notifyListenersAboutFinishedOperation(
@@ -184,20 +185,42 @@ public class PrePushValidation implements IPreOperationValidation {
   }
 
   /**
-   * Check if the main files support is enabled and configured.
+   * If the current project has Main files, this method will only collect then into the given list.
+   * Else, a dialog box will be displayed to treat some exception that occur.
+   *  
+   * @param mainFiles The list to add the main files.
    * 
-   * @return The list of Main files for current project.
+   * @return <code>true</code> if the current project has at least one Main file, <code>false</code> otherwise.
    */
-  private List<URL> checkMainFilesSupport() {
-    final List<URL> mainFiles = ImmutableList.copyOf(
-        OxygenAPIWrapper.getInstance().getMainFileResourcesIterator());
-    if(mainFiles.isEmpty()) {
+  private boolean tryToAddMainFiles(@NonNull final List<URL> mainFiles) {
+    boolean performPush = true;
+    try {
+      mainFiles.addAll(getMainFiles());
+    } catch (MainFilesNotAvailableException e) {
+      performPush = false;
       MessagePresenterProvider
       .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
-      .setMessage(TRANSLATOR.getTranslation(Tags.MAIN_FILES_SUPPORT_NOT_ENABLED))
+      .setMessage(e.getMessage())
       .setOkButtonVisible(false)
       .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
       .buildAndShow();
+    }
+    
+    return performPush;
+  }
+
+  /**
+   * Get the Main files for current project.
+   * 
+   * @return The list of Main files for current project.
+   * 
+   * @throws MainFilesNotAvailableException  When the project has no Main files.
+   */
+  private List<URL> getMainFiles() throws MainFilesNotAvailableException {
+    final List<URL> mainFiles = ImmutableList.copyOf(
+        OxygenAPIWrapper.getInstance().getMainFileResourcesIterator());
+    if(mainFiles.isEmpty()) {
+      throw new MainFilesNotAvailableException();
     }
     return mainFiles;
   }
