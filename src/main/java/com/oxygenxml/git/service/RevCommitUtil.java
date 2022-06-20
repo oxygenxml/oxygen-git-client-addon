@@ -48,6 +48,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.RenameTracker;

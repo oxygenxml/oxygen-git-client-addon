@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 
 /**
  * A script for creating/changing a Git repository. 

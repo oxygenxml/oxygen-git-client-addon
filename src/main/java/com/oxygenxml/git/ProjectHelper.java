@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;

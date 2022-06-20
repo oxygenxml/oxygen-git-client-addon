@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
 import com.oxygenxml.git.view.event.PullType;
 
 public class GitAccessPushTest extends GitTestBase {

@@ -12,6 +12,7 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.transport.URIish;
 import org.mockito.Mockito;
 
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;

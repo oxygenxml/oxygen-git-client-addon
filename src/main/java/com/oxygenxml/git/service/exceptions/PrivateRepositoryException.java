@@ -1,4 +1,4 @@
-package com.oxygenxml.git.service;
+package com.oxygenxml.git.service.exceptions;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;

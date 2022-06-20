@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.RepoNotInitializedException;
+import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;

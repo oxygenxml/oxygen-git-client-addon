@@ -15,7 +15,7 @@ import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.HistoryController;

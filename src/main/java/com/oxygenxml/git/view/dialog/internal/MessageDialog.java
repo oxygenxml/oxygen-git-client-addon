@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

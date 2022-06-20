@@ -43,7 +43,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 

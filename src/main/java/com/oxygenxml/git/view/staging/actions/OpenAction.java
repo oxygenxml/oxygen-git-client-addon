@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.tags.CreateTagDialog;

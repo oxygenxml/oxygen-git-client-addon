@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

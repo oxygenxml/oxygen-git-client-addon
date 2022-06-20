@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.validation.OxygenAPIWrapper;
 

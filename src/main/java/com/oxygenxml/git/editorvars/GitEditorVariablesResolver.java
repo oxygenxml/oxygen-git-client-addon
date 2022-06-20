@@ -18,7 +18,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitEventInfo;

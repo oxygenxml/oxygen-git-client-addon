@@ -16,7 +16,7 @@ import com.google.common.collect.Sets;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.actions.internal.CloneRepositoryAction;

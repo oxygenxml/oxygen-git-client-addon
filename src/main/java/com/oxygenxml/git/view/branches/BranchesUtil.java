@@ -15,7 +15,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;

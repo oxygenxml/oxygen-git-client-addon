@@ -67,6 +67,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;

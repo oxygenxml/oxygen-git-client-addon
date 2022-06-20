@@ -21,7 +21,7 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 
 /**
  * Used for working with GitTags

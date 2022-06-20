@@ -1,4 +1,4 @@
-package com.oxygenxml.git.service;
+package com.oxygenxml.git.service.exceptions;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package com.oxygenxml.git.view.util;
 
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 
-import com.oxygenxml.git.service.NoChangesInSquashedCommitException;
+import com.oxygenxml.git.service.exceptions.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
