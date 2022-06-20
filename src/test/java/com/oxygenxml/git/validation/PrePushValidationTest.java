@@ -93,10 +93,6 @@ public class PrePushValidationTest extends GitTestBase {
   public void setUp() throws Exception {
     super.setUp();
     
-    final StandalonePluginWorkspace spw = 
-        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    Mockito.when(spw.getProjectManager()).thenReturn(Mockito.mock(ProjectController.class));
-    
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(REMOTE_TEST_REPOSITORY);
     remoteRepo = gitAccess.getRepository();
@@ -262,6 +258,7 @@ public class PrePushValidationTest extends GitTestBase {
     final ProjectController projectController = createProjectControllerForTest(
         repo.getDirectory().toURI().toURL(), mainFilesURL.iterator());
     Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    OxygenAPIWrapper.clearInstance();
   }
 
 
@@ -278,6 +275,7 @@ public class PrePushValidationTest extends GitTestBase {
    */ 
   @Test
   public void testOxygenAPIWrapper() throws Exception {
+    OxygenAPIWrapper.clearInstance();
     assertFalse("The classes marked with @see must be refactorized because the API is already available.", 
         OxygenAPIWrapper.getInstance().isAvailable());
   }

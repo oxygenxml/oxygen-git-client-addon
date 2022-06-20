@@ -4,11 +4,14 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jgit.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.oxygenxml.git.service.annotation.TestOnly;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -19,7 +22,6 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
 /**
  * This class is a wrapper for some Oxygen APIs extracted using reflexion.
  * 
- * TODO Replace this class with real APIs when Oxygen 25 will be the minimum version needed to run latest Git Client.
  * 
  * @author alex_smarandache
  *
@@ -51,6 +53,12 @@ public class OxygenAPIWrapper {
    */
   private Optional<Method> getContentTypeMethod = Optional.empty();
   
+  /**
+   * An internal instance used for tests. 
+   */
+  @TestOnly
+  private static OxygenAPIWrapper testInstance = null;
+  
 
   /**
    * Helper class to manage the singleton instance.
@@ -67,7 +75,7 @@ public class OxygenAPIWrapper {
    * @return The instance.
    */
   public static OxygenAPIWrapper getInstance() {
-    return SingletonHelper.INSTANCE;
+    return Objects.isNull(testInstance) ? SingletonHelper.INSTANCE : testInstance;
   }
 
   /**
@@ -141,6 +149,14 @@ public class OxygenAPIWrapper {
     final Object invokeResult =  getContentTypeMethod.get().invoke(utilAccess, systemID);
     return Optional.ofNullable(invokeResult).filter(
         val -> val.getClass().isAssignableFrom(String.class)).map(String.class::cast).orElse(null);
+  }
+  
+  /**
+   * Reset the current instance.
+   */
+  @TestOnly
+  public static void clearInstance() {
+    testInstance = new OxygenAPIWrapper();
   }
   
 }
