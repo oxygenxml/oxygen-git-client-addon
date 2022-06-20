@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -141,9 +140,11 @@ public class PrePushValidation implements IPreOperationValidation {
       if(currentProjectURL == null ||!RepoUtil.isEqualsWithCurrentRepo(new File(currentProjectURL.toURI()))) {
         performPush = treatNotSameProjectCase(standalonePluginWorkspace);
       } 
-      final List<URL> mainFiles = new ArrayList<>(); 
+      List<URL> mainFiles = new ArrayList<>(); 
+      
       if(performPush) {
-        performPush = tryToAddMainFiles(mainFiles); 
+        mainFiles = computeMainFiles(); 
+        performPush = !mainFiles.isEmpty();
       }
 
       // treat case with validation could not be performed because there are uncommited changes.
@@ -187,17 +188,14 @@ public class PrePushValidation implements IPreOperationValidation {
   /**
    * If the current project has Main files, this method will only collect then into the given list.
    * Else, a dialog box will be displayed to treat some exception that occur.
-   *  
-   * @param mainFiles The list to add the main files.
    * 
-   * @return <code>true</code> if the current project has at least one Main file, <code>false</code> otherwise.
+   * @return The list with current project's Main files or an empty list if there are no Main files.
    */
-  private boolean tryToAddMainFiles(@NonNull final List<URL> mainFiles) {
-    boolean performPush = true;
+  private List<URL> computeMainFiles() {
+    List<URL> mainFiles = new ArrayList<>();
     try {
-      mainFiles.addAll(getMainFiles());
+      mainFiles = getMainFiles();
     } catch (MainFilesNotAvailableException e) {
-      performPush = false;
       MessagePresenterProvider
       .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
       .setMessage(e.getMessage())
@@ -206,7 +204,7 @@ public class PrePushValidation implements IPreOperationValidation {
       .buildAndShow();
     }
     
-    return performPush;
+    return mainFiles;
   }
 
   /**

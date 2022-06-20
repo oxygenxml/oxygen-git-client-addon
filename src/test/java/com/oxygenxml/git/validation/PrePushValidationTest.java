@@ -258,7 +258,7 @@ public class PrePushValidationTest extends GitTestBase {
     final ProjectController projectController = createProjectControllerForTest(
         repo.getDirectory().toURI().toURL(), mainFilesURL.iterator());
     Mockito.when(spw.getProjectManager()).thenReturn(projectController);
-    OxygenAPIWrapper.clearInstance();
+    OxygenAPIWrapper.createNewInstance();
   }
 
 
@@ -275,7 +275,7 @@ public class PrePushValidationTest extends GitTestBase {
    */ 
   @Test
   public void testOxygenAPIWrapper() throws Exception {
-    OxygenAPIWrapper.clearInstance();
+    OxygenAPIWrapper.createNewInstance();
     assertFalse("The classes marked with @see must be refactorized because the API is already available.", 
         OxygenAPIWrapper.getInstance().isAvailable());
   }
@@ -756,14 +756,12 @@ public class PrePushValidationTest extends GitTestBase {
 
       @Override
       public void addProjectChangeListener(ProjectChangeListener projectChangeListener) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
       public void removeProjectChangeListener(ProjectChangeListener projectChangeListener) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
@@ -773,54 +771,54 @@ public class PrePushValidationTest extends GitTestBase {
 
       @Override
       public void addPopUpMenuCustomizer(ProjectPopupMenuCustomizer popUpCustomizer) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
       public void removePopUpMenuCustomizer(ProjectPopupMenuCustomizer popUpCustomizer) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
       public File[] getSelectedFiles() {
-        // TODO Auto-generated method stub
         return null;
       }
 
       @Override
       public void refreshFolders(File[] folders) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
       public void addLinksToFoldersInProjectRoot(File[] folders) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
       public void addRendererCustomizer(ProjectRendererCustomizer rendererCustomizer) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
       public void removeRendererCustomizer(ProjectRendererCustomizer rendererCustomizer) {
-        // TODO Auto-generated method stub
-
+        // Not needed.
       }
 
       @Override
       public void loadProject(File project) {
-        // TODO Auto-generated method stub
+        // Not needed.
       }
 
+      /**
+       * This method is created to perform a successfully extraction on @OxygenAPIWrapper.
+       * This method is available from Oxygen 25.
+       * 
+       * @return The main files iterator.
+       */
       public Iterator<URL> getMainFileResourcesIterator() {
         return mainFilesIterator;
       }
     };
+    
   }
 }

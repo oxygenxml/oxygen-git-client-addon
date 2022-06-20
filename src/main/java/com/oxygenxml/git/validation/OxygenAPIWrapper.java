@@ -155,7 +155,7 @@ public class OxygenAPIWrapper {
    * Reset the current instance.
    */
   @TestOnly
-  public static void clearInstance() {
+  public static void createNewInstance() {
     testInstance = new OxygenAPIWrapper();
   }
   

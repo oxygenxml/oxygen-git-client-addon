@@ -70,7 +70,7 @@ public class MessageDialog extends OKCancelDialog {
   /**
    * String value for this class.
    */
-  private final String toStringValue;
+  private final DialogInfo info;
   
   /**
    * Document with custom wrapping.
@@ -118,8 +118,8 @@ public class MessageDialog extends OKCancelDialog {
             (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
             info.title,
         true);
-    toStringValue = info.toString();
-    createUI(info);
+    this.info = info;
+    createUI();
   }
 
   /**
@@ -127,7 +127,7 @@ public class MessageDialog extends OKCancelDialog {
    * 
    * @param info The dialog informations. 
    */
-  private void createUI(final DialogInfo info) {
+  private void createUI() {
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
     // Icon
@@ -240,7 +240,7 @@ public class MessageDialog extends OKCancelDialog {
  
   @Override
   public String toString() {
-    return toStringValue;
+    return info.toString();
   }
   
 }

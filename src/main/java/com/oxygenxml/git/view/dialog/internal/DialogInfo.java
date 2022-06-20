@@ -2,15 +2,12 @@ package com.oxygenxml.git.view.dialog.internal;
 
 import java.util.List;
 
-import com.google.common.annotations.VisibleForTesting;
-
 /**
  * Contains necessary information for a @MessageDialog construction.
  * 
  * @author alex_smarandache
  *
  */
- @VisibleForTesting
  public class DialogInfo {
  
   /**
