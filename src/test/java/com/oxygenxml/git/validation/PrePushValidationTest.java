@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -25,7 +26,6 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
 import com.oxygenxml.git.validation.internal.FilesValidator;
 import com.oxygenxml.git.validation.internal.ICollector;
@@ -87,16 +87,16 @@ public class PrePushValidationTest extends GitTestBase {
    * The git access.
    */
   private GitAccess gitAccess;
-  
-  /**
-   * The old project controller.
-   */
-  private ProjectController pc;
+
 
   @Override
   public void setUp() throws Exception {
     super.setUp();
-
+    
+    final StandalonePluginWorkspace spw = 
+        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    Mockito.when(spw.getProjectManager()).thenReturn(Mockito.mock(ProjectController.class));
+    
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(REMOTE_TEST_REPOSITORY);
     remoteRepo = gitAccess.getRepository();
@@ -113,7 +113,7 @@ public class PrePushValidationTest extends GitTestBase {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
+
     StoredConfig config = firstLocalRepo.getConfig();
     RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
     URIish uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
@@ -122,38 +122,32 @@ public class PrePushValidationTest extends GitTestBase {
     remoteConfig.addFetchRefSpec(spec);
     remoteConfig.update(config);
     config.save();
-    
+
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
     File local1File = new File(REMOTE_TEST_REPOSITORY, "test1.txt");
     local1File.createNewFile();
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test1.txt"));
     gitAccess.commit("First");
- 
+
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITORY);
     pull("", "", PullType.MERGE_FF, false);
-    
+
     String branchName = GitAccess.DEFAULT_BRANCH_NAME;
     String remoteName = "origin";
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
     config.save();
-   
+
     bindLocalToRemote(firstLocalRepo , remoteRepo);
     sleep(500);
-    
+
     pushOneFileToRemote(FIRST_LOCAL_TEST_REPOSITORY, "test_second_local.txt", "hellllo");
     flushAWT();
-
-    final StandalonePluginWorkspace spw = 
-        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    pc = spw.getProjectManager();
+    
   }
-  
+
   @Override
   public void tearDown() throws Exception {
-    final StandalonePluginWorkspace spw = 
-        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    Mockito.when(spw.getProjectManager()).thenReturn(pc);
     gitAccess.closeRepo();
     firstLocalRepo.close();
     remoteRepo.close();
@@ -168,10 +162,10 @@ public class PrePushValidationTest extends GitTestBase {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
+
     super.tearDown();
   }
-  
+
   /**
    * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
    * is enabled and the push should not be rejected on validation problem.</p>
@@ -185,35 +179,27 @@ public class PrePushValidationTest extends GitTestBase {
   public void testPrePushValidationWhenPushIsNotRejected() throws Exception {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
-    
+
     initProjectController(FIRST_LOCAL_TEST_REPOSITORY, firstLocalRepo);
-    
+
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
     final MessageDialog dialog = Mockito.mock(MessageDialog.class);
     Mockito.when(dialog.getResult()).then((Answer<Integer>) 
-      invocation -> {
-        return dialogResult[0];
-      }); 
+        invocation -> {
+          return dialogResult[0];
+        }); 
 
     // Detects if the "Push anyway" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[2];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
+    final String dialogToString[] = new String[1];
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_push", DialogType.ERROR) {
 
       @Override
-      public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] = Tags.PUSH_ANYWAY.equals(okButtonName);
-        return super.setOkButtonName(okButtonName);
-      }
-
-      @Override
       public MessageDialog buildAndShow() {
-        dialogPresentedFlags[0] = true;
+        dialogToString[0] = dialogInfo.toString();
         return dialog;
       }
     });
@@ -243,12 +229,20 @@ public class PrePushValidationTest extends GitTestBase {
     ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(validator, null));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-   
+
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
-    assertTrue(dialogPresentedFlags[0]);
-    assertTrue(dialogPresentedFlags[1]);
+    final String expectedDialog = "title = Pre_Push_Validation\n" + 
+        "iconPath = /images/Warning32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = Failed_Push_Validation_Message_With_Stash\n" + 
+        "questionMessage = Push_Validation_Uncommited_Changes\n" + 
+        "okButtonName = Push_Anyway\n" + 
+        "cancelButtonName = Cancel\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = true";
+    assertEquals(expectedDialog, dialogToString[0]);
   }
 
   /**
@@ -269,7 +263,7 @@ public class PrePushValidationTest extends GitTestBase {
         repo.getDirectory().toURI().toURL(), mainFilesURL.iterator());
     Mockito.when(spw.getProjectManager()).thenReturn(projectController);
   }
-  
+
 
   /**
    * <p><b>Description:</b> @OxygenAPIWrapper usefully only when the getMainFiles is not accessible.</p>
@@ -284,8 +278,8 @@ public class PrePushValidationTest extends GitTestBase {
    */ 
   @Test
   public void testOxygenAPIWrapper() throws Exception {
-     assertFalse("The classes marked with @see must be refactorized because the API is already available.", 
-         OxygenAPIWrapper.getInstance().isAvailable());
+    assertFalse("The classes marked with @see must be refactorized because the API is already available.", 
+        OxygenAPIWrapper.getInstance().isAvailable());
   }
 
   /**
@@ -335,7 +329,7 @@ public class PrePushValidationTest extends GitTestBase {
         remoteRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"));
 
   }
-  
+
   /**
    * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
    * is enabled and the push should be rejected on validation problem.</p>
@@ -349,9 +343,9 @@ public class PrePushValidationTest extends GitTestBase {
   public void testPrePushValidationWhenPushIsRejected() throws Exception {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(true);
-    
+
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
-    
+
     final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     final ProjectController projectController = Mockito.mock(ProjectController.class);
     Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
@@ -367,22 +361,14 @@ public class PrePushValidationTest extends GitTestBase {
         }); 
 
     // Detects if the "Push anyway" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[2];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
+    final String dialogToString[] = new String[1];
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_push", DialogType.ERROR) {
 
       @Override
-      public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] = Tags.PUSH_ANYWAY.equals(okButtonName);
-        return super.setOkButtonName(okButtonName);
-      }
-
-      @Override
       public MessageDialog buildAndShow() {
-        dialogPresentedFlags[0] = true;
+        dialogToString[0] = dialogInfo.toString();
         return dialog;
       }
     });
@@ -408,18 +394,26 @@ public class PrePushValidationTest extends GitTestBase {
         invocation -> {
           return collector;
         });
-    
+
     ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
         validator, null));
-   
+
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertFalse(ValidationManager.getInstance().checkPushValid());
-    assertTrue(dialogPresentedFlags[0]);
-    assertFalse(dialogPresentedFlags[1]);
+    final String expectedDialog = "title = Pre_Push_Validation\n" + 
+        "iconPath = /images/Error32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = Main_Files_Support_Not_Enabled\n" + 
+        "questionMessage = null\n" + 
+        "okButtonName = null\n" + 
+        "cancelButtonName = Close\n" + 
+        "showOkButton = false\n" + 
+        "showCancelButton = true";
+    assertEquals(expectedDialog, dialogToString[0]);
   }
-  
-  
+
+
   /**
    * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
    * is enabled and the push should not be rejected on validation problem and the not same project is loaded 
@@ -437,7 +431,7 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
 
     initProjectController(SECOND_LOCAL_TEST_REPOSITORY, secondLocalRepo);
- 
+
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
@@ -448,30 +442,16 @@ public class PrePushValidationTest extends GitTestBase {
         }); 
 
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
-    // Detects if the "Push anyway" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[3];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
-    dialogPresentedFlags[2] = false;
 
+    // Detects if the "Push anyway" button is available and the dialog is shows.
+    final String dialogToString[] = new String[1];
+    
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_push", DialogType.ERROR) {
 
       @Override
-      public MessageDialogBuilder setQuestionMessage(String questionMessage) {
-        dialogPresentedFlags[2] |= Tags.NOT_SAME_PROJECT_MESSAGE.equals(questionMessage);
-        return super.setQuestionMessage(questionMessage);
-      }
-
-      @Override
-      public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] |= Tags.LOAD.equals(okButtonName);
-        return super.setOkButtonName(okButtonName);
-      }
-
-      @Override
       public MessageDialog buildAndShow() {
-        dialogPresentedFlags[0] = true;
+        dialogToString[0] = dialogInfo.toString();
         return dialog;
       }
     });
@@ -500,15 +480,22 @@ public class PrePushValidationTest extends GitTestBase {
 
     ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
         validator, null));
-    
+
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
-    assertTrue(dialogPresentedFlags[0]);
-    assertTrue(dialogPresentedFlags[1]);
-    assertTrue(dialogPresentedFlags[2]);
+    final String expectedDialog = "title = Pre_Push_Validation\n" + 
+        "iconPath = /images/Warning32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = null\n" + 
+        "questionMessage = Push_Validation_Uncommited_Changes\n" + 
+        "okButtonName = Stash_And_Continue\n" + 
+        "cancelButtonName = null\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = true";
+    assertEquals(expectedDialog, dialogToString[0]);
   }
-  
+
   /**
    * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
    * is enabled and the push should not be rejected on validation problem and there are uncommited changes</p>
@@ -523,9 +510,9 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
-   
+
     initProjectController(SECOND_LOCAL_TEST_REPOSITORY, secondLocalRepo);
-    
+
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
@@ -535,30 +522,14 @@ public class PrePushValidationTest extends GitTestBase {
           return dialogResult[0];
         }); 
 
-    // Detects if the "Stash" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[3];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
-    dialogPresentedFlags[2] = false;
+    final String dialogToString[] = new String[1];
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_push", DialogType.ERROR) {
-     
-      @Override
-          public MessageDialogBuilder setQuestionMessage(String questionMessage) {
-            dialogPresentedFlags[2] |= Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES.equals(questionMessage);
-            return super.setQuestionMessage(questionMessage);
-          }
-      
-      @Override
-      public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] |= Tags.STASH_AND_CONTINUE.equals(okButtonName);
-        return super.setOkButtonName(okButtonName);
-      }
 
       @Override
       public MessageDialog buildAndShow() {
-        dialogPresentedFlags[0] = true;
+        dialogToString[0] = dialogInfo.toString();
         return dialog;
       }
     });
@@ -590,11 +561,18 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(gitAccess.hasFilesChanged());
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
-    assertTrue(dialogPresentedFlags[0]);
-    assertTrue(dialogPresentedFlags[1]);
-    assertTrue(dialogPresentedFlags[2]);
+    final String expectedDialog = "title = Pre_Push_Validation\n" + 
+        "iconPath = /images/Warning32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = null\n" + 
+        "questionMessage = Push_Validation_Uncommited_Changes\n" + 
+        "okButtonName = Stash_And_Continue\n" + 
+        "cancelButtonName = null\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = true";
+    assertEquals(expectedDialog, dialogToString[0]);
   }
-  
+
   /**
    * <p><b>Description:</b> Tests the default options for pre-push validation.</p>
    * 
@@ -622,7 +600,7 @@ public class PrePushValidationTest extends GitTestBase {
   public void testPrePushValidationWhenNoPushesAhead() throws Exception {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
-    
+
     StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     final ProjectController projectController = Mockito.mock(ProjectController.class);
     Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
@@ -637,32 +615,17 @@ public class PrePushValidationTest extends GitTestBase {
           return dialogResult[0];
         }); 
 
-    // Detects if the "Stash" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[3];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
-    dialogPresentedFlags[2] = false;
+    final String dialogToString[] = new String[1];
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_push", DialogType.ERROR) {
-     
-      @Override
-          public MessageDialogBuilder setQuestionMessage(String questionMessage) {
-            dialogPresentedFlags[2] |= Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES.equals(questionMessage);
-            return super.setQuestionMessage(questionMessage);
-          }
-      
-      @Override
-      public MessageDialogBuilder setOkButtonName(String okButtonName) {
-        dialogPresentedFlags[1] |= Tags.STASH.equals(okButtonName);
-        return super.setOkButtonName(okButtonName);
-      }
 
       @Override
       public MessageDialog buildAndShow() {
-        dialogPresentedFlags[0] = true;
+        dialogToString[0] = dialogInfo.toString();
         return dialog;
       }
+
     });
 
     // Create a custom collector constructed to behave as if it contains validation problems
@@ -698,9 +661,7 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertFalse(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
-    assertFalse(dialogPresentedFlags[0]);
-    assertFalse(dialogPresentedFlags[1]);
-    assertFalse(dialogPresentedFlags[2]);
+    assertNull(dialogToString[0]); // The validation will be not started and no dialog occur.
   }
 
   /**
@@ -723,7 +684,7 @@ public class PrePushValidationTest extends GitTestBase {
     final ProjectController projectController = createProjectControllerForTest(
         firstLocalRepo.getDirectory().toURI().toURL(), new ArrayList<URL>().iterator());
     Mockito.when(spw.getProjectManager()).thenReturn(projectController);
-    
+
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
@@ -733,30 +694,14 @@ public class PrePushValidationTest extends GitTestBase {
           return dialogResult[0];
         }); 
 
-    // Detects if the "Stash" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[3];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
-    dialogPresentedFlags[2] = false;
+    final String dialogToString[] = new String[1];
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_push", DialogType.ERROR) {
-     
-      @Override
-          public MessageDialogBuilder setMessage(String questionMessage) {
-            dialogPresentedFlags[2] |= Tags.MAIN_FILES_SUPPORT_NOT_ENABLED.equals(questionMessage);
-            return super.setQuestionMessage(questionMessage);
-          }
-      
-      @Override
-      public MessageDialogBuilder setCancelButtonName(String okButtonName) {
-        dialogPresentedFlags[1] |= Tags.CLOSE.equals(okButtonName);
-        return super.setOkButtonName(okButtonName);
-      }
 
       @Override
       public MessageDialog buildAndShow() {
-        dialogPresentedFlags[0] = true;
+        dialogToString[0] = dialogInfo.toString();
         return dialog;
       }
     });
@@ -787,25 +732,40 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertFalse(ValidationManager.getInstance().checkPushValid());
-    assertTrue(dialogPresentedFlags[0]);
-    assertTrue(dialogPresentedFlags[1]);
-    assertTrue(dialogPresentedFlags[2]);
+    final String expectedDialog = "title = Pre_Push_Validation\n" + 
+        "iconPath = /images/Error32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = Main_Files_Support_Not_Enabled\n" + 
+        "questionMessage = null\n" + 
+        "okButtonName = null\n" + 
+        "cancelButtonName = Close\n" + 
+        "showOkButton = false\n" + 
+        "showCancelButton = true";
+    assertEquals(expectedDialog, dialogToString[0]);
   }
-  
-  private ProjectController createProjectControllerForTest(final URL currentProjectURL, 
-      Iterator<URL> mainFilesIterator) {
+
+  /**
+   * Create a custom project controller used in tests.
+   * 
+   * @param currentProjectURL The current project URL.
+   * @param mainFilesIterator An iterator for Main files list. If there are no Main files, this iterator should be empty.
+   * 
+   * @return The created project controller.
+   */
+  private ProjectController createProjectControllerForTest(@NonNull final URL currentProjectURL, 
+      @NonNull final Iterator<URL> mainFilesIterator) {
     return new ProjectController() {
 
       @Override
       public void addProjectChangeListener(ProjectChangeListener projectChangeListener) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
       public void removeProjectChangeListener(ProjectChangeListener projectChangeListener) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
@@ -816,13 +776,13 @@ public class PrePushValidationTest extends GitTestBase {
       @Override
       public void addPopUpMenuCustomizer(ProjectPopupMenuCustomizer popUpCustomizer) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
       public void removePopUpMenuCustomizer(ProjectPopupMenuCustomizer popUpCustomizer) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
@@ -834,32 +794,32 @@ public class PrePushValidationTest extends GitTestBase {
       @Override
       public void refreshFolders(File[] folders) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
       public void addLinksToFoldersInProjectRoot(File[] folders) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
       public void addRendererCustomizer(ProjectRendererCustomizer rendererCustomizer) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
       public void removeRendererCustomizer(ProjectRendererCustomizer rendererCustomizer) {
         // TODO Auto-generated method stub
-        
+
       }
 
       @Override
       public void loadProject(File project) {
         // TODO Auto-generated method stub
       }
-      
+
       public Iterator<URL> getMainFileResourcesIterator() {
         return mainFilesIterator;
       }
