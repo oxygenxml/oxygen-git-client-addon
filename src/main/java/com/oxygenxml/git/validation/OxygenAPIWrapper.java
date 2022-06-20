@@ -4,15 +4,11 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jgit.annotations.NonNull;
-import org.eclipse.jgit.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.oxygenxml.git.service.annotation.TestOnly;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -55,11 +51,6 @@ public class OxygenAPIWrapper {
    */
   private Optional<Method> getContentTypeMethod = Optional.empty();
   
-  /**
-   * The list of main files.
-   */
-  @TestOnly
-  private List<URL> mainFiles = null;
 
   /**
    * Helper class to manage the singleton instance.
@@ -112,9 +103,6 @@ public class OxygenAPIWrapper {
    */
   @NonNull
   public Iterator<URL> getMainFileResourcesIterator() {
-    if(mainFiles != null) {
-      return mainFiles.iterator();
-    }
     if(getMainFilesMethod.isPresent()) {
       try {
         return (Iterator<URL>) getMainFilesMethod.get().invoke(projectController);
@@ -153,16 +141,6 @@ public class OxygenAPIWrapper {
     final Object invokeResult =  getContentTypeMethod.get().invoke(utilAccess, systemID);
     return Optional.ofNullable(invokeResult).filter(
         val -> val.getClass().isAssignableFrom(String.class)).map(String.class::cast).orElse(null);
-  }
-  
-  /**
-   * Set custom main files to be returned. Set <code>null</code> to reset the main files.
-   * 
-   * @param mainFiles The main files.
-   */
-  @TestOnly
-  public void setCustomMainFiles(@Nullable final List<URL> mainFiles) {
-    this.mainFiles = mainFiles;
   }
   
 }

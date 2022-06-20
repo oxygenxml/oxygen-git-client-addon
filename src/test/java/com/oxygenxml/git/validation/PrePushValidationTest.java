@@ -2,8 +2,10 @@ package com.oxygenxml.git.validation;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -37,7 +39,10 @@ import com.oxygenxml.git.view.event.PullType;
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectChangeListener;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.standalone.project.ProjectPopupMenuCustomizer;
+import ro.sync.exml.workspace.api.standalone.project.ProjectRendererCustomizer;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -82,6 +87,11 @@ public class PrePushValidationTest extends GitTestBase {
    * The git access.
    */
   private GitAccess gitAccess;
+  
+  /**
+   * The old project controller.
+   */
+  private ProjectController pc;
 
   @Override
   public void setUp() throws Exception {
@@ -133,20 +143,21 @@ public class PrePushValidationTest extends GitTestBase {
     
     pushOneFileToRemote(FIRST_LOCAL_TEST_REPOSITORY, "test_second_local.txt", "hellllo");
     flushAWT();
-    
-    List<URL> urls = new ArrayList<>();
-    urls.add(new File(FIRST_LOCAL_TEST_REPOSITORY).toURI().toURL());
-    OxygenAPIWrapper.getInstance().setCustomMainFiles(urls);
+
+    final StandalonePluginWorkspace spw = 
+        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    pc = spw.getProjectManager();
   }
   
   @Override
   public void tearDown() throws Exception {
-    OxygenAPIWrapper.getInstance().setCustomMainFiles(null);
+    final StandalonePluginWorkspace spw = 
+        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    Mockito.when(spw.getProjectManager()).thenReturn(pc);
     gitAccess.closeRepo();
     firstLocalRepo.close();
     remoteRepo.close();
     secondLocalRepo.close();
-    
     try {
       File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
       FileUtils.deleteDirectory(dirToDelete);
@@ -175,19 +186,16 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
     
-    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    final ProjectController projectController = Mockito.mock(ProjectController.class);
-    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
-        firstLocalRepo.getDirectory().toURI().toURL());
-    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    initProjectController(FIRST_LOCAL_TEST_REPOSITORY, firstLocalRepo);
+    
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
     final MessageDialog dialog = Mockito.mock(MessageDialog.class);
     Mockito.when(dialog.getResult()).then((Answer<Integer>) 
-        invocation -> {
-          return dialogResult[0];
-        }); 
+      invocation -> {
+        return dialogResult[0];
+      }); 
 
     // Detects if the "Push anyway" button is available and the dialog is shows.
     final boolean[] dialogPresentedFlags = new boolean[2];
@@ -241,6 +249,25 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(ValidationManager.getInstance().checkPushValid());
     assertTrue(dialogPresentedFlags[0]);
     assertTrue(dialogPresentedFlags[1]);
+  }
+
+  /**
+   * Initialize the project controller.
+   * 
+   * @param repoPath  The current repository project to be returned fot this controller.
+   * @param repo      The current repository.
+   * 
+   * @throws MalformedURLException
+   */
+  private void initProjectController(final String repoPath, 
+      final Repository repo) throws MalformedURLException {
+    // Configure the custom project controller.
+    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final List<URL> mainFilesURL = new ArrayList<>();
+    mainFilesURL.add(new File(repoPath).toURI().toURL());
+    final ProjectController projectController = createProjectControllerForTest(
+        repo.getDirectory().toURI().toURL(), mainFilesURL.iterator());
+    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
   }
   
 
@@ -409,11 +436,8 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
 
-    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    final ProjectController projectController = Mockito.mock(ProjectController.class);
-    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
-        secondLocalRepo.getDirectory().toURI().toURL());
-    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    initProjectController(SECOND_LOCAL_TEST_REPOSITORY, secondLocalRepo);
+ 
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
@@ -499,11 +523,9 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
-    StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    final ProjectController projectController = Mockito.mock(ProjectController.class);
-    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
-        secondLocalRepo.getDirectory().toURI().toURL());
-    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+   
+    initProjectController(SECOND_LOCAL_TEST_REPOSITORY, secondLocalRepo);
+    
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
@@ -694,13 +716,14 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
     // Disable main files support
-    OxygenAPIWrapper.getInstance().setCustomMainFiles(null);
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
-    StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    final ProjectController projectController = Mockito.mock(ProjectController.class);
-    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
-        secondLocalRepo.getDirectory().toURI().toURL());
+
+    // Configure the custom project controller.
+    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final ProjectController projectController = createProjectControllerForTest(
+        firstLocalRepo.getDirectory().toURI().toURL(), new ArrayList<URL>().iterator());
     Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+    
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_OK;
@@ -769,4 +792,77 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(dialogPresentedFlags[2]);
   }
   
+  private ProjectController createProjectControllerForTest(final URL currentProjectURL, 
+      Iterator<URL> mainFilesIterator) {
+    return new ProjectController() {
+
+      @Override
+      public void addProjectChangeListener(ProjectChangeListener projectChangeListener) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void removeProjectChangeListener(ProjectChangeListener projectChangeListener) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public URL getCurrentProjectURL() {
+        return currentProjectURL;
+      }
+
+      @Override
+      public void addPopUpMenuCustomizer(ProjectPopupMenuCustomizer popUpCustomizer) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void removePopUpMenuCustomizer(ProjectPopupMenuCustomizer popUpCustomizer) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public File[] getSelectedFiles() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public void refreshFolders(File[] folders) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void addLinksToFoldersInProjectRoot(File[] folders) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void addRendererCustomizer(ProjectRendererCustomizer rendererCustomizer) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void removeRendererCustomizer(ProjectRendererCustomizer rendererCustomizer) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void loadProject(File project) {
+        // TODO Auto-generated method stub
+      }
+      
+      public Iterator<URL> getMainFileResourcesIterator() {
+        return mainFilesIterator;
+      }
+    };
+  }
 }
