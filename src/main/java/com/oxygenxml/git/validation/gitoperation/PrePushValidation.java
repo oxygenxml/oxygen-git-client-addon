@@ -6,6 +6,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -192,7 +193,7 @@ public class PrePushValidation implements IPreOperationValidation {
    * @return The list with current project's Main files or an empty list if there are no Main files.
    */
   private List<URL> computeMainFiles() {
-    List<URL> mainFiles = new ArrayList<>();
+    List<URL> mainFiles = Collections.emptyList();
     try {
       mainFiles = getMainFiles();
     } catch (MainFilesNotAvailableException e) {
