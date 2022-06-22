@@ -178,7 +178,12 @@ public class CommitAndStatusPanel extends JPanel {
         stopTimer();
         handleCommitEnded(commitSuccessful);
         
-        if (commitSuccessful && autoPushWhenCommittingToggle.isSelected()) {
+        final boolean isPrePushValidationEnabled = ValidationManager.getInstance()
+            .isPrePushValidationEnabled();
+        if (commitSuccessful 
+            && autoPushWhenCommittingToggle.isSelected() &&
+            (!isPrePushValidationEnabled || ValidationManager.getInstance().checkPushValid())
+            ) {
           gitController.push();
         }
       }
