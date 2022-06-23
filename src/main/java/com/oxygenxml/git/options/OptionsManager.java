@@ -58,21 +58,30 @@ public class OptionsManager {
    */
   private Options options = null;
 
+  
   /**
-   * Singleton instance.
+   * Helper class to manage the singleton instance.
+   *
+   * @author Alex_Smarandache
    */
-  private static OptionsManager instance;
-
+  private static class SingletonHelper {
+    static final OptionsManager INSTANCE = new OptionsManager();
+  }
+  
   /**
-   * Gets the singleton instance
+   * The hidden constructor.
+   */
+  private OptionsManager() {
+    // not needed
+  }
+  
+  /**
+   * Gets the singleton instance.
    * 
-   * @return singleton instance
+   * @return The unique instance.
    */
-  public static synchronized OptionsManager getInstance() {
-    if (instance == null) {
-      instance = new OptionsManager();
-    }
-    return instance;
+  public static OptionsManager getInstance() {
+    return SingletonHelper.INSTANCE;
   }
 
   /**
