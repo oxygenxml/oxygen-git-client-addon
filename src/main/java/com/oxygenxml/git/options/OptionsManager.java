@@ -57,6 +57,11 @@ public class OptionsManager {
    * All Repositories that were selected by the user with their options
    */
   private Options options = null;
+  
+  /**
+   * The unique instance.
+   */
+  private static OptionsManager instance;
 
   
   /**
@@ -81,7 +86,10 @@ public class OptionsManager {
    * @return The unique instance.
    */
   public static OptionsManager getInstance() {
-    return SingletonHelper.INSTANCE;
+    if(instance == null) {
+      instance = SingletonHelper.INSTANCE;
+    }
+    return instance;
   }
 
   /**
