@@ -45,7 +45,10 @@ public class AutoCommitTest extends FlatViewTestBase {
    *
    * @throws Exception
    */
-  public void testAutoPushWhenCommit() throws Exception {
+  public void testAutoPushWhenCommit() throws Exception { 
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(false);
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+    
     String localTestRepository = "target/test-resources/testAutoPushWhenCommit_local";
     String remoteTestRepository = "target/test-resources/testAutoPushWhenCommit_remote";
     
