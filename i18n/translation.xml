@@ -16,12 +16,12 @@
 	</languageList>
 	<key value="PrePush_Validation_Info">
 		<comment>Informations about pre-push validation.</comment>
-		<val lang="en_US">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
-		<val lang="de_DE">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
-		<val lang="fr_FR">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
-		<val lang="ja_JP">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
-		<val lang="nl_NL">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
-		<val lang="zh_CN">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
+		<val lang="en_US">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="de_DE">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="fr_FR">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="ja_JP">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="nl_NL">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="zh_CN">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
 	</key>
 	<key value="Main_Files_Support_Not_Enabled">
 		<comment>This message appears when Main files support is not enabled.</comment>
