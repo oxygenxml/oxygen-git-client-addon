@@ -203,9 +203,7 @@ public class PreCommitValidationTest extends GitTestBase {
         }); 
 
     // Detects if the "Commit anyway" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[2];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
+    final boolean[] dialogPresentedFlags = { false, false };
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_precommit", DialogType.ERROR) {
@@ -300,10 +298,7 @@ public class PreCommitValidationTest extends GitTestBase {
         }); 
 
     // Detects if the "Commit anyway" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[3];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
-    dialogPresentedFlags[2] = false;
+    final boolean[] dialogPresentedFlags = { false, false, false };
 
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_precommit", DialogType.WARNING) {
@@ -397,10 +392,8 @@ public class PreCommitValidationTest extends GitTestBase {
         }); 
 
     // Detects if the "Commit anyway" button is available and the dialog is shows.
-    final boolean[] dialogPresentedFlags = new boolean[2];
-    dialogPresentedFlags[0] = false;
-    dialogPresentedFlags[1] = false;
-
+    final boolean[] dialogPresentedFlags = { false, false };
+    
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_precommit", DialogType.ERROR) {
 

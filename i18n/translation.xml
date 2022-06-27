@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="PrePush_Validation_Info">
+		<comment>Informations about pre-push validation.</comment>
+		<val lang="en_US">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
+		<val lang="de_DE">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
+		<val lang="fr_FR">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
+		<val lang="ja_JP">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
+		<val lang="nl_NL">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
+		<val lang="zh_CN">You need to have an Oxygen project loaded in the Git Staging view, this project must also be opened in the Project view and have the Main Files support enabled.</val>
+	</key>
 	<key value="Main_Files_Support_Not_Enabled">
 		<comment>This message appears when Main files support is not enabled.</comment>
 		<val lang="en_US">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
@@ -22,15 +31,6 @@
 		<val lang="ja_JP">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
 		<val lang="nl_NL">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
 		<val lang="zh_CN">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
-	</key>
-	<key value="PrePush_Validation_Info">
-		<comment>Informations about pre-push validation.</comment>
-		<val lang="en_US">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
-		<val lang="de_DE">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
-		<val lang="fr_FR">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
-		<val lang="ja_JP">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
-		<val lang="nl_NL">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
-		<val lang="zh_CN">You need to have an Oxygen project in the Git Repository, this project must be opened inside the Project view and Main files should be active in the project.</val>
 	</key>
 	<key value="Stash_And_Continue">
 		<comment>En: Stash and continue.</comment>
