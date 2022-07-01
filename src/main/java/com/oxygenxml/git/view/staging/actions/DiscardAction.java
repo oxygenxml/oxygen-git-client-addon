@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -82,38 +83,58 @@ public class DiscardAction extends AbstractAction {
         translator.getTranslation(Tags.DISCARD),
         translator.getTranslation(Tags.DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
     if (response == 0) {
-      Set<File> foldersToRefresh = new HashSet<>();
-      Set<File> deletedFilesParentDirs = new HashSet<>();
-      String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
-      
       List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
-      for (FileStatus file : allSelectedResources) {
-        if (file.getChangeType() == GitChangeType.ADD
-            || file.getChangeType() == GitChangeType.UNTRACKED) {
-          try {
-            File fileToDiscard = new File(selectedRepository, file.getFileLocation());
-            FileUtils.forceDelete(fileToDiscard);
-            // Collect the parent folders. We'll later have to find the common ancestor and refresh it.
-            deletedFilesParentDirs.add(fileToDiscard.getParentFile());
-          } catch (IOException e1) {
-            LOGGER.error(e1.getMessage(), e1);
-          }
-        } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
-          discardSubmodule(file, foldersToRefresh, selectedRepository);
-        }
-      }
-      
-      // Also refresh the common folder of all the individual discarded files
-      if (!deletedFilesParentDirs.isEmpty()) {
-        foldersToRefresh.add(FileUtil.getCommonDir(deletedFilesParentDirs));
-      }
       
       // Execute Git command
-      gitController.asyncDiscard(allSelectedResources);
+      gitController.asyncDiscard(allSelectedResources, () -> {
+        Set<File> foldersToRefresh = getFoldersToRefresh(allSelectedResources);
+        refreshFilesInProject(wsAccess, foldersToRefresh);
+      }
+      );
       
-      // Refresh the Project view
-      wsAccess.getProjectManager().refreshFolders(foldersToRefresh.toArray(new File[0]));
     }
+  }
+
+  private Set<File> getFoldersToRefresh(List<FileStatus> allSelectedResources) {
+    Set<File> foldersToRefresh = new HashSet<>();
+    Set<File> deletedFilesParentDirs = new HashSet<>();
+    String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+    
+    for (FileStatus file : allSelectedResources) {
+      if (file.getChangeType() == GitChangeType.ADD
+          || file.getChangeType() == GitChangeType.UNTRACKED) {
+        try {
+          File fileToDiscard = new File(selectedRepository, file.getFileLocation());
+          FileUtils.forceDelete(fileToDiscard);
+          // Collect the parent folders. We'll later have to find the common ancestor and refresh it.
+          deletedFilesParentDirs.add(fileToDiscard.getParentFile());
+        } catch (IOException e1) {
+          LOGGER.error(e1.getMessage(), e1);
+        }
+      } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
+        discardSubmodule(file, foldersToRefresh, selectedRepository);
+      } else if (file.getChangeType() == GitChangeType.REMOVED
+          || file.getChangeType() == GitChangeType.MISSING) {
+        deletedFilesParentDirs.add(new File(selectedRepository, file.getFileLocation()).getParentFile());
+      }
+    }
+    
+    // Also refresh the common folder of all the individual discarded files
+    if (!deletedFilesParentDirs.isEmpty()) {
+      foldersToRefresh.add(FileUtil.getCommonDir(deletedFilesParentDirs));
+    }
+    return foldersToRefresh;
+  }
+
+  /**
+   * Refresh the files in the project view.
+   * 
+   * @param wsAccess Workspace access.
+   * @param foldersToRefresh Files to refresh.
+   */
+  private static void refreshFilesInProject(StandalonePluginWorkspace wsAccess, Set<File> foldersToRefresh) {
+    // Refresh the Project view
+    SwingUtilities.invokeLater(() -> wsAccess.getProjectManager().refreshFolders(foldersToRefresh.toArray(new File[0])));
   }
 
   /**

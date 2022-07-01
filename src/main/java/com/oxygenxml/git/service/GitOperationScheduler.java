@@ -9,6 +9,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.eclipse.jgit.annotations.NonNull;
+import org.eclipse.jgit.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,16 +98,23 @@ public class GitOperationScheduler {
    * 
    * @param <V> the type of the result returned by the future task.
    * @param task A task to run on the dedicated Git actions thread.
+   * @param operationDoneHandler It's called after the task is executed. It's
+   * called on the thread that executed the job.
    * @param errorHandler Receives notifications when the task fails with an exception.
    * 
    * @return A future that monitors the task.
    */
   @SuppressWarnings("java:S1452")
-  public <V> ScheduledFuture<?> schedule(Runnable task, Consumer<Throwable> errorHandler) {
+  public <V> ScheduledFuture<?> schedule(Runnable task, @Nullable Runnable operationDoneHandler, @NonNull Consumer<Throwable> errorHandler) {
     return schedule(new java.util.concurrent.FutureTask<V> (task, null) {
       @Override
       protected void done() {
         try {
+          if (operationDoneHandler != null ) {
+            // Notify the completion of the task.
+            operationDoneHandler.run();
+          }
+          // Call get because it throws exceptions encountered during execution.
           get();
         } catch (ExecutionException e) {
           errorHandler.accept(e.getCause());      

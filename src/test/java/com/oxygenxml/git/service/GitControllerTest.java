@@ -50,7 +50,7 @@ public class GitControllerTest {
     
     ScheduledFuture<?> future = ctrl.async(() -> {
       GitAccess.getInstance().createBranch(null);
-    });
+    }, null);
     
     future.get();
     

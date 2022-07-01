@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -88,7 +89,7 @@ public abstract class GitControllerBase {
       if (shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution.RESOLVE_USING_MINE)) {
         resolveUsingMine(conflictFiles);
       }
-    });
+    }, null);
   }
 
   /**
@@ -101,37 +102,44 @@ public abstract class GitControllerBase {
       if (shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution.RESOLVE_USING_THEIRS)) {
         resolveUsingTheirs(conflictFiles);
       }
-    });
+    }, null);
+  }
+
+  /**
+   * Runs a task on the Git operation thread.
+   * 
+   * @param task Git Task.
+   * @param operationDoneHandler It's called after the task is executed. It's
+   * called on the thread that executed the job.
+   * 
+   * @return A future monitoring the orginal task.
+   */
+  @SuppressWarnings("java:S1452")
+  ScheduledFuture<?> async(Runnable task, @Nullable Runnable operationDoneHandler) {
+    return async(task, operationDoneHandler, null);
   }
 
   /**
    * Runs a task on the Git operation thread.
    * 
    * @param r Git Task.
+   * @param operationDoneHandler It's called after the task is executed. It's
+   * called on the thread that executed the job.
+   * @param errorHandler Error handler. Can be null if not interested in errors.
    * 
    * @return A future monitoring the orginal task.
    */
   @SuppressWarnings("java:S1452")
-  ScheduledFuture<?> async(Runnable r) {
-    return async(r, null);
-  }
-
-  /**
-   * Runs a task on the Git operation thread.
-   * 
-   * @param r Git Task.
-   * @param errorHandler Error handler.
-   * 
-   * @return A future monitoring the orginal task.
-   */
-  @SuppressWarnings("java:S1452")
-  private ScheduledFuture<?> async(Runnable r, Consumer<Throwable> errorHandler) {
-    return GitOperationScheduler.getInstance().schedule(r, t -> {
-      consumeEvents(t);
-      if (errorHandler != null) {
-        errorHandler.accept(t);
-      }
-    });
+  private ScheduledFuture<?> async(Runnable r, @Nullable Runnable operationDoneHandler, @Nullable Consumer<Throwable> errorHandler) {
+    return GitOperationScheduler.getInstance().schedule(
+        r, 
+        operationDoneHandler, 
+        t -> {
+          consumeEvents(t);
+          if (errorHandler != null) {
+            errorHandler.accept(t);
+          }
+        });
   }
 
   /**
@@ -196,7 +204,7 @@ public abstract class GitControllerBase {
    * @param filesStatuses Files to add.
    */
   public void asyncAddToIndex(List<FileStatus> filesStatuses) {
-    async(() -> gitAccess.addAll(filesStatuses));
+    async(() -> gitAccess.addAll(filesStatuses), null);
   }
 
   /**
@@ -205,16 +213,18 @@ public abstract class GitControllerBase {
    * @param filesStatuses Files to add.
    */
   public void asyncReset(List<FileStatus> filesStatuses) {
-    async(() -> gitAccess.resetAll(filesStatuses));
+    async(() -> gitAccess.resetAll(filesStatuses), null);
   }
 
   /**
    * Discard files.
    * 
    * @param filesStatuses The resources to discard.
+   * @param operationDoneHandler It's called after the task is executed. It's
+   * called on the thread that executed the job.
    */
-  public void asyncDiscard(List<FileStatus> filesStatuses) {
-    async(() -> discard(filesStatuses));
+  public void asyncDiscard(List<FileStatus> filesStatuses, @Nullable Runnable operationDoneHandler) {
+    async(() -> discard(filesStatuses), operationDoneHandler);
   }
 
   /**
