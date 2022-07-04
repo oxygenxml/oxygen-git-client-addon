@@ -292,12 +292,12 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
                 branchesComboBox.removeAllItems();
                 setProgressVisible(true);
               });
-              boolean wasUrlProvided = sourceUrlAsText != null && !sourceUrlAsText.isEmpty();
+              final boolean wasUrlProvided = sourceUrlAsText != null && !sourceUrlAsText.isEmpty();
               previousURLText = sourceUrlAsText;
               if (wasUrlProvided) {
                 addBranches(remoteBranches, sourceUrlAsText);
-              }
-
+              } 
+              
               SwingUtilities.invokeLater(() -> {
                 boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
                 if (shouldEnableBranchesCombo) {
@@ -311,6 +311,9 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
                   // If we have branches, then we didn't have any problems.
                   // Hide the information label. Otherwise, show it.
                   informationLabel.setVisible(!shouldEnableBranchesCombo);
+                } else {
+                  informationLabel.setText("");
+                  informationLabel.setVisible(false);
                 }
               });
             } catch (JGitInternalException e) {
