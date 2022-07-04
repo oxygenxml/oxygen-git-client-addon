@@ -120,7 +120,7 @@ public class RefreshProjectTest extends TestCase {
           // A mock that does nothing.
           mockController());
       discardAction.actionPerformed(null);
-      refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS);
+      assertTrue("Refresh API call wasn't intercepted", refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS));
       
       assertEquals(
           repoDir.getCanonicalFile().getAbsolutePath(),
@@ -177,7 +177,7 @@ public class RefreshProjectTest extends TestCase {
           // A mock that does nothing.
           mockController());
       discardAction.actionPerformed(null);
-      refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS);
+      assertTrue("Refresh API call wasn't intercepted", refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS));
 
       assertEquals(
           repoDir.getCanonicalFile().getAbsolutePath(),
@@ -225,7 +225,7 @@ public class RefreshProjectTest extends TestCase {
           // A mock that does nothing.
           mockController());
       discardAction.actionPerformed(null);
-      refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS);
+      assertTrue("Refresh API call wasn't intercepted", refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS));
 
       assertEquals(
           subModule.getCanonicalFile().getAbsolutePath(),
