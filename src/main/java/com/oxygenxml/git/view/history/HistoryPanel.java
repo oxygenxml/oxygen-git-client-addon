@@ -39,7 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -100,6 +99,12 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  * Presents the commits for a given resource.
  */
 public class HistoryPanel extends JPanel {
+  
+  /**
+   * The filter allocated percent.
+   */
+  private static final int FILTER_PERCENT_ALLOCATED = 30;
+
   /**
    * History label right inset.
    */
@@ -217,11 +222,6 @@ public class HistoryPanel extends JPanel {
    */
   private boolean wasPreviousShowed = false;
   
-  /**
-   * Timer used to update history label message.
-   */
-  private final Timer timer = new Timer(15, e -> updateInfoHistoryLabelText());
-  
 
   /**
    * Constructor.
@@ -239,8 +239,6 @@ public class HistoryPanel extends JPanel {
       }
       wasPreviousShowed = actualState;
     });
-    
-    timer.setRepeats(false);
     
     graphCellRender = new CommitsGraphCellRender();
   
@@ -283,8 +281,7 @@ public class HistoryPanel extends JPanel {
       
       @Override
       public void componentResized(ComponentEvent e) {
-          timer.stop();
-          timer.start(); 
+        updateTopPanelComponentsSize();
       }});
     
     topPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -364,11 +361,17 @@ public class HistoryPanel extends JPanel {
   }
 
   /**
-   * Update history info label text.
+   * Update history info label text and the filter width.
    * 
    * The @historyLabelMessage will be set or a truncate version of this message if no necessary space is provided. 
    */
-  private void updateInfoHistoryLabelText() {
+  private void updateTopPanelComponentsSize() {
+    final Dimension filterDim = new Dimension(
+        (topPanel.getWidth() * FILTER_PERCENT_ALLOCATED) / 100, 
+        filter.getPreferredSize().height);
+    filter.setPreferredSize(filterDim);
+    filter.setMaximumSize(filterDim);
+    filter.setMinimumSize(filterDim);
     int newLabelWidth = topPanel.getWidth() - INFO_HISTORY_WIDTH_INSET;
     for(int i = 0; i < topPanel.getComponentCount(); i++) {
       if(topPanel.getComponent(i) != historyInfoLabel) { // reduce width with the other's components
@@ -761,10 +764,6 @@ public class HistoryPanel extends JPanel {
     constr.gridx++;
     constr.fill = GridBagConstraints.NONE;
     constr.weightx = 0;
-    final Dimension filterDim = new Dimension(FILTER_WIDTH, filter.getPreferredSize().height);
-    filter.setPreferredSize(filterDim);
-    filter.setMinimumSize(filterDim);
-    filter.setMaximumSize(filterDim);
     topPanel.add(filter, constr);
 
     add(topPanel, BorderLayout.NORTH);
@@ -826,7 +825,7 @@ public class HistoryPanel extends JPanel {
           historyLabelMessage += " " + TRANSLATOR.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
        
-        updateInfoHistoryLabelText();
+        updateTopPanelComponentsSize();
         
         historyInfoLabel.setToolTipText(historyLabelMessage);
         historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
