@@ -299,17 +299,18 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
               } 
               
               SwingUtilities.invokeLater(() -> {
-                boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
-                if (shouldEnableBranchesCombo) {
+                final boolean remoteBranchesDetected = !remoteBranches.isEmpty();
+                if (remoteBranchesDetected) {
                   branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
                   for (Ref ref : remoteBranches) {
                     branchesComboBox.addItem(ref);
                   }
                 }
-                branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+                branchesComboBox.setEnabled(remoteBranchesDetected);
+                
                 // If an URL was provided and we have branches, then we didn't have any problems.
                 // Hide the information label. Otherwise, show it.
-                final boolean errorDetected = wasUrlProvided && !shouldEnableBranchesCombo;
+                final boolean errorDetected = wasUrlProvided && !remoteBranchesDetected;
                 if(!errorDetected) {
                   informationLabel.setText(""); // reset text when no errors occur
                 }
