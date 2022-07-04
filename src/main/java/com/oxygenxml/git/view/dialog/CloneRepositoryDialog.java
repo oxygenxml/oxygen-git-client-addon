@@ -299,15 +299,15 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
               } 
               
               SwingUtilities.invokeLater(() -> {
-                boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
-                if (shouldEnableBranchesCombo) {
+                boolean remoteBranchesDetected = !remoteBranches.isEmpty();
+                if (remoteBranchesDetected) {
                   branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
                   for (Ref ref : remoteBranches) {
                     branchesComboBox.addItem(ref);
                   }
                 }
-                branchesComboBox.setEnabled(shouldEnableBranchesCombo);
-                final boolean errorDetected = wasUrlProvided && !shouldEnableBranchesCombo;
+                branchesComboBox.setEnabled(remoteBranchesDetected);
+                final boolean errorDetected = wasUrlProvided && !remoteBranchesDetected;
 
                 if(!errorDetected) {
                   informationLabel.setText(""); // reset text when no errors occur
