@@ -167,7 +167,8 @@ public class HistoryPanel extends JPanel {
    * The file presenter for repository commits history.
    */
   private final transient FileHistoryPresenter fileHistoryPresenter = new FileHistoryPresenter();
-  /*
+  
+  /**
    * The current strategy to present history.
    */
   private HistoryStrategy currentStrategy;
