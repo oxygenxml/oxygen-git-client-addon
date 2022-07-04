@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -100,59 +101,82 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  */
 public class HistoryPanel extends JPanel {
   /**
+   * History label right inset.
+   */
+  private static final int INFO_HISTORY_WIDTH_INSET = 20;
+  
+  /**
+   * Filter width.
+   */
+  private static final int FILTER_WIDTH = 100;
+  
+  /**
    * Logger for logging.
    */
   private static final Logger LOGGER =  LoggerFactory.getLogger(HistoryPanel.class);
+  
   /**
    * Git API access.
    */
   private static GitAccess gitAccess = GitAccess.getInstance();
+  
   /**
    * The translator.
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
+  
   /**
    * Table view that presents the commits.
    */
   JTable historyTable;
+  
   /**
    * Panel presenting a detailed description of the commit (author, date, etc).
    */
   private JEditorPane commitDescriptionPane;
+  
   /**
    * The history label text
    */
   private String historyLabelMessage;
+  
   /**
    * The label that shows information about the history we present.
    */
   private JLabel historyInfoLabel;
+  
   /**
    * Intercepts clicks in the commit details area.
    */
   private HistoryHyperlinkListener hyperlinkListener;
+  
   /**
    * Commit selection listener that updates all the views with details.
    */
   private RowHistoryTableSelectionListener revisionDataUpdater;
+  
   /**
    * The changed files from a commit.
    */
   private JTable affectedFilesTable;
+  
   /**
    * The file path of the resource for which we are currently presenting the
    * history. If <code>null</code>, we present the history for the entire
    * repository.
    */
   private String activeFilePath;
+  
   /**
    * Presents the contextual menu.
    */
   private HistoryViewContextualMenuPresenter contextualMenuPresenter;
+  
   /**
    * Filter field for quick search
    */
   private FilterTextField filter;
+  
   /**
    * Top panel (with the "Showing history" label and the "Refresh" action
    */
@@ -193,6 +217,11 @@ public class HistoryPanel extends JPanel {
    */
   private boolean wasPreviousShowed = false;
   
+  /**
+   * Timer used to update history label message.
+   */
+  private final Timer timer = new Timer(15, e -> updateInfoHistoryLabelText());
+  
 
   /**
    * Constructor.
@@ -210,6 +239,8 @@ public class HistoryPanel extends JPanel {
       }
       wasPreviousShowed = actualState;
     });
+    
+    timer.setRepeats(false);
     
     graphCellRender = new CommitsGraphCellRender();
   
@@ -249,19 +280,12 @@ public class HistoryPanel extends JPanel {
 
     topPanel = new JPanel(new GridBagLayout());
     this.addComponentListener(new ComponentAdapter() {
+      
       @Override
       public void componentResized(ComponentEvent e) {
-        if (e.getComponent().getWidth() < 600) {
-          historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
-              historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
-              HistoryPanel.this.getWidth() / topPanel.getComponentCount()));
-          repaint();
-        } else {
-          historyInfoLabel.setText(historyLabelMessage);
-          repaint();
-        }
-      }
-    });
+          timer.stop();
+          timer.start(); 
+      }});
     
     topPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     GridBagConstraints constr = new GridBagConstraints();
@@ -269,9 +293,10 @@ public class HistoryPanel extends JPanel {
     constr.gridx = 0;
     constr.gridy = 0;
     constr.insets = new Insets(0, 1, 0, 0);
-    constr.weightx = 0.8;
+    constr.weightx = 1;
 
     historyInfoLabel = new JLabel();
+    historyInfoLabel.setMinimumSize(new Dimension(10, historyInfoLabel.getMinimumSize().height));
     topPanel.add(historyInfoLabel, constr);
     createAndAddToolbarToTopPanel(topPanel, constr);
 
@@ -338,6 +363,23 @@ public class HistoryPanel extends JPanel {
     add(centerSplitPane, BorderLayout.CENTER);
   }
 
+  /**
+   * Update history info label text.
+   * 
+   * The @historyLabelMessage will be set or a truncate version of this message if no necessary space is provided. 
+   */
+  private void updateInfoHistoryLabelText() {
+    int newLabelWidth = topPanel.getWidth() - INFO_HISTORY_WIDTH_INSET;
+    for(int i = 0; i < topPanel.getComponentCount(); i++) {
+      if(topPanel.getComponent(i) != historyInfoLabel) { // reduce width with the other's components
+        newLabelWidth -= topPanel.getComponent(i).getWidth();
+      }
+    }
+    newLabelWidth = newLabelWidth >= 0 ? newLabelWidth : 0;
+    historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
+        historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
+        newLabelWidth));
+  }
   
   /**
    * Initialize history table.
@@ -717,8 +759,12 @@ public class HistoryPanel extends JPanel {
     this.filter = filterTemp;
     constr.insets = new Insets(0, 7, 0, 0);
     constr.gridx++;
-    constr.fill = GridBagConstraints.HORIZONTAL;
-    constr.weightx = 0.5;
+    constr.fill = GridBagConstraints.NONE;
+    constr.weightx = 0;
+    final Dimension filterDim = new Dimension(FILTER_WIDTH, filter.getPreferredSize().height);
+    filter.setPreferredSize(filterDim);
+    filter.setMinimumSize(filterDim);
+    filter.setMaximumSize(filterDim);
     topPanel.add(filter, constr);
 
     add(topPanel, BorderLayout.NORTH);
@@ -779,10 +825,9 @@ public class HistoryPanel extends JPanel {
           directory = new File(directory, filePath);
           historyLabelMessage += " " + TRANSLATOR.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
+       
+        updateInfoHistoryLabelText();
         
-        historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
-            historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
-            this.getWidth() / topPanel.getComponentCount()));
         historyInfoLabel.setToolTipText(historyLabelMessage);
         historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
@@ -1113,6 +1158,4 @@ public class HistoryPanel extends JPanel {
     this.currentStrategy = currentStrategy;
   }
   
-  
-
 }
