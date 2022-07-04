@@ -366,7 +366,8 @@ public class HistoryPanel extends JPanel {
    * The @historyLabelMessage will be set or a truncate version of this message if no necessary space is provided. 
    */
   private void updateTopPanelComponentsSize() {
-    final Dimension filterDim = new Dimension(
+    // needed to set a custom dimension to filter for a better resize view than fill with weightX = (FILTER_PERCENT_ALLOCATED) / 100.00
+    final Dimension filterDim = new Dimension( 
         (topPanel.getWidth() * FILTER_PERCENT_ALLOCATED) / 100, 
         filter.getPreferredSize().height);
     filter.setPreferredSize(filterDim);
