@@ -307,13 +307,12 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
                   }
                 }
                 branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+                // If an URL was provided and we have branches, then we didn't have any problems.
+                // Hide the information label. Otherwise, show it.
                 final boolean errorDetected = wasUrlProvided && !shouldEnableBranchesCombo;
-
                 if(!errorDetected) {
                   informationLabel.setText(""); // reset text when no errors occur
                 }
-                // If we have branches, then we didn't have any problems.
-                // Hide the information label. Otherwise, show it.
                 informationLabel.setVisible(errorDetected);
               });
             } catch (JGitInternalException e) {
