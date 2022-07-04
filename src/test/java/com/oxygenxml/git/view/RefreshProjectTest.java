@@ -3,6 +3,8 @@ package com.oxygenxml.git.view;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
@@ -14,10 +16,10 @@ import org.powermock.reflect.Whitebox;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.SubmoduleAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.staging.actions.DiscardAction;
@@ -44,7 +46,14 @@ public class RefreshProjectTest extends TestCase {
     }
   };
   
+  /**
+   * Records the folder on which refresh was called.
+   */
   private File refreshedFolder;
+  /**
+   * Used to wait until refresh is called.
+   */
+  private Semaphore refreshSemaphore = new Semaphore(0);
   
   @Override
   protected void setUp() throws Exception {
@@ -70,6 +79,7 @@ public class RefreshProjectTest extends TestCase {
       public Void answer(InvocationOnMock invocation) throws Throwable {
         File[] filesToRefresh = (File[]) invocation.getArguments()[0];
         refreshedFolder = filesToRefresh[0];
+        refreshSemaphore.release();
         return null;
       }
     }).when(projectCtrlMock).refreshFolders(Mockito.any());
@@ -108,8 +118,9 @@ public class RefreshProjectTest extends TestCase {
             }
           },
           // A mock that does nothing.
-          Mockito.mock(GitControllerBase.class));
+          mockController());
       discardAction.actionPerformed(null);
+      refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS);
       
       assertEquals(
           repoDir.getCanonicalFile().getAbsolutePath(),
@@ -117,6 +128,18 @@ public class RefreshProjectTest extends TestCase {
     } finally {
       FileUtils.deleteDirectory(repoDir);
     }
+  }
+
+  private GitController mockController() {
+    GitAccess gitAccess = Mockito.mock(GitAccess.class);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(gitAccess).restoreLastCommitFile(Mockito.anyList());
+
+    return new GitController(gitAccess);
   }
   
   /**
@@ -152,8 +175,9 @@ public class RefreshProjectTest extends TestCase {
             }
           },
           // A mock that does nothing.
-          Mockito.mock(GitControllerBase.class));
+          mockController());
       discardAction.actionPerformed(null);
+      refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS);
 
       assertEquals(
           repoDir.getCanonicalFile().getAbsolutePath(),
@@ -199,8 +223,9 @@ public class RefreshProjectTest extends TestCase {
             }
           },
           // A mock that does nothing.
-          Mockito.mock(GitControllerBase.class));
+          mockController());
       discardAction.actionPerformed(null);
+      refreshSemaphore.tryAcquire(1, TimeUnit.SECONDS);
 
       assertEquals(
           subModule.getCanonicalFile().getAbsolutePath(),
