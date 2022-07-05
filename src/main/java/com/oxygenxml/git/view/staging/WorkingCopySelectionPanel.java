@@ -172,35 +172,35 @@ public class WorkingCopySelectionPanel extends JPanel {
 			// repository will be selected
 			String selectedEntry = (String) workingCopyCombo.getSelectedItem();
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Selected working copy: " + selectedEntry);
+			  LOGGER.debug("Selected working copy: " + selectedEntry);
 			}
+			
 			if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
-				SwingUtilities.invokeLater(() -> {
-					String[] options = new String[] {
-							"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
-							"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
-					int[] optionIds = new int[] { 0, 1 };
-					PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-					if (pluginWorkspace != null) {
-					  int result = pluginWorkspace.showConfirmDialog(
-					      TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
-					      TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
-					      options,
-					      optionIds);
-					  if (result == optionIds[0]) {
-					    clearHistory();
-					  } else {
-					    workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
-					  }
-          }
-				});
+
+			  String[] options = new String[] {
+			      "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+			      "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
+			  int[] optionIds = new int[] { 0, 1 };
+			  PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+			  if (pluginWorkspace != null) {
+			    int result = pluginWorkspace.showConfirmDialog(
+			        TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
+			        TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+			        options,
+			        optionIds);
+			    if (result == optionIds[0]) {
+			      clearHistory();
+			    } else {
+			      workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
+			    }
+			  }
 			} else {
-				if (selectedEntry != null) {
-					gitAccess.setRepositoryAsync(selectedEntry);
-				}
+			  if (selectedEntry != null) {
+			    gitAccess.setRepositoryAsync(selectedEntry);
+			  }
 			}
 		} finally {
-			inhibitRepoUpdate = false;
+		  inhibitRepoUpdate = false;
 		}
 	}
 
