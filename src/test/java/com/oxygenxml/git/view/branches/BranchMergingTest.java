@@ -3,12 +3,14 @@ package com.oxygenxml.git.view.branches;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
+import org.awaitility.Awaitility;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.mockito.Mockito;
@@ -34,6 +36,7 @@ import com.oxygenxml.git.view.history.HistoryStrategy;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Test cases for the actions that can be done on a branch.
@@ -139,10 +142,11 @@ public class BranchMergingTest extends GitTestBase {
     JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
-    sleep(200);
-    
+    Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).until(() ->
+         "local content for merging".equals(TestUtil.read(file.toURI().toURL()))
+      );
+  
     assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
-    
   }
   
   /**
@@ -217,7 +221,7 @@ public class BranchMergingTest extends GitTestBase {
     JButton mergeOkButton = findFirstButton(squashMergeBranchesDialog, Tags.SQUASH_AND_COMMIT);
     mergeOkButton.doClick();
     
-    sleep(200);
+    waitForScheduler();
     
     final List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
         HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
@@ -304,7 +308,7 @@ public class BranchMergingTest extends GitTestBase {
     JButton mergeOkButton = findFirstButton(squashMergeBranchesDialog, Tags.SQUASH_AND_COMMIT);
     mergeOkButton.doClick();
     
-    sleep(200);
+    waitForScheduler();
     
     List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
         HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
@@ -360,34 +364,25 @@ public class BranchMergingTest extends GitTestBase {
    * @throws Exception
    */
   public void testBranchSquashMergingWithoutCommits() throws Exception{
-    final int isDialogOk[] = new int[1];
-    isDialogOk[0] = 0;
-    
+ // SetUp mocks
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        });
+    final int currentDialog[] = { 0 };
+    final String dialogToString[] = new String[5];
+
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
-        translator.getTranslation(Tags.SQUASH_MERGE), DialogType.INFO) {
+        "test_merge", DialogType.INFO) {
 
-      @Override
-      public MessageDialogBuilder setTitle(String title) {
-        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_MERGE).equals(title) ? 1 : 0;
-        return super.setTitle(title);
-      }
-
-      @Override
-      public MessageDialogBuilder setType(DialogType type) {        
-        isDialogOk[0] += DialogType.INFO == type ? 1 : 0;
-        return super.setType(type);
-      }
-      
-      @Override
-      public MessageDialogBuilder setMessage(String message) {
-        isDialogOk[0] += translator.getTranslation(Tags.SQUASH_NO_COMMITS_DETECTED_MESSAGE).equals(message) ? 1 : 0;
-        return super.setMessage(message);
-      }
-      
       @Override
       public MessageDialog buildAndShow() {
-        isDialogOk[0]++;
-        return Mockito.mock(MessageDialog.class);
+        dialogToString[currentDialog[0]++] = dialogInfo.toString();
+        reset();
+        return dialog;
       }
     });
     
@@ -430,15 +425,22 @@ public class BranchMergingTest extends GitTestBase {
     gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
+    
     // Merge LocalBranch into main
     executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(firstLeaf), Tags.SQUASH_MERGE_ACTION_NAME + "...");
-    flushAWT();
-  
+    waitForScheduler();
     
-    sleep(300);
-    assertEquals(4, isDialogOk[0]);
+    assertEquals("title = Squash_Merge\n" + 
+        "iconPath = /images/Info32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = Squash_No_Commits_Message\n" + 
+        "questionMessage = null\n" + 
+        "okButtonName = null\n" + 
+        "cancelButtonName = null\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = false", dialogToString[0]);
     
-    List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
+    final List<CommitCharacteristics> commits = GitAccess.getInstance().getCommitsCharacteristics(
         HistoryStrategy.CURRENT_LOCAL_BRANCH, null, null);
     assertEquals(1, commits.size());
     assertEquals("local content", TestUtil.read(file.toURI().toURL()));
@@ -455,9 +457,29 @@ public class BranchMergingTest extends GitTestBase {
    * @throws Exception
    */
   public void testBranchMergingWithConflict() throws Exception {
-    JDialog conflictMergeDialog = null;
-    try {
+    
+    // SetUp mocks
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        });
+    final int currentDialog[] = { 0 };
+    final String dialogToString[] = new String[5];
 
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_merge", DialogType.INFO) {
+
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogToString[currentDialog[0]++] = dialogInfo.toString();
+        reset();
+        return dialog;
+      }
+    });
+   
     File file1 = new File(LOCAL_TEST_REPOSITORY, "local1.txt");
     File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
     file1.createNewFile();
@@ -511,19 +533,34 @@ public class BranchMergingTest extends GitTestBase {
     assertTrue(secondaryBranchPath.contains(Constants.R_HEADS));
     refreshSupport.call();
     executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
-    flushAWT();
-    sleep(200);
-    //Confirm merge dialog
-    JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
-    mergeOkButton.doClick();
-    
-    flushAWT();
-    sleep(200);
     waitForScheduler();
-
-    conflictMergeDialog = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
-    assertNotNull(conflictMergeDialog);
+    
+    // the merge dialog will be displayed first.
+    final String mergeBranchesDialogExpected = 
+        "title = Merge_Branches\n" + 
+        "iconPath = /images/Help32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = null\n" + 
+        "questionMessage = Merge_Info\n" + 
+        "\n" + 
+        "Merge_Branches_Question_Message\n" + 
+        "okButtonName = Merge\n" + 
+        "cancelButtonName = Cancel\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = true";
+    assertEquals(mergeBranchesDialogExpected, dialogToString[0]);
+    
+    final String mergeConflictDialogExpected = 
+        "title = Merge_Conflicts_Title\n" + 
+        "iconPath = /images/Warning32.png\n" + 
+        "targetFiles = [local2.txt, local1.txt]\n" + 
+        "message = Merge_Conflicts_Message\n" + 
+        "questionMessage = null\n" + 
+        "okButtonName = null\n" + 
+        "cancelButtonName = null\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = false";
+    assertEquals(mergeConflictDialogExpected, dialogToString[1]);
 
     assertTrue(TestUtil.read(file1.toURI().toURL()).
         contains("<<<<<<< HEAD\n" 
@@ -538,12 +575,6 @@ public class BranchMergingTest extends GitTestBase {
             + "=======\n" 
             + "local file 2 on new branch\n" 
             + ">>>>>>>"));
-    } finally {
-      if (conflictMergeDialog != null) {
-        conflictMergeDialog.setVisible(false);
-        conflictMergeDialog.dispose();
-      }
-    }
   }
   
   /**
@@ -555,99 +586,126 @@ public class BranchMergingTest extends GitTestBase {
    * @throws Exception
    */
   public void testFailingBranchMerging() throws Exception {
-    JDialog mergeFailDialog = null;
+    // SetUp mocks
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        });
+    final int currentDialog[] = { 0 };
+    final String dialogToString[] = new String[5];
 
-    try {
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_merge", DialogType.INFO) {
 
-      File file1 = new File(LOCAL_TEST_REPOSITORY, "local1.txt");
-      File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
-      file1.createNewFile();
-      file2.createNewFile();
-
-      setFileContent(file1, "local file 1 content");
-      setFileContent(file2, "local file 2 content");
-
-      // Make the first commit for the local repository, create a new branch and move on it
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
-      gitAccess.commit("First local commit on main.");
-      
-      // Create new branch and commit some changes
-      gitAccess.createBranch(LOCAL_BRANCH_NAME1);
-      gitAccess.setBranch(LOCAL_BRANCH_NAME1);
-
-      setFileContent(file1, "branch file1 modification ");
-      setFileContent(file2, "branch file2 modification ");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
-      gitAccess.commit("Commit on secondary branch");
-
-      // Move on main branch, make some uncommitted modifications
-      gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
-      
-      setFileContent(file1, "file1 something xx...xx...");
-      setFileContent(file2, "file2 something xx...xx...");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
-      
-      // Try to merge the secondary branch into the default one - CHECKOUT CONFLICT
-      GitControllerBase mock = new GitController();
-      BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
-      branchManagementPanel.refreshBranches();
-      flushAWT();
-      
-      BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
-      GitTreeNode root = (GitTreeNode) (branchManagementPanel.getTree().getModel().getRoot());
-      GitTreeNode secondaryBranchNode = (GitTreeNode) root.getFirstLeaf();
-      
-      executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
-      
-      flushAWT();
-      sleep(300);
-      
-      //Confirm merge dialog
-      JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
-      mergeOkButton.doClick();
-      
-      sleep(200);
-
-      mergeFailDialog = findDialog(translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE));
-      assertNotNull(mergeFailDialog);
-      
-      mergeFailDialog.setVisible(false);
-      mergeFailDialog.dispose();
-
-      //Commit the changes on the main branch then make other uncommitted changes and try to merge again
-      // MERGE FAILED
-      gitAccess.commit("Commit on main branch");
-
-      setFileContent(file1, "file1 something modif");
-      setFileContent(file2, "file2 something modif");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
-
-      executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
-      
-      flushAWT();
-      sleep(300);
-      
-      //Confirm merge dialog
-      mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
-      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
-      mergeOkButton.doClick();
-      
-      sleep(200);
-
-      mergeFailDialog = findDialog(translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE));
-      assertNotNull(mergeFailDialog);
-
-    } finally {
-      if (mergeFailDialog != null) {
-        mergeFailDialog.setVisible(false);
-        mergeFailDialog.dispose();
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogToString[currentDialog[0]++] = dialogInfo.toString();
+        reset();
+        return dialog;
       }
-    }
+    });
+
+    File file1 = new File(LOCAL_TEST_REPOSITORY, "local1.txt");
+    File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
+    file1.createNewFile();
+    file2.createNewFile();
+
+    setFileContent(file1, "local file 1 content");
+    setFileContent(file2, "local file 2 content");
+
+    // Make the first commit for the local repository, create a new branch and move on it
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    gitAccess.commit("First local commit on main.");
+    
+    // Create new branch and commit some changes
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+
+    setFileContent(file1, "branch file1 modification ");
+    setFileContent(file2, "branch file2 modification ");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    gitAccess.commit("Commit on secondary branch");
+
+    // Move on main branch, make some uncommitted modifications
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    
+    setFileContent(file1, "file1 something xx...xx...");
+    setFileContent(file2, "file2 something xx...xx...");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    
+    // Try to merge the secondary branch into the default one - CHECKOUT CONFLICT
+    GitControllerBase mock = new GitController();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    GitTreeNode root = (GitTreeNode) (branchManagementPanel.getTree().getModel().getRoot());
+    GitTreeNode secondaryBranchNode = (GitTreeNode) root.getFirstLeaf();
+    
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
+    waitForScheduler();
+    
+    // the merge dialog will be displayed first.
+    final String mergeBranchesDialogExpected = 
+        "title = Merge_Branches\n" + 
+        "iconPath = /images/Help32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = null\n" + 
+        "questionMessage = Merge_Info\n" + 
+        "\n" + 
+        "Merge_Branches_Question_Message\n" + 
+        "okButtonName = Merge\n" + 
+        "cancelButtonName = Cancel\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = true";
+    assertEquals(mergeBranchesDialogExpected, dialogToString[0]);
+    
+    // now a display a dialog for failed merge because uncommited changes reason
+    final String mergeFailedDialogUncommitedChangesExpected1 = 
+        "title = Merge_Failed_Uncommitted_Changes_Title\n" + 
+        "iconPath = /images/Warning32.png\n" + 
+        "targetFiles = [local1.txt, local2.txt]\n" + 
+        "message = Merge_Failed_Uncommitted_Changes_Message\n" + 
+        "questionMessage = null\n" + 
+        "okButtonName = null\n" + 
+        "cancelButtonName = null\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = false";
+    assertEquals(mergeFailedDialogUncommitedChangesExpected1, dialogToString[1]);
+    
+    //Commit the changes on the main branch then make other uncommitted changes and try to merge again
+    // MERGE FAILED
+    gitAccess.commit("Commit on main branch");
+
+    setFileContent(file1, "file1 something modif");
+    setFileContent(file2, "file2 something modif");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
+    waitForScheduler();
+        
+    assertEquals(mergeBranchesDialogExpected, dialogToString[2]);
+    
+    final String mergeFailedDialogUncommitedChangesExpected2 = 
+        "title = Merge_Failed_Uncommitted_Changes_Title\n" + 
+        "iconPath = /images/Error32.png\n" + 
+        "targetFiles = [local1.txt]\n" + 
+        "message = Merge_Failed_Uncommitted_Changes_Message\n" + 
+        "questionMessage = null\n" + 
+        "okButtonName = Close\n" + 
+        "cancelButtonName = null\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = false";
+    assertEquals(mergeBranchesDialogExpected, dialogToString[2]);
+    assertEquals(mergeFailedDialogUncommitedChangesExpected2, dialogToString[3]);
   }
   
   /**
@@ -660,7 +718,7 @@ public class BranchMergingTest extends GitTestBase {
    */
   public void testBranchMergingWithoutResolvingConflict() throws Exception { 
     
-    JDialog conflictMergeDialog = null;
+    final JDialog[] conflictMergeDialog = new JDialog[1];
     JDialog mergeOkDialog = null;
 
     File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
@@ -709,14 +767,10 @@ public class BranchMergingTest extends GitTestBase {
     JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     
-    sleep(200);
-    
-    conflictMergeDialog = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
-    assertNotNull(conflictMergeDialog);
-    conflictMergeDialog.dispose();
-    
-    sleep(200);
-    
+    conflictMergeDialog[0] = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
+    assertNotNull(conflictMergeDialog[0]);
+    conflictMergeDialog[0].dispose();
+   
     //Don't resolve merge conflicts and try to do the merge again and we will get an errMsg
     
     //Mock showErrorMessage
@@ -731,10 +785,11 @@ public class BranchMergingTest extends GitTestBase {
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
-    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
-    flushAWT();
-    
-    sleep(200);
+    executeActionByName(branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode), 
+        Tags.MERGE_BRANCH1_INTO_BRANCH2 +  "...");
+    Awaitility.waitAtMost(500, TimeUnit.MILLISECONDS).until(() -> 
+      Tags.RESOLVE_CONFLICTS_FIRST.equals(errMsg[0]));
+ 
     assertEquals(Tags.RESOLVE_CONFLICTS_FIRST, errMsg[0]);
   }
   
