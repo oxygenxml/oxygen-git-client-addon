@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -38,6 +39,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.MockSystemReader;
@@ -872,16 +875,11 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * @return The dialog, or null if there is no dialog having that title.
    */
   protected JDialog findDialog(String title){
-    
-    JDialog dialogToReturn = null;
-    
-    for (int i = 0; i < 5; i++) {
 
-      flushAWT();
-      
-      
+    final JDialog dialogToReturn[] = new JDialog[1];
+    Awaitility.await().atMost(Duration.TWO_SECONDS).until(() -> {
       // Get the opened windows
-      Window[] windows = WindowMonitor.getWindows();
+      final Window[] windows = WindowMonitor.getWindows();
       if (windows != null && windows.length > 0) {
         for (Window window : windows) { 
           if (window.isActive() && window instanceof JDialog) {
@@ -891,20 +889,20 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
               // If the dialog title is the same or starts with the given title
               // return this dialog
               if (title.equals(dialogTitle) || dialogTitle.startsWith(title)) {
-                dialogToReturn = dialog;
+                dialogToReturn[0] = dialog;
               }
             }
           }
         }
       }                
-      if(dialogToReturn != null) {
-        break;
-      } else {
-        LOGGER.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
-        sleep(200);
-      }
+      return Objects.nonNull(dialogToReturn[0]);
+    });
+
+    if(Objects.isNull(dialogToReturn[0])) {
+      LOGGER.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
     }
-    return dialogToReturn;
+
+    return dialogToReturn[0];
   }
 
 //  protected void flushAWT() {
