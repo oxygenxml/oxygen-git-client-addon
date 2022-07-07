@@ -877,26 +877,31 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   protected JDialog findDialog(String title){
 
     final JDialog dialogToReturn[] = new JDialog[1];
-    Awaitility.await().atMost(Duration.TWO_SECONDS).until(() -> {
-      // Get the opened windows
-      final Window[] windows = WindowMonitor.getWindows();
-      if (windows != null && windows.length > 0) {
-        for (Window window : windows) { 
-          if (window.isActive() && window instanceof JDialog) {
-            JDialog dialog = (JDialog) window;
-            String dialogTitle = dialog.getTitle();
-            if (dialogTitle != null) {
-              // If the dialog title is the same or starts with the given title
-              // return this dialog
-              if (title.equals(dialogTitle) || dialogTitle.startsWith(title)) {
-                dialogToReturn[0] = dialog;
+    try {
+      Awaitility.await().atMost(Duration.TWO_SECONDS).until(() -> {
+        // Get the opened windows
+        final Window[] windows = WindowMonitor.getWindows();
+        if (windows != null && windows.length > 0) {
+          for (Window window : windows) { 
+            if (window.isActive() && window instanceof JDialog) {
+              JDialog dialog = (JDialog) window;
+              String dialogTitle = dialog.getTitle();
+              if (dialogTitle != null) {
+                // If the dialog title is the same or starts with the given title
+                // return this dialog
+                if (title.equals(dialogTitle) || dialogTitle.startsWith(title)) {
+                  dialogToReturn[0] = dialog;
+                }
               }
             }
           }
-        }
-      }                
-      return Objects.nonNull(dialogToReturn[0]);
-    });
+        }                
+        return Objects.nonNull(dialogToReturn[0]);
+      });
+
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
 
     if(Objects.isNull(dialogToReturn[0])) {
       LOGGER.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
