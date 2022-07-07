@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -18,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.Awaitility;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -29,8 +32,10 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.base.Supplier;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
@@ -251,7 +256,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(500);
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -265,8 +270,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);
         });
-        flushAWT();
-
+       
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
@@ -284,9 +288,22 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         break;
       }
     }
-    sleep(500);
     
-    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
+    final Supplier<String> branchName = new Supplier<String>() { 
+      @Override
+      public String get() {
+        try {
+          return gitAccess.getRepository().getBranch();
+        } catch (IOException | NoRepositorySelected e) {
+          return null;
+        }
+      }
+    };
+    
+    Awaitility.waitAtMost(500, TimeUnit.MILLISECONDS).until(() -> 
+      GitAccess.DEFAULT_BRANCH_NAME.equals(branchName.get()));
+    
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, branchName.get());
     
     assertEquals("Cannot_checkout_new_branch_when_having_conflicts", errMsg[0]);
   }
@@ -342,7 +359,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(500);
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -356,7 +373,6 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);
         });
-        flushAWT();
 
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
@@ -375,10 +391,23 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         break;
       }
     }
-    sleep(500);
     
+    final Supplier<String> branchName = new Supplier<String>() { 
+      @Override
+      public String get() {
+        try {
+          return gitAccess.getRepository().getBranch();
+        } catch (IOException | NoRepositorySelected e) {
+          return null;
+        }
+      }
+    };
+    
+    Awaitility.waitAtMost(500, TimeUnit.MILLISECONDS).until(() -> 
+      GitAccess.DEFAULT_BRANCH_NAME.equals(branchName.get()));
+
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
-    
+
     assertEquals("Cannot_checkout_new_branch_when_having_conflicts", errMsg[0]);
   }
   
@@ -429,7 +458,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     GitControllerBase mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(500);
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -443,8 +472,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);
         });
-        flushAWT();
-
+      
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
@@ -462,8 +490,21 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         break;
       }
     }
-    sleep(500);
     
+    final Supplier<String> branchName = new Supplier<String>() { 
+      @Override
+      public String get() {
+        try {
+          return gitAccess.getRepository().getBranch();
+        } catch (IOException | NoRepositorySelected e) {
+          return null;
+        }
+      }
+    };
+    
+    Awaitility.waitAtMost(500, TimeUnit.MILLISECONDS).until(() -> 
+    "a_new_day".equals(branchName.get()));
+
     assertEquals("a_new_day", gitAccess.getRepository().getBranch());
   }
   
@@ -484,7 +525,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
     push("", "");
-  
+
     // Create new_branch, change file and commit
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
@@ -492,18 +533,18 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "altfel");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
-    
+
     // Move to main branch and change file
     gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    
+
     GitControllerBase gitCtrl = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
-    sleep(500);
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(gitCtrl);
-   
+
     // Simulate branch checkout from Git Branch Manager view
     GitTreeNode node = new GitTreeNode(
         new TreePath(
@@ -513,8 +554,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     for (AbstractAction abstractAction : actionsForNode) {
       if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
         SwingUtilities.invokeLater(() -> abstractAction.actionPerformed(null));
-        flushAWT();
-
+      
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
@@ -526,7 +566,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
             translator.getTranslation(Tags.BRANCH_NAME) + ": ",
             JTextField.class);
         branchNameTextField.setText("a_new_day");
-        
+
         JButton okButton = findFirstButton(createBranchDialog, "Create");
         if (okButton != null) {
           okButton.setEnabled(true);
@@ -536,18 +576,35 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         break;
       }
     }
-    
-    sleep(1000);
-    
-    Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
-    
-    JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
-    yesButton.doClick();
-    flushAWT();
-    sleep(1000);
-    
-    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
-    
+
+    Awaitility.waitAtMost(1000, TimeUnit.MILLISECONDS).until(() -> {
+      final Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager()
+          .getFocusedWindow();
+      if(Objects.nonNull(focusedWindow)) {
+        final JButton yesButton = TestUtil.findButton(focusedWindow, 
+            translator.getTranslation(Tags.MOVE_CHANGES));
+        if(Objects.nonNull(yesButton)) {
+          yesButton.doClick();
+          return true;
+        }
+      }
+      return false;
+    });
+
+    final Supplier<String> branchName = new Supplier<String>() { 
+      @Override
+      public String get() {
+        try {
+          return gitAccess.getRepository().getBranch();
+        } catch (IOException | NoRepositorySelected e) {
+          return null;
+        }
+      }
+    };
+
+    Awaitility.waitAtMost(1000, TimeUnit.MILLISECONDS).until(() -> 
+    GitAccess.DEFAULT_BRANCH_NAME.equals(branchName.get()));
+
     assertEquals("Cannot_checkout_new_branch_because_uncommitted_changes", errMsg[0]);
   }
   
