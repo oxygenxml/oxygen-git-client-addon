@@ -1,22 +1,28 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTable;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 
+import com.google.common.base.Supplier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
@@ -100,11 +106,22 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       dump = dumpHistory(Arrays.asList(commitCharacteristics));
       expected = replaceDate("[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n");
       assertEquals(expected, dump);
+      final Supplier<String> branchName = new Supplier<String>() { 
+        @Override
+        public String get() {
+          try {
+            return GitAccess.getInstance().getRepository().getBranch();
+          } catch (IOException | NoRepositorySelected e) {
+            return null;
+          }
+        }
+      };
       GitAccess.getInstance().checkoutCommitAndCreateBranch("new_branch", commitCharacteristics.getCommitId());
       waitForScheduler();
-      sleep(400);
-      assertEquals("new_branch", GitAccess.getInstance().getBranchInfo().getBranchName());
-      
+      Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).until(() -> 
+        "new_branch".equals(branchName.get())
+      );
+   
       // Check the history of the new branch
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       dump = dumpHistory(commitsCharacteristics);
@@ -137,8 +154,8 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       
       GitAccess.getInstance().setRepositorySynchronously(repoDir.getParent());
        
-      int initialNoOfRefreshes = 0;
-      assertEquals(initialNoOfRefreshes, noOfRefreshes);
+      final int initialNoOfRefreshes[] = { 0 };
+      assertEquals(initialNoOfRefreshes[0], noOfRefreshes);
       
       File file = new File(repoDir, "textFile.txt");
       setFileContent(file, "BLA");
@@ -147,18 +164,26 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       
       GitAccess.getInstance().add(new FileStatus(GitChangeType.ADD, "textFile.txt"));
       GitAccess.getInstance().commit("Another commit");
-      assertEquals(++initialNoOfRefreshes, noOfRefreshes);
+      initialNoOfRefreshes[0]++;
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->initialNoOfRefreshes[0]
+          == noOfRefreshes);
       
       refreshSupport.setHistoryPanel(historyPanel);
       refreshSupport.call();
-      sleep(1000);
-      assertEquals(++initialNoOfRefreshes, noOfRefreshes);
+      
+      initialNoOfRefreshes[0]++;
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->initialNoOfRefreshes[0]
+          == noOfRefreshes);
       
       GitAccess.getInstance().createBranch("new_branch");
-      assertEquals(++initialNoOfRefreshes, noOfRefreshes);
+      initialNoOfRefreshes[0]++;
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
+          == noOfRefreshes);
       
       GitAccess.getInstance().deleteBranch("new_branch");
-      assertEquals(++initialNoOfRefreshes, noOfRefreshes);
+      initialNoOfRefreshes[0]++;
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
+          == noOfRefreshes);
       
       final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
       RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
@@ -168,12 +193,13 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       config.save();
       
       PUSH_PULL_CONTROLLER.push();
-      sleep(700);
-      assertEquals(++initialNoOfRefreshes, noOfRefreshes);
+      initialNoOfRefreshes[0]++;
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
+          == noOfRefreshes);
       
     } finally {
       GitAccess.getInstance().closeRepo();
-      sleep(1000);
+      sleep(100);
       FileUtils.deleteDirectory(repoDir);
     }
   }
