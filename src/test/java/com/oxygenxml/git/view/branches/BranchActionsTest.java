@@ -1,7 +1,9 @@
 package com.oxygenxml.git.view.branches;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -10,6 +12,8 @@ import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 
@@ -19,6 +23,7 @@ import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.event.GitController;
@@ -62,7 +67,17 @@ public class BranchActionsTest extends GitTestBase {
    * 
    * @throws Exception
    */
-  public void testCheckoutLocalBranchAction() throws Exception{
+  public void testCheckoutLocalBranchAction() throws Exception {
+    final Supplier<String> branchName = new Supplier<String>() { 
+      @Override
+      public String get() {
+        try {
+          return gitAccess.getRepository().getBranch();
+        } catch (IOException | NoRepositorySelected e) {
+          return null;
+        }
+      }
+    };
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
     setFileContent(file, "local content");
@@ -98,9 +113,10 @@ public class BranchActionsTest extends GitTestBase {
         break;
       }
     }
-    sleep(500);
-    gitAccess.fetch();
-    assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
+   
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      LOCAL_BRANCH_NAME1.equals(branchName.get())
+    );
     
     //------------- Checkout the next branch in the tree: LOCAL_BRANCH_NAME1 -------------
     GitTreeNode nextLeaf = (GitTreeNode)firstLeaf.getNextLeaf();
@@ -114,9 +130,10 @@ public class BranchActionsTest extends GitTestBase {
     if (checkoutAction != null) {
       checkoutAction.actionPerformed(null);
     }
-    sleep(500);
-    gitAccess.fetch();
-    assertEquals(LOCAL_BRANCH_NAME2, gitAccess.getRepository().getBranch());
+     
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      LOCAL_BRANCH_NAME2.equals(branchName.get())
+    );
   }
   
   /**
@@ -179,9 +196,8 @@ public class BranchActionsTest extends GitTestBase {
           break;
         }
       }
-      sleep(500);
-
-      gitAccess.fetch();
+      
+      sleep(200);
       branchManagementPanel.refreshBranches();
       flushAWT();
       root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
@@ -265,9 +281,7 @@ public class BranchActionsTest extends GitTestBase {
           break;
         }
       }
-      sleep(500);
-
-      gitAccess.fetch();
+      sleep(200);
       branchManagementPanel.refreshBranches();
       flushAWT();
       root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
@@ -339,9 +353,7 @@ public class BranchActionsTest extends GitTestBase {
         break;
       }
     }
-    sleep(500);
-    
-    gitAccess.fetch();
+    sleep(200);
     branchManagementPanel.refreshBranches();
     flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
@@ -412,8 +424,7 @@ public class BranchActionsTest extends GitTestBase {
         }
       }
     }
-    sleep(500);
-    gitAccess.fetch();
+    sleep(200);
     branchManagementPanel.refreshBranches();
     flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
@@ -459,8 +470,7 @@ public class BranchActionsTest extends GitTestBase {
         break;
       }
     }
-    sleep(500);
-    gitAccess.fetch();
+    sleep(200);
     branchManagementPanel.refreshBranches();
     flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
