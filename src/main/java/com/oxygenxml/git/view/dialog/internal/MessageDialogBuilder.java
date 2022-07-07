@@ -156,4 +156,17 @@ public class MessageDialogBuilder {
     return dialog;
   }
   
+  /**
+   * Reset all optional flags to default value.
+   * 
+   * @return This dialog builder.
+   */
+  public MessageDialogBuilder reset() {
+    final DialogInfo newDialogInfo = new DialogInfo();
+    newDialogInfo.title = dialogInfo.title;
+    newDialogInfo.iconPath = dialogInfo.iconPath;
+    this.dialogInfo = newDialogInfo;
+    return this;
+  }
+  
 }
