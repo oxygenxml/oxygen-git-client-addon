@@ -8,6 +8,8 @@ import java.util.concurrent.Semaphore;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
@@ -65,7 +67,6 @@ public class FlatView2Test extends FlatViewTestBase {
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo = createRepository(localTestRepository);
     bindLocalToRemote(localRepo , remoteRepo);
-    sleep(700);
 
     // Create a new file and push it.
     String fileName = "test.txt";
@@ -137,10 +138,7 @@ public class FlatView2Test extends FlatViewTestBase {
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
-    
-    assertFalse(secondRepoFile.exists());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> !secondRepoFile.exists()); 
     pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
@@ -168,13 +166,11 @@ public class FlatView2Test extends FlatViewTestBase {
 
     // --------------- REPO 2
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
-    sleep(300);
-    assertFalse(rebasePanel.isShowing());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> !rebasePanel.isShowing());
     
     // --------------- REPO 1
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
-    sleep(300);
-    assertTrue(rebasePanel.isShowing());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> rebasePanel.isShowing());
   }
   
   /**
@@ -216,10 +212,7 @@ public class FlatView2Test extends FlatViewTestBase {
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
-    
-    assertFalse(secondRepoFile.exists());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> !secondRepoFile.exists());
     pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
@@ -242,9 +235,8 @@ public class FlatView2Test extends FlatViewTestBase {
     PullResponse pullResponse = pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
-    sleep(1000);
-    
-    assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> PullStatus.CONFLICTS 
+        == pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
 
     JButton abortButton = findFirstButton(rebasePanel, "Abort_rebase");
@@ -252,9 +244,7 @@ public class FlatView2Test extends FlatViewTestBase {
     
     abortButton.doClick();
     flushAWT();
-    sleep(500);
-    
-    assertFalse(rebasePanel.isShowing());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> !rebasePanel.isShowing());
   }
   
   /**
@@ -296,10 +286,7 @@ public class FlatView2Test extends FlatViewTestBase {
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
-    
-    assertFalse(secondRepoFile.exists());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> !secondRepoFile.exists());
     pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
@@ -522,7 +509,6 @@ public class FlatView2Test extends FlatViewTestBase {
     GitController ppc = (GitController) stagingPanel.getGitController();
     ppc.pull(PullType.REBASE);
     flushAWT();
-    sleep(300);
     
     JDialog interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNotNull(interruptedRebaseDlg);
@@ -532,7 +518,6 @@ public class FlatView2Test extends FlatViewTestBase {
         Translator.getInstance().getTranslation(Tags.CANCEL));
     abortBtn.doClick();
     flushAWT();
-    sleep(1000);
     
     interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNull(interruptedRebaseDlg);
@@ -587,9 +572,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
       refreshSupport.call();
       flushAWT();
-      sleep(400);
-
-      assertFalse(secondRepoFile.exists());
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> !secondRepoFile.exists());
       pull("", "", PullType.REBASE, false);
       assertTrue(secondRepoFile.exists());
 
@@ -612,15 +595,14 @@ public class FlatView2Test extends FlatViewTestBase {
       PullResponse pullResponse = pull("", "", PullType.REBASE, false);
       refreshSupport.call();
       flushAWT();
-      sleep(500);
-      assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+        PullStatus.CONFLICTS ==  pullResponse.getStatus());
       assertTrue(rebasePanel.isShowing());
 
       // Pull again. Rebase in progress dialog is shown
       GitController ppc = (GitController) stagingPanel.getGitController();
       ppc.pull(PullType.REBASE);
       flushAWT();
-      sleep(300);
 
       JDialog rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
       assertNotNull(rebaseInProgressDlg);
@@ -646,7 +628,6 @@ public class FlatView2Test extends FlatViewTestBase {
           Translator.getInstance().getTranslation(Tags.CONTINUE_REBASE));
       continueBtn.doClick();
 
-
       waitForScheduler();
       
       assertEquals("Cannot_continue_rebase_because_of_conflicts", errMessage[0]);
@@ -665,7 +646,6 @@ public class FlatView2Test extends FlatViewTestBase {
       // Pull again.
       ppc.pull(PullType.REBASE);
       flushAWT();
-      sleep(300);
 
       // Rebase in progress dialog shown
       rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
@@ -680,7 +660,6 @@ public class FlatView2Test extends FlatViewTestBase {
       
       flushAWT();
       waitForScheduler();
-      sleep(1000);
 
       rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
       assertNull(rebaseInProgressDlg);
