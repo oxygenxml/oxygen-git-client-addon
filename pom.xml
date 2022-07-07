@@ -30,7 +30,7 @@
 	</developers>
 
 	<properties>
-	    <oxygen.version>22.1.0.0</oxygen.version>
+		<oxygen.version>22.1.0.0</oxygen.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- We want sonar. -->
@@ -57,7 +57,7 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
 			<version>3.6.0</version>
-			<scope>test</scope> 
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
@@ -73,12 +73,12 @@
 		</dependency>
 
 		<!-- JGit -->
-		<!-- EXM-49967 oxygen-superpom-versions has a JGit 5.11 dependency. We need to override it,
-		othewise we will distribute mix versions. -->
+		<!-- EXM-49967 oxygen-superpom-versions has a JGit 5.11 dependency. We 
+			need to override it, othewise we will distribute mix versions. -->
 		<dependency>
-		    <groupId>org.eclipse.jgit</groupId>
-		    <artifactId>org.eclipse.jgit</artifactId>
-		    <version>5.13.0.202109080827-r</version>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+			<version>5.13.0.202109080827-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
@@ -103,6 +103,19 @@
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 			<scope>provided</scope>
+		</dependency>
+
+        <!-- Awaitility -->
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.bytebuddy</groupId>
+					<artifactId>byte-buddy</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Oxygen SDK -->
@@ -147,16 +160,17 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- EXM-49720 - SET SCOPE PROVIDED TO EXCLUDE slf4j-api AND logback FROM ADDON. -->
+		<!-- EXM-49720 - SET SCOPE PROVIDED TO EXCLUDE slf4j-api AND logback FROM 
+			ADDON. -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-		    <groupId>ch.qos.logback</groupId>
-        	<artifactId>logback-classic</artifactId>
-        	<scope>provided</scope>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<!-- EXM-49720 END -->
 
@@ -261,16 +275,16 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-			 <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.17</version>
-        <configuration>
-          <excludes>
-           
-          </excludes>
-        </configuration>
-      </plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.17</version>
+					<configuration>
+						<excludes>
+
+						</excludes>
+					</configuration>
+				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
