@@ -59,7 +59,7 @@ public class FlatView11Test extends FlatViewTestBase {
       mainFrame.repaint();
     });
     flushAWT();
-    sleep(3000);
+    
     assertEquals(
         "thisIsTheFirstSubFolder/thisIsTheSecondSubFolder/thisIsTheThirdSubFolder/test.txt",
         tableCellRenderer.getText());
@@ -70,7 +70,7 @@ public class FlatView11Test extends FlatViewTestBase {
       mainFrame.repaint();
     });
     flushAWT();
-    sleep(3000);
+   
     assertEquals(
         "thisIsTheFirstSubFolder/.../thisIsTheThirdSubFolder/test.txt",
         tableCellRenderer.getText());
@@ -81,7 +81,7 @@ public class FlatView11Test extends FlatViewTestBase {
       mainFrame.repaint();
     });
     flushAWT();
-    sleep(3000);
+   
     assertEquals(
         "thisIsTheFirstSubFolder/.../test.txt",
         tableCellRenderer.getText());
