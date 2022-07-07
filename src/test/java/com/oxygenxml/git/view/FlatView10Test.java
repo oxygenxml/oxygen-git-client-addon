@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import javax.swing.JButton;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.junit.Test;
@@ -85,8 +87,9 @@ public class FlatView10Test extends FlatViewTestBase {
     GitAccess.getInstance().commit("Third commit.");
     
     // Now pull to generate conflict
-    ConflictButtonsPanel abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
-    assertFalse(abortMergeButtonPanel.isShowing());
+    ConflictButtonsPanel abortMergeButtonPanel[] = { stagingPanel.getConflictButtonsPanel() };
+    
+    assertFalse(abortMergeButtonPanel[0].isShowing());
     flushAWT();
     PullResponse pullResponse = pull("", "", PullType.MERGE_FF, false);
     refreshSupport.call();
@@ -94,18 +97,18 @@ public class FlatView10Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
     assertEquals(RepositoryState.MERGING, repositoryState);
-    assertTrue(abortMergeButtonPanel.isShowing());
+    assertTrue(abortMergeButtonPanel[0].isShowing());
 
     // --------------- REPO 2
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository_2);
-    sleep(300);
-    assertFalse(abortMergeButtonPanel.isShowing());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+        !abortMergeButtonPanel[0].isShowing()); 
     
     // --------------- REPO 1
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository_1);
-    sleep(300);
-    assertTrue(abortMergeButtonPanel.isShowing());
-    JButton abortMergeBtn = findFirstButton(abortMergeButtonPanel, Tags.ABORT_MERGE);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+    abortMergeButtonPanel[0].isShowing()); 
+    JButton abortMergeBtn = findFirstButton(abortMergeButtonPanel[0], Tags.ABORT_MERGE);
     assertNotNull(abortMergeBtn);
     
     // Resolve using mine
@@ -122,17 +125,17 @@ public class FlatView10Test extends FlatViewTestBase {
     waitForScheduler();
     flushAWT();
 
-    abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
-    assertFalse(abortMergeButtonPanel.isShowing());
+    abortMergeButtonPanel[0] = stagingPanel.getConflictButtonsPanel();
+    assertFalse(abortMergeButtonPanel[0].isShowing());
     
     // Restart merge
     GitAccess.getInstance().restartMerge();
     flushAWT();
     sleep(200);
     
-    abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
-    assertTrue(abortMergeButtonPanel.isShowing());
-    abortMergeBtn = findFirstButton(abortMergeButtonPanel, Tags.ABORT_MERGE);
+    abortMergeButtonPanel[0] = stagingPanel.getConflictButtonsPanel();
+    assertTrue(abortMergeButtonPanel[0].isShowing());
+    abortMergeBtn = findFirstButton(abortMergeButtonPanel[0], Tags.ABORT_MERGE);
     assertNotNull(abortMergeBtn);
     
     // Resolve using theirs
@@ -140,16 +143,16 @@ public class FlatView10Test extends FlatViewTestBase {
     waitForScheduler();
     flushAWT();
 
-    abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
-    assertFalse(abortMergeButtonPanel.isShowing());
+    abortMergeButtonPanel[0] = stagingPanel.getConflictButtonsPanel();
+    assertFalse(abortMergeButtonPanel[0].isShowing());
     
     // Restart merge
     GitAccess.getInstance().restartMerge();
     flushAWT();
     
-    abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
-    assertTrue(abortMergeButtonPanel.isShowing());
-    abortMergeBtn = findFirstButton(abortMergeButtonPanel, Tags.ABORT_MERGE);
+    abortMergeButtonPanel[0] = stagingPanel.getConflictButtonsPanel();
+    assertTrue(abortMergeButtonPanel[0].isShowing());
+    abortMergeBtn = findFirstButton(abortMergeButtonPanel[0], Tags.ABORT_MERGE);
     assertNotNull(abortMergeBtn);
     repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
     assertEquals(RepositoryState.MERGING, repositoryState);
@@ -159,8 +162,8 @@ public class FlatView10Test extends FlatViewTestBase {
     // Abort merge
     abortMergeBtn.doClick();
     flushAWT();
-    abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
-    assertFalse(abortMergeButtonPanel.isShowing());
+    abortMergeButtonPanel[0] = stagingPanel.getConflictButtonsPanel();
+    assertFalse(abortMergeButtonPanel[0].isShowing());
     
     repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
     assertEquals(RepositoryState.SAFE, repositoryState);
