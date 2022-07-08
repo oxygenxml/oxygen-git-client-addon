@@ -46,7 +46,6 @@ public class AutoCommitTest extends FlatViewTestBase {
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo = createRepository(localTestRepository);
     bindLocalToRemote(localRepo , remoteRepo);
-    sleep(500);
 
     pushOneFileToRemote(localTestRepository, "test_second_local.txt", "hellllo");
     flushAWT();
@@ -66,8 +65,7 @@ public class AutoCommitTest extends FlatViewTestBase {
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
     stagingPanel.getCommitPanel().getCommitMessageArea().setText("Commit message");
     stagingPanel.getCommitPanel().getCommitButton().doClick();
-    waitForScheluerBetter();
-    flushAWT();
+    waitForSchedulerBetter();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
 
     // Change the file again.
@@ -83,8 +81,7 @@ public class AutoCommitTest extends FlatViewTestBase {
       stagingPanel.getCommitPanel().getCommitMessageArea().setText("Another commit message");
       stagingPanel.getCommitPanel().getCommitButton().doClick();
     });
-    waitForScheluerBetter();
-    flushAWT();
+    waitForSchedulerBetter();
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
   }
 
@@ -129,7 +126,6 @@ public class AutoCommitTest extends FlatViewTestBase {
       Repository remoteRepo = createRepository(remoteTestRepository);
       Repository localRepo = createRepository(localTestRepository);
       bindLocalToRemote(localRepo , remoteRepo);
-      sleep(500);
 
       pushOneFileToRemote(localTestRepository, "test_second_local.txt", "hellllo");
       flushAWT();
@@ -149,8 +145,7 @@ public class AutoCommitTest extends FlatViewTestBase {
       assertEquals(0, GitAccess.getInstance().getPushesAhead());
       stagingPanel.getCommitPanel().getCommitMessageArea().setText("Commit message");
       stagingPanel.getCommitPanel().getCommitButton().doClick();
-      waitForScheluerBetter();
-      flushAWT();
+      waitForSchedulerBetter();
       assertEquals(1, GitAccess.getInstance().getPushesAhead());
 
       // Change the file again.
@@ -166,7 +161,7 @@ public class AutoCommitTest extends FlatViewTestBase {
         stagingPanel.getCommitPanel().getCommitMessageArea().setText("Another commit message");
         stagingPanel.getCommitPanel().getCommitButton().doClick();
       });
-      waitForScheluerBetter();
+      waitForSchedulerBetter();
       flushAWT();
 
       assertEquals(0, GitAccess.getInstance().getPushesAhead());

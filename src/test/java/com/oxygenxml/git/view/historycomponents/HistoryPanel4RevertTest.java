@@ -90,14 +90,13 @@ public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
       
       GitAccess.getInstance().revertCommit(commitCharacteristics.getCommitId());
       waitForScheduler();
-      sleep(400);
 
       // Check the history of the new branch
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
       dump = dumpHistory(commitsCharacteristics);
       expected = "[ Revert \"Changes.\"\n"
           + "\n"
-          + "This reverts commit "+commitCharacteristics.getCommitId()+".\n"
+          + "This reverts commit "+ commitCharacteristics.getCommitId()+".\n"
           + " , {date} , AlexJitianu <alex_jitianu@sync.ro> , 5 , AlexJitianu , [1] ]\n"
           + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
           + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"

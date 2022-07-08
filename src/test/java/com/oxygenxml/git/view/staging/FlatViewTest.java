@@ -87,7 +87,7 @@ public class FlatViewTest extends FlatViewTestBase {
     setFileContent(file, "modified from 1st repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     GitAccess.getInstance().commit("modified from 2nd local repo");
-    
+    waitForScheduler();
     // Get the remote. The conflict appears.
     pull();
     flushAWT();
@@ -97,9 +97,7 @@ public class FlatViewTest extends FlatViewTestBase {
     stagingPanel.getGitController().asyncResolveUsingMine(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     
-    waitForScheduler();
-    
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     
     assertTableModels("", "");
 
@@ -156,7 +154,7 @@ public class FlatViewTest extends FlatViewTestBase {
     setFileContent(file, "modified from 1st repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     GitAccess.getInstance().commit("modified from 2nd local repo");
-    
+    waitForScheduler();
     // Get the remote. The conflict appears.
     pull();
     flushAWT();

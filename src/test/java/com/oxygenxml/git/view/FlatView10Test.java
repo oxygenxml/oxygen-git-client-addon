@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 
@@ -68,9 +69,8 @@ public class FlatView10Test extends FlatViewTestBase {
     
     refreshSupport.call();
     flushAWT();
-    sleep(400);
-    
-    assertFalse(secondRepoFile.exists());
+    Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).until(() -> 
+      !secondRepoFile.exists());
     pull("", "", PullType.MERGE_FF, false);
     assertTrue(secondRepoFile.exists());
     

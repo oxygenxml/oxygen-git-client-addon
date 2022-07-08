@@ -82,7 +82,7 @@ public class FlatView6Test extends FlatViewTestBase {
       usButton.doClick();
     }
     
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
   }
   
   protected final void switchToView(ResourcesViewMode viewMode) {
@@ -149,7 +149,6 @@ public class FlatView6Test extends FlatViewTestBase {
     // Add it to the index.
     add(new FileStatus(GitChangeType.UNTRACKED, "test.txt"));
     flushAWT();
-    sleep(400);
     assertTableModels("", "ADD, test.txt");
     
     GitAccess.getInstance().commit("First version.");

@@ -10,6 +10,8 @@ import javax.swing.JDialog;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
@@ -184,17 +186,15 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.MERGE));
     mergeOkButton.doClick();
     flushAWT();
-    sleep(300);
-
+    
     JDialog conflictMergeDialog = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
     assertNotNull(conflictMergeDialog);
     conflictMergeDialog.setVisible(false);
     conflictMergeDialog.dispose();
-    flushAWT();
-    sleep(200);
-
-    assertTrue(TestUtil.read(file1.toURI().toURL()).contains("<<<<<<< HEAD\n" + "local file 1 modifications\n"
-        + "=======\n" + "local file 1 on new branch\n" + ">>>>>>>"));
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      TestUtil.read(file1.toURI().toURL()).contains("<<<<<<< HEAD\n" + "local file 1 modifications\n"
+        + "=======\n" + "local file 1 on new branch\n" + ">>>>>>>")
+    );
 
     assertTrue(TestUtil.read(file2.toURI().toURL()).contains("<<<<<<< HEAD\n" + "local file 2 modifications\n"
         + "=======\n" + "local file 2 on new branch\n" + ">>>>>>>"));
@@ -224,9 +224,9 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     JButton revertOkButton = findFirstButton(revertConfirmationDlg, Tags.YES);
     revertOkButton.doClick();
     flushAWT();
-    sleep(300);
-
-    assertEquals("", errMsg[0]);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      "".equals(errMsg[0])
+    );
   }
 
 }

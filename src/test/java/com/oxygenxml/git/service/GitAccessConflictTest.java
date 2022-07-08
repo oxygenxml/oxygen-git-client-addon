@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -236,7 +239,6 @@ public class GitAccessConflictTest extends TestCase {
     gitAccess.commit("file test added");
     push("", "");
   
-
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File testFileSecondRepo = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
@@ -252,20 +254,19 @@ public class GitAccessConflictTest extends TestCase {
 		GitController gitCtrl = new GitController(gitAccess);
     gitCtrl.asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
-    sleep(700);
-		
-		String expected = "hellllo";
-		String actual = getFileContent(testFileSecondRepo);
-		assertEquals(expected, actual);
+    final String expected = "hellllo";
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
+      expected.equals(getFileContent(testFileSecondRepo))
+    );
 		
 		// Pulling now will say that the merge was not concluded and we should commit
     assertEquals(RepositoryState.MERGING_RESOLVED, gitAccess.getRepository().getRepositoryState());
 
     GitController ppc = new GitController(gitAccess);
     ppc.pull();
-    sleep(1200);
-
-    assertEquals("Conclude_Merge_Message", shownWarningMess[0]);
+    Awaitility.await().atMost(1500, TimeUnit.MILLISECONDS).until(() ->
+      "Conclude_Merge_Message".equals(shownWarningMess[0])
+    );
 	}
 
 	@Test
@@ -280,7 +281,6 @@ public class GitAccessConflictTest extends TestCase {
     gitAccess.commit("file test added");
     push("", "");
   
-
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
@@ -301,10 +301,9 @@ public class GitAccessConflictTest extends TestCase {
 		assertEquals(expected, actual);
 		
 		gitAccess.restartMerge();
-		sleep(1000);
-		actual = gitAccess.getRepository().getRepositoryState();
-		expected = RepositoryState.MERGING;
-		assertEquals(expected, actual);
+	  Awaitility.await().atMost(1500, TimeUnit.MILLISECONDS).until(() ->
+	    RepositoryState.MERGING.equals(gitAccess.getRepository().getRepositoryState())
+    );
 	}
 	
   /**
@@ -396,7 +395,8 @@ public class GitAccessConflictTest extends TestCase {
     };
     gitCtrl.asyncResolveUsingMine(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
-    sleep(700);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
+      "changed in local 2".equals(getFileContent(local1File)));
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -412,10 +412,8 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
     gitAccess.continueRebase();
-    sleep(700);
-    
-    repositoryState = gitAccess.getRepository().getRepositoryState();
-    assertEquals(RepositoryState.SAFE, repositoryState);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
+      RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     
     assertEquals(0, gitAccess.getPullsBehind());
     assertEquals(0, gitAccess.getPushesAhead());
@@ -514,7 +512,8 @@ public class GitAccessConflictTest extends TestCase {
     };
     gitCtrl.asyncResolveUsingMine(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
-    sleep(700);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      "changed in local 2".equals(getFileContent(local1File)));
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -531,10 +530,8 @@ public class GitAccessConflictTest extends TestCase {
     
     // Abort. Go back to the state before trying to pull.
     gitAccess.abortRebase();
-    sleep(700);
-    
-    repositoryState = gitAccess.getRepository().getRepositoryState();
-    assertEquals(RepositoryState.SAFE, repositoryState);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     
     assertEquals(
         "changed in local 1",
@@ -633,8 +630,6 @@ public class GitAccessConflictTest extends TestCase {
     };
     gitCtrl.asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
-    sleep(700);
-    
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -653,11 +648,8 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
     gitAccess.continueRebase();
-    sleep(700);
-    
-    repositoryState = gitAccess.getRepository().getRepositoryState();
-    assertEquals(RepositoryState.SAFE, repositoryState);
-    
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     gitStatus = gitAccess.getStatus();
     assertTrue(gitStatus.getStagedFiles().isEmpty());
     assertTrue(gitStatus.getUnstagedFiles().isEmpty());
@@ -754,7 +746,8 @@ public class GitAccessConflictTest extends TestCase {
     };
     gitCtrl.asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
-    sleep(700);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
+      "changed in local 1".equals(getFileContent(local1File)));
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -773,10 +766,8 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
     gitAccess.abortRebase();
-    sleep(700);
-    
-    repositoryState = gitAccess.getRepository().getRepositoryState();
-    assertEquals(RepositoryState.SAFE, repositoryState);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
+      RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     
     gitStatus = gitAccess.getStatus();
     assertTrue(gitStatus.getStagedFiles().isEmpty());
@@ -876,7 +867,8 @@ public class GitAccessConflictTest extends TestCase {
     };
     gitCtrl.asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
-    sleep(1000);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      "changed in local 1".equals(getFileContent(local1File)));
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -900,10 +892,8 @@ public class GitAccessConflictTest extends TestCase {
     
     // Restart merge
     gitAccess.restartMerge();
-    sleep(1000);
-    
-    repositoryState = gitAccess.getRepository().getRepositoryState();
-    assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+      RepositoryState.REBASING_MERGE.equals(gitAccess.getRepository().getRepositoryState()));
     
     gitStatus = gitAccess.getStatus();
     assertTrue(gitStatus.getStagedFiles().isEmpty());
@@ -912,17 +902,6 @@ public class GitAccessConflictTest extends TestCase {
         gitStatus.getUnstagedFiles().toString());
     
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
-  }
-  
-  /**
-   * Sleep well!
-   * 
-   * @param delay Delay.
-   * 
-   * @throws InterruptedException
-   */
-  private void sleep(int delay) throws InterruptedException {
-    Thread.sleep(delay);
   }
 
   /**

@@ -3,9 +3,11 @@ package com.oxygenxml.git.view.staging;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.awaitility.Awaitility;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -84,7 +86,7 @@ public class FlatView8Test extends FlatViewTestBase {
       commitPanel.getCommitMessageArea().setText("FIRST COMMIT MESSAGE");
       commitPanel.getCommitButton().doClick();
       });
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     
     RevCommit firstCommit = getLastCommit();
@@ -109,16 +111,14 @@ public class FlatView8Test extends FlatViewTestBase {
     assertEquals("REPLACE THIS, PLEASE", commitPanel.getCommitMessageArea().getText());
     
     SwingUtilities.invokeLater(() -> amendBtn.setSelected(true));
-    waitForScheluerBetter();
-    flushAWT();
+    waitForSchedulerBetter();
     assertTrue(amendBtn.isSelected());
     assertEquals("FIRST COMMIT MESSAGE", commitPanel.getCommitMessageArea().getText());
     
     SwingUtilities.invokeLater(() -> commitPanel.getCommitButton().doClick());
-    waitForScheluerBetter();
-    flushAWT();
-    sleep(500);
-    assertEquals(1, GitAccess.getInstance().getPushesAhead());
+    waitForSchedulerBetter();
+    Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).until(() -> 
+      1 == GitAccess.getInstance().getPushesAhead());
     assertFalse(amendBtn.isSelected());
     assertEquals("", commitPanel.getCommitMessageArea().getText());
     

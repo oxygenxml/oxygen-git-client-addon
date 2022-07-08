@@ -248,7 +248,6 @@ public class TagsVisualTest extends GitTestBase {
     createTagDialog.getTagTitleField().setText("TagCreated");
     createTagDialog.getTagMessageField().setText("Mesaj Tag De Test");
     createTagDialog.setVisible(false);
-    flushAWT();
     sleep(500);
     createTagDialog.getOkButton().doClick();
     
@@ -276,7 +275,6 @@ public class TagsVisualTest extends GitTestBase {
     createTagDialog2.getTagMessageField().setText("Mesaj Tag De Test2");
     createTagDialog2.getPushCheckbox().setSelected(true);
     createTagDialog2.setVisible(false);
-    flushAWT();
     sleep(500);
     createTagDialog2.getOkButton().doClick();
     

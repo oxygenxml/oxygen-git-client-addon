@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -197,10 +198,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     
     refreshSupport.call();
     waitForScheduler();
-    sleep(400);
-    flushAWT();
-    
     remoteRepos.add(remoteRepo);
+    waitForScheduler();   
   }
 
   
@@ -230,10 +229,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     
     refreshSupport.call();
     waitForScheduler();
-    sleep(400);
-    flushAWT();
-    
     remoteRepos.add(remoteRepo);
+    waitForScheduler();
     
   }
 
@@ -732,7 +729,6 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       e.printStackTrace();
     }
     
-    
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
     System.gc();
@@ -746,7 +742,12 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     FileSystemUtil.deleteRecursivelly(new File("target/test-resources"));
     
     new File("src/test/resources/Options.xml").delete();
-    GitAccess.getInstance().getStatusCache().resetCache();
+    
+    // Sometimes a NPE is throw here.
+    Optional.ofNullable(GitAccess.getInstance()).ifPresent(gitAcc -> {
+      Optional.ofNullable(gitAcc.getStatusCache()).ifPresent(StatusCache::resetCache);
+    });
+    
     // wait more
     waitForScheduler();
   }

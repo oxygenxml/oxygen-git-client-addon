@@ -77,13 +77,13 @@ public class FlatView9Test extends FlatViewTestBase {
       commitPanel.getCommitMessageArea().setText("FIRST COMMIT MESSAGE");
       commitPanel.getCommitButton().doClick();
       });
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     // >>> Push
     push("", "");
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     refreshSupport.call();
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
     
     // Change the file again.
@@ -106,7 +106,7 @@ public class FlatView9Test extends FlatViewTestBase {
     
     assertTrue(commitPanel.getCommitButton().isEnabled());
     SwingUtilities.invokeLater(() -> amendBtn.setSelected(true));
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     flushAWT();
     // The amend was cancelled. We must not see the first commit message.
     assertEquals("SECOND COMMIT MESSAGE", commitPanel.getCommitMessageArea().getText());

@@ -299,19 +299,15 @@ public class TreeViewTest extends FlatViewTestBase {
     setFileContent(file, "modified from 1st repo");
     add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     GitAccess.getInstance().commit("modified from 2nd local repo");
-    
+    waitForScheduler();
     // Get the remote. The conflict appears.
     pull();
-    flushAWT();
-    sleep(300);
     assertTreeModels("CONFLICT, test.txt", "");
     
     stagingPanel.getGitController().asyncResolveUsingMine(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     
-    waitForScheduler();
-    
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     
     assertTreeModels("", "");
     
@@ -319,11 +315,11 @@ public class TreeViewTest extends FlatViewTestBase {
     CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
     assertEquals("Commit_to_merge", commitPanel.getCommitMessageArea().getText());
     
-    commitPanel.getCommitButton().doClick();
-    waitForScheduler();
+    // commitPanel.getCommitButton().doClick();
+    // waitForScheduler();
 
     // TODO What should it assert here?
-    assertEquals("", "");
+    // assertEquals("", "");
   }
 
   /**
@@ -380,6 +376,7 @@ public class TreeViewTest extends FlatViewTestBase {
     setFileContent(file, "modified from 1st repo");
     add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     GitAccess.getInstance().commit("modified from 2nd local repo");
+    waitForScheduler();
     
     // Get the remote. The conflict appears.
     pull();

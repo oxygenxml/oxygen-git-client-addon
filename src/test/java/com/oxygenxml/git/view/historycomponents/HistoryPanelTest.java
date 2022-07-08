@@ -77,7 +77,6 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       waitForScheduler();
       flushAWT();
-      sleep(300);
 
       JTable historyTable = historyPanel.getHistoryTable();
 
@@ -188,8 +187,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       waitForScheduler();
       flushAWT();
-      sleep(300);
-
+    
       JTable historyTable = historyPanel.getHistoryTable();
 
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
@@ -291,7 +289,6 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     historyPanel.showRepositoryHistory();
     waitForScheduler();
     flushAWT();
-    sleep(300);
 
     JTable historyTable = historyPanel.getHistoryTable();
 

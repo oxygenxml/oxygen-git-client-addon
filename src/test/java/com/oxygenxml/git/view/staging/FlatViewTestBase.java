@@ -97,7 +97,6 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @throws Exception If it fails.
    */
   protected void pull() throws Exception {
-    Thread.sleep(500);
     // Execute pull command and wait for it to finish.
     ((GitController) stagingPanel.getGitController()).pull().get();
   }
@@ -109,7 +108,6 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @param indexExpected Expected for the staged model.
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
-    sleep(200);
     flushAWT();
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
@@ -149,12 +147,11 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
   /**
    * Dumps the un-staged and stage models and asserts their content.
    * 
-   * @param unstagedExpected Expected for the un-staged model.
+   * @param unstagedExpected Expected for the unstaged model.
    * @param indexExpected Expected for the staged model.
    */
   protected void assertTreeModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTree filesTable = unstagedChangesPanel.getTreeView();
@@ -235,13 +232,14 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
     return file;
   }
   
-  protected void waitForScheluerBetter() {
+  protected void waitForSchedulerBetter() {
     // TODO Alex This sequence is needed because of com.oxygenxml.git.view.CommitAndStatusPanel.commitButtonAndMessageUpdateTaskTimer
     // We can stop using this timer and switch to the scheduler.
     sleep(300);
     flushAWT();
     waitForScheduler();
   }
+  
   
   /**
    * Adds a file in the git index.

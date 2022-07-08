@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.swing.JTable;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.junit.Test;
@@ -47,7 +49,6 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("nimic");
-      sleep(300);
       
       String dump = dumpHistory(model.getAllCommits(), true);
       assertEquals("", dump);
@@ -67,17 +68,14 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       waitForScheduler();
       flushAWT();
-      sleep(300);
   
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
-      sleep(700);
-      
-      String dump = dumpHistory(model.getAllCommits(), true);
-      String expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n";
-      assertEquals(expected, dump);
-      
+      final String expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n";
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+        expected.equals(dumpHistory(model.getAllCommits(), true))
+      ); 
   }
   
   /**
@@ -99,31 +97,26 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       //we search the message, but the message is not with uppercase
       model.filterChanged("FIRST COMMIT");
-      sleep(300);
       
       String dump = dumpHistory(model.getAllCommits(), true);
       String expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n";
       assertEquals(expected, dump);
       
-      sleep(100);
-      
       //we go back to the original list
       model.filterChanged("");
-      sleep(300);
       
-      dump = dumpHistory(model.getAllCommits(), true);
-      String expectedAll = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [1] ]\n" + 
+      final String expectedAll = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [1] ]\n" + 
           "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n" + 
           "";
-      assertEquals(expectedAll, dump);
-      
-      sleep(100);
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+        expectedAll.equals(dumpHistory(model.getAllCommits(), true))
+      );
       
       //we search for message but not in the right order 
       model.filterChanged("commit First");
-      sleep(300);
-      dump = dumpHistory(model.getAllCommits(), true);
-      assertEquals(expected, dump);
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
+        expected.equals(dumpHistory(model.getAllCommits(), true))
+      );
       
   }
   
@@ -146,13 +139,11 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       waitForScheduler();
       flushAWT();
-      sleep(300);
   
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
       historyTable.setRowSelectionInterval(0, 0);
-      sleep(300);
       
       JTable affectedFiles = historyPanel.getAffectedFilesTable();
       CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);

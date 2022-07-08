@@ -87,7 +87,7 @@ public class FlatView5Test extends FlatViewTestBase {
       commitPanel.getCommitMessageArea().setText("FIRST COMMIT MESSAGE");
       commitPanel.getCommitButton().doClick();
       });
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     
     RevCommit firstCommit = getLastCommit();
@@ -105,7 +105,7 @@ public class FlatView5Test extends FlatViewTestBase {
     assertEquals("", commitPanel.getCommitMessageArea().getText());
     
     SwingUtilities.invokeLater(() -> amendBtn.setSelected(true));
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     flushAWT();
     assertTrue(amendBtn.isSelected());
     assertEquals("FIRST COMMIT MESSAGE", commitPanel.getCommitMessageArea().getText());
@@ -113,7 +113,7 @@ public class FlatView5Test extends FlatViewTestBase {
     
     SwingUtilities.invokeLater(() -> commitPanel.getCommitMessageArea().setText("EDITED MESSAGE"));
     SwingUtilities.invokeLater(() -> commitPanel.getCommitButton().doClick());
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     flushAWT();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     assertFalse(amendBtn.isSelected());
@@ -164,13 +164,13 @@ public class FlatView5Test extends FlatViewTestBase {
       commitPanel.getCommitMessageArea().setText("FIRST COMMIT MESSAGE");
       commitPanel.getCommitButton().doClick();
       });
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     // >>> Push
     push("", "");
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     refreshSupport.call();
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
     
     SwingUtilities.invokeLater(() -> {
@@ -187,7 +187,7 @@ public class FlatView5Test extends FlatViewTestBase {
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
     SwingUtilities.invokeLater(() -> amendBtn.setSelected(true));
-    waitForScheluerBetter();
+    waitForSchedulerBetter();
     flushAWT();
     // The amend was cancelled. We must not see the first commit message.
     assertEquals("SECOND COMMIT MESSAGE", commitPanel.getCommitMessageArea().getText());

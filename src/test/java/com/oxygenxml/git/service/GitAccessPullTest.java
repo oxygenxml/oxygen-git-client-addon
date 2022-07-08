@@ -22,9 +22,9 @@ import com.oxygenxml.git.view.event.PullType;
 
 public class GitAccessPullTest extends GitTestBase{
   
-	protected final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/local";
+	protected final static String FIRST_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessPullTest/local";
 	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessPullTest/local2";
-	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/remote";
+	private final static String REMOTE_TEST_REPOSITORY = "target/test-resources/GitAccessPullTest/remote";
 	private Repository localRepo1;
 	private Repository localRepo2;
 	private Repository remoteRepo;
@@ -35,15 +35,15 @@ public class GitAccessPullTest extends GitTestBase{
 	  super.setUp();
 	  
 		gitAccess = GitAccess.getInstance();
-		gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
+		gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITORY);
 		localRepo1 = gitAccess.getRepository();
 		gitAccess.createNewRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		localRepo2 = gitAccess.getRepository();
-		gitAccess.createNewRepository(REMOTE_TEST_REPOSITPRY);
+		gitAccess.createNewRepository(REMOTE_TEST_REPOSITORY);
 		remoteRepo = gitAccess.getRepository();
 
-		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
-		File file = new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
+		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITORY);
+		File file = new File(FIRST_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();	
 		StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
@@ -146,7 +146,7 @@ public class GitAccessPullTest extends GitTestBase{
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
 		
-		PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
+		PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITORY + "/test.txt");
 		out.println("teeeeeest");
 		out.close();
 		
@@ -171,10 +171,10 @@ public class GitAccessPullTest extends GitTestBase{
 		localRepo1.close();
 		localRepo2.close();
 		remoteRepo.close();
-		File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITPRY);
+		File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
 		try {
 			FileUtils.deleteDirectory(dirToDelete);
-			dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
+			dirToDelete = new File(REMOTE_TEST_REPOSITORY);
 			FileUtils.deleteDirectory(dirToDelete);
 			dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
 			FileUtils.deleteDirectory(dirToDelete);
@@ -189,10 +189,10 @@ public class GitAccessPullTest extends GitTestBase{
 	 * @throws Exception If it fails.
 	 */
 	protected void pushOneFileToRemote() throws Exception {
-		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
-		OptionsManager.getInstance().saveSelectedRepository(FIRST_LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITORY);
+		OptionsManager.getInstance().saveSelectedRepository(FIRST_LOCAL_TEST_REPOSITORY);
 
-		PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
+		PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITORY + "/test.txt");
 		out.println("hellllo");
 		out.close();
 		

@@ -3,12 +3,14 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+import org.awaitility.Awaitility;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -157,9 +159,8 @@ public class RevertCommitTest extends GitTestBase {
     assertEquals("", errMsg[0]);
     SwingUtilities.invokeLater(() -> revertOkButton.doClick());
     flushAWT();
-    sleep(300);
-    
-    assertTrue(errMsg[0].contains("Cannot revert"));
+    Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).until(() -> 
+      errMsg[0].contains("Cannot revert"));
     
     // The history stays the same
     commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
@@ -190,8 +191,6 @@ public class RevertCommitTest extends GitTestBase {
     RevertCommitAction revertAction = new RevertCommitAction(commitToRevert);
     SwingUtilities.invokeLater(() -> revertAction.actionPerformed(null));
     flushAWT();
-    sleep(200);
-
     JDialog revertConfirmationDlg = findDialog(Tags.REVERT_COMMIT);
     JTextArea confirmationTextArea = findFirstTextArea(revertConfirmationDlg);
     assertEquals(Tags.REVERT_COMMIT_CONFIRMATION, confirmationTextArea.getText().toString());
@@ -234,7 +233,6 @@ public class RevertCommitTest extends GitTestBase {
     RevertCommitAction revertAction = new RevertCommitAction(commitToRevert);
     SwingUtilities.invokeLater(() -> revertAction.actionPerformed(null));
     flushAWT();
-    sleep(200);
 
     JDialog revertConfirmationDlg = findDialog(Tags.REVERT_COMMIT);
     JTextArea confirmationTextArea = findFirstTextArea(revertConfirmationDlg);
@@ -242,7 +240,6 @@ public class RevertCommitTest extends GitTestBase {
     JButton revertOkButton = findFirstButton(revertConfirmationDlg, Tags.YES);
     SwingUtilities.invokeLater(() -> revertOkButton.doClick());
     flushAWT();
-    sleep(300);
     
     JDialog dlg = findDialog(Tags.REVERT_COMMIT);
     assertNotNull(dlg);

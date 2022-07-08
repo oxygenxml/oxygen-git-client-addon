@@ -53,7 +53,6 @@ public class FlatView7Test extends FlatViewTestBase {
 		bindLocalToRemote(localRepo , remoteRepo);
 		Repository localRepo_2 = createRepository(localTestRepository_2);
 		bindLocalToRemote(localRepo_2 , remoteRepo);
-		sleep(500);
 
 		pushOneFileToRemote(localTestRepository, "init.txt", "hello");
 		flushAWT();
@@ -87,8 +86,8 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		// Push to create the remote branch
 		((GitController) stagingPanel.getGitController()).push();
-		waitForScheluerBetter();
-
+		waitForScheduler();
+		
 		branchesCombo.refresh();
 		flushAWT();
 		refreshSupport.call();
@@ -111,11 +110,11 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		// Commit a new file locally
 		commitOneFile(localTestRepository, "anotherFile.txt", "");
-		waitForScheluerBetter();
+		waitForScheduler();
 
 		// Commit to remote
 		commitOneFile(remoteTestRepository, "anotherFile_2.txt", "");
-		waitForScheluerBetter();
+		waitForScheduler();
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		flushAWT();
@@ -156,11 +155,11 @@ public class FlatView7Test extends FlatViewTestBase {
 
 		// Commit a new change locally
 		commitOneFile(localTestRepository, "anotherFile.txt", "changed");
-		waitForScheluerBetter();
+		waitForScheduler();
 
 		// Commit to remote
 		commitOneFile(remoteTestRepository, "anotherFile_2.txt", "changed");
-		waitForScheluerBetter();
+		waitForScheduler();
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
@@ -196,14 +195,14 @@ public class FlatView7Test extends FlatViewTestBase {
 				+ "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 				+ "000000000000000000000000000000000000000000000000000"
 				+ ".txt", "changed2");
-		waitForScheluerBetter();
+		waitForScheduler();
 
 		// Commit to remote
 		commitOneFile(remoteTestRepository, "anotherFile300000000000000000000000000000000000000000000000000000000000"
 				+ "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 				+ "000000000000000000000000000000000000000000000000000"
 				+ ".txt", "changed3");
-		waitForScheluerBetter();
+		waitForScheduler();
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
 		GitAccess.getInstance().fetch();
@@ -248,11 +247,11 @@ public class FlatView7Test extends FlatViewTestBase {
 		for (int i = 0; i < filesForCommit.length; i++) {
 			// Commit a new change locally
 			commitOneFile(localTestRepository, filesForCommit[i], "changed");
-			waitForScheluerBetter();
+			waitForScheduler();
 
 			// Commit to remote
 			commitOneFile(remoteTestRepository, "_" + filesForCommit[i], "changed");
-			waitForScheluerBetter();
+			waitForScheduler();
 		}
 
 		GitAccess.getInstance().setRepositorySynchronously(localTestRepository);

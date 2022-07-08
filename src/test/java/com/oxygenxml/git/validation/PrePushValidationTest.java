@@ -135,8 +135,6 @@ public class PrePushValidationTest extends GitTestBase {
     config.save();
 
     bindLocalToRemote(firstLocalRepo , remoteRepo);
-    sleep(500);
-
     pushOneFileToRemote(FIRST_LOCAL_TEST_REPOSITORY, "test_second_local.txt", "hellllo");
     flushAWT();
     
