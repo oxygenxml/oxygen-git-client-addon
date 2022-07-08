@@ -41,7 +41,6 @@ import javax.swing.JTextArea;
 
 import org.apache.commons.io.FileUtils;
 import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.MockSystemReader;
@@ -879,7 +878,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
 
     final JDialog dialogToReturn[] = new JDialog[1];
     try {
-      Awaitility.await().atMost(Duration.TWO_SECONDS).until(() -> {
+      Awaitility.await().atMost(1250, TimeUnit.MILLISECONDS).until(() -> {
         // Get the opened windows
         final Window[] windows = WindowMonitor.getWindows();
         if (windows != null && windows.length > 0) {
