@@ -630,6 +630,8 @@ public class GitAccessConflictTest extends TestCase {
     };
     gitCtrl.asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
+      "changed in local 1".equals(getFileContent(local1File)));
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
