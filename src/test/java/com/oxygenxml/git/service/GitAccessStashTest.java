@@ -349,9 +349,8 @@ public class GitAccessStashTest extends TestCase {
     assertEquals(10, gitAccess.listStashes().size());
     
     gitAccess.dropAllStashes();
-    
     assertTrue(isStashEmpty());
-    
+
   }  
  
 }
