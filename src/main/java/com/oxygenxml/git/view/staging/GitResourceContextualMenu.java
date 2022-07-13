@@ -33,6 +33,7 @@ import com.oxygenxml.git.view.staging.actions.StageUnstageResourceAction;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
  * Contextual menu shown for staged/unstaged resources from the Git view
@@ -159,30 +160,30 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		createAllActions(allSelectedResources, selectedLeaves, selResProvider, forStagedRes);
 
 		// Resolve Conflict
-		JMenu resolveConflict = new JMenu();
-		resolveConflict.setText(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICT));
-		resolveConflict.add(showDiffAction);
+		final JMenu resolveConflict = OxygenUIComponentsFactory.createMenu(
+		    TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICT));
+		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(showDiffAction));
 		resolveConflict.addSeparator();
-		resolveConflict.add(resolveUsingMineAction);
-		resolveConflict.add(resolveUsingTheirsAction);
-		resolveConflict.add(markResolvedAction);
+		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(resolveUsingMineAction));
+		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(resolveUsingTheirsAction));
+		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(markResolvedAction));
 		resolveConflict.addSeparator();
-		resolveConflict.add(restartMergeAction);
+		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(restartMergeAction));
 
 		// Populate contextual menu
-		this.add(showDiffAction);
-		this.add(openAction);
+		this.add(OxygenUIComponentsFactory.createMenuItem(showDiffAction));
+		this.add(OxygenUIComponentsFactory.createMenuItem(openAction));
 		addSeparator();
-		this.add(stageUnstageAction);
+		this.add(OxygenUIComponentsFactory.createMenuItem(stageUnstageAction));
 		this.add(resolveConflict);
-		this.add(discardAction);
+		this.add(OxygenUIComponentsFactory.createMenuItem(discardAction));
 
 	if (!forStagedRes) {
 			addSeparator();
 			historyAction.setEnabled(FileUtil.shouldEnableBlameAndHistory(allSelectedResources));
-			this.add(historyAction);
+			this.add(OxygenUIComponentsFactory.createMenuItem(historyAction));
 			blameAction.setEnabled(FileUtil.shouldEnableBlameAndHistory(allSelectedResources));
-			this.add(blameAction);
+			this.add(OxygenUIComponentsFactory.createMenuItem(blameAction));
 		}
 
 		boolean allSelResHaveSameChangeType = true;
