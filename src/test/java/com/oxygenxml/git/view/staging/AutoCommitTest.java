@@ -4,6 +4,8 @@ import java.io.File;
 
 import javax.swing.SwingUtilities;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Repository;
 
 import com.jidesoft.swing.JideToggleButton;
@@ -63,10 +65,14 @@ public class AutoCommitTest extends FlatViewTestBase {
     assertFalse(autoPushBtn.isSelected());
 
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
-    stagingPanel.getCommitPanel().getCommitMessageArea().setText("Commit message");
-    stagingPanel.getCommitPanel().getCommitButton().doClick();
+    SwingUtilities.invokeLater(() -> {
+      stagingPanel.getCommitPanel().getCommitMessageArea().setText("Commit message");
+      stagingPanel.getCommitPanel().getCommitButton().doClick();
+    });   
     waitForSchedulerBetter();
-    assertEquals(1, GitAccess.getInstance().getPushesAhead());
+    Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(
+        () -> 1 ==  GitAccess.getInstance().getPushesAhead()
+    );
 
     // Change the file again.
     setFileContent(file, "modified again");
@@ -82,7 +88,9 @@ public class AutoCommitTest extends FlatViewTestBase {
       stagingPanel.getCommitPanel().getCommitButton().doClick();
     });
     waitForSchedulerBetter();
-    assertEquals(0, GitAccess.getInstance().getPushesAhead());
+    Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(
+        () -> 0 ==  GitAccess.getInstance().getPushesAhead()
+    );
   }
 
 

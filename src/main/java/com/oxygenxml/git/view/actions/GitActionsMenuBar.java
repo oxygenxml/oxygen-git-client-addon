@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 import org.eclipse.jgit.annotations.NonNull;
 
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -106,9 +107,9 @@ public class GitActionsMenuBar implements MenuBarCustomizer, UpdateActionsStates
 		gitMenu.addSeparator();
 		settingsMenu = OxygenUIComponentsFactory.createMenu(TRANSLATOR.getTranslation(Tags.SETTINGS));
 		settingsMenu.setIcon(Icons.getIcon(Icons.SETTINGS));
+	  settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getOpenPreferencesAction()));
+	  settingsMenu.addSeparator();
 		settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getResetAllCredentialsAction()));
-		settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getOpenPreferencesAction()));
-
 		gitMenu.add(settingsMenu);
 	}
 
@@ -118,7 +119,8 @@ public class GitActionsMenuBar implements MenuBarCustomizer, UpdateActionsStates
 	 */
 	@Override
 	public void customizeMainMenu(JMenuBar mainMenu) {
-		for (int i = 0; i < mainMenu.getMenuCount(); i++) {
+	  final int noOfMenuItems = mainMenu.getMenuCount();
+		for (int i = 0; i < noOfMenuItems; i++) {
 			if (TRANSLATOR.getTranslation(Tags.TOOLS).equals(mainMenu.getMenu(i).getText())) {
 				mainMenu.add(gitMenu, i + 1);
 				break;
@@ -148,10 +150,9 @@ public class GitActionsMenuBar implements MenuBarCustomizer, UpdateActionsStates
   }
 	
 	/**
-	 * !!! Used for tests. !!!
-	 * 
 	 * @return The settings menu.
 	 */
+  @TestOnly
 	public JMenu getSettingsMenu() {
 		return settingsMenu;
 	}

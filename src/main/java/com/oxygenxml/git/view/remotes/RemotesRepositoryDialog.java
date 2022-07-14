@@ -406,18 +406,12 @@ public class RemotesRepositoryDialog extends OKCancelDialog {
 
             if (OKCancelDialog.RESULT_OK == answer) {
 
-
-              actionsToExecute.add(new Runnable() {
-
-                @Override
-                public void run() {
-                  try {
-                    GitAccess.getInstance().removeRemote(remoteName);
-                  } catch (NoRepositorySelected e1) {
-                    LOGGER.error(e1.getMessage(), e1);
-                  }	
-
-                }
+              actionsToExecute.add(() -> {
+                try {
+                  GitAccess.getInstance().removeRemote(remoteName);
+                } catch (NoRepositorySelected e1) {
+                  LOGGER.error(e1.getMessage(), e1);
+                }	
               });
 
               remotesModel.deleteRemote(selectedRow);

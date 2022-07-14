@@ -22,6 +22,13 @@ import com.oxygenxml.git.view.util.UIUtil;
  *
  */
 public class StashCellRendersFactory {
+  
+  /**
+   * Hidden constructor.
+   */
+  private StashCellRendersFactory() {
+    throw new IllegalStateException("This class should be not intantiated");
+  }
 
 	/**
 	 * Create a new render for stash date.

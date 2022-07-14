@@ -32,9 +32,6 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -64,12 +61,6 @@ public class BranchManagementPanel extends JPanel {
    * Inset.
    */
   private static final int INSET_3_PX = 3;
-
-  /**
-   * Logger for this class.
-   */
-  @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(BranchManagementPanel.class);
 
   /**
    * A field for searching branches in the current repository.
