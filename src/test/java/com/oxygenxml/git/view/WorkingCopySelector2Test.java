@@ -135,12 +135,11 @@ public class WorkingCopySelector2Test extends JFCTestCase {
       
       assertEquals(
           wcTree.getAbsolutePath() + "\n" + 
-              "CLEAR_HISTORY\n" + 
               "",
               sb.toString());
       
-      assertEquals(wcTree.getAbsolutePath(), workingCopyCombo.getSelectedItem().toString());
-      
+      assertEquals(null, workingCopyCombo.getSelectedItem());
+
       assertEquals("[" + badWcTree.getAbsolutePath() + "]", removedRepositories.toString());
       
     } finally {

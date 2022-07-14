@@ -166,42 +166,43 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * Loads in the GitAccess the repository selected in the working copy.
 	 */
 	private void loadRepository() {
-		inhibitRepoUpdate = true;
-		try {
-			// get and save the selected Option so that at restart the same
-			// repository will be selected
-			String selectedEntry = (String) workingCopyCombo.getSelectedItem();
-			if (LOGGER.isDebugEnabled()) {
-			  LOGGER.debug("Selected working copy: " + selectedEntry);
-			}
-			
-			if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
+	  SwingUtilities.invokeLater(() -> {
+	    inhibitRepoUpdate = true;
+	    try {
+	      // get and save the selected Option so that at restart the same
+	      // repository will be selected
+	      String selectedEntry = (String) workingCopyCombo.getSelectedItem();
+	      if (LOGGER.isDebugEnabled()) {
+	        LOGGER.debug("Selected working copy: " + selectedEntry);
+	      }
+	      if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
 
-			  String[] options = new String[] {
-			      "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
-			      "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
-			  int[] optionIds = new int[] { 0, 1 };
-			  PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-			  if (pluginWorkspace != null) {
-			    int result = pluginWorkspace.showConfirmDialog(
-			        TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
-			        TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
-			        options,
-			        optionIds);
-			    if (result == optionIds[0]) {
-			      clearHistory();
-			    } else {
-			      workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
-			    }
-			  }
-			} else {
-			  if (selectedEntry != null) {
-			    gitAccess.setRepositoryAsync(selectedEntry);
-			  }
-			}
-		} finally {
-		  inhibitRepoUpdate = false;
-		}
+	        String[] options = new String[] {
+	            "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+	            "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
+	        int[] optionIds = new int[] { 0, 1 };
+	        PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+	        if (pluginWorkspace != null) {
+	          int result = pluginWorkspace.showConfirmDialog(
+	              TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY),
+	              TRANSLATOR.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+	              options,
+	              optionIds);
+	          if (result == optionIds[0]) {
+	            clearHistory();
+	          } else {
+	            workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
+	          }
+	        }
+	      } else {
+	        if (selectedEntry != null) {
+	          gitAccess.setRepositoryAsync(selectedEntry);
+	        }
+	      }
+	    } finally {
+	      inhibitRepoUpdate = false;
+	    }
+	  });
 	}
 
 
@@ -508,16 +509,14 @@ public class WorkingCopySelectionPanel extends JPanel {
 		 * @param wc Working-copy.
 		 */
 		private void removeInexistentRepo(File wc) {
-			String wcDir = wc.getAbsolutePath();
-			OptionsManager.getInstance().removeRepositoryLocation(wcDir);
-			if (workingCopyCombo.getItemCount() > 0) {
-				// Fallback to the previously loaded WC. We assume its the topmost in the list. Not to elegant...
-				workingCopyCombo.setSelectedIndex(0);
-			} else {
-				workingCopyCombo.setSelectedItem(null);
-				gitAccess.closeRepo();
-			}
-			workingCopyCombo.removeItem(wcDir);
+		  
+		  String wcDir = wc.getAbsolutePath();
+		  OptionsManager.getInstance().removeRepositoryLocation(wcDir);
+		  workingCopyCombo.removeItem(wcDir);
+		  if (workingCopyCombo.getItemCount() <= 2) {
+		    workingCopyCombo.removeItem(CLEAR_HISTORY_ENTRY);
+		  }
+		  workingCopyCombo.setSelectedItem(null);
 		}
 
 
