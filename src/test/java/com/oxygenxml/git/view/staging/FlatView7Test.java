@@ -1,15 +1,10 @@
 package com.oxygenxml.git.view.staging;
 
-import javax.swing.JMenu;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.view.actions.GitActionsManager;
-import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
@@ -286,23 +281,6 @@ public class FlatView7Test extends FlatViewTestBase {
 				expected.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour"),
 				actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
 				);      
-	}
-	
-
-	/**
-	 * <p><b>Description:</b> list the Settings menu actions.</p>
-	 * <p><b>Bug ID:</b> EXM-46442</p>
-	 *
-	 * @author sorin_carbunaru
-	 *
-	 * @throws Exception
-	 */
-	public void testSettingsMenu() throws Exception {
-		final JMenu settingsMenu = new GitActionsMenuBar(
-				new GitActionsManager(new GitController(), null, null, null)).getSettingsMenu();
-		assertEquals(2, settingsMenu.getItemCount());
-		assertEquals(Tags.RESET_ALL_CREDENTIALS, settingsMenu.getItem(0).getText());
-		assertEquals(Tags.PREFERENCES, settingsMenu.getItem(1).getText());
 	}
 	
 
