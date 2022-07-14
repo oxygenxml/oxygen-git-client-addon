@@ -21,6 +21,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.PrivateRepositoryException;
@@ -345,6 +346,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * @return The last scheduled task for refresing the Git status.
 	 */
+	@TestOnly
 	public ScheduledFuture<?> getScheduledTaskForTests() { // NOSONAR
 		return refreshFuture;
 	}

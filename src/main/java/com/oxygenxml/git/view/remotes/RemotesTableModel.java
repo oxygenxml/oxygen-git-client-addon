@@ -43,7 +43,7 @@ public class RemotesTableModel extends AbstractTableModel {
 	  /**
 	   * The internal representation of the model.
 	   */
-	  private transient List<Remote> remotes = new ArrayList();
+	  private transient List<Remote> remotes = new ArrayList<>();
 	  
 	  
 	  
@@ -205,10 +205,10 @@ public class RemotesTableModel extends AbstractTableModel {
 	   * Add a remote.
 	   * 
 	   * @param name  The name of remote.
-	   * @param URL   The URL of remote.
+	   * @param url   The URL of remote.
 	   */
-	  public void addRemote(String name, String URL) {
-		  remotes.add(new Remote(name, URL));
+	  public void addRemote(String name, String url) {
+		  remotes.add(new Remote(name, url));
 		  fireTableRowsInserted(remotes.size() -1 , remotes.size() -1);
 	  }
 	  
