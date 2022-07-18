@@ -2721,42 +2721,57 @@ public class GitAccess {
 	}
 	
 	/**
-	 * Push a given local tag
-	 * 
-	 * @param name The name of the tag
-	 * 
-	 * @throws GitAPIException
-	 */
-	public void pushTag(String name) throws GitAPIException {
-      CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
+   * Push a given local tag
+   * 
+   * @param name The name of the tag
+   * 
+   * @throws GitAPIException
+   */
+  public void pushTag(final String name) throws GitAPIException {
+      final CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
+      final StringBuilder refTag = new StringBuilder(Constants.R_TAGS).append(name).append(":")
+          .append(Constants.R_TAGS).append(name);
       getGit()
         .push()
         .setCredentialsProvider(credentialsProvider)
-        .setRefSpecs(new RefSpec("refs/tags/"+ name +":refs/tags/" + name))
+        .setRefSpecs(new RefSpec(refTag.toString()))
         .call();
-	}
-	
-	/**
-	 * Delete a given Tag
-	 * 
-	 * @param name The name of the tag to be deleted
-	 * 
-	 * @throws GitAPIException
-	 */
-	public void deleteTag(String name) throws GitAPIException  {
-		fireOperationAboutToStart(new GitEventInfo(GitOperation.DELETE_TAG));
-		try {
-			getGit()
-			.tagDelete()
-			.setTags(name)
-			.call();
-			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.DELETE_TAG));
-		} catch (GitAPIException e) {
-			LOGGER.error(e.getMessage(), e);
-			fireOperationFailed(new GitEventInfo(GitOperation.DELETE_TAG), e);
-			throw e;
-		}
-	}
+  }
+  
+  /**
+   * Delete all given tags.
+   * 
+   * @param tags           The names of the tags to be deleted.
+   * @param includeRemotes <code>true</code> if the remote tags should be also deleted.
+   * 
+   * @throws GitAPIException
+   */
+  public void deleteTags(final boolean includeRemotes, final String... tags) throws GitAPIException  {
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.DELETE_TAG));
+    try {
+      getGit()
+      .tagDelete()
+      .setTags(tags)
+      .call();
+      final CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
+      
+      if(includeRemotes) {
+        for(String name : tags) {
+          final StringBuilder refTag = new StringBuilder(":").append(Constants.R_TAGS).append(name);
+          getGit()
+          .push()
+          .setCredentialsProvider(credentialsProvider)
+          .setRefSpecs(new RefSpec(refTag.toString()))
+          .call();
+        }
+      }
+
+      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.DELETE_TAG));
+    } catch (GitAPIException e) {
+      fireOperationFailed(new GitEventInfo(GitOperation.DELETE_TAG), e);
+      throw e;
+    }
+  }
 	
 	
 	/**

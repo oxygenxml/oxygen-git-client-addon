@@ -14,6 +14,15 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	<key value="Delete_Pushed_Tag_Dialog_Message">
+		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
+		<val lang="en_US">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
+		<val lang="de_DE">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
+		<val lang="fr_FR">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
+		<val lang="ja_JP">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
+		<val lang="nl_NL">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
+		<val lang="zh_CN">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
+	</key>
 	<key value="PrePush_Validation_Info">
 		<comment>Informations about pre-push validation.</comment>
 		<val lang="en_US">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
@@ -1229,7 +1238,7 @@
 		<val lang="nl_NL">Tag verwijderen</val>
 		<val lang="zh_CN">删除标签</val>
 	</key>
-	<key value="Delete_Tag_Dialog_Message">
+	<key value="Delete_Local_Tag_Dialog_Message">
 		<comment>The message of the dialog for deleting a tag</comment>
 		<val lang="en_US">Are you sure you want to delete this tag?</val>
 		<val lang="de_DE">Sind Sie sicher, dass Sie dieses Tag löschen möchten?

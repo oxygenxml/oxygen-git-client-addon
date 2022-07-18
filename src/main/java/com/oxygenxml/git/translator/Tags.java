@@ -1521,10 +1521,17 @@ public class Tags {
    * The title of the dialog for deleting a tag
    */
   public static final String DELETE_TAG_DIALOG_TITLE= "Delete_Tag_Dialog_Title"; 
+ 
   /**
-   * The message of the dialog for deleting a tag
+   * The message of the dialog for deleting a local tag.
    */
-  public static final String DELETE_TAG_DIALOG_MESSAGE= "Delete_Tag_Dialog_Message"; 
+  public static final String DELETE_LOCAL_TAG_DIALOG_MESSAGE= "Delete_Local_Tag_Dialog_Message"; 
+  
+
+  /**
+   * The message of the dialog for deleting a remote tag.
+   */
+  public static final String DELETE_REMOTE_TAG_DIALOG_MESSAGE= "Delete_Pushed_Tag_Dialog_Message"; 
   
   /**
    * History graph column title.

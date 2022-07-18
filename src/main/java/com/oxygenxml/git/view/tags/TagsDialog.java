@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.swing.Action;
@@ -238,14 +239,9 @@ public class TagsDialog extends OKCancelDialog {
       boolean isSelectionValid = selectedRow >= 0;
       checkoutButton.setEnabled(isSelectionValid);
       if(isSelectionValid) { 	
-        GitTag tag = model.getItemAt(selectedRow);
-        if (!tag.isPushed()) {
-          pushButton.setEnabled(true);
-          deleteButton.setEnabled(true);
-        } else {
-          pushButton.setEnabled(false);
-          deleteButton.setEnabled(false);
-        }
+        final GitTag tag = model.getItemAt(selectedRow);
+        deleteButton.setEnabled(true);
+        pushButton.setEnabled(!tag.isPushed());
       } 
     });
 
@@ -344,7 +340,7 @@ public class TagsDialog extends OKCancelDialog {
         try {
           GitAccess.getInstance().pushTag(tag.getName());
           pushButton.setEnabled(false);
-          deleteButton.setEnabled(false);
+          deleteButton.setEnabled(true);
           tag.setPushed(true);
         } catch (GitAPIException ex) {
           LOGGER.debug(ex.getMessage(), ex);
@@ -362,32 +358,58 @@ public class TagsDialog extends OKCancelDialog {
   private ActionListener createDeleteListener() {
 
     return e -> {
-      
-      final int result = MessagePresenterProvider.getBuilder(
-          TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE), DialogType.QUESTION)
-          .setQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_MESSAGE))
-          .setOkButtonName(TRANSLATOR.getTranslation(Tags.YES))
-          .setCancelButtonName(TRANSLATOR.getTranslation(Tags.NO))
-          .buildAndShow().getResult();
+      final int selectedRow = (tagsTable.getSelectedRow());
+      final GitTag tag = ((TagsTableModel)tagsTable.getModel()).getItemAt(selectedRow);
+      final int result = tag.isPushed() ? questionAboutDeletingPushedTag(tag.getName()) 
+          : questionAboutDeletingLocalTag();
           
       if (result == OKCancelDialog.RESULT_OK) {
         deleteButton.setEnabled(false);
         pushButton.setEnabled(false);
-        int selectedRow = (tagsTable.getSelectedRow());
         String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
-
         try {
-          GitAccess.getInstance().deleteTag(tagName);
-
+          GitAccess.getInstance().deleteTags(true, tagName);
           TagsTableModel model = (TagsTableModel) tagsTable.getModel();
-          GitTag tag = model.getItemAt(selectedRow);
           model.remove(tag);
           model.fireTableRowsDeleted(selectedRow,selectedRow);
         } catch (GitAPIException ex) {
+          LOGGER.error(ex.getMessage(), ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         } 
       }
     };
+  }
+
+  /**
+   * Question user about deleting a local tag.
+   * 
+   * @return The user answer.
+   */
+  private int questionAboutDeletingLocalTag() {
+    return MessagePresenterProvider.getBuilder(
+    TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE), DialogType.WARNING)
+    .setQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_LOCAL_TAG_DIALOG_MESSAGE))
+    .setOkButtonName(TRANSLATOR.getTranslation(Tags.DELETE))
+    .setCancelButtonName(TRANSLATOR.getTranslation(Tags.NO))
+    .buildAndShow().getResult();
+  }
+
+
+  /**
+   * Question user about deleting an already pushed tag.
+   * 
+   * @param pushedTag The tag to be deleted.
+   * 
+   * @return The user answer.
+   */
+  private int questionAboutDeletingPushedTag(final String pushedTag) {
+    return MessagePresenterProvider.getBuilder(
+    TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE), DialogType.WARNING)
+    .setQuestionMessage(MessageFormat.format(TRANSLATOR.getTranslation(
+        Tags.DELETE_REMOTE_TAG_DIALOG_MESSAGE), pushedTag))
+    .setOkButtonName(TRANSLATOR.getTranslation(Tags.DELETE))
+    .setCancelButtonName(TRANSLATOR.getTranslation(Tags.NO))
+    .buildAndShow().getResult();
   }
   
   /**

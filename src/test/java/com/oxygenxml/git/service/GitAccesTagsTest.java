@@ -156,7 +156,7 @@ public class GitAccesTagsTest extends TestCase {
     assertTrue(gitAccess.existsTag("Tagul2"));
     
     //Delete one tag
-    gitAccess.deleteTag("Tagul1");
+    gitAccess.deleteTags(false, "Tagul1");
     
     assertFalse(gitAccess.existsTag("Tagul1"));
   }

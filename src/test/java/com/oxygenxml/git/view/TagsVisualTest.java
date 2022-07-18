@@ -174,33 +174,41 @@ public class TagsVisualTest extends GitTestBase {
       assertTrue(showTagsJDialog.getPushButton().isEnabled());
       assertTrue(showTagsJDialog.getDeleteButton().isEnabled());
       
-      //Select 2nd row and verify if the buttons are not enabled
+      //Select 2nd row and verify if the push button are not enabled
       tagsTable.setRowSelectionInterval(1, 1);
       assertFalse(showTagsJDialog.getPushButton().isEnabled());
-      assertFalse(showTagsJDialog.getDeleteButton().isEnabled());
+      assertTrue(showTagsJDialog.getDeleteButton().isEnabled());
       
-      //Select first row and push the tag and verify if the buttons are not enabled and the tag was pushed
+      //Select first row and push the tag and verify if the push button are not enabled and the tag was pushed
       tagsTable.setRowSelectionInterval(0, 0);
       showTagsJDialog.getPushButton().doClick();
       assertFalse(showTagsJDialog.getPushButton().isEnabled());
-      assertFalse(showTagsJDialog.getDeleteButton().isEnabled());
+      assertTrue(showTagsJDialog.getDeleteButton().isEnabled());
       assertTrue(tag3.isPushed());
       
+      // ---- TEST DELETE LOCAL TAG ---- 
       final TagsDialog tagsFinalJDialog = showTagsJDialog;
       //Select last row and delete the tag and verify if the tag doesn't exist
       tagsTable.setRowSelectionInterval(2, 2);
       SwingUtilities.invokeLater(() -> tagsFinalJDialog.getDeleteButton().doClick());
-
       flushAWT();
-      
       JDialog deleteDialog = findDialog(Tags.DELETE_TAG_DIALOG_TITLE);
       assertNotNull(deleteDialog);
-      findFirstButton(deleteDialog, Tags.YES).doClick();
+      findFirstButton(deleteDialog, Tags.DELETE).doClick();
       flushAWT();
       assertFalse(gitAccess.existsTag("Tag1"));
+      assertEquals(2, tagsTable.getRowCount()); //Verify how many rows has the table left
       
-      //Verify how many rows has the table left
-      assertEquals(2, tagsTable.getRowCount());
+      // ---- TEST DELETE REMOTE TAG ---- 
+      tagsTable.setRowSelectionInterval(1, 1);
+      SwingUtilities.invokeLater(() -> tagsFinalJDialog.getDeleteButton().doClick());
+      flushAWT();
+      deleteDialog = findDialog(Tags.DELETE_TAG_DIALOG_TITLE);
+      assertNotNull(deleteDialog);
+      findFirstButton(deleteDialog, Tags.DELETE).doClick();
+      flushAWT();
+      assertFalse(gitAccess.existsTag("Tag2"));
+      assertEquals(1, tagsTable.getRowCount());  //Verify how many rows has the table left
       
       //Verify the tagDetails Dialog
       new TagDetailsDialog(tag3).setVisible(true);
