@@ -34,6 +34,7 @@ import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -700,10 +701,9 @@ public class StagingPanel extends JPanel {
   }
 
   /**
-   * !!!!!!! FOR TESTS !!!!!!
-   * 
    * @return The conflict buttons panel.
    */
+  @TestOnly
   public ConflictButtonsPanel getConflictButtonsPanel() {
     return conflictButtonsPanel;
   }
@@ -715,12 +715,4 @@ public class StagingPanel extends JPanel {
     return gitActionsManager;
   }
   
- 
-  
-  @Override
-  public String toString() {
-    
-    return "This is Staging Panel";
-  }
-
 }

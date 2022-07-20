@@ -33,6 +33,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -478,5 +479,24 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		return pluginWorkspaceAccess.isViewShowing(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW);
 	}
 	
+	/**
+	 * Setter for staging panel.
+	 * 
+	 * @param stagingPanel The new staging panel.
+	 */
+	@TestOnly
+	public void setStagingPanel(final StagingPanel stagingPanel) {
+    this.stagingPanel = stagingPanel;
+  }
+	
+	/**
+   * Setter for refresh support panel.
+   * 
+   * @param gitRefreshSupport The new refresh support panel.
+   */
+	@TestOnly
+	public void setGitRefreshSupport(final PanelRefresh gitRefreshSupport) {
+    this.gitRefreshSupport = gitRefreshSupport;
+  }
 
 }
