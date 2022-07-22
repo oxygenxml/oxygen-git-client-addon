@@ -332,8 +332,9 @@ public class BranchSelectionComboTest extends GitTestBase {
       frame.setVisible(false);
       GitAccess.getInstance().getGit().checkout().setName(LOCAL_BRANCH).call();
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
-        "main".equals( branchesCombo.getSelectedItem()));
-      
+        LOCAL_BRANCH.equals( GitAccess.getInstance().getBranchInfo().getBranchName()));
+      assertEquals("main", branchesCombo.getSelectedItem());
+     
       // return to the window and test if the branch was updated
       frame.setVisible(true);
       Awaitility.await().atMost(Duration.TWO_SECONDS).until(() -> 
