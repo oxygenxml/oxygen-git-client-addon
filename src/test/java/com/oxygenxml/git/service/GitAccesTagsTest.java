@@ -3,15 +3,23 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.URIish;
 import org.mockito.Mockito;
 
+import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
@@ -146,7 +154,7 @@ public class GitAccesTagsTest extends TestCase {
    * @throws IOException 
    * @throws GitAPIException 
    */
-  public void testDeleteMethod() throws GitAPIException, IOException, NoRepositorySelected {
+  public void testDeleteLocalTagMethod() throws GitAPIException, IOException, NoRepositorySelected {
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     
     gitAccess.tagCommit("Tagul1", "lala", commitsCharacteristics.get(1).getCommitId());
@@ -159,6 +167,61 @@ public class GitAccesTagsTest extends TestCase {
     gitAccess.deleteTags(false, "Tagul1");
     
     assertFalse(gitAccess.existsTag("Tagul1"));
+  }
+  
+  /**
+   * <p><b>Description:</b> Tests the delete remote tag method.</p>
+   * <p><b>Bug ID:</b> EXM-50658</p>
+   *
+   * @author alex_smarandache
+   * 
+   * @throws NoRepositorySelected 
+   * @throws IOException 
+   * @throws GitAPIException 
+   */
+  public void testDeleteRemoteTagMethod() throws GitAPIException, IOException, NoRepositorySelected {
+    
+    File file = new File(REPOSITORY_TEST_CLONE);
+    URL url = gitAccess.getRepository().getDirectory().toURI().toURL();
+    gitAccess.clone(new URIish(url), file, null, "refs/heads/main");
+
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
+    String commitId = commitsCharacteristics.get(0).getCommitId();
+    gitAccess.tagCommit("Tag", "", commitId);
+    gitAccess.pushTag("Tag");
+
+    assertTrue(gitAccess.existsTag("Tag"));
+    final List<String> remoteTags = getRemoteTags();
+    assertEquals(1, remoteTags.size());
+    assertEquals("Tag", remoteTags.get(0));
+
+    //Delete one tag
+    gitAccess.deleteTags(true, "Tag");
+    
+    assertFalse(gitAccess.existsTag("Tag"));
+    assertTrue(getRemoteTags().isEmpty());
+  }
+
+  /**
+   * @return The current repository remote tags.
+   * 
+   * @throws GitAPIException
+   * @throws InvalidRemoteException
+   * @throws TransportException
+   */
+  private List<String> getRemoteTags() throws GitAPIException, InvalidRemoteException, TransportException {
+    final CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(
+        GitAccess.getInstance().getHostName());
+    final Collection <Ref> refs = GitAccess.getInstance()
+        .getGit()
+        .lsRemote()
+        .setRemote(GitAccess.getInstance().getRemoteFromCurrentBranch())
+        .setCredentialsProvider(credentialsProvider)
+        .setTags(true)
+        .call();
+    
+    return refs.stream().map(t -> Repository.shortenRefName(
+        t.getName())).collect(Collectors.toList());
   }
   
   /**
