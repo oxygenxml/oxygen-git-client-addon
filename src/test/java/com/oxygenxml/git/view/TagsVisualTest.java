@@ -23,6 +23,7 @@ import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.tags.CreateTagDialog;
 import com.oxygenxml.git.view.tags.GitTag;
+import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.tags.TagDetailsDialog;
 import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.tags.TagsTableModel;
@@ -197,7 +198,13 @@ public class TagsVisualTest extends GitTestBase {
       findFirstButton(deleteDialog, Tags.DELETE).doClick();
       flushAWT();
       assertFalse(gitAccess.existsTag("Tag1"));
-      assertEquals(2, tagsTable.getRowCount()); //Verify how many rows has the table left
+      assertEquals(2, tagsTable.getRowCount()); //Verify how many rows has the table left  
+      
+      // test if there are two remote tags.
+      List<GitTag> remoteTags = GitTagsManager.getRemoteTags();
+      assertEquals(2, remoteTags.size());
+      assertEquals("Tag3", remoteTags.get(0).getName());
+      assertEquals("Tag2", remoteTags.get(1).getName());  
       
       // ---- TEST DELETE REMOTE TAG ---- 
       tagsTable.setRowSelectionInterval(1, 1);
@@ -208,7 +215,7 @@ public class TagsVisualTest extends GitTestBase {
       findFirstButton(deleteDialog, Tags.DELETE).doClick();
       flushAWT();
       assertFalse(gitAccess.existsTag("Tag2"));
-      assertEquals(1, tagsTable.getRowCount());  //Verify how many rows has the table left
+      assertEquals(1, tagsTable.getRowCount());  //Verify how many rows has the table left 
       
       //Verify the tagDetails Dialog
       new TagDetailsDialog(tag3).setVisible(true);
@@ -219,6 +226,10 @@ public class TagsVisualTest extends GitTestBase {
       JTextArea tagMessageArea = findFirstTextArea(tagDetailsDialog);
       assertEquals("", tagMessageArea.getText()); //Tag doesn't have a message
       
+      // test if "Tag2" was also deleted from remote tags list.
+      remoteTags = GitTagsManager.getRemoteTags();
+      assertEquals(1, remoteTags.size());
+      assertEquals("Tag3", remoteTags.get(0).getName());
     } finally {
       frame.setVisible(false);
       frame.dispose();
