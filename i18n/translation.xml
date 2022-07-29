@@ -16,12 +16,12 @@
 	</languageList>
 	<key value="Delete_Pushed_Tag_Dialog_Message">
 		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
-		<val lang="en_US">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
-		<val lang="de_DE">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
-		<val lang="fr_FR">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
-		<val lang="ja_JP">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
-		<val lang="nl_NL">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
-		<val lang="zh_CN">Are you sure you want to delete the "{0}" tag? This tag is already pushed and will be permanently deleted from the remote repository.</val>
+		<val lang="en_US">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="de_DE">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="fr_FR">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="ja_JP">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="nl_NL">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="zh_CN">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
 	</key>
 	<key value="PrePush_Validation_Info">
 		<comment>Informations about pre-push validation.</comment>
