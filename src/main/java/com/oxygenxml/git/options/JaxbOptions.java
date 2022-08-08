@@ -137,11 +137,18 @@ public class JaxbOptions implements Options {
 	 */
 	@XmlElement(name = "whenRepoDetectedInProject")
 	private WhenRepoDetectedInProject whenRepoDetectedInProject = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
+	
 	/**
 	 * <code>true</code> to update submodules on pull.
 	 */
 	private boolean updateSubmodulesOnPull = true;
+	
 	/**
+   * <code>true</code> to detect and open xpr files from opened working copies
+   */
+  private boolean detectAndOpenXprFiles = false;
+	
+  /**
 	 * <code>true</code> to automatically push to remote when committing.
 	 */
 	@XmlElement(name = "isAutoPushWhenCommitting")
@@ -389,6 +396,16 @@ public class JaxbOptions implements Options {
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     this.updateSubmodulesOnPull = updateSubmodules;
   }
+  
+  @Override
+  public boolean getDetectAndOpenXprFiles() {
+    return detectAndOpenXprFiles;
+  }
+  
+  @Override
+  public void setDetectAndOpenXprFiles(boolean detectAndOpenXprFiles) {
+   this.detectAndOpenXprFiles = detectAndOpenXprFiles;
+  }
 
 	/**
    * @return the list of personal access token info items.
@@ -462,6 +479,7 @@ public class JaxbOptions implements Options {
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
 		result = prime * result + (notifyAboutNewRemoteCommits ? 1 : 0);
 		result = prime * result + (isCheckoutNewlyCreatedLocalBranch ? 1 : 0);
+		result = prime * result + (detectAndOpenXprFiles ? 1 : 0);
 	  result = prime * result + (validateFilesBeforeCommit ? 1 : 0);
     result = prime * result + (rejectCommitOnValidationProblems ? 1 : 0);
     result = prime * result + (validateMainFilesBeforePush ? 1 : 0);
@@ -482,6 +500,7 @@ public class JaxbOptions implements Options {
 	        && Equaler.verifyEquals(projectsTestsForGit, opt.getProjectsTestsForGit())
 	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
 	        && Equaler.verifyEquals(notifyAboutNewRemoteCommits, opt.isNotifyAboutNewRemoteCommits())
+	        && Equaler.verifyEquals(detectAndOpenXprFiles, opt.getDetectAndOpenXprFiles())
 	        && Equaler.verifyEquals(validateFilesBeforeCommit, opt.getValidateFilesBeforeCommit())
 	        && Equaler.verifyEquals(rejectCommitOnValidationProblems, opt.getRejectCommitOnValidationProblems())
 	        && Equaler.verifyEquals(validateMainFilesBeforePush, opt.getValidateMainFilesBeforePush())
@@ -508,8 +527,8 @@ public class JaxbOptions implements Options {
         + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase=" + passphrase
         + ", stagedResViewMode=" + stagedResViewMode + ", unstagedResViewMode=" + unstagedResViewMode
         + ", whenRepoDetectedInProject=" + whenRepoDetectedInProject + ", updateSubmodulesOnPull="
-        + updateSubmodulesOnPull + ", isAutoPushWhenCommitting=" + isAutoPushWhenCommitting + 
-        ", validateFilesBeforeCommit=" + validateFilesBeforeCommit + ", rejectCommitOnValidationProblems=" 
+        + updateSubmodulesOnPull + ", detectAndOpenXprFiles=" + detectAndOpenXprFiles + ", isAutoPushWhenCommitting=" 
+        + isAutoPushWhenCommitting + ", validateFilesBeforeCommit=" + validateFilesBeforeCommit + ", rejectCommitOnValidationProblems=" 
         + rejectCommitOnValidationProblems + ", validateMainFilesBeforePush=" + validateMainFilesBeforePush + 
         ", rejectPushOnValidationProblems=" + rejectPushOnValidationProblems + "]";
   }

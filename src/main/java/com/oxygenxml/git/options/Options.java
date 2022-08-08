@@ -229,6 +229,18 @@ public interface Options {
    * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
    */
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) ;
+  
+  /**
+   * @return <code>true</code> to detect and open xpr files from opened working copies
+   */
+  public boolean getDetectAndOpenXprFiles();
+    
+  /**
+   * Sets the detecting and opening xpr files in the project view
+   * 
+   * @param detectAndOpenXprFiles <code>true</code> to detect and open xpr files from opened working copies
+   */
+  public void setDetectAndOpenXprFiles(boolean detectAndOpenXprFiles);
 
   /**
    * @return the list of personal access token info items.

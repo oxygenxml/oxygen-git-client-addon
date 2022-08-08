@@ -14,6 +14,16 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	
+	<key value="Detect_And_Open_Xpr_Files">
+		<comment>Detect and open xpr files from opened working copies option.</comment>
+		<val lang="en_US">Detect and open xpr files from opened working copies</val>
+		<val lang="de_DE">Detect and open xpr files from opened working copies</val>
+		<val lang="fr_FR">Detect and open xpr files from opened working copies</val>
+		<val lang="ja_JP">Detect and open xpr files from opened working copies</val>
+		<val lang="nl_NL">Detect and open xpr files from opened working copies</val>
+		<val lang="zh_CN">Detect and open xpr files from opened working copies</val>
+	</key>
 	<key value="Delete_Pushed_Tag_Dialog_Message">
 		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
 		<val lang="en_US">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>

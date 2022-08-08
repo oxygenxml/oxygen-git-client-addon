@@ -145,5 +145,10 @@ public class OptionTags {
    * The tag option for reject push on validation problems.
    */
   public static final String REJECT_PUSH_ON_VALIDATION_PROBLEMS = "com.oxygenxml.git.validator.push.reject";
+  
+  /**
+   * The tag option for "Detect and open xpr files from opened working copies".
+   */
+  public static final String DETECT_AND_OPEN_XPR_FILES = "com.oxygenxml.git.detect.and.open.xpr.files";
 
 }
