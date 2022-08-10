@@ -11,6 +11,8 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +21,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -449,21 +452,62 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		@Override
 		public void operationSuccessfullyEnded(GitEventInfo info) {
-			if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-				Runnable r = () -> {
-					setWCSelectorsEnabled(true);
-					updateComboboxModelAfterRepositoryChanged();
-				};
-				if (!SwingUtilities.isEventDispatchThread()) {
-					SwingUtilities.invokeLater(r);
-				} else {
-					r.run();
-				}
-			}
+		  if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+		    Runnable r = () -> {
+		      setWCSelectorsEnabled(true);
+		      updateComboboxModelAfterRepositoryChanged();
+		      if (OptionsManager.getInstance().isDetectAndOpenXprFiles() && info instanceof WorkingCopyGitEventInfo) {
+		        File wcDirectory = ((WorkingCopyGitEventInfo) info).getWorkingCopy();
+		        List<File> xprFiles = FileUtil.findAllFilesByExtension(wcDirectory, ".xpr");
+		        URL xprUrl = getXprURLfromXprFiles(xprFiles);
+		        if (xprUrl != null) {
+		          PluginWorkspaceProvider.getPluginWorkspace().open(xprUrl);
+		        }
+		      }
+		    };
+		    if (!SwingUtilities.isEventDispatchThread()) {
+		      SwingUtilities.invokeLater(r);
+		    } else {
+		      r.run();
+		    }
+		  }
 		}
 
-
 		/**
+		 * Get the project file URL from a list of project files.
+		 * A dialog will be displayed for choosing one project if there are multiple files
+		 *  
+		 * @param xprFiles The project files 
+		 * 
+		 * @return A URL for the project or <code>null</code> if the URL is malformed or xprFiles is empty
+		 */
+	private URL getXprURLfromXprFiles(List<File> xprFiles) {
+	  URL xprUrl = null;
+	  if(!xprFiles.isEmpty()) {
+	    try {
+	      if (xprFiles.size() == 1) {
+	        xprUrl = xprFiles.get(0).toURI().toURL();
+	      } else {
+	        OpenProjectDialog dialog= new OpenProjectDialog(
+	            (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+	            TRANSLATOR.getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG),
+	            true,
+	            xprFiles);
+	        dialog.setVisible(true);
+	        if (dialog.getResult() == 1) {
+	          xprUrl = dialog.getSelectedFile().toURI().toURL();
+	        } 
+	      } 
+	    } catch (MalformedURLException e) {
+	      if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e.getMessage(), e);
+        }
+	    }
+	  }
+	  return xprUrl;
+	}
+		
+    /**
 		 * Update the WC selectors enabled.
 		 * 
 		 * @param isEnabled the new state.
@@ -570,8 +614,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 			}
 		}
 	}
-
-
+	
 	/**
 	 * @return the working copy combo.
 	 */
