@@ -15,6 +15,15 @@
 			localeDescription="中文" />
 	</languageList>
 	
+		<key value="Detect_And_Open_Xpr_Files_Dialog">
+		<comment>Detect and open xpr files from opened working copies dialog title.</comment>
+		<val lang="en_US">Change the project</val>
+		<val lang="de_DE">Change the project</val>
+		<val lang="fr_FR">Change the project</val>
+		<val lang="ja_JP">Change the project</val>
+		<val lang="nl_NL">Change the project</val>
+		<val lang="zh_CN">Change the project</val>
+	</key>
 	<key value="Detect_And_Open_Xpr_Files">
 		<comment>Detect and open xpr files from opened working copies option.</comment>
 		<val lang="en_US">Detect and open xpr files from opened working copies</val>

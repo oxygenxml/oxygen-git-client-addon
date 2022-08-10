@@ -1938,5 +1938,10 @@ public class Tags {
    */
   public static final String DETECT_AND_OPEN_XPR_FILES = "Detect_And_Open_Xpr_Files";
   
+  /**
+   * Detect and open xpr files from opened working copy dialog title
+   */
+  public static final String DETECT_AND_OPEN_XPR_FILES_DIALOG = "Detect_And_Open_Xpr_Files_Dialog";
+  
 }
 
