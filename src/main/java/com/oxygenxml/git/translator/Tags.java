@@ -1941,7 +1941,22 @@ public class Tags {
   /**
    * Detect and open xpr files from opened working copy dialog title
    */
-  public static final String DETECT_AND_OPEN_XPR_FILES_DIALOG = "Detect_And_Open_Xpr_Files_Dialog";
+  public static final String DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE = "Detect_And_Open_Xpr_Files_Dialog_Title";
+  
+  /**
+   * Detect and open xpr files from opened working copy dialog jlabel text
+   */
+  public static final String DETECT_AND_OPEN_XPR_FILES_DIALOG_TEXT = "Detect_And_Open_Xpr_Files_Dialog_Text";
+  
+  /**
+   * en: Select Oxygen project:
+   */
+  public static final String SELECT_OXYGEN_PROJECT = "Select_Oxygen_Project";
+  
+  /**
+   * en: current
+   */
+  public static final String CURRENT = "Current";
   
 }
 

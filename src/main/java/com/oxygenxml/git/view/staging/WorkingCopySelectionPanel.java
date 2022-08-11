@@ -490,7 +490,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	      } else {
 	        OpenProjectDialog dialog= new OpenProjectDialog(
 	            (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-	            TRANSLATOR.getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG),
+	            TRANSLATOR.getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE),
 	            true,
 	            xprFiles);
 	        dialog.setVisible(true);

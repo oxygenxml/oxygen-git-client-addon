@@ -15,14 +15,41 @@
 			localeDescription="中文" />
 	</languageList>
 	
-		<key value="Detect_And_Open_Xpr_Files_Dialog">
+	<key value="Current">
+		<comment>current</comment>
+		<val lang="en_US">current</val>
+		<val lang="de_DE">current</val>
+		<val lang="fr_FR">current</val>
+		<val lang="ja_JP">current</val>
+		<val lang="nl_NL">current</val>
+		<val lang="zh_CN">current</val>
+	</key>
+	<key value="Select_Oxygen_Project">
+		<comment>Select Oxygen Project</comment>
+		<val lang="en_US">Select Oxygen project</val>
+		<val lang="de_DE">Select Oxygen project</val>
+		<val lang="fr_FR">Select Oxygen project</val>
+		<val lang="ja_JP">Select Oxygen project</val>
+		<val lang="nl_NL">Select Oxygen project</val>
+		<val lang="zh_CN">Select Oxygen project</val>
+	</key>
+	<key value="Detect_And_Open_Xpr_Files_Dialog_Text">
+		<comment>Detect and open xpr files from opened working copies dialog text.</comment>
+		<val lang="en_US">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="de_DE">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="fr_FR">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="ja_JP">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="nl_NL">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="zh_CN">Current Git project contains multiple Oxygen project files (.xpr).</val>
+	</key>
+	<key value="Detect_And_Open_Xpr_Files_Dialog_Title">
 		<comment>Detect and open xpr files from opened working copies dialog title.</comment>
-		<val lang="en_US">Change the project</val>
-		<val lang="de_DE">Change the project</val>
-		<val lang="fr_FR">Change the project</val>
-		<val lang="ja_JP">Change the project</val>
-		<val lang="nl_NL">Change the project</val>
-		<val lang="zh_CN">Change the project</val>
+		<val lang="en_US">Switch project</val>
+		<val lang="de_DE">Switch project</val>
+		<val lang="fr_FR">Switch project</val>
+		<val lang="ja_JP">Switch project</val>
+		<val lang="nl_NL">Switch project</val>
+		<val lang="zh_CN">Switch project</val>
 	</key>
 	<key value="Detect_And_Open_Xpr_Files">
 		<comment>Detect and open xpr files from opened working copies option.</comment>

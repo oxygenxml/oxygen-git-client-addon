@@ -624,9 +624,9 @@ public class FileUtil {
   public static List<File> findAllFilesByExtension(File wcDir, String extension) {
     return findAllFilesByExtension(wcDir, new ArrayList<>(), extension);
   }
-
+  
   /**
-   * Search all the files(excluding the hidden ones) by the given extension and add them to the given list
+   * Search all the files by the given extension and add them to the given list
    * 
    * @param startDir    The directory to search recursively
    * @param foundFiles  The list with the found files
