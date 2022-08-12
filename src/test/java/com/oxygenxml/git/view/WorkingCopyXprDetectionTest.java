@@ -49,35 +49,35 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
    */
   public void testAutoOpenXPR() throws Exception {
     OptionsManager.getInstance().setDetectAndOpenXprFiles(true);
-    
+
     final String localRepository1 = "localrepo1"; 
     final String[] currentProject = new String[1];
     final String localRepository2 = "localrepo2";
     final String dir = "target/test-resources/WorkingCopyXprDetection";
-    
+
     final StandalonePluginWorkspace pluginWS = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.when(pluginWS.open(Mockito.any(URL.class))).thenAnswer(invocation -> {
       currentProject[0] = new File(((URL)invocation.getArgument(0)).toURI()).getPath();
       return true;
     });
-    
+
     final JFrame frame = new JFrame();
     Mockito.when(pluginWS.getParentFrame()).thenReturn(frame);
-    
+
     final List<File> files = new ArrayList<>();
-    createResorces(dir, localRepository1, localRepository2, files);
+    createResorces(dir, localRepository1, 1, localRepository2, 3, files);
     assertEquals(7, files.size());
-    
+
     final int mainDirectoryIndex = 0;
     final int localRepo2Index = 2;
     final int xpr1Index = 3;
     final int xpr2Index = 4;
-   
+
     final ProjectController projectManager = Mockito.mock(ProjectController.class);
     Mockito.when(projectManager.getCurrentProjectURL()).thenReturn(files.get(localRepo2Index).toURI().toURL());
     Mockito.when(pluginWS.getProjectManager()).thenReturn(projectManager);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWS);
-    
+
     try {
       GitControllerBase mock = Mockito.mock(GitControllerBase.class);
       GitAccess instance = GitAccess.getInstance();
@@ -91,23 +91,23 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
 
       instance.createNewRepository(new File(dir, localRepository1).getPath());
       Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() ->
-        files.get(xpr1Index).getAbsolutePath().equals(currentProject[0]));
+      files.get(xpr1Index).getAbsolutePath().equals(currentProject[0]));
 
-   
+
       instance.createNewRepository(new File(dir, localRepository2).getPath());
       OpenProjectDialog dialog = (OpenProjectDialog) findDialog(
           Translator.getInstance().getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE));
       assertNotNull(dialog);
       assertEquals(3, dialog.getFilesCombo().getItemCount());
-      
+
       // assert that the repository was not changed without confirmation.
       Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() ->
-        files.get(xpr1Index).getAbsolutePath().equals(currentProject[0]));
+      files.get(xpr1Index).getAbsolutePath().equals(currentProject[0]));
 
       dialog.getOkButton().doClick();
       Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() ->
-        files.get(xpr2Index).getAbsolutePath().equals(currentProject[0]));
-      
+      files.get(xpr2Index).getAbsolutePath().equals(currentProject[0]));
+
     } finally {
       FileSystemUtil.deleteRecursivelly(files.get(mainDirectoryIndex));
       frame.setVisible(false);
@@ -117,12 +117,13 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
   }
 
   /**
-   * Creates the following resources: a directory with two directories inside it. The first directory contains
-   * a xpr file and the second directory contains two xpr files.
+   * Creates testing resources.
    *     
    * @param mainDirectory           The main directory.
    * @param localRepository1        The first local repository folder.
+   * @param repo1XprFiles           The first repository number of xpr files
    * @param localRepository2        The second local repository folder.
+   * @param repo2XprFiles           The second repository number of xpr files
    * @param files                   The list to collect created files.
    * 
    * @throws URISyntaxException
@@ -131,24 +132,35 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
   private void createResorces(
       final String mainDirectory, 
       final String localRepository1, 
+      final int repo1XprFiles,
       final String localRepository2,
+      final int repo2XprFiles,
       final List<File> files) throws URISyntaxException, IOException {
+
     final File mainDir = new File(mainDirectory);
     if(!mainDir.exists()) {
       mainDir.mkdirs();
     }
     files.add(mainDir);
+
     final File localRepositoryFile1 = new File(mainDir, localRepository1);
     final File localRepositoryFile2 = new File(mainDir, localRepository2);
     localRepositoryFile1.mkdir();
     localRepositoryFile2.mkdir();
     files.add(localRepositoryFile1);
     files.add(localRepositoryFile2);
-    final File xpr1 = new File(localRepositoryFile1, "file1.xpr");
-    xpr1.createNewFile();
-    files.add(xpr1);
+
+    IntStream.range(1, repo1XprFiles + 1).forEachOrdered(index -> {
+      final File file = new File(localRepositoryFile1, "file" + index + ".xpr");
+      try {
+        file.createNewFile();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      files.add(file);
+    });
     
-    IntStream.range(2, 5).forEachOrdered(index -> {
+    IntStream.range(1, repo2XprFiles + 1).forEachOrdered(index -> {
       final File file = new File(localRepositoryFile2, "file" + index + ".xpr");
       try {
         file.createNewFile();
