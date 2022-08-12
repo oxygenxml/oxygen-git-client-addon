@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -56,7 +57,7 @@ public class OpenProjectDialog extends OKCancelDialog {
   /**
    * XPR files combo
    */
-  JComboBox<File> filesCombo;
+  private JComboBox<File> filesCombo;
 
   /**
    * Constructor 
@@ -168,5 +169,14 @@ public class OpenProjectDialog extends OKCancelDialog {
     return currentXPRuri;
   }
   
+  /**
+   * Getter.
+   * 
+   * @return The combo with files.
+   */
+  @TestOnly
+  public JComboBox<File> getFilesCombo() {
+    return filesCombo;
+  }
 
 }
