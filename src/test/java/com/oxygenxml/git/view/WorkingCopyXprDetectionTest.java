@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -79,9 +78,7 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
     PluginWorkspaceProvider.setPluginWorkspace(pluginWS);
 
     try {
-      GitControllerBase mock = Mockito.mock(GitControllerBase.class);
       GitAccess instance = GitAccess.getInstance();
-      Mockito.when(mock.getGitAccess()).thenReturn(instance);
       WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(new GitController(instance), true);
       frame.getContentPane().add(wcPanel);
       frame.pack();
