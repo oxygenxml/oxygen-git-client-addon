@@ -38,11 +38,12 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 public class WorkingCopyXprDetectionTest extends GitTestBase {
 
   /**
-   * <p><b>Description:</b> Tests auto opening an .xpr file project when option is enabled.</p>
+   * <p><b>Description:</b> Tests auto opening an .xpr file project when option is enabled and disabled.</p>
    * 
    * <p><b>Bug ID:</b> EXM-46694</p>
    *
    * @author alex_smarandache
+   * @author gabriel_nedianu
    * 
    * @throws Exception When problems occur.
    */
@@ -86,25 +87,44 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
       SwingUtilities.invokeAndWait(() -> frame.setVisible(true));
       sleep(100);
 
-      instance.createNewRepository(new File(dir, localRepository1).getPath());
+      File repository1 = new File(dir, localRepository1);
+      instance.createNewRepository(repository1.getPath());
       Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() ->
       files.get(xpr1Index).getAbsolutePath().equals(currentProject[0]));
 
-
-      instance.createNewRepository(new File(dir, localRepository2).getPath());
+      File repository2 = new File(dir, localRepository2);
+      instance.createNewRepository(repository2.getPath());
       OpenProjectDialog dialog = (OpenProjectDialog) findDialog(
           Translator.getInstance().getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE));
       assertNotNull(dialog);
       assertEquals(3, dialog.getFilesCombo().getItemCount());
-
+      
       // assert that the repository was not changed without confirmation.
       Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() ->
       files.get(xpr1Index).getAbsolutePath().equals(currentProject[0]));
-
+      
       dialog.getOkButton().doClick();
       Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() ->
       files.get(xpr2Index).getAbsolutePath().equals(currentProject[0]));
-
+      
+      //Switching to the first repo shouldn't change the xpr when the option not set
+      OptionsManager.getInstance().setDetectAndOpenXprFiles(false);
+      wcPanel.getWorkingCopyCombo().setSelectedItem(repository1.getAbsolutePath());
+      Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() ->
+      files.get(xpr2Index).getAbsolutePath().equals(currentProject[0]));
+      assertEquals("First repo should be set in the working copy combo",
+          repository1.getAbsolutePath(),
+          wcPanel.getWorkingCopyCombo().getSelectedItem());
+      
+      //Switching to the second repo shouldn't open the dialog
+      wcPanel.getWorkingCopyCombo().setSelectedItem(repository2.getAbsolutePath());
+      dialog = (OpenProjectDialog) findDialog(
+          Translator.getInstance().getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE));
+      assertNull("Switching to the second repo shouldn't open the dialog", dialog);
+      assertEquals("Second repo should be set in the working copy combo",
+          repository2.getAbsolutePath(),
+          wcPanel.getWorkingCopyCombo().getSelectedItem());
+      
     } finally {
       FileSystemUtil.deleteRecursivelly(files.get(mainDirectoryIndex));
       frame.setVisible(false);
