@@ -24,14 +24,14 @@
 		<val lang="nl_NL">current</val>
 		<val lang="zh_CN">current</val>
 	</key>
-	<key value="Select_Oxygen_Project">
-		<comment>Select Oxygen Project</comment>
-		<val lang="en_US">Select Oxygen project</val>
-		<val lang="de_DE">Select Oxygen project</val>
-		<val lang="fr_FR">Select Oxygen project</val>
-		<val lang="ja_JP">Select Oxygen project</val>
-		<val lang="nl_NL">Select Oxygen project</val>
-		<val lang="zh_CN">Select Oxygen project</val>
+	<key value="Select_Project">
+		<comment>Select Project</comment>
+		<val lang="en_US">Select project</val>
+		<val lang="de_DE">Select project</val>
+		<val lang="fr_FR">Select project</val>
+		<val lang="ja_JP">Select project</val>
+		<val lang="nl_NL">Select project</val>
+		<val lang="zh_CN">Select project</val>
 	</key>
 	<key value="Detect_And_Open_Xpr_Files_Dialog_Text">
 		<comment>Detect and open xpr files from opened working copies dialog text.</comment>

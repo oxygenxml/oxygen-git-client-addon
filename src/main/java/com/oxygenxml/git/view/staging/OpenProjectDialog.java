@@ -52,7 +52,7 @@ public class OpenProjectDialog extends OKCancelDialog {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER =  LoggerFactory.getLogger(WorkingCopySelectionPanel.class);
+  private static final Logger LOGGER =  LoggerFactory.getLogger(OpenProjectDialog.class);
   
   /**
    * XPR files combo
@@ -101,7 +101,7 @@ public class OpenProjectDialog extends OKCancelDialog {
         UIConstants.COMPONENT_BOTTOM_PADDING,
         UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.gridy++;
-    JLabel selectXprText = new JLabel(TRANSLATOR.getTranslation(Tags.SELECT_OXYGEN_PROJECT) + ":");
+    JLabel selectXprText = new JLabel(TRANSLATOR.getTranslation(Tags.SELECT_PROJECT) + ":");
     panel.add(selectXprText, gbc);
     
     gbc.insets = new Insets(
@@ -117,6 +117,8 @@ public class OpenProjectDialog extends OKCancelDialog {
     panel.add(filesCombo, gbc);
     
     this.getContentPane().add(panel);
+    
+    setOkButtonText(TRANSLATOR.getTranslation(Tags.OPEN));
   }
 
   /**
@@ -142,31 +144,11 @@ public class OpenProjectDialog extends OKCancelDialog {
       JLabel comp = (JLabel) super.getListCellRendererComponent((JList<File>)list, value, index, isSelected, cellHasFocus);
       if (value != null) {
         File currentFile = (File) value;
-        URI currentUri = currentFile.toURI();
         comp.setText(currentFile.getName());
-        if (currentUri != null && currentUri.equals(getCurrentXprURI())) {
-          comp.setText(comp.getText()+ " (" + TRANSLATOR.getTranslation(Tags.CURRENT) + ")");
-        }
         comp.setToolTipText(currentFile.getPath().replace("\\", "/"));
       }
       return comp;
     }
-  }
-  
-  /**
-   * @return The uri of the current project(xpr) or <code>null</code>
-   */
-  private static URI getCurrentXprURI(){
-    URI currentXPRuri = null;
-    StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    try {
-      currentXPRuri = spw.getProjectManager().getCurrentProjectURL().toURI();
-    } catch (URISyntaxException e) {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e.getMessage(),e);
-      }
-    }
-    return currentXPRuri;
   }
   
   /**

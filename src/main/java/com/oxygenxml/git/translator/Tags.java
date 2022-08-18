@@ -1949,9 +1949,9 @@ public class Tags {
   public static final String DETECT_AND_OPEN_XPR_FILES_DIALOG_TEXT = "Detect_And_Open_Xpr_Files_Dialog_Text";
   
   /**
-   * en: Select Oxygen project:
+   * en: Select project:
    */
-  public static final String SELECT_OXYGEN_PROJECT = "Select_Oxygen_Project";
+  public static final String SELECT_PROJECT = "Select_Project";
   
   /**
    * en: current
