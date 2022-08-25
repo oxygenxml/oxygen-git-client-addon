@@ -53,6 +53,7 @@ import com.oxygenxml.git.view.util.UIUtil;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -488,20 +489,18 @@ public class WorkingCopySelectionPanel extends JPanel {
 		  URL xprUrl = null;
 		  URI currentXprURI = getCurrentXprURI();
 		  try {
-		    if(!xprFiles.isEmpty() && currentXprURI != null && !xprFiles.contains(new File(currentXprURI))) {
+		    if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) {
 		      if (xprFiles.size() == 1) {
 		        xprUrl = xprFiles.get(0).toURI().toURL();
 		      } else {
 		        OpenProjectDialog dialog= new OpenProjectDialog(
 		            (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		            TRANSLATOR.getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE),
-		            true,
 		            xprFiles);
 		        dialog.setVisible(true);
-		        if (dialog.getResult() == 1) {
+		        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
 		          xprUrl = dialog.getSelectedFile().toURI().toURL();
 		        } 
-		      } 
+		      }
 		    }
 		  } catch (MalformedURLException e) {
 		    if (LOGGER.isDebugEnabled()) {

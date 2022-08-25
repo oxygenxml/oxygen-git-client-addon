@@ -12,8 +12,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,16 +22,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -42,17 +35,13 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author gabriel_nedianu
  *
  */
+@SuppressWarnings("serial")
 public class OpenProjectDialog extends OKCancelDialog {
   
   /**
    * The translator for the messages that are displayed in this panel
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER =  LoggerFactory.getLogger(OpenProjectDialog.class);
   
   /**
    * XPR files combo
@@ -67,8 +56,10 @@ public class OpenProjectDialog extends OKCancelDialog {
    * @param modal <code>true</code> if it should be modal
    * @param xprFiles The list of files that will be shown in the dialog
    */
-  public OpenProjectDialog(JFrame parentFrame, String title, boolean modal, List<File> xprFiles) {
-    super(parentFrame, title, modal);
+  public OpenProjectDialog(JFrame parentFrame, List<File> xprFiles) {
+    super(parentFrame,
+        TRANSLATOR.getTranslation(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE),
+        true);
     createGUI(xprFiles);
     this.pack();
   }
@@ -98,16 +89,16 @@ public class OpenProjectDialog extends OKCancelDialog {
     gbc.insets = new Insets(
        2*UIConstants.COMPONENT_TOP_PADDING,
         UIConstants.COMPONENT_LEFT_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING,
+        0,
         UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.gridy++;
     JLabel selectXprText = new JLabel(TRANSLATOR.getTranslation(Tags.SELECT_PROJECT) + ":");
     panel.add(selectXprText, gbc);
     
     gbc.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_SMALL_TOP_PADDING,
          UIConstants.COMPONENT_LEFT_PADDING,
-         UIConstants.COMPONENT_BOTTOM_PADDING,
+         UIConstants.LAST_LINE_COMPONENT_BOTTOM_PADDING,
          UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.gridy++;
     gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -115,9 +106,8 @@ public class OpenProjectDialog extends OKCancelDialog {
     filesCombo = new JComboBox<>(xprFiles.toArray(new File[0]));
     filesCombo.setRenderer(new OpenProjectFilesCellRenderer());
     panel.add(filesCombo, gbc);
-    
+
     this.getContentPane().add(panel);
-    
     setOkButtonText(TRANSLATOR.getTranslation(Tags.OPEN));
   }
 
@@ -134,7 +124,6 @@ public class OpenProjectDialog extends OKCancelDialog {
    * @author gabriel_nedianu
    *
    */
-  @SuppressWarnings("serial")
   private final class OpenProjectFilesCellRenderer extends DefaultListCellRenderer {
     
     @Override
@@ -145,7 +134,7 @@ public class OpenProjectDialog extends OKCancelDialog {
       if (value != null) {
         File currentFile = (File) value;
         comp.setText(currentFile.getName());
-        comp.setToolTipText(currentFile.getPath().replace("\\", "/"));
+        comp.setToolTipText(currentFile.getPath());
       }
       return comp;
     }
