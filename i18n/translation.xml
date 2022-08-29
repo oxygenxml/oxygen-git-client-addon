@@ -53,12 +53,12 @@
 	</key>
 	<key value="Detect_And_Open_Xpr_Files">
 		<comment>Detect and open xpr files from opened working copies option.</comment>
-		<val lang="en_US">Detect and open xpr files from opened working copies</val>
-		<val lang="de_DE">Detect and open xpr files from opened working copies</val>
-		<val lang="fr_FR">Detect and open xpr files from opened working copies</val>
-		<val lang="ja_JP">Detect and open xpr files from opened working copies</val>
-		<val lang="nl_NL">Detect and open xpr files from opened working copies</val>
-		<val lang="zh_CN">Detect and open xpr files from opened working copies</val>
+		<val lang="en_US">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="de_DE">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="fr_FR">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="ja_JP">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="nl_NL">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="zh_CN">Detect and open Oxygen projects (.xpr) from opened working copies</val>
 	</key>
 	<key value="Delete_Pushed_Tag_Dialog_Message">
 		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
