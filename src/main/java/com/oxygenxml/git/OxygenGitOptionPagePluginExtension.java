@@ -385,7 +385,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         OptionTags.VALIDATE_FILES_BEFORE_COMMIT,
         OptionTags.REJECT_COMMIT_ON_VALIDATION_PROBLEMS,
         OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH,
-        OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS
+        OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS,
+        OptionTags.DETECT_AND_OPEN_XPR_FILES
     };
   }
 }
