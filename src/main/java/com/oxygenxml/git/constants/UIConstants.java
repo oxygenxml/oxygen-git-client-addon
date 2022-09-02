@@ -29,7 +29,12 @@ public class UIConstants {
 	 * 5px for insets
 	 */
 	public static final int INDENT_5PX = 5;
-
+	
+	 /**
+   * Small top padding for components
+   */
+  public static final int COMPONENT_SMALL_TOP_PADDING = 3;
+	
 	/**
 	 * Top padding for components (in general).
 	 */

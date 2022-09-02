@@ -11,6 +11,10 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +23,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -47,6 +52,8 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -449,21 +456,77 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		@Override
 		public void operationSuccessfullyEnded(GitEventInfo info) {
-			if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-				Runnable r = () -> {
-					setWCSelectorsEnabled(true);
-					updateComboboxModelAfterRepositoryChanged();
-				};
-				if (!SwingUtilities.isEventDispatchThread()) {
-					SwingUtilities.invokeLater(r);
-				} else {
-					r.run();
-				}
-			}
+		  if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+		    Runnable r = () -> {
+		      setWCSelectorsEnabled(true);
+		      updateComboboxModelAfterRepositoryChanged();
+		      if (OptionsManager.getInstance().isDetectAndOpenXprFiles() && info instanceof WorkingCopyGitEventInfo) {
+		        File wcDirectory = ((WorkingCopyGitEventInfo) info).getWorkingCopy();
+		        List<File> xprFiles = FileUtil.findAllFilesByExtension(wcDirectory, ".xpr");
+		        URL xprUrl = getXprURLfromXprFiles(xprFiles);
+		        if (xprUrl != null) {
+		          PluginWorkspaceProvider.getPluginWorkspace().open(xprUrl);
+		        }
+		      }
+		    };
+		    if (!SwingUtilities.isEventDispatchThread()) {
+		      SwingUtilities.invokeLater(r);
+		    } else {
+		      r.run();
+		    }
+		  }
 		}
 
-
 		/**
+		 * Get the project file URL from a list of project files.
+		 * A dialog will be displayed for choosing one project if there are multiple files
+		 *  
+		 * @param xprFiles The project files 
+		 * 
+		 * @return A URL for the project or <code>null</code> if the URL is malformed or xprFiles is empty
+		 */
+		private URL getXprURLfromXprFiles(List<File> xprFiles) {
+		  URL xprUrl = null;
+		  URI currentXprURI = getCurrentXprURI();
+		  try {
+		    if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) {
+		      if (xprFiles.size() == 1) {
+		        xprUrl = xprFiles.get(0).toURI().toURL();
+		      } else {
+		        OpenProjectDialog dialog= new OpenProjectDialog(
+		            (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		            xprFiles);
+		        dialog.setVisible(true);
+		        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+		          xprUrl = dialog.getSelectedFile().toURI().toURL();
+		        } 
+		      }
+		    }
+		  } catch (MalformedURLException e) {
+		    if (LOGGER.isDebugEnabled()) {
+		      LOGGER.debug(e.getMessage(), e);
+		    }
+		  }
+		  return xprUrl;
+		}
+	
+  /**
+   * @return The uri of the current project(xpr) or <code>null</code>
+   */
+  private URI getCurrentXprURI(){
+    URI currentXPRuri = null;
+    StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    try {
+      currentXPRuri = spw.getProjectManager().getCurrentProjectURL().toURI();
+    } catch (URISyntaxException e) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e.getMessage(),e);
+      }
+    }
+    return currentXPRuri;
+  }
+		
+    /**
 		 * Update the WC selectors enabled.
 		 * 
 		 * @param isEnabled the new state.
@@ -570,8 +633,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 			}
 		}
 	}
-
-
+	
 	/**
 	 * @return the working copy combo.
 	 */

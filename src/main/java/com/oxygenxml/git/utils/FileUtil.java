@@ -614,4 +614,35 @@ public class FileUtil {
     return null;
   }
   
+  /**
+   * Search recursively all the files by the given extension
+   * 
+   * @param wcDir The directory to search
+   * 
+   * @return A list of all the files with the given extension
+   */
+  public static List<File> findAllFilesByExtension(File wcDir, String extension) {
+    return findAllFilesByExtension(wcDir, new ArrayList<>(), extension);
+  }
+  
+  /**
+   * Search all the files by the given extension and add them to the given list
+   * 
+   * @param startDir    The directory to search recursively
+   * @param foundFiles  The list with the found files
+   *  
+   * @return A list of all the files with the given extension found in the given directory
+   */
+  private static List<File> findAllFilesByExtension(File startDir, List<File> foundFiles, String extension) {
+    for (File file : startDir.listFiles(pathname -> !pathname.isHidden())) {
+      if(file.getName().endsWith(extension)) {
+        foundFiles.add(file);
+      }
+      if (file.isDirectory()) {
+        findAllFilesByExtension(file, foundFiles, extension);
+      }
+    }
+    return foundFiles;
+  }
+  
 }

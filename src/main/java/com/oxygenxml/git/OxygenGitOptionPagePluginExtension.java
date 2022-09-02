@@ -89,6 +89,11 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   private JCheckBox updateSubmodulesOnPull;
   
   /**
+   * Detect and open xpr files from opened working copies
+   */
+  private JCheckBox detectAndOpenXprFiles;
+  
+  /**
    * CheckBox for the option to notify the user about new commits in the remote.
    */
   private JCheckBox notifyAboutRemoteCommitsCheckBox;
@@ -152,6 +157,12 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     updateSubmodulesOnPull = new JCheckBox(TRANSLATOR.getTranslation(
         Tags.UPDATE_SUBMODULES_ON_PULL));
     mainPanel.add(updateSubmodulesOnPull, constraints);
+    
+    // Option that detects and opens xpr files in the project view
+    constraints.gridy ++;
+    detectAndOpenXprFiles = new JCheckBox(TRANSLATOR.getTranslation(
+        Tags.DETECT_AND_OPEN_XPR_FILES));
+    mainPanel.add(detectAndOpenXprFiles, constraints);
 
     // check if the validation support is available
     if(ValidationManager.getInstance().isAvailable()) {
@@ -245,6 +256,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     boolean updateSubmodules = OPTIONS_MANAGER.getUpdateSubmodulesOnPull();
     updateSubmodulesOnPull.setSelected(updateSubmodules);
     
+    detectAndOpenXprFiles.setSelected(OPTIONS_MANAGER.isDetectAndOpenXprFiles());
+    
     if(ValidationManager.getInstance().isAvailable()) {
       boolean validateFilesBeforeCommit = OPTIONS_MANAGER.isFilesValidatedBeforeCommit();
       validateBeforeCommit.setSelected(validateFilesBeforeCommit);
@@ -312,6 +325,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void apply(PluginWorkspace pluginWorkspace) {
     OPTIONS_MANAGER.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
     OPTIONS_MANAGER.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
+    OPTIONS_MANAGER.setDetectAndOpenXprFiles(detectAndOpenXprFiles.isSelected());
     OPTIONS_MANAGER.setValidateFilesBeforeCommit(validateBeforeCommit.isSelected());
     OPTIONS_MANAGER.setRejectCommitOnValidationProblems(rejectCommitOnValidationProblems.isSelected());
     OPTIONS_MANAGER.setValidateMainFilesBeforePush(validateBeforePush.isSelected());
@@ -332,6 +346,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void restoreDefaults() {
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
     updateSubmodulesOnPull.setSelected(true);
+    detectAndOpenXprFiles.setSelected(false);
     askToSwitchToWCRadio.setSelected(true);
     validateBeforeCommit.setSelected(false);
     rejectCommitOnValidationProblems.setSelected(false);
@@ -370,7 +385,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         OptionTags.VALIDATE_FILES_BEFORE_COMMIT,
         OptionTags.REJECT_COMMIT_ON_VALIDATION_PROBLEMS,
         OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH,
-        OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS
+        OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS,
+        OptionTags.DETECT_AND_OPEN_XPR_FILES
     };
   }
 }

@@ -684,7 +684,6 @@ public class OptionsManager {
 
  /**
   * Set what to do when a repository is detected when opening an Oxygen project.
-
   *  
   * @param whatToDo What to do.
   */
@@ -713,6 +712,22 @@ public class OptionsManager {
    */
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     getOptions().setUpdateSubmodulesOnPull(updateSubmodules);
+  }
+  
+  /**
+   * Sets the detecting and opening xpr files in the project view
+   * 
+   * @param validateFilesBeforeCommit <code>true</code> if should detect and open xpr files from opened working copies
+   */
+  public void setDetectAndOpenXprFiles(boolean detectAndOpenXprFiles) {
+    getOptions().setDetectAndOpenXprFiles(detectAndOpenXprFiles);
+  }
+
+  /**
+   * @return <code>true</code> if should detect and open xpr files from opened working copies
+   */
+  public boolean isDetectAndOpenXprFiles() {
+    return getOptions().getDetectAndOpenXprFiles();
   }
   
   /**

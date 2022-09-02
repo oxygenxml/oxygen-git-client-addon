@@ -251,7 +251,8 @@ public class OptionsWithTagsTest {
         + "HISTORY_STRATEGY\n"
         + "VALIDATE_FILES_BEFORE_COMMIT\n"
         + "REJECT_COMMIT_ON_VALIDATION_PROBLEMS\n"
-        + "VALIDATE_MAIN_FILES_BEFORE_PUSH\n" + 
-        "REJECT_PUSH_ON_VALIDATION_PROBLEMS", dump);
+        + "VALIDATE_MAIN_FILES_BEFORE_PUSH\n" 
+        + "REJECT_PUSH_ON_VALIDATION_PROBLEMS\n"
+        + "DETECT_AND_OPEN_XPR_FILES", dump);
   }
 }

@@ -306,7 +306,16 @@ public class TagBasedOptions implements Options {
   @Override
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
    wsOptionsStorage.setOption(OptionTags.UPDATE_SUBMODULES_ON_PULL, String.valueOf(updateSubmodules));
-
+  }
+  
+  @Override
+  public boolean getDetectAndOpenXprFiles() {
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.DETECT_AND_OPEN_XPR_FILES, FALSE));
+  }
+  
+  @Override
+  public void setDetectAndOpenXprFiles(boolean detectAndOpenXprFiles) {
+   wsOptionsStorage.setOption(OptionTags.DETECT_AND_OPEN_XPR_FILES, String.valueOf(detectAndOpenXprFiles));
   }
 
   @Override

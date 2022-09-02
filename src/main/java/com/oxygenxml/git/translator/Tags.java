@@ -1933,5 +1933,30 @@ public class Tags {
    */
   public static final String MAIN_FILES_SUPPORT_NOT_ENABLED = "Main_Files_Support_Not_Enabled";
   
+  /**
+   * Detect and open xpr files from opened working copies option
+   */
+  public static final String DETECT_AND_OPEN_XPR_FILES = "Detect_And_Open_Xpr_Files";
+  
+  /**
+   * Detect and open xpr files from opened working copy dialog title
+   */
+  public static final String DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE = "Detect_And_Open_Xpr_Files_Dialog_Title";
+  
+  /**
+   * Detect and open xpr files from opened working copy dialog jlabel text
+   */
+  public static final String DETECT_AND_OPEN_XPR_FILES_DIALOG_TEXT = "Detect_And_Open_Xpr_Files_Dialog_Text";
+  
+  /**
+   * en: Select project:
+   */
+  public static final String SELECT_PROJECT = "Select_Project";
+  
+  /**
+   * en: current
+   */
+  public static final String CURRENT = "Current";
+  
 }
 

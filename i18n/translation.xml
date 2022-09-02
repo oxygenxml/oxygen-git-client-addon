@@ -14,6 +14,52 @@
 		<language description="Chinese" lang="zh_CN"
 			localeDescription="中文" />
 	</languageList>
+	
+	<key value="Current">
+		<comment>current</comment>
+		<val lang="en_US">current</val>
+		<val lang="de_DE">current</val>
+		<val lang="fr_FR">current</val>
+		<val lang="ja_JP">current</val>
+		<val lang="nl_NL">current</val>
+		<val lang="zh_CN">current</val>
+	</key>
+	<key value="Select_Project">
+		<comment>Select Project</comment>
+		<val lang="en_US">Select project</val>
+		<val lang="de_DE">Select project</val>
+		<val lang="fr_FR">Select project</val>
+		<val lang="ja_JP">Select project</val>
+		<val lang="nl_NL">Select project</val>
+		<val lang="zh_CN">Select project</val>
+	</key>
+	<key value="Detect_And_Open_Xpr_Files_Dialog_Text">
+		<comment>Detect and open xpr files from opened working copies dialog text.</comment>
+		<val lang="en_US">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="de_DE">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="fr_FR">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="ja_JP">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="nl_NL">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="zh_CN">Current Git project contains multiple Oxygen project files (.xpr).</val>
+	</key>
+	<key value="Detect_And_Open_Xpr_Files_Dialog_Title">
+		<comment>Detect and open xpr files from opened working copies dialog title.</comment>
+		<val lang="en_US">Switch project</val>
+		<val lang="de_DE">Switch project</val>
+		<val lang="fr_FR">Switch project</val>
+		<val lang="ja_JP">Switch project</val>
+		<val lang="nl_NL">Switch project</val>
+		<val lang="zh_CN">Switch project</val>
+	</key>
+	<key value="Detect_And_Open_Xpr_Files">
+		<comment>Detect and open xpr files from opened working copies option.</comment>
+		<val lang="en_US">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="de_DE">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="fr_FR">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="ja_JP">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="nl_NL">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="zh_CN">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+	</key>
 	<key value="Delete_Pushed_Tag_Dialog_Message">
 		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
 		<val lang="en_US">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
