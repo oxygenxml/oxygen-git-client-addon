@@ -256,7 +256,7 @@
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
 		<val lang="fr_FR">This operation will merge changes on top of the "{0}" branch.  
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
-		<val lang="ja_JP">TThis operation will merge changes on top of the "{0}" branch.  
+		<val lang="ja_JP">This operation will merge changes on top of the "{0}" branch.  
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
 		<val lang="nl_NL">This operation will merge changes on top of the "{0}" branch.  
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
@@ -3657,7 +3657,7 @@
 		<val lang="en_US">Invalid remote</val>
 		<val lang="de_DE">Remote ungültig</val>
 		<val lang="fr_FR">Remote invalide</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Invalid remote</val>
 		<val lang="nl_NL">Ongeldige externe repository</val>
 		<val lang="zh_CN">无效远程服务器</val>
 	</key>
@@ -3668,7 +3668,7 @@
 		<val lang="de_DE">Unter dieser URL wurde kein Remote-Repository gefunden.
 		</val>
 		<val lang="fr_FR">Aucun dépôt remote trouvé pour l'URL fournie.</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">No remote repository found for the provided URL.</val>
 		<val lang="nl_NL">Geen externe repository gevonden bij deze url.</val>
 		<val lang="zh_CN">找不到提供的 URL 的远程存储库.</val>
 	</key>
@@ -3678,7 +3678,7 @@
 		<val lang="en_US">Checkout branch</val>
 		<val lang="de_DE">Branch auschecken</val>
 		<val lang="fr_FR">Extraction de la branche</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Checkout branch</val>
 		<val lang="nl_NL">Branch uitchecken</val>
 		<val lang="zh_CN">检出分支</val>
 	</key>
@@ -3687,7 +3687,7 @@
 		<val lang="en_US">Yes</val>
 		<val lang="de_DE">Ja</val>
 		<val lang="fr_FR">Oui</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Yes</val>
 		<val lang="nl_NL">Ja</val>
 		<val lang="zh_CN">是的</val>
 	</key>
@@ -3696,7 +3696,7 @@
 		<val lang="en_US">No</val>
 		<val lang="de_DE">Nein</val>
 		<val lang="fr_FR">Non</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">No</val>
 		<val lang="nl_NL">Nee</val>
 		<val lang="zh_CN">不</val>
 	</key>
@@ -3705,7 +3705,7 @@
 		<val lang="en_US">Pull status</val>
 		<val lang="de_DE">Pull-Status</val>
 		<val lang="fr_FR">Statut du pull</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Pull status</val>
 		<val lang="nl_NL">Status ophalen</val>
 		<val lang="zh_CN">拉取状态</val>
 	</key>
@@ -3714,7 +3714,7 @@
 		<val lang="en_US">Please enter your SSH passphrase</val>
 		<val lang="de_DE">Bitte gib deinen SSH-Passphrase ein</val>
 		<val lang="fr_FR">Veuillez entrer votre passphrase SSH</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Please enter your SSH passphrase</val>
 		<val lang="nl_NL">Voer uw SSH wachtwoord in</val>
 		<val lang="zh_CN">请输入您的 SSH 密码</val>
 	</key>
@@ -3724,7 +3724,7 @@
 		<val lang="en_US">Working copy: </val>
 		<val lang="de_DE">Arbeitskopie: </val>
 		<val lang="fr_FR">Copie de travail: </val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Working copy: </val>
 		<val lang="nl_NL">Werkkopie: </val>
 		<val lang="zh_CN">工作副本: </val>
 	</key>
@@ -3733,7 +3733,7 @@
 		<val lang="en_US">Push</val>
 		<val lang="de_DE">Senden (push)</val>
 		<val lang="fr_FR" skipTranslation="true">Push</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Push</val>
 		<val lang="nl_NL">Pushen</val>
 		<val lang="zh_CN">推送</val>
 	</key>
@@ -3742,7 +3742,7 @@
 		<val lang="en_US">Pull</val>
 		<val lang="de_DE">Ziehen (pull)</val>
 		<val lang="fr_FR" skipTranslation="true">Pull</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Pull</val>
 		<val lang="nl_NL">Ophalen</val>
 		<val lang="zh_CN">拉取</val>
 	</key>
@@ -3751,7 +3751,7 @@
 		<val lang="en_US">Browse File System</val>
 		<val lang="de_DE">Im Dateisystem suchen</val>
 		<val lang="fr_FR">Parcourir le système de fichier</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Browse File System</val>
 		<val lang="nl_NL">Bestandssysteem verkennen</val>
 		<val lang="zh_CN">浏览文件系统</val>
 	</key>
@@ -3760,7 +3760,7 @@
 		<val lang="en_US">Stage all</val>
 		<val lang="de_DE">Alle vormerken</val>
 		<val lang="fr_FR">Tout réserver</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Stage all</val>
 		<val lang="nl_NL">Stage alles</val>
 		<val lang="zh_CN">所有阶段</val>
 	</key>
@@ -3769,7 +3769,7 @@
 		<val lang="en_US">Unstage all</val>
 		<val lang="de_DE">Alle nicht mehr vormerken</val>
 		<val lang="fr_FR">Tout libérer</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Unstage all</val>
 		<val lang="nl_NL">Unstage alles</val>
 		<val lang="zh_CN">全部取消</val>
 	</key>
@@ -3778,7 +3778,7 @@
 		<val lang="en_US">Stage selected</val>
 		<val lang="de_DE">Auswahl vormerken</val>
 		<val lang="fr_FR">Réserver la sélection</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Stage selected</val>
 		<val lang="nl_NL">Stage geselecteerde</val>
 		<val lang="zh_CN">已选择阶段</val>
 	</key>
@@ -3787,7 +3787,7 @@
 		<val lang="en_US">Unstage selected</val>
 		<val lang="de_DE">Auswahl nicht mehr vormerken</val>
 		<val lang="fr_FR">Libérer la sélection</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Unstage selected</val>
 		<val lang="nl_NL">Unstage geselecteerde</val>
 		<val lang="zh_CN">取消暂存选中</val>
 	</key>
@@ -3797,7 +3797,7 @@
 		<val lang="en_US">File Created</val>
 		<val lang="de_DE">Datei erstellt</val>
 		<val lang="fr_FR">Fichier créé</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">File Created</val>
 		<val lang="nl_NL">Bestand aangemaakt</val>
 		<val lang="zh_CN">文件已创建</val>
 	</key>
@@ -3807,7 +3807,7 @@
 		<val lang="en_US">File Modified</val>
 		<val lang="de_DE">Datei geändert</val>
 		<val lang="fr_FR">Fichier modifié</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">File Modified</val>
 		<val lang="nl_NL">Bestand gewijzigd</val>
 		<val lang="zh_CN">文件修改</val>
 	</key>
@@ -3817,7 +3817,7 @@
 		<val lang="en_US">File Deleted</val>
 		<val lang="de_DE">Datei gelöscht</val>
 		<val lang="fr_FR">Fichier supprimé</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">File Deleted</val>
 		<val lang="nl_NL">Bestand verwijderd</val>
 		<val lang="zh_CN">文件已删除</val>
 	</key>
@@ -3827,7 +3827,7 @@
 		<val lang="en_US">Conflict</val>
 		<val lang="de_DE">Konflikt</val>
 		<val lang="fr_FR">Conflit</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Conflict</val>
 		<val lang="nl_NL">Conflict</val>
 		<val lang="zh_CN">冲突</val>
 	</key>
@@ -3837,7 +3837,7 @@
 		<val lang="en_US">Commit message</val>
 		<val lang="de_DE">Commit-Nachricht</val>
 		<val lang="fr_FR">Message de commit</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Commit message</val>
 		<val lang="nl_NL">Commitbericht</val>
 		<val lang="zh_CN">提交消息</val>
 	</key>
@@ -3849,7 +3849,7 @@
 		<val lang="en_US">Choose a previously used comment</val>
 		<val lang="de_DE">Wähle eine vorherige Commit-Nachricht</val>
 		<val lang="fr_FR">Choisir un commentaire déjà utilisé</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Choose a previously used comment</val>
 		<val lang="nl_NL">Kies een eerder gebruikte opmerking</val>
 		<val lang="zh_CN">选择一个以前使用过的评论</val>
 	</key>
@@ -3858,7 +3858,7 @@
 		<val lang="en_US">Commit</val>
 		<val lang="de_DE">Commit</val>
 		<val lang="fr_FR" skipTranslation="true">Commit</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Commit</val>
 		<val lang="nl_NL">Vastleggen</val>
 		<val lang="zh_CN">提交</val>
 	</key>
@@ -3867,7 +3867,7 @@
 		<val lang="en_US">Commit successful</val>
 		<val lang="de_DE">Commit erfolgreich</val>
 		<val lang="fr_FR">Commit réussi</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Commit successful</val>
 		<val lang="nl_NL">Commit succesvol</val>
 		<val lang="zh_CN">提交成功</val>
 	</key>
@@ -3879,7 +3879,7 @@
 			bestehen.</val>
 		<val lang="fr_FR">Impossible d'effectuer le commit en ayant des conflits.
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Cannot commit while having conflicts.</val>
 		<val lang="nl_NL">Kan geen commit doen zolang er nog conflicten zijn.
 		</val>
 		<val lang="zh_CN">发生冲突时无法提交.</val>
@@ -3897,7 +3897,8 @@
 			Effectuez d'abord
 			un pull.
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Cannot push. Your current branch is behind. Pull first.
+		</val>
 		<val lang="nl_NL">Kan niet pushen. Uw huidige branch ligt achter. Doe
 			eerst pull.</val>
 		<val lang="zh_CN">推送失败. 您当前的分支落后了. 先拉取.</val>
@@ -3907,7 +3908,7 @@
 		<val lang="en_US">Push successful</val>
 		<val lang="de_DE">Push erfolgreich</val>
 		<val lang="fr_FR">Push réussi</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Push successful</val>
 		<val lang="nl_NL">Push succesvol</val>
 		<val lang="zh_CN">推送成功</val>
 	</key>
@@ -3916,7 +3917,7 @@
 		<val lang="en_US">Cannot push.</val>
 		<val lang="de_DE">Push nicht möglich.</val>
 		<val lang="fr_FR">Push impossible.</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Cannot push.</val>
 		<val lang="nl_NL">Kan niet pushen.</val>
 		<val lang="zh_CN">不可推送.</val>
 	</key>
@@ -3925,7 +3926,7 @@
 		<val lang="en_US">There was nothing to push</val>
 		<val lang="de_DE">Es wurde nichts gepusht</val>
 		<val lang="fr_FR">Rien dans le push</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">There was nothing to push</val>
 		<val lang="nl_NL">Er was niets om te pushen</val>
 		<val lang="zh_CN">没有什么可推送的</val>
 	</key>
@@ -3934,7 +3935,7 @@
 		<val lang="en_US">Pushing...</val>
 		<val lang="de_DE">Push läuft...</val>
 		<val lang="fr_FR">Push en cours...</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Pushing...</val>
 		<val lang="nl_NL">Bezig met push ...</val>
 		<val lang="zh_CN">推动...</val>
 	</key>
@@ -3945,7 +3946,7 @@
 		<val lang="en_US">Repository is already up to date</val>
 		<val lang="de_DE">Repository ist bereits auf dem aktuellen Stand</val>
 		<val lang="fr_FR">Le dépôt est déjà à jour</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Repository is already up to date</val>
 		<val lang="nl_NL">Repository is al bijgewerkt</val>
 		<val lang="zh_CN">存储库已经是最新的</val>
 	</key>
@@ -3955,7 +3956,7 @@
 		<val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand
 		</val>
 		<val lang="fr_FR">Pull réussi. Le dépôt est à jour</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Pull successful. Repository up to date</val>
 		<val lang="nl_NL">Pull sucecesvol. Repository is bijgewerkt.</val>
 		<val lang="zh_CN">拉取成功. 存储库是最新的</val>
 	</key>
@@ -3964,7 +3965,7 @@
 		<val lang="en_US">Pulling...</val>
 		<val lang="de_DE">Pull läuft...</val>
 		<val lang="fr_FR">Pull en cours...</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Pulling...</val>
 		<val lang="nl_NL">Bezig met pull ...</val>
 		<val lang="zh_CN">拉取中...</val>
 	</key>
@@ -3974,7 +3975,7 @@
 		<val lang="en_US">Pull successful with conflicts: </val>
 		<val lang="de_DE">Beim Pullen sind Konflikte aufgetreten: </val>
 		<val lang="fr_FR">Pull réussi avec des conflits: </val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Pull successful with conflicts: </val>
 		<val lang="nl_NL">Pull succesvol met conflicten:</val>
 		<val lang="zh_CN">在冲突中拉取成功: </val>
 	</key>
@@ -3984,7 +3985,7 @@
 		<val lang="en_US">Open in compare editor</val>
 		<val lang="de_DE">Änderungen anzeigen</val>
 		<val lang="fr_FR">Ouvrir dans l'éditeur de comparaison</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Open in compare editor</val>
 		<val lang="nl_NL">Open in vergelijkingseditor</val>
 		<val lang="zh_CN">在对比编辑器中打开</val>
 	</key>
@@ -3994,7 +3995,7 @@
 		<val lang="en_US">Open</val>
 		<val lang="de_DE">Öffnen</val>
 		<val lang="fr_FR">Ouvrir</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Open</val>
 		<val lang="nl_NL">Openen</val>
 		<val lang="zh_CN">打开</val>
 	</key>
@@ -4004,7 +4005,7 @@
 		<val lang="en_US">Unstage</val>
 		<val lang="de_DE">Nicht mehr vormerken</val>
 		<val lang="fr_FR">Libérer</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Unstage</val>
 		<val lang="nl_NL">Fasering stoppen</val>
 		<val lang="zh_CN">取消暂存</val>
 	</key>
@@ -4014,7 +4015,7 @@
 		<val lang="en_US">Stage</val>
 		<val lang="de_DE">Für Commit vormerken</val>
 		<val lang="fr_FR">Réserver</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Stage</val>
 		<val lang="nl_NL">Faseren</val>
 		<val lang="zh_CN">阶段</val>
 	</key>
@@ -4023,7 +4024,7 @@
 		<val lang="en_US">Resolve Conflict</val>
 		<val lang="de_DE">Konflikt lösen</val>
 		<val lang="fr_FR">Résoudre les conflits</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Resolve Conflict</val>
 		<val lang="nl_NL">Conflict oplossen</val>
 		<val lang="zh_CN">解决冲突</val>
 	</key>
@@ -4033,7 +4034,7 @@
 		<val lang="en_US">Discard</val>
 		<val lang="de_DE">Änderung verwerfen</val>
 		<val lang="fr_FR">Abandonner</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Discard</val>
 		<val lang="nl_NL">Annuleren</val>
 		<val lang="zh_CN">取消</val>
 	</key>
@@ -4045,7 +4046,7 @@
 			wollen?</val>
 		<val lang="fr_FR">Êtes-vous sûr de vouloir abandonner vos modifications?
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Are you sure you want to discard your changes?</val>
 		<val lang="nl_NL">Weet u zeker dat u uw wijzigingen ongedaan wilt maken?
 		</val>
 		<val lang="zh_CN">您确定要放弃您的更改吗?</val>
@@ -4055,7 +4056,7 @@
 		<val lang="en_US">Resolve Using "Mine"</val>
 		<val lang="de_DE">Konflikt lösen mit "Meins"</val>
 		<val lang="fr_FR">Résoudre en utilisant "La mienne"</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Resolve Using "Mine"</val>
 		<val lang="nl_NL">Oplossen met "Mijn"</val>
 		<val lang="zh_CN">使用“我的”解决</val>
 	</key>
@@ -4064,7 +4065,7 @@
 		<val lang="en_US">Resolve Using "Theirs"</val>
 		<val lang="de_DE">Konflikt lösen mit "Ihres"</val>
 		<val lang="fr_FR">Résoudre en utilisant "La leur"</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Resolve Using "Theirs"</val>
 		<val lang="nl_NL">Oplossen met "Hun"</val>
 		<val lang="zh_CN">使用“他们的”来解决</val>
 	</key>
@@ -4074,7 +4075,7 @@
 		<val lang="en_US">Restart Merge</val>
 		<val lang="de_DE">Merge erneut starten</val>
 		<val lang="fr_FR">Relancer la fusion</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Restart Merge</val>
 		<val lang="nl_NL">Samenvoegen opnieuw starten</val>
 		<val lang="zh_CN">重新开始合并</val>
 	</key>
@@ -4084,7 +4085,7 @@
 		<val lang="en_US">Mark Resolved</val>
 		<val lang="de_DE">Als gelöst markieren</val>
 		<val lang="fr_FR">Marquer comme résolu</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Mark Resolved</val>
 		<val lang="nl_NL">Markeren als opgelost</val>
 		<val lang="zh_CN">标记已解决</val>
 	</key>
@@ -4096,7 +4097,7 @@
 		<val lang="en_US">The selected repository was not found</val>
 		<val lang="de_DE">Das ausgewählte Repository wurde nicht gefunden</val>
 		<val lang="fr_FR">Le dépôt sélectionné n'a pas été trouvé</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">The selected repository was not found</val>
 		<val lang="nl_NL">De geselecteerde repository is niet gevonden</val>
 		<val lang="zh_CN">未找到选定的存储库</val>
 	</key>
@@ -4108,7 +4109,7 @@
 		<val lang="en_US">Please select a git directory</val>
 		<val lang="de_DE">Bitte wählen Sie ein Git-Repository aus</val>
 		<val lang="fr_FR">Veuillez sélectionner un dépôt git</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Please select a git directory</val>
 		<val lang="nl_NL">Selecteer een git-repository</val>
 		<val lang="zh_CN">请选择一个git目录</val>
 	</key>
@@ -4129,7 +4130,10 @@
 			résoudre le conflit
 			en conservant votre version?
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">You have not modified the local version. Do you want to
+			resolve the
+			conflict by keeping your version?
+		</val>
 		<val lang="nl_NL">U hebt uw lokale versie niet gewijzigd. Wilt u het
 			conflict oplossen door
 			uw lokale versie te behouden?
@@ -4144,7 +4148,7 @@
 		<val lang="en_US">Conflict Resolution</val>
 		<val lang="de_DE">Konflikt-Lösung</val>
 		<val lang="fr_FR">Résolution de conflits</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Conflict Resolution</val>
 		<val lang="nl_NL">Conflictoplossing</val>
 		<val lang="zh_CN">解决冲突</val>
 	</key>
@@ -4156,7 +4160,7 @@
 		<val lang="en_US">Remote repository URL: </val>
 		<val lang="de_DE">Remote-URL: </val>
 		<val lang="fr_FR">URL du dépôt remote: </val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Remote repository URL: </val>
 		<val lang="nl_NL">Externe repository url: </val>
 		<val lang="zh_CN">远程存储库 URL: </val>
 	</key>
@@ -4171,7 +4175,8 @@
 		</val>
 		<val lang="fr_FR">Ce dépôt n'a pas de remote. Veuillez en fournir un.
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">This repository has no remotes. Please provide one.
+		</val>
 		<val lang="nl_NL">Deze repository heeft geen externe repositories. Voeg
 			deze eerst
 			toe.
@@ -4186,7 +4191,7 @@
 		<val lang="en_US">New Git Project</val>
 		<val lang="de_DE">Neues Git-Projekt</val>
 		<val lang="fr_FR">Nouveau projet Git</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">New Git Project</val>
 		<val lang="nl_NL">Nieuw Git-project</val>
 		<val lang="zh_CN">新建 Git 项目</val>
 	</key>
@@ -4196,7 +4201,7 @@
 		<val lang="en_US">Submodule: </val>
 		<val lang="de_DE">Submodul: </val>
 		<val lang="fr_FR">Sous-module: </val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Submodule: </val>
 		<val lang="nl_NL">Submodule:</val>
 		<val lang="zh_CN">子模块: </val>
 	</key>
@@ -4208,7 +4213,7 @@
 		<val lang="en_US">Submodules</val>
 		<val lang="de_DE">Submodule</val>
 		<val lang="fr_FR">Sous-modules</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Submodules</val>
 		<val lang="nl_NL">Submodules</val>
 		<val lang="zh_CN">子模块</val>
 	</key>
@@ -4220,7 +4225,7 @@
 		<val lang="en_US">Submodule</val>
 		<val lang="de_DE">Submodul</val>
 		<val lang="fr_FR">Sous-module</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Submodule</val>
 		<val lang="nl_NL">Submodule</val>
 		<val lang="zh_CN">子模块</val>
 	</key>
@@ -4229,7 +4234,7 @@
 		<val lang="en_US">Username: </val>
 		<val lang="de_DE">Benutzername: </val>
 		<val lang="fr_FR">Nom d'utilisateur: </val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Username: </val>
 		<val lang="nl_NL">Gebruikersnaam: </val>
 		<val lang="zh_CN">用户名: </val>
 	</key>
@@ -4238,7 +4243,7 @@
 		<val lang="en_US">Password: </val>
 		<val lang="de_DE">Passwort: </val>
 		<val lang="fr_FR">Mot de passe: </val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Password: </val>
 		<val lang="nl_NL">Wachtwoord: </val>
 		<val lang="zh_CN">密码: </val>
 	</key>
@@ -4262,7 +4267,7 @@
 		<val lang="en_US">Up to date.</val>
 		<val lang="de_DE">Aktuell.</val>
 		<val lang="fr_FR">À jour.</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Up to date.</val>
 		<val lang="nl_NL">Bijgewerkt.</val>
 		<val lang="zh_CN">更新到最新.</val>
 	</key>
@@ -4274,7 +4279,7 @@
 		<val lang="en_US">Detached HEAD on commit</val>
 		<val lang="de_DE">Detached HEAD an Commit</val>
 		<val lang="fr_FR">HEAD détaché lors du commit</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Detached HEAD on commit</val>
 		<val lang="nl_NL">HEAD tonen bij commit</val>
 		<val lang="zh_CN">提交时分离 HEAD </val>
 	</key>
@@ -4284,7 +4289,7 @@
 		<val lang="en_US">Git</val>
 		<val lang="de_DE">Git</val>
 		<val lang="fr_FR" skipTranslation="true">Git</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Git</val>
 		<val lang="nl_NL">Git</val>
 		<val lang="zh_CN">Git</val>
 	</key>
@@ -4294,7 +4299,7 @@
 		<val lang="en_US">Git Diff</val>
 		<val lang="de_DE">Git-Diff</val>
 		<val lang="fr_FR" skipTranslation="true">Git Diff</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Git Diff</val>
 		<val lang="nl_NL">Git-diff</val>
 		<val lang="zh_CN">Git 差异</val>
 	</key>
@@ -4304,7 +4309,7 @@
 		<val lang="en_US">Commit</val>
 		<val lang="de_DE">Commit</val>
 		<val lang="fr_FR" skipTranslation="true">Commit</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Commit</val>
 		<val lang="nl_NL">Vastleggen</val>
 		<val lang="zh_CN">提交</val>
 	</key>
@@ -4318,7 +4323,7 @@
 		</val>
 		<val lang="fr_FR">Vous n'avez pas le droit d'effectuer un push dans ce
 			dépôt</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">You have no rights to push in this repository</val>
 		<val lang="nl_NL">U mist de bevoegdheden voor push naar deze repository
 		</val>
 		<val lang="zh_CN">您无权在此存储库中推送</val>
@@ -4331,7 +4336,7 @@
 		<val lang="en_US">You don't have rights to push</val>
 		<val lang="de_DE">Keine Push-Berechtigung</val>
 		<val lang="fr_FR">Vous n'avez pas les droits pour le push</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">You don't have rights to push</val>
 		<val lang="nl_NL">U mist de bevoegdheden voor push</val>
 		<val lang="zh_CN">您无权推送</val>
 	</key>
@@ -4343,7 +4348,7 @@
 		<val lang="en_US">Switch to tree view</val>
 		<val lang="de_DE">Zur Baumansicht wechseln</val>
 		<val lang="fr_FR">Passer à la vue arborescente</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Switch to tree view</val>
 		<val lang="nl_NL">Boomweergave wijzigen</val>
 		<val lang="zh_CN">切换到树状视图</val>
 	</key>
@@ -4364,7 +4369,10 @@
 			identifiants pour la
 			synchronisation.
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">This is a private repository. We need your credentials
+			for
+			synchronization.
+		</val>
 		<val lang="nl_NL">Dit is een privé-repository. We hebben uw inloggegevens
 			nodig voor
 			synchronisatie.
@@ -4376,7 +4384,7 @@
 		<val lang="en_US">Clone new repository</val>
 		<val lang="de_DE">Neues Repository klonen</val>
 		<val lang="fr_FR">Clone un nouveau dépôt</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Clone new repository</val>
 		<val lang="nl_NL">Nieuwe repository klonen</val>
 		<val lang="zh_CN">克隆新的存储库</val>
 	</key>
@@ -4388,7 +4396,7 @@
 		<val lang="en_US">Clone Repository</val>
 		<val lang="de_DE">Repository klonen</val>
 		<val lang="fr_FR">Clonage de dépôt</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Clone Repository</val>
 		<val lang="nl_NL">Repository klonen</val>
 		<val lang="zh_CN">复制储存库</val>
 	</key>
@@ -4398,7 +4406,7 @@
 		<val lang="en_US">Repository URL</val>
 		<val lang="de_DE">Repository-URL</val>
 		<val lang="fr_FR">URL du dépôt</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Repository URL</val>
 		<val lang="nl_NL">Repository url</val>
 		<val lang="zh_CN">储存库URL</val>
 	</key>
@@ -4410,7 +4418,7 @@
 		<val lang="en_US">Destination path:</val>
 		<val lang="de_DE">Zielverzeichnis:</val>
 		<val lang="fr_FR">Chemin de destination:</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Destination path:</val>
 		<val lang="nl_NL">Doelpad:</val>
 		<val lang="zh_CN">目标路径:</val>
 	</key>
@@ -4420,7 +4428,7 @@
 		<val lang="en_US">Destination path is invalid</val>
 		<val lang="de_DE">Zielverzeichnis ist ungültig</val>
 		<val lang="fr_FR">Le chemin de destination est invalide</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Destination path is invalid</val>
 		<val lang="nl_NL">Doelpad is niet geldig</val>
 		<val lang="zh_CN">目标路径无效</val>
 	</key>
@@ -4433,7 +4441,8 @@
 			leer.</val>
 		<val lang="fr_FR">Le chemin de destination existe déjà et n'est pas un
 			dossier vide.</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">The destination path already exists and is not an empty
+			folder.</val>
 		<val lang="nl_NL">Het doelpad bestaat al en is geen lege map.</val>
 		<val lang="zh_CN">目标路径已经存在，并且不是空文件夹.</val>
 	</key>
@@ -4443,7 +4452,7 @@
 		<val lang="en_US">Cloning repository</val>
 		<val lang="de_DE">Repository wird geklont</val>
 		<val lang="fr_FR">Clonage du dépôt</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">Cloning repository</val>
 		<val lang="nl_NL">Bezig met klonen repository</val>
 		<val lang="zh_CN">克隆储存库</val>
 	</key>
@@ -4460,7 +4469,8 @@
 			une extraction
 			vers une branche.
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">You are on a detached HEAD. We suggest you checkout a
+			branch.</val>
 		<val lang="nl_NL">U zit op een losgekoppelde HEAD. We raden u uitchecken
 			in een branch
 			aan.
@@ -4484,7 +4494,10 @@
 			pas terminée.
 			Effectuez un commit pour finaliser la fusion.
 		</val>
-		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="ja_JP">All conflicts were resolved, but you are still merging.
+			Commit to conclude
+			the merge.
+		</val>
 		<val lang="nl_NL">Alle conflicten zijn opgelost, maar u bent nog bezig met
 			samenvoegen.
 			Commit om het samenvoegen af te ronden.
