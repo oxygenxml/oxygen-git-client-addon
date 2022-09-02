@@ -448,8 +448,7 @@
 			is not associated with a remote or may be hidden by permission
 			settings.</val>
 	</key>
-	</key>
-	<key value="Invalid_remote">
+		<key value="Invalid_remote">
 		<comment>Message shown when trying to clone from an invalid remote.
 		</comment>
 		<val lang="en_US">Invalid remote</val>
@@ -4549,7 +4548,8 @@
 		</val>
 		<val lang="ja_JP">次の理由により、サブモジュールをロードできませんでした: {0}。</val>
 		<val lang="nl_NL">Submodule kon niet worden geladen vanwege: {0}.</val>
-		<val lang="zh_CN">无法加载子模块，原因是：{0}.</va>
+		<val lang="zh_CN">无法加载子模块，原因是：{0}.</val>
+	</key>
 	<key value="CommitID">
 		<comment>The text in the warning of detached-head </comment>
 		<val lang="en_US">Commit</val>
