@@ -2,8 +2,8 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.ComboBoxModel;
@@ -48,7 +48,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
   /**
    * Repositories that were removed from options.
    */
-  private List<String> removedRepositories = new LinkedList<>(); 
+  private Set<String> removedRepositories = new HashSet<>(); 
   
   @Override
   protected void setUp() throws Exception {
@@ -104,6 +104,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
       frame.getContentPane().add(wcPanel);
       frame.pack();
       // Showing the WC panel also initializes the combo
+      // and triggers a number of update events on AWT and Git thread.
       frame.setVisible(true);
       
       JComboBox<String> workingCopyCombo = wcPanel.getWorkingCopyCombo();
@@ -140,7 +141,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
       
       assertEquals(null, workingCopyCombo.getSelectedItem());
 
-      assertEquals("[" + badWcTree.getAbsolutePath() + ", " + badWcTree.getAbsolutePath() + "]", removedRepositories.toString());
+      assertEquals("[" + badWcTree.getAbsolutePath() + "]", removedRepositories.toString());
       
     } finally {
       frame.setVisible(false);
