@@ -53,10 +53,33 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-		Icon icon = Icons.getIcon(Icons.FOLDER_TREE_ICON);
+		StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+		
+		if(model.getFilesStatuses().isEmpty()) {
+		  tree.setRootVisible(false);
+		} else {
+		  tree.setRootVisible(true);
+		  label = getUpdatedJLabel(tree, sel, row, label, model);
+		}
+		
+    return label;
+	}
+
+	/**
+	 * Update the given label for the current node.
+	 * 
+	 * @param tree   The current tree.
+	 * @param sel    <code>true</code> when selected.
+	 * @param row    The current row.
+	 * @param label  The super label.
+	 * @param model  The current tree model.
+	 * 
+	 * @return The updated label.
+	 */
+  private JLabel getUpdatedJLabel(JTree tree, boolean sel, int row, JLabel label, StagingResourcesTreeModel model) {
+    Icon icon = Icons.getIcon(Icons.FOLDER_TREE_ICON);
 		String toolTip = null;
 
-		StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 		TreePath treePath = tree.getPathForRow(row);
 		if (treePath != null) {
 			String path = TreeUtil.getStringPath(treePath);
@@ -87,9 +110,8 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 		    setBackgroundSelectionColor(tree);
 		  }
 		}
-
     return label;
-	}
+  }
 
 	/**
 	 * Set background selection color.
