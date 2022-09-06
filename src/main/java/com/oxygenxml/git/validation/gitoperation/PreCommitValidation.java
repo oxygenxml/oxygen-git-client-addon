@@ -158,7 +158,7 @@ public class PreCommitValidation implements IPreOperationValidation {
           Tags.PRE_COMMIT_VALIDATION), DialogType.WARNING)
           .setMessage(MessageFormat.format(TRANSLATOR.getTranslation(Tags.FAILED_COMMIT_VALIDATION_MESSAGE), 
               TRANSLATOR.getTranslation(Tags.PRE_COMMIT_VALIDATION)))
-          .setOkButtonName(Tags.COMMIT_ANYWAY)
+          .setOkButtonName(TRANSLATOR.getTranslation(Tags.COMMIT_ANYWAY))
           .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
           .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
     }
