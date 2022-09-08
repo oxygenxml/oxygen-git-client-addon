@@ -35,6 +35,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- We want sonar. -->
 		<sonar.skip>false</sonar.skip>
+		<oxyProductName>editor</oxyProductName>
 	</properties>
 
 	<repositories>
@@ -78,22 +79,22 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>5.13.0.202109080827-r</version>
+			<version>6.2.0.202206071550-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
-			<version>5.13.0.202109080827-r</version>
+			<version>6.2.0.202206071550-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
-			<version>5.13.0.202109080827-r</version>
+			<version>6.2.0.202206071550-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.junit</artifactId>
-			<version>5.13.0.202109080827-r</version>
+			<version>6.2.0.202206071550-r</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -178,7 +179,16 @@
 
 	<build>
 		<plugins>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-dependencies-jre-version-compatible-with-our-compile-target-jre-version</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>

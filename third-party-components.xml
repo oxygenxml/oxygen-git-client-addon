@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <third-party>
-    <component id="com.googlecode.javaewah:JavaEWAH:1.1.12" product="editor">
+    <component id="com.googlecode.javaewah:JavaEWAH:1.1.13" product="editor">
         <name>JavaEWAH</name>
-        <version>1.1.12</version>
+        <version>1.1.13</version>
         <project-info>
             <about>The bit array data structure is implemented in Java as the BitSet class. Unfortunately, this fails to scale without compression.
   JavaEWAH is a word-aligned compressed variant of the Java bitset class. It uses a 64-bit run-length encoding (RLE) compression scheme.
@@ -264,18 +264,18 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <url>http://www.jcraft.com/jsch/LICENSE.txt</url>
         </license>
     </component>
-    <component id="com.jcraft:jzlib:1.1.1" product="editor">
+    <component id="com.jcraft:jzlib:1.1.3" product="editor">
         <name>JZlib</name>
-        <version>1.1.1</version>
+        <version>1.1.3</version>
         <project-info>
             <about>JZlib is a re-implementation of zlib in pure Java</about>
-            <licensor>JCraft,Inc.</licensor>
+            <licensor>jcraft</licensor>
             <start-year></start-year>
             <project-url>http://www.jcraft.com/jzlib/</project-url>
         </project-info>
         <license>
-            <type>Revised BSD</type>
-            <content>http://www.jcraft.com/jzlib/</content>
+            <type>BSD</type>
+            <content>http://www.jcraft.com/jzlib/LICENSE.txt</content>
             <url>http://www.jcraft.com/jzlib/LICENSE.txt</url>
         </license>
     </component>
@@ -294,9 +294,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <url>https://creativecommons.org/publicdomain/zero/1.0/</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-common:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-common:2.8.0" product="editor">
         <name>Apache Mina SSHD :: Common support utilities</name>
-        <version>2.7.0</version>
+        <version>2.8.0</version>
         <project-info>
             <about>The Apache Software Foundation provides support for the Apache community of open-source software projects.
     The Apache projects are characterized by a collaborative, consensus based development process, an open and
@@ -309,13 +309,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </project-info>
         <license>
             <type>Apache 2.0 License</type>
-            <content>https://www.apache.org/sshd/sshd-common/</content>
+            <content>https://mina.apache.org/sshd-project/index.html</content>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-core:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-core:2.8.0" product="editor">
         <name>Apache Mina SSHD :: Core</name>
-        <version>2.7.0</version>
+        <version>2.8.0</version>
         <project-info>
             <about>The Apache Software Foundation provides support for the Apache community of open-source software projects.
     The Apache projects are characterized by a collaborative, consensus based development process, an open and
@@ -328,13 +328,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </project-info>
         <license>
             <type>Apache 2.0 License</type>
-            <content>https://www.apache.org/sshd/sshd-core/</content>
+            <content>https://mina.apache.org/sshd-project/index.html</content>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-osgi:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-osgi:2.8.0" product="editor">
         <name>Apache Mina SSHD :: OSGi</name>
-        <version>2.7.0</version>
+        <version>2.8.0</version>
         <project-info>
             <about>The Apache Software Foundation provides support for the Apache community of open-source software projects.
     The Apache projects are characterized by a collaborative, consensus based development process, an open and
@@ -347,13 +347,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </project-info>
         <license>
             <type>Apache 2.0 License</type>
-            <content>https://www.apache.org/sshd/sshd-osgi/</content>
+            <content>https://mina.apache.org/sshd-project/index.html</content>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.apache.sshd:sshd-sftp:2.7.0" product="editor">
+    <component id="org.apache.sshd:sshd-sftp:2.8.0" product="editor">
         <name>Apache Mina SSHD :: SFTP</name>
-        <version>2.7.0</version>
+        <version>2.8.0</version>
         <project-info>
             <about>The Apache Software Foundation provides support for the Apache community of open-source software projects.
     The Apache projects are characterized by a collaborative, consensus based development process, an open and
@@ -366,13 +366,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </project-info>
         <license>
             <type>Apache 2.0 License</type>
-            <content>https://www.apache.org/sshd/sshd-sftp/</content>
+            <content>https://mina.apache.org/sshd-project/index.html</content>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.13.0.202109080827-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:6.2.0.202206071550-r" product="editor">
         <name>JGit - Apache sshd-based SSH support</name>
-        <version>5.13.0.202109080827-r</version>
+        <version>6.2.0.202206071550-r</version>
         <project-info>
             <about>SSH support for JGit based on Apache MINA sshd</about>
             <licensor>Eclipse JGit Project</licensor>
@@ -381,13 +381,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </project-info>
         <license>
             <type>Eclipse Distribution License (New BSD License)</type>
-            <content>https://www.eclipse.org/jgit//org.eclipse.jgit.ssh.apache</content>
-            <url></url>
+            <content>https://mina.apache.org/sshd-project/index.html</content>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:5.13.0.202109080827-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.2.0.202206071550-r" product="editor">
         <name>JGit - JSch-based SSH support</name>
-        <version>5.13.0.202109080827-r</version>
+        <version>6.2.0.202206071550-r</version>
         <project-info>
             <about>SSH support for JGit based on JSch</about>
             <licensor>Eclipse JGit Project</licensor>
@@ -396,13 +396,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </project-info>
         <license>
             <type>Eclipse Distribution License (New BSD License)</type>
-            <content>https://www.eclipse.org/jgit//org.eclipse.jgit.ssh.jsch</content>
+            <content>https://www.eclipse.org/jgit/</content>
             <url></url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit:6.2.0.202206071550-r" product="editor">
         <name>JGit - Core</name>
-        <version>5.13.0.202109080827-r</version>
+        <version>6.2.0.202206071550-r</version>
         <project-info>
             <about>Repository access and algorithms</about>
             <licensor>Eclipse JGit Project</licensor>
@@ -411,7 +411,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </project-info>
         <license>
             <type>Eclipse Distribution License (New BSD License)</type>
-            <content>https://www.eclipse.org/jgit//org.eclipse.jgit</content>
+            <content>https://www.eclipse.org/jgit/</content>
             <url></url>
         </license>
     </component>

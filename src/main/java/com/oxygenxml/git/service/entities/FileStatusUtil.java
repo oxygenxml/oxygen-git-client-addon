@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
@@ -78,11 +79,12 @@ public class FileStatusUtil {
    * @throws IncorrectObjectTypeException
    * @throws CorruptObjectException
    * @throws IOException
+   * @throws CanceledException 
    */
   public static List<FileStatus> compute(final Repository repository,
       final TreeWalk walk, final RevCommit commit, @Nullable final RevCommit oldCommit,
       final TreeFilter... markTreeFilters) throws MissingObjectException,
-  IncorrectObjectTypeException, CorruptObjectException, IOException {
+  IncorrectObjectTypeException, CorruptObjectException, IOException, CanceledException {
     return compute(repository, walk, commit, oldCommit, commit.getParents(),
         markTreeFilters);
   }
@@ -103,13 +105,14 @@ public class FileStatusUtil {
    * @throws IncorrectObjectTypeException
    * @throws CorruptObjectException
    * @throws IOException
+   * @throws CanceledException 
    */
   @NonNull
   public static List<FileStatus> compute(final Repository repository,
       final TreeWalk walk, final RevCommit commit, final RevCommit oldCommit,
       final RevCommit[] parents,
       final TreeFilter... markTreeFilters) throws MissingObjectException,
-  IncorrectObjectTypeException, CorruptObjectException, IOException {
+  IncorrectObjectTypeException, CorruptObjectException, IOException, CanceledException {
 
     final List<FileStatus> filesToReturn = new ArrayList<>();
 
