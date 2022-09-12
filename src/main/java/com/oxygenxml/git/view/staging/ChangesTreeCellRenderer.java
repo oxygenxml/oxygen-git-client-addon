@@ -53,14 +53,9 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-		StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+		final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 		
-		if(model.getFilesStatuses().isEmpty()) {
-		  tree.setRootVisible(false);
-		} else {
-		  tree.setRootVisible(true);
-		  label = getUpdatedJLabel(tree, sel, row, label, model);
-		}
+		label = getUpdatedJLabel(tree, sel, row, label, model);
 		
     return label;
 	}

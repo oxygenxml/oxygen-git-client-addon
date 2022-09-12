@@ -37,6 +37,9 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -339,19 +342,21 @@ public class ChangesPanel extends JPanel {
 	 * @param filesStatus
 	 *          - files to generate the nodes
 	 */
-	private void updateTreeView(List<FileStatus> filesStatus) {
+	private void updateTreeView(final List<FileStatus> filesStatus) {
 	  if (tree != null) {
 	    Enumeration<TreePath> expandedPaths = TreeUtil.getLastExpandedPaths(tree);
 	    TreePath[] selectionPaths = tree.getSelectionPaths();
 
 	    // Create the tree with the new model
-	    tree.setModel(
-	        new StagingResourcesTreeModel(
-	            gitController, 
-	            GitAccess.getInstance().getWorkingCopyName(), 
-	            forStagedResources, 
-	            filesStatus));
-
+	    final StagingResourcesTreeModel newModel = new StagingResourcesTreeModel(
+          gitController, 
+          GitAccess.getInstance().getWorkingCopyName(), 
+          forStagedResources, 
+          filesStatus);
+	    SwingUtilities.invokeLater(() -> tree.setRootVisible(filesStatus != null && !filesStatus.isEmpty()));
+	    tree.setModel(newModel);
+      installRootUpdaterViewListener(newModel);
+      
 	    // restore last expanded paths after refresh
 	    TreeUtil.restoreLastExpandedPaths(expandedPaths, tree);
 	    tree.setSelectionPaths(selectionPaths);
@@ -969,12 +974,14 @@ public class ChangesPanel extends JPanel {
 	    }
 	    
 	     // Create the tree with the new model
-      tree.setModel(
-          new StagingResourcesTreeModel(
-              gitController, 
-              GitAccess.getInstance().getWorkingCopyName(), 
-              forStagedResources, 
-              filesStatuses));
+	    final StagingResourcesTreeModel newModel = new StagingResourcesTreeModel(
+          gitController, 
+          GitAccess.getInstance().getWorkingCopyName(), 
+          forStagedResources, 
+          filesStatuses);
+	    SwingUtilities.invokeLater(() -> tree.setRootVisible(filesStatuses != null && !filesStatuses.isEmpty()));
+      tree.setModel(newModel);
+      installRootUpdaterViewListener(newModel);
 	    
 	    restoreSelectedPathsFromTableToTree();
 	    
@@ -1164,19 +1171,65 @@ public class ChangesPanel extends JPanel {
 	 * @return The tree that presents the resources. 
 	 */
 	private JTree createTree() {
-	  JTree t = new Tree() {
+	  final JTree t = new Tree() {
 	    @Override
 	    public JToolTip createToolTip() {
 	      return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
 	    }
 	  };
-	  
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextualMenuShowing));
-	  t.setModel(new StagingResourcesTreeModel(gitController, null, forStagedResources, null));
+	  SwingUtilities.invokeLater(() -> t.setRootVisible(false));
+	  final StagingResourcesTreeModel model = new StagingResourcesTreeModel(
+	      gitController, null, forStagedResources, null);
+	  installRootUpdaterViewListener(model);
+	  t.setModel(model);
+	
 	  t.setBorder(BorderFactory.createEmptyBorder(0, TREE_LEFT_EMPTY_BORDER_SIZE, 0, 0));
 	  t.setLargeModel(true);
 	  
     return t;
+  }
+
+	/**
+	 * Installs a listener to disable root folder if no changes are present.
+	 * 
+	 * @param model The tree model.
+	 */
+  private void installRootUpdaterViewListener(final StagingResourcesTreeModel model) {
+    model.addTreeModelListener(new TreeModelListener() {
+      
+      @Override
+      public void treeStructureChanged(TreeModelEvent e) {
+        SwingUtilities.invokeLater(this::updateRootView);
+      }
+      
+      @Override
+      public void treeNodesRemoved(TreeModelEvent e) {
+        SwingUtilities.invokeLater(this::updateRootView);
+      }
+      
+      @Override
+      public void treeNodesInserted(TreeModelEvent e) {
+        SwingUtilities.invokeLater(this::updateRootView);
+      }
+      
+      @Override
+      public void treeNodesChanged(TreeModelEvent e) {
+        SwingUtilities.invokeLater(this::updateRootView);
+      }
+      
+      /**
+       * Updates the root view.
+       */
+      private void updateRootView() {
+        final TreeModel nodesModel = tree.getModel();
+        if(nodesModel instanceof StagingResourcesTreeModel) {
+          tree.setRootVisible(!((StagingResourcesTreeModel)nodesModel).getFilesStatuses().isEmpty());
+          tree.repaint();
+        }
+      }
+      
+    });
   }
 	
     
