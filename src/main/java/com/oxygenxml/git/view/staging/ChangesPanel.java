@@ -353,9 +353,10 @@ public class ChangesPanel extends JPanel {
           GitAccess.getInstance().getWorkingCopyName(), 
           forStagedResources, 
           filesStatus);
-	    SwingUtilities.invokeLater(() -> tree.setRootVisible(filesStatus != null && !filesStatus.isEmpty()));
+
 	    tree.setModel(newModel);
       installRootUpdaterViewListener(newModel);
+      tree.setRootVisible(filesStatus != null && !filesStatus.isEmpty());
       
 	    // restore last expanded paths after refresh
 	    TreeUtil.restoreLastExpandedPaths(expandedPaths, tree);
@@ -979,9 +980,9 @@ public class ChangesPanel extends JPanel {
           GitAccess.getInstance().getWorkingCopyName(), 
           forStagedResources, 
           filesStatuses);
-	    SwingUtilities.invokeLater(() -> tree.setRootVisible(filesStatuses != null && !filesStatuses.isEmpty()));
       tree.setModel(newModel);
       installRootUpdaterViewListener(newModel);
+      tree.setRootVisible(filesStatuses != null && !filesStatuses.isEmpty());
 	    
 	    restoreSelectedPathsFromTableToTree();
 	    
