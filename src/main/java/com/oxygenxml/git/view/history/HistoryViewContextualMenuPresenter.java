@@ -17,6 +17,7 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -73,6 +74,11 @@ public class HistoryViewContextualMenuPresenter {
    * Executes GIT commands (stage, unstage, discard, etc).
    */
   protected GitControllerBase gitCtrl;
+  
+  /**
+   * Contains commits ahead and behind for current repository.
+   */
+  private CommitsAheadAndBehind commitsAheadAndBehind;
   
   /**
    * Constructor.
@@ -392,8 +398,24 @@ public class HistoryViewContextualMenuPresenter {
       addCompareWithParentsAction(actions, commitCharacteristics, addFileName, filePath);
     }
     
-    addCompareWithWorkingTreeAction(actions, commitCharacteristics, addFileName, filePath);
+    if(fileStatus.getChangeType() != GitChangeType.ADD || isCommitPulled(commitCharacteristics)) {
+      addCompareWithWorkingTreeAction(actions, commitCharacteristics, addFileName, filePath);
+    }
 
+  }
+
+  /**
+   * Checks if the given commit is pulled or not. 
+   * 
+   * @param commitCharacteristics The commit to check.
+   * 
+   * @return <code>true</code> if the commit is pulled. If the unpushed and unpulled commits are not set, <code>false</code> will be returned.
+   */
+  private boolean isCommitPulled(final CommitCharacteristics commitCharacteristics) {
+    return commitsAheadAndBehind != null
+    && commitsAheadAndBehind.getCommitsBehind() != null
+    && commitsAheadAndBehind.getCommitsBehind()
+    .stream().noneMatch(commit -> commit.getId().equals(commitCharacteristics.getPlotCommit().getId()));
   }
 
   /**
@@ -749,5 +771,14 @@ public class HistoryViewContextualMenuPresenter {
     }
     
     return Optional.ofNullable(fileURL);
+  }
+  
+  /**
+   * Set the new commits ahead and behind.
+   * 
+   * @param commitsAheadAndBehind The unpushed and unpulled commits.
+   */
+  public void setCommitsAheadAndBehind(@Nullable final CommitsAheadAndBehind commitsAheadAndBehind) {
+    this.commitsAheadAndBehind = commitsAheadAndBehind;
   }
 }

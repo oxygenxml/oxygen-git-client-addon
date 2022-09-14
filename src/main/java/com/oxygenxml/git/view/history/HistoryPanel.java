@@ -859,7 +859,8 @@ public class HistoryPanel extends JPanel {
        
         final CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
             repo.getFullBranch());
-
+        Optional.ofNullable(contextualMenuPresenter).ifPresent(
+            menuPresenter -> menuPresenter.setCommitsAheadAndBehind(commitsAheadAndBehind));
         // Compute the row height.
         CommitMessageTableRenderer renderer = new CommitMessageTableRenderer(repo, commitsAheadAndBehind,
             gitAccess.getBranchInfo().getBranchName(), getTagMap(repo),
