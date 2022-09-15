@@ -13,6 +13,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.view.GitTreeNode;
@@ -144,6 +145,7 @@ public class TreeUtil {
 	 *          - The string to find the node from
 	 * @return The node or <code>null</code> if the file is not present in the tree.
 	 */
+	@Nullable
 	public static GitTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
 		GitTreeNode node = (GitTreeNode) model.getRoot();
 		if (node != null && path != null && !path.isEmpty()) {

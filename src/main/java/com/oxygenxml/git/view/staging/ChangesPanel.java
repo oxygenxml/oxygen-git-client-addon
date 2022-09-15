@@ -353,8 +353,8 @@ public class ChangesPanel extends JPanel {
           GitAccess.getInstance().getWorkingCopyName(), 
           forStagedResources, 
           filesStatus);
-
-	    tree.setModel(newModel);
+     
+	    SwingUtilities.invokeLater(() ->   tree.setModel(newModel));
       installRootUpdaterViewListener(newModel);
       tree.setRootVisible(filesStatus != null && !filesStatus.isEmpty());
       
@@ -980,7 +980,7 @@ public class ChangesPanel extends JPanel {
           GitAccess.getInstance().getWorkingCopyName(), 
           forStagedResources, 
           filesStatuses);
-      tree.setModel(newModel);
+	    SwingUtilities.invokeLater(() ->   tree.setModel(newModel));
       installRootUpdaterViewListener(newModel);
       tree.setRootVisible(filesStatuses != null && !filesStatuses.isEmpty());
 	    
@@ -1183,7 +1183,7 @@ public class ChangesPanel extends JPanel {
 	  final StagingResourcesTreeModel model = new StagingResourcesTreeModel(
 	      gitController, null, forStagedResources, null);
 	  installRootUpdaterViewListener(model);
-	  t.setModel(model);
+	  SwingUtilities.invokeLater(() ->  t.setModel(model));
 	
 	  t.setBorder(BorderFactory.createEmptyBorder(0, TREE_LEFT_EMPTY_BORDER_SIZE, 0, 0));
 	  t.setLargeModel(true);
