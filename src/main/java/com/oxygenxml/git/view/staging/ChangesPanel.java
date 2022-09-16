@@ -354,7 +354,7 @@ public class ChangesPanel extends JPanel {
           forStagedResources, 
           filesStatus);
      
-	    SwingUtilities.invokeLater(() ->   tree.setModel(newModel));
+	    tree.setModel(newModel);
       installRootUpdaterViewListener(newModel);
       tree.setRootVisible(filesStatus != null && !filesStatus.isEmpty());
       
@@ -980,7 +980,7 @@ public class ChangesPanel extends JPanel {
           GitAccess.getInstance().getWorkingCopyName(), 
           forStagedResources, 
           filesStatuses);
-	    SwingUtilities.invokeLater(() ->   tree.setModel(newModel));
+	    tree.setModel(newModel);
       installRootUpdaterViewListener(newModel);
       tree.setRootVisible(filesStatuses != null && !filesStatuses.isEmpty());
 	    
@@ -989,7 +989,7 @@ public class ChangesPanel extends JPanel {
 	    // Activate the tree view.
 	    scrollPane.setViewportView(tree);
 	  } else {
-	    
+	   
 	    // Get the list of files from the tree model and update the table.
 	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 	    List<FileStatus> filesStatuses = treeModel.getFilesStatuses();
@@ -1178,13 +1178,14 @@ public class ChangesPanel extends JPanel {
 	      return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
 	    }
 	  };
-	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextualMenuShowing));
-	  SwingUtilities.invokeLater(() -> t.setRootVisible(false));
+	  
 	  final StagingResourcesTreeModel model = new StagingResourcesTreeModel(
 	      gitController, null, forStagedResources, null);
 	  installRootUpdaterViewListener(model);
-	  SwingUtilities.invokeLater(() ->  t.setModel(model));
-	
+	  
+	  t.setRootVisible(false);
+    t.setModel(model);
+    t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextualMenuShowing));
 	  t.setBorder(BorderFactory.createEmptyBorder(0, TREE_LEFT_EMPTY_BORDER_SIZE, 0, 0));
 	  t.setLargeModel(true);
 	  
@@ -1241,7 +1242,6 @@ public class ChangesPanel extends JPanel {
    */
   private void repositoryChanged(List<FileStatus> unstagedFiles) {
     updateFlatView(unstagedFiles);
-
     updateTreeView(unstagedFiles);
   }
 }
