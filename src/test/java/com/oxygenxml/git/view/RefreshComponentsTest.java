@@ -171,7 +171,7 @@ public class RefreshComponentsTest extends GitTestBase {
     
     refreshManager.setStagingPanel(stagingPanel);
     refreshManager.call();
-    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> noRefreshes[0] == 3);
+    Awaitility.await().atMost(Duration.FIVE_SECONDS).until(() -> noRefreshes[0] == 3);
   }
   
   /**
