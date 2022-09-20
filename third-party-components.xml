@@ -370,9 +370,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:6.2.0.202206071550-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache:6.3.0.202209071007-r" product="editor">
         <name>JGit - Apache sshd-based SSH support</name>
-        <version>6.2.0.202206071550-r</version>
+        <version>6.3.0.202209071007-r</version>
         <project-info>
             <about>SSH support for JGit based on Apache MINA sshd</about>
             <licensor>Eclipse JGit Project</licensor>
@@ -385,9 +385,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.2.0.202206071550-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.3.0.202209071007-r" product="editor">
         <name>JGit - JSch-based SSH support</name>
-        <version>6.2.0.202206071550-r</version>
+        <version>6.3.0.202209071007-r</version>
         <project-info>
             <about>SSH support for JGit based on JSch</about>
             <licensor>Eclipse JGit Project</licensor>
@@ -400,9 +400,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <url></url>
         </license>
     </component>
-    <component id="org.eclipse.jgit:org.eclipse.jgit:6.2.0.202206071550-r" product="editor">
+    <component id="org.eclipse.jgit:org.eclipse.jgit:6.3.0.202209071007-r" product="editor">
         <name>JGit - Core</name>
-        <version>6.2.0.202206071550-r</version>
+        <version>6.3.0.202209071007-r</version>
         <project-info>
             <about>Repository access and algorithms</about>
             <licensor>Eclipse JGit Project</licensor>

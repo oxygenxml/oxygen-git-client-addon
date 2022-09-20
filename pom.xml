@@ -31,8 +31,8 @@
 
 	<properties>
 		<oxygen.version>22.1.0.0</oxygen.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>15</maven.compiler.source>
+		<maven.compiler.target>15</maven.compiler.target>
 		<!-- We want sonar. -->
 		<sonar.skip>false</sonar.skip>
 		<oxyProductName>editor</oxyProductName>
@@ -79,22 +79,22 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>6.2.0.202206071550-r</version>
+			<version>6.3.0.202209071007-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
-			<version>6.2.0.202206071550-r</version>
+			<version>6.3.0.202209071007-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
-			<version>6.2.0.202206071550-r</version>
+			<version>6.3.0.202209071007-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.junit</artifactId>
-			<version>6.2.0.202206071550-r</version>
+			<version>6.3.0.202209071007-r</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -179,6 +179,21 @@
 
 	<build>
 		<plugins>
+		<!-- Override the one from oxygen-superpom which enforces compilatino to java 8. -->
+		      <plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-compiler-plugin</artifactId>
+      		  </plugin>
+		    <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-dependencies-jre-version-compatible-with-our-compile-target-jre-version</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
