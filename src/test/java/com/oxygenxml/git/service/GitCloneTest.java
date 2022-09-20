@@ -97,8 +97,8 @@ public class GitCloneTest extends GitTestBase {
       
       // Check what we have in the destination folder
       List<File> files = new ArrayList<>();
-      FileSystemUtil.listRecursively(new File[] {cloneDest}, false, null, files);
-      assertEquals(14, files.size());
+      FileSystemUtil.listRecursively(new File[] {cloneDest}, false, f -> !f.getName().equals(".git") , files);
+      assertEquals(2, files.size());
       assertTrue(files.toString().contains("test.txt"));
       // Only the "main" branch should have this
       assertTrue(files.toString().contains("test2.txt"));
