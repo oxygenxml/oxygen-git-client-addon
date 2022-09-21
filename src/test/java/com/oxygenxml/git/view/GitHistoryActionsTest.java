@@ -115,8 +115,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Compare_file_with_working_tree_version,"
-          + " Open_this_version_of_filename,"
+      assertEquals("[Open_this_version_of_filename,"
           + " Open_the_working_copy_version_of]", dumpActions(actions));
       
       // Next COMMIT / REVISION
