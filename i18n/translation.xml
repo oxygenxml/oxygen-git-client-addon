@@ -19,7 +19,7 @@
 		<comment>current</comment>
 		<val lang="en_US">current</val>
 		<val lang="de_DE">current</val>
-		<val lang="fr_FR">current</val>
+		<val lang="fr_FR">actuel</val>
 		<val lang="ja_JP">current</val>
 		<val lang="nl_NL">current</val>
 		<val lang="zh_CN">current</val>
@@ -28,7 +28,7 @@
 		<comment>Select Project</comment>
 		<val lang="en_US">Select project</val>
 		<val lang="de_DE">Select project</val>
-		<val lang="fr_FR">Select project</val>
+		<val lang="fr_FR">Sélectionnez un projet</val>
 		<val lang="ja_JP">Select project</val>
 		<val lang="nl_NL">Select project</val>
 		<val lang="zh_CN">Select project</val>
@@ -37,7 +37,7 @@
 		<comment>Detect and open xpr files from opened working copies dialog text.</comment>
 		<val lang="en_US">Current Git project contains multiple Oxygen project files (.xpr).</val>
 		<val lang="de_DE">Current Git project contains multiple Oxygen project files (.xpr).</val>
-		<val lang="fr_FR">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="fr_FR">Le projet Git actuel contient plusieurs fichiers de projet Oxygen (.xpr).</val>
 		<val lang="ja_JP">Current Git project contains multiple Oxygen project files (.xpr).</val>
 		<val lang="nl_NL">Current Git project contains multiple Oxygen project files (.xpr).</val>
 		<val lang="zh_CN">Current Git project contains multiple Oxygen project files (.xpr).</val>
@@ -46,7 +46,7 @@
 		<comment>Detect and open xpr files from opened working copies dialog title.</comment>
 		<val lang="en_US">Switch project</val>
 		<val lang="de_DE">Switch project</val>
-		<val lang="fr_FR">Switch project</val>
+		<val lang="fr_FR">Changer de projet</val>
 		<val lang="ja_JP">Switch project</val>
 		<val lang="nl_NL">Switch project</val>
 		<val lang="zh_CN">Switch project</val>
@@ -55,7 +55,7 @@
 		<comment>Detect and open xpr files from opened working copies option.</comment>
 		<val lang="en_US">Detect and open Oxygen projects (.xpr) from opened working copies</val>
 		<val lang="de_DE">Detect and open Oxygen projects (.xpr) from opened working copies</val>
-		<val lang="fr_FR">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="fr_FR">Détecter et ouvrir les projets Oxygen (.xpr) à partir des copies de travail ouvertes</val>
 		<val lang="ja_JP">Detect and open Oxygen projects (.xpr) from opened working copies</val>
 		<val lang="nl_NL">Detect and open Oxygen projects (.xpr) from opened working copies</val>
 		<val lang="zh_CN">Detect and open Oxygen projects (.xpr) from opened working copies</val>
@@ -64,7 +64,7 @@
 		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
 		<val lang="en_US">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
 		<val lang="de_DE">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
-		<val lang="fr_FR">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="fr_FR">Êtes-vous sûr de vouloir supprimer le tag "{0}"? Un push sur le dépôt remote a déjà été effectué sur ce tag et il sera définitivement supprimé de celui-ci.</val>
 		<val lang="ja_JP">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
 		<val lang="nl_NL">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
 		<val lang="zh_CN">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
@@ -73,7 +73,7 @@
 		<comment>Informations about pre-push validation.</comment>
 		<val lang="en_US">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
 		<val lang="de_DE">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
-		<val lang="fr_FR">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="fr_FR">Vous devez avoir un projet Oxygen chargé dans la vue Git Staging. Ce projet doit également être ouvert dans la vue Projet et le support des fichiers principaux doit être activé.</val>
 		<val lang="ja_JP">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
 		<val lang="nl_NL">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
 		<val lang="zh_CN">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
@@ -82,7 +82,7 @@
 		<comment>This message appears when Main files support is not enabled.</comment>
 		<val lang="en_US">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
 		<val lang="de_DE">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
-		<val lang="fr_FR">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
+		<val lang="fr_FR">Le support des fichiers principaux doit être activé dans le projet actuel et les fichiers doivent être ajoutés au dossier des fichiers principaux.</val>
 		<val lang="ja_JP">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
 		<val lang="nl_NL">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
 		<val lang="zh_CN">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
@@ -91,7 +91,7 @@
 		<comment>En: Stash and continue.</comment>
 		<val lang="en_US">Stash and continue</val>
 		<val lang="de_DE">Stash and continue</val>
-		<val lang="fr_FR">Stash and continue</val>
+		<val lang="fr_FR">Remiser et continuer</val>
 		<val lang="ja_JP">Stash and continue</val>
 		<val lang="nl_NL">Stash and continue</val>
 		<val lang="zh_CN">Stash and continue</val>
@@ -100,7 +100,7 @@
 		<comment>Error message when cannot open git-upload-pack.</comment>
 		<val lang="en_US">Cannot open git-upload-pack.</val>
 		<val lang="de_DE">Cannot open git-upload-pack.</val>
-		<val lang="fr_FR">Cannot open git-upload-pack.</val>
+		<val lang="fr_FR">Impossible d'ouvrir git-upload-pack.</val>
 		<val lang="ja_JP">Cannot open git-upload-pack.</val>
 		<val lang="nl_NL">Cannot open git-upload-pack.</val>
 		<val lang="zh_CN">Cannot open git-upload-pack.</val>
@@ -109,7 +109,7 @@
 		<comment>Error message for a transport exception.</comment>
 		<val lang="en_US">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
 		<val lang="de_DE">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
-		<val lang="fr_FR">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="fr_FR">Impossible de se connecter à l'hôte à partir de l'URL. Les causes possibles sont: le nom de domaine n'existe pas ou est hors service. Vérifiez si l'adresse est correcte ou réessayez plus tard.</val>
 		<val lang="ja_JP">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
 		<val lang="nl_NL">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
 		<val lang="zh_CN">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
@@ -118,7 +118,7 @@
 		<comment>End the push validation progress.</comment>
 		<val lang="en_US">Validation finished</val>
 		<val lang="de_DE">Validation finished</val>
-		<val lang="fr_FR">Validation finished</val>
+		<val lang="fr_FR">Validation terminée</val>
 		<val lang="ja_JP">Validation finished</val>
 		<val lang="nl_NL">Validation finished</val>
 		<val lang="zh_CN">Validation finished</val>
@@ -127,7 +127,7 @@
 		<comment>Start the push validation progress.</comment>
 		<val lang="en_US">Validation in progress</val>
 		<val lang="de_DE">Validation in progress</val>
-		<val lang="fr_FR">Validation in progress</val>
+		<val lang="fr_FR">Validation en cours</val>
 		<val lang="ja_JP">Validation in progress</val>
 		<val lang="nl_NL">Validation in progress</val>
 		<val lang="zh_CN">Validation in progress</val>
@@ -136,7 +136,7 @@
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
 		<val lang="en_US">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="de_DE">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="fr_FR">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="fr_FR">Des problèmes de validation ont été rencontrés dans les ressources du projet et la remise n'a pas été appliquée.\nVous pouvez consulter et appliquer la remise à tout moment en utilisant l'action "Lister les remises", mais il est recommandé de résoudre d'abord les problèmes signalés. Vous pouvez les consulter dans l'onglet "{0}" de la zone Résultats.</val>
 		<val lang="ja_JP">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="nl_NL">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="zh_CN">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
@@ -145,7 +145,7 @@
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
 		<val lang="de_DE">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
-		<val lang="fr_FR">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
+		<val lang="fr_FR">La copie de travail actuelle est différente du projet chargé dans la vue Projet et ne peut pas être validée avant le processus de push.\n\nVoulez-vous charger le projet de la vue Projet comme étant la copie de travail actuelle?</val>
 		<val lang="ja_JP">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
 		<val lang="nl_NL">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
 		<val lang="zh_CN">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
@@ -154,7 +154,7 @@
 		<comment>The message presented to the user when the git staging project has not a .xpr file.</comment>
 		<val lang="en_US">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
 		<val lang="de_DE">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
-		<val lang="fr_FR">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
+		<val lang="fr_FR">Le projet actuel ne contient aucun fichier ".xpr" et ne peut être validé avant le processus de push.</val>
 		<val lang="ja_JP">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
 		<val lang="nl_NL">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
 		<val lang="zh_CN">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
@@ -163,7 +163,7 @@
 		<comment>Load</comment>
 		<val lang="en_US">Load</val>
 		<val lang="de_DE">Load</val>
-		<val lang="fr_FR">Load</val>
+		<val lang="fr_FR">Charger</val>
 		<val lang="ja_JP">Load</val>
 		<val lang="nl_NL">Load</val>
 		<val lang="zh_CN">Load</val>
@@ -172,7 +172,7 @@
 		<comment>Displayed message when the push validation could be not performed because there are uncommited changes.</comment>
 		<val lang="en_US">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
 		<val lang="de_DE">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
-		<val lang="fr_FR">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
+		<val lang="fr_FR">Le projet actuel ne peut pas être validé car il y a des changements hors commit.\nVoulez-vous remiser les changements et les restaurer après le processus de validation?</val>
 		<val lang="ja_JP">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
 		<val lang="nl_NL">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
 		<val lang="zh_CN">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
@@ -181,7 +181,7 @@
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
 		<val lang="en_US">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="de_DE">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="fr_FR">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="fr_FR">Des problèmes de validation ont été rencontrés dans les ressources du projet.\nIls peuvent être visualisés dans l'onglet "{0}" de la zone Résultats.</val>
 		<val lang="ja_JP">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="nl_NL">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="zh_CN">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
@@ -190,7 +190,7 @@
 		<comment>Push anyway</comment>
 		<val lang="en_US">Push anyway</val>
 		<val lang="de_DE">Push anyway</val>
-		<val lang="fr_FR">Push anyway</val>
+		<val lang="fr_FR">Effectuer le push quand même</val>
 		<val lang="ja_JP">Push anyway</val>
 		<val lang="nl_NL">Push anyway</val>
 		<val lang="zh_CN">Push anyway</val>
@@ -199,7 +199,7 @@
 		<comment>Label for reject push on validation problems option.</comment>
 		<val lang="en_US">Reject push when validation problems occur</val>
 		<val lang="de_DE">Reject push when validation problems occur</val>
-		<val lang="fr_FR">Reject push when validation problems occur</val>
+		<val lang="fr_FR">Rejeter le push en cas de problèmes de validation</val>
 		<val lang="ja_JP">Reject push when validation problems occur</val>
 		<val lang="nl_NL">Reject push when validation problems occur</val>
 		<val lang="zh_CN">Reject push when validation problems occur</val>
@@ -208,7 +208,7 @@
 		<comment>Label for validate files before commit option.</comment>
 		<val lang="en_US">Validate all files from the project's "Main Files" folder before pushing</val>
 		<val lang="de_DE">Validate all files from the project's "Main Files" folder before pushing</val>
-		<val lang="fr_FR">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="fr_FR">Valider tous les fichiers du dossier "Fichiers principaux" du projet avant d'effectuer un push</val>
 		<val lang="ja_JP">Validate all files from the project's "Main Files" folder before pushing</val>
 		<val lang="nl_NL">Validate all files from the project's "Main Files" folder before pushing</val>
 		<val lang="zh_CN">Validate all files from the project's "Main Files" folder before pushing</val>
@@ -217,7 +217,7 @@
 		<comment>Title for problems occurred on a pre-push validation and presented by a dialog/view.</comment>
 		<val lang="en_US">Git pre-push validation</val>
 		<val lang="de_DE">Git pre-push validation</val>
-		<val lang="fr_FR">Git pre-push validation</val>
+		<val lang="fr_FR">Validation pré-push de Git</val>
 		<val lang="ja_JP">Git pre-push validation</val>
 		<val lang="nl_NL">Git pre-push validation</val>
 		<val lang="zh_CN">Git pre-push validation</val>
@@ -226,7 +226,7 @@
 		<comment>Title for validation section</comment>
 		<val lang="en_US">Validation</val>
 		<val lang="de_DE">Validation</val>
-		<val lang="fr_FR">Validation</val>
+		<val lang="fr_FR" skipTranslation="true">Validation</val>
 		<val lang="ja_JP">Validation</val>
 		<val lang="nl_NL">Validation</val>
 		<val lang="zh_CN">Validation</val>
@@ -235,7 +235,7 @@
 		<comment>Displayed message when problems on validation are detected.</comment>
 		<val lang="en_US">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="de_DE">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="fr_FR">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="fr_FR">Des problèmes de validation ont été rencontrés dans les ressources à commiter.\nIls peuvent être consultés dans l'onglet "{0}" de la zone Résultats.</val>
 		<val lang="ja_JP">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="nl_NL">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
 		<val lang="zh_CN">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
@@ -244,7 +244,7 @@
 		<comment>Title for problems occurred on a pre-commit validation and presented by a dialog/view.</comment>
 		<val lang="en_US">Git pre-commit validation</val>
 		<val lang="de_DE">Git pre-commit validation</val>
-		<val lang="fr_FR">Git pre-commit validation</val>
+		<val lang="fr_FR">Validation pré-commit de Git</val>
 		<val lang="ja_JP">Git pre-commit validation</val>
 		<val lang="nl_NL">Git pre-commit validation</val>
 		<val lang="zh_CN">Git pre-commit validation</val>
@@ -253,7 +253,7 @@
 		<comment>Label for reject commit on validation problems option.</comment>
 		<val lang="en_US">Reject commit when validation problems occur</val>
 		<val lang="de_DE">Reject commit when validation problems occur</val>
-		<val lang="fr_FR">Reject commit when validation problems occur</val>
+		<val lang="fr_FR">Rejeter un commit en cas de problèmes de validation</val>
 		<val lang="ja_JP">Reject commit when validation problems occur</val>
 		<val lang="nl_NL">Reject commit when validation problems occur</val>
 		<val lang="zh_CN">Reject commit when validation problems occur</val>
@@ -262,7 +262,7 @@
 		<comment>Label for validate files before commit option.</comment>
 		<val lang="en_US">Validate each file before committing</val>
 		<val lang="de_DE">Validate each file before committing</val>
-		<val lang="fr_FR">Validate each file before committing</val>
+		<val lang="fr_FR">Valider chaque fichier avant le commit</val>
 		<val lang="ja_JP">Validate each file before committing</val>
 		<val lang="nl_NL">Validate each file before committing</val>
 		<val lang="zh_CN">Validate each file before committing</val>
@@ -274,9 +274,8 @@
 			"{1}"?</val>
 		<val lang="de_DE">Are you sure you want to merge "{0}" into
 			"{1}"?</val>
-		<val lang="fr_FR">Are you sure you want to merge "{0}" into
-			"{1}"?
-		</val>
+		<val lang="fr_FR">Êtes-vous sûr de vouloir fusionner "{0}" avec
+			"{1}"?</val>
 		<val lang="ja_JP">Are you sure you want to merge "{0}" into
 			"{1}"?</val>
 		<val lang="nl_NL">Are you sure you want to merge "{0}" into
@@ -289,7 +288,7 @@
 		</comment>
 		<val lang="en_US">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
 		<val lang="de_DE">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
-		<val lang="fr_FR">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="fr_FR">Cette opération fusionnera tous les changements effectués sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}", et elle enregistrera les résultats dans un nouveau commit à appliquer au-dessus de la branche "{0}".</val>
 		<val lang="ja_JP">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
 		<val lang="nl_NL">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
 		<val lang="zh_CN">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
@@ -300,8 +299,8 @@
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
 		<val lang="de_DE">This operation will merge changes on top of the "{0}" branch.  
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
-		<val lang="fr_FR">This operation will merge changes on top of the "{0}" branch.  
-		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="fr_FR">Cette opération fusionnera les changements au-dessus de la branche "{0}".  
+		Elle fusionnera tous les changements effectués sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}", et elle enregistrera les résultats dans un nouveau commit de fusion.</val>
 		<val lang="ja_JP">This operation will merge changes on top of the "{0}" branch.  
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
 		<val lang="nl_NL">This operation will merge changes on top of the "{0}" branch.  
@@ -313,7 +312,7 @@
 		<comment>Set remote</comment>
 		<val lang="en_US">Set remote</val>
 		<val lang="de_DE">Set remote</val>
-		<val lang="fr_FR">Set remote</val>
+		<val lang="fr_FR">Définir remote</val>
 		<val lang="ja_JP">Set remote</val>
 		<val lang="nl_NL">Set remote</val>
 		<val lang="zh_CN">Set remote</val>
@@ -322,7 +321,7 @@
 		<comment>Set remote branch.</comment>
 		<val lang="en_US">Set remote branch</val>
 		<val lang="de_DE">Set remote branch</val>
-		<val lang="fr_FR">Set remote branch</val>
+		<val lang="fr_FR">Définir la branche remote</val>
 		<val lang="ja_JP">Set remote branch</val>
 		<val lang="nl_NL">Set remote branch</val>
 		<val lang="zh_CN">Set remote branch</val>
@@ -331,7 +330,7 @@
 		<comment>Clone.</comment>
 		<val lang="en_US">Clone</val>
 		<val lang="de_DE">Clone</val>
-		<val lang="fr_FR">Clone</val>
+		<val lang="fr_FR" skipTranslation="true">Clone</val>
 		<val lang="ja_JP">Clone</val>
 		<val lang="nl_NL">Clone</val>
 		<val lang="zh_CN">Clone</val>
@@ -340,7 +339,7 @@
 		<comment>Text for track branch button.</comment>
 		<val lang="en_US">Track branch</val>
 		<val lang="de_DE">Track branch</val>
-		<val lang="fr_FR">Track branch</val>
+		<val lang="fr_FR">Suivre la branche</val>
 		<val lang="ja_JP">Track branch</val>
 		<val lang="nl_NL">Track branch</val>
 		<val lang="zh_CN">Track branch</val>
@@ -349,7 +348,7 @@
 		<comment>Change</comment>
 		<val lang="en_US">Change</val>
 		<val lang="de_DE">Change</val>
-		<val lang="fr_FR">Change</val>
+		<val lang="fr_FR">Modifier</val>
 		<val lang="ja_JP">Change</val>
 		<val lang="nl_NL">Change</val>
 		<val lang="zh_CN">Change</val>
@@ -358,7 +357,7 @@
 		<comment>Keep current WC message.</comment>
 		<val lang="en_US">Keep current</val>
 		<val lang="de_DE">Keep current</val>
-		<val lang="fr_FR">Keep current</val>
+		<val lang="fr_FR">Conserver actuelle</val>
 		<val lang="ja_JP">Keep current</val>
 		<val lang="nl_NL">Keep current</val>
 		<val lang="zh_CN">Keep current</val>
@@ -394,7 +393,7 @@
 		<comment>Tooltip message for the push button.</comment>
 		<val lang="en_US">The current local branch is not published. Push to create a "{0}" remote branch.</val>
 		<val lang="de_DE">The current local branch is not published. Push to create a "{0}" remote branch.</val>
-		<val lang="fr_FR">La branche locale actuelle n''est pas publiée. Effectuez un push pour créer une branche distante "{0}".</val>
+		<val lang="fr_FR">La branche locale actuelle n''est pas publiée. Effectuez un push pour créer une branche remote "{0}".</val>
 		<val lang="ja_JP">The current local branch is not published. Push to create a "{0}" remote branch.</val>
 		<val lang="nl_NL">The current local branch is not published. Push to create a "{0}" remote branch.</val>
 		<val lang="zh_CN">The current local branch is not published. Push to create a "{0}" remote branch.</val>
@@ -1314,7 +1313,7 @@
 		<comment>Edit remote.</comment>
 		<val lang="en_US">Edit remote repository</val>
 		<val lang="de_DE">Bearbeite entferntes Repository</val>
-		<val lang="fr_FR">Modifier le dépôt distant</val>
+		<val lang="fr_FR">Modifier le dépôt remote</val>
 		<val lang="ja_JP">リモートリポジトリを編集する</val>
 		<val lang="nl_NL">Externe opslagplaats bewerken</val>
 		<val lang="zh_CN">编辑远程存储库</val>
@@ -1323,7 +1322,7 @@
 		<comment>Add remote.</comment>
 		<val lang="en_US">Add remote repository</val>
 		<val lang="de_DE">Füge entferntes Repository hinzu</val>
-		<val lang="fr_FR">Ajouter un dépôt distant</val>
+		<val lang="fr_FR">Ajouter un dépôt remote</val>
 		<val lang="ja_JP">リモートリポジトリを追加する</val>
 		<val lang="nl_NL">Externe opslagplaats toevoegen</val>
 		<val lang="zh_CN">添加远程存储库</val>
@@ -1341,7 +1340,7 @@
 		<comment>Title for remotes dialog.</comment>
 		<val lang="en_US">Remote repositories</val>
 		<val lang="de_DE">Entfernte Repositories</val>
-		<val lang="fr_FR">Dépôts distants</val>
+		<val lang="fr_FR">Dépôts remote</val>
 		<val lang="ja_JP">リモートリポジトリ</val>
 		<val lang="nl_NL">Externe opslagplaatsen</val>
 		<val lang="zh_CN">远程存储库</val>
@@ -1384,7 +1383,7 @@
 			Commits.
 		</val>
 		<val lang="fr_FR">Affiche les commits pour la branche actuelle, y compris
-			les commits locaux hors push et les commits distants hors pull.</val>
+			les commits locaux hors push et les commits remote hors pull.</val>
 		<val lang="ja_JP">プッシュされていないローカルコミットとプルされていないリモートコミットを含む、現在の分岐のコミットを表示します。
 		</val>
 		<val lang="nl_NL">Toont de commits voor de huidige vertakking, inclusief
@@ -1415,9 +1414,9 @@
 			entfernte),
 			einschließlich ungesendeter lokaler und ungezogener entfernter Commits.
 		</val>
-		<val lang="fr_FR">Affiche les commits pour toutes les branches (locales et
-			distantes), y compris les commits locaux hors push et les commits
-			distants hors pull.</val>
+		<val lang="fr_FR">Affiche les commits pour toutes les branches (local et
+			remote), y compris les commits locaux hors push et les commits
+			remote hors pull.</val>
 		<val lang="ja_JP">プッシュされていないローカルコミットとプルされていないリモートコミットを含む、すべての分岐
 			(ローカルとリモートの両方) のコミットを表示します。</val>
 		<val lang="nl_NL">Toont de commits voor alle vertakkingen (lokaal en
