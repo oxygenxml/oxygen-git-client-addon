@@ -128,7 +128,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
-      assertEquals("[Compare_file_with_working_tree_version, Open_this_version_of_filename,"
+      assertEquals("[Open_this_version_of_filename,"
           + " Open_the_working_copy_version_of, Reset_file_x_to_this_commit]", dumpActions(actions));
 
       
@@ -174,7 +174,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Compare_with_working_tree_version, Open, Open_working_copy_version]", dumpActions(actions));
+      assertEquals("[Open, Open_working_copy_version]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -188,7 +188,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       assertEquals(
-          "[Compare_with_working_tree_version, Open, Open_working_copy_version, Reset_file_to_this_commit]", 
+          "[Open, Open_working_copy_version, Reset_file_to_this_commit]", 
           dumpActions(actions));
       
       // ========================= Uncommitted changes ======================================
