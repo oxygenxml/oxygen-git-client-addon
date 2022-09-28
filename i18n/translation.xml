@@ -1,429 +1,445 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <translation>
 	<languageList>
-		<language description="English" lang="en_US"
-			localeDescription="English" />
-		<language description="German" lang="de_DE"
-			localeDescription="Deutsch" />
-		<language description="French" lang="fr_FR"
-			localeDescription="Français" />
-		<language description="Japanese" lang="ja_JP"
-			localeDescription="日本語" />
-		<language description="Dutch" lang="nl_NL"
-			localeDescription="Nederlands" />
-		<language description="Chinese" lang="zh_CN"
-			localeDescription="中文" />
+		<language description="English" lang="en_US" localeDescription="English"/>
+		<language description="German" lang="de_DE" localeDescription="Deutsch"/>
+		<language description="French" lang="fr_FR" localeDescription="Français"/>
+		<language description="Japanese" lang="ja_JP" localeDescription="日本語"/>
+		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
+		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
 	
 	<key value="Current">
 		<comment>current</comment>
 		<val lang="en_US">current</val>
-		<val lang="de_DE">current</val>
+		<val lang="de_DE">aktuell</val>
 		<val lang="fr_FR">actuel</val>
-		<val lang="ja_JP">current</val>
-		<val lang="nl_NL">current</val>
-		<val lang="zh_CN">current</val>
+		<val lang="ja_JP">現在</val>
+		<val lang="nl_NL">huidig</val>
+		<val lang="zh_CN">当前的</val>
 	</key>
 	<key value="Select_Project">
 		<comment>Select Project</comment>
 		<val lang="en_US">Select project</val>
-		<val lang="de_DE">Select project</val>
+		<val lang="de_DE">Projekt wählen</val>
 		<val lang="fr_FR">Sélectionnez un projet</val>
-		<val lang="ja_JP">Select project</val>
-		<val lang="nl_NL">Select project</val>
-		<val lang="zh_CN">Select project</val>
+		<val lang="ja_JP">プロジェクトを選択する</val>
+		<val lang="nl_NL">Project selecteren</val>
+		<val lang="zh_CN">选择项目</val>
 	</key>
 	<key value="Detect_And_Open_Xpr_Files_Dialog_Text">
 		<comment>Detect and open xpr files from opened working copies dialog text.</comment>
 		<val lang="en_US">Current Git project contains multiple Oxygen project files (.xpr).</val>
-		<val lang="de_DE">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="de_DE">Aktuelles Git-Projekt enthält mehrere Oxygen-Projektdateien (.xpr).</val>
 		<val lang="fr_FR">Le projet Git actuel contient plusieurs fichiers de projet Oxygen (.xpr).</val>
-		<val lang="ja_JP">Current Git project contains multiple Oxygen project files (.xpr).</val>
-		<val lang="nl_NL">Current Git project contains multiple Oxygen project files (.xpr).</val>
-		<val lang="zh_CN">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="ja_JP">現在の Git プロジェクトには、複数の Oxygen プロジェクト ファイル (.xpr) が含まれています。</val>
+		<val lang="nl_NL">Huidig Git-project bevat meerdere Oxygen-projectbestanden (.xpr).</val>
+		<val lang="zh_CN">当前Git项目包含多个Oxygen项目文件（.xpr）。</val>
 	</key>
 	<key value="Detect_And_Open_Xpr_Files_Dialog_Title">
 		<comment>Detect and open xpr files from opened working copies dialog title.</comment>
 		<val lang="en_US">Switch project</val>
-		<val lang="de_DE">Switch project</val>
+		<val lang="de_DE">Projekt wechseln</val>
 		<val lang="fr_FR">Changer de projet</val>
-		<val lang="ja_JP">Switch project</val>
-		<val lang="nl_NL">Switch project</val>
-		<val lang="zh_CN">Switch project</val>
+		<val lang="ja_JP">プロジェクトを切り替える</val>
+		<val lang="nl_NL">Project wisselen</val>
+		<val lang="zh_CN">切换项目</val>
 	</key>
 	<key value="Detect_And_Open_Xpr_Files">
 		<comment>Detect and open xpr files from opened working copies option.</comment>
 		<val lang="en_US">Detect and open Oxygen projects (.xpr) from opened working copies</val>
-		<val lang="de_DE">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="de_DE">Oxygen-Projekte (.xpr) in den geöffneten Arbeitskopien ermitteln und
+         öffnen</val>
 		<val lang="fr_FR">Détecter et ouvrir les projets Oxygen (.xpr) à partir des copies de travail ouvertes</val>
-		<val lang="ja_JP">Detect and open Oxygen projects (.xpr) from opened working copies</val>
-		<val lang="nl_NL">Detect and open Oxygen projects (.xpr) from opened working copies</val>
-		<val lang="zh_CN">Detect and open Oxygen projects (.xpr) from opened working copies</val>
+		<val lang="ja_JP">開いている作業コピーから Oxygen プロジェクト (.xpr) を検出して開く</val>
+		<val lang="nl_NL">Oxygen-projecten (.xpr) detecteren en vanuit geopende werkkopieën openen</val>
+		<val lang="zh_CN">从打开的工作副本中检测并打开Oxygen项目（.xpr）</val>
 	</key>
 	<key value="Delete_Pushed_Tag_Dialog_Message">
 		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
 		<val lang="en_US">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
-		<val lang="de_DE">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="de_DE">Sind Sie sicher, dass Sie das "{0}" Tag löschen möchten? Dieses Tag ist
+         bereits zum entfernten Repository gesendet worden und wird permanent von diesem
+         gelöscht.</val>
 		<val lang="fr_FR">Êtes-vous sûr de vouloir supprimer le tag "{0}"? Un push sur le dépôt remote a déjà été effectué sur ce tag et il sera définitivement supprimé de celui-ci.</val>
-		<val lang="ja_JP">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
-		<val lang="nl_NL">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
-		<val lang="zh_CN">Are you sure you want to delete the "{0}" tag? This tag is already pushed on the remote repository and will be permanently deleted from it.</val>
+		<val lang="ja_JP">「{0}」タグを削除しますか? このタグは既にリモートリポジトリにプッシュされており、そこから完全に削除されます。</val>
+		<val lang="nl_NL">Weet u zeker dat u de tag '{0}' wilt verwijderen? Deze tag is al naar de externe opslagplaats gepusht en wordt permanent hieruit verwijderd.</val>
+		<val lang="zh_CN">是否确实要删除“{0}”标签？此标签已推送到远程存储库中，并将永久删除。</val>
 	</key>
 	<key value="PrePush_Validation_Info">
 		<comment>Informations about pre-push validation.</comment>
 		<val lang="en_US">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
-		<val lang="de_DE">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="de_DE">Sie müssen ein Oxygen-Projekt in der Git-Staging-Ansicht laden. Dieses
+         Projekt muss ebenfalls in der Projektansicht geöffnet sein und die Unterstützung für
+         Hauptdateien muss aktiviert sein.</val>
 		<val lang="fr_FR">Vous devez avoir un projet Oxygen chargé dans la vue Git Staging. Ce projet doit également être ouvert dans la vue Projet et le support des fichiers principaux doit être activé.</val>
-		<val lang="ja_JP">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
-		<val lang="nl_NL">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
-		<val lang="zh_CN">You must have an Oxygen project loaded in the Git Staging view. This project must also be open in the Project view and the Main Files support must be enabled.</val>
+		<val lang="ja_JP">Git Staging ビューに Oxygen プロジェクトをロードする必要があります。このプロジェクトはプロジェクトビューでも開く必要があり、メインファイルのサポートが有効になっている必要があります。</val>
+		<val lang="nl_NL">U moet een Oxygen-project in de Git-faseringsweergave hebben geladen. Dit project moet ook in de Project-weergave zijn geopend en de Hoofdbestandenondersteuning moet zijn ingeschakeld.</val>
+		<val lang="zh_CN">必须在Git Staging视图中加载Oxygen项目。此项目还必须在“项目”视图中打开，并且必须启用“主文件”支持。</val>
 	</key>
 	<key value="Main_Files_Support_Not_Enabled">
 		<comment>This message appears when Main files support is not enabled.</comment>
 		<val lang="en_US">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
-		<val lang="de_DE">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
+		<val lang="de_DE">Die Unterstützung für Hauptdateien muss im aktuellen Projekt aktiviert sein
+         und Dateien müssen in das Hauptdateien-Verzeichnis hinzugefügt werden.</val>
 		<val lang="fr_FR">Le support des fichiers principaux doit être activé dans le projet actuel et les fichiers doivent être ajoutés au dossier des fichiers principaux.</val>
-		<val lang="ja_JP">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
-		<val lang="nl_NL">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
-		<val lang="zh_CN">The Main Files support must be enabled in the current project and files must be added to the Main Files folder.</val>
+		<val lang="ja_JP">現在のプロジェクトでメインファイルのサポートを有効にし、ファイルをメインファイルフォルダーに追加する必要があります。</val>
+		<val lang="nl_NL">De Hoofdbestandenondersteuning moet in het huidige project worden ingeschakeld en bestanden moeten aan de Hoofdbestandenmap worden toegevoegd.</val>
+		<val lang="zh_CN">必须在当前项目中启用主文件支持，并且必须将文件添加到主文件文件夹中。</val>
 	</key>
 	<key value="Stash_And_Continue">
 		<comment>En: Stash and continue.</comment>
 		<val lang="en_US">Stash and continue</val>
-		<val lang="de_DE">Stash and continue</val>
+		<val lang="de_DE">Verstecken und fortfahren</val>
 		<val lang="fr_FR">Remiser et continuer</val>
-		<val lang="ja_JP">Stash and continue</val>
-		<val lang="nl_NL">Stash and continue</val>
-		<val lang="zh_CN">Stash and continue</val>
+		<val lang="ja_JP">一時退避して続行する</val>
+		<val lang="nl_NL">Opbergen en doorgaan</val>
+		<val lang="zh_CN">Stash并继续</val>
 	</key>
 	<key value="Cannot_Open_Git_Upload_Pack">
 		<comment>Error message when cannot open git-upload-pack.</comment>
 		<val lang="en_US">Cannot open git-upload-pack.</val>
-		<val lang="de_DE">Cannot open git-upload-pack.</val>
+		<val lang="de_DE">Kann git-upload-pack nicht öffnen.</val>
 		<val lang="fr_FR">Impossible d'ouvrir git-upload-pack.</val>
-		<val lang="ja_JP">Cannot open git-upload-pack.</val>
-		<val lang="nl_NL">Cannot open git-upload-pack.</val>
-		<val lang="zh_CN">Cannot open git-upload-pack.</val>
+		<val lang="ja_JP">git-upload-pack を開けません。</val>
+		<val lang="nl_NL">Kan git-upload-pakket niet openen.</val>
+		<val lang="zh_CN">无法打开git上载包。</val>
 	</key>
 	<key value="Transport_Exception_Possible_Causes">
 		<comment>Error message for a transport exception.</comment>
 		<val lang="en_US">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
-		<val lang="de_DE">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="de_DE">Konnte den Host dieser URL nicht erreichen. Mögliche Ursachen sind: Der
+         Domänenname existiert nicht oder ist down. Prüfen Sie, ob die Adresse korrekt ist oder
+         versuchen Sie es später noch einmal.</val>
 		<val lang="fr_FR">Impossible de se connecter à l'hôte à partir de l'URL. Les causes possibles sont: le nom de domaine n'existe pas ou est hors service. Vérifiez si l'adresse est correcte ou réessayez plus tard.</val>
-		<val lang="ja_JP">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
-		<val lang="nl_NL">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
-		<val lang="zh_CN">Could not connect to the host from the URL. Possible causes are: the domain name does not exist or it is down. Check if the address is correct or try again later.</val>
+		<val lang="ja_JP">URL からホストに接続できませんでした。考えられる原因は、ドメイン名が存在しない、あるいはダウンしているということです。アドレスが正しいかどうかを確認するか、後でもう一度やり直してください。</val>
+		<val lang="nl_NL">Kan vanuit de URL geen verbinding maken met de host. Mogelijke oorzaken zijn: de domeinnaam bestaat niet of deze is niet actief. Controleer of het adres correct is of probeer het later opnieuw.</val>
+		<val lang="zh_CN">无法从URL连接到主机。可能的原因是：域名不存在或已关闭。请检查地址是否正确或稍后重试。</val>
 	</key>
 	<key value="End_Push_Validation_Progress">
 		<comment>End the push validation progress.</comment>
 		<val lang="en_US">Validation finished</val>
-		<val lang="de_DE">Validation finished</val>
+		<val lang="de_DE">Validierung abgeschlossen</val>
 		<val lang="fr_FR">Validation terminée</val>
-		<val lang="ja_JP">Validation finished</val>
-		<val lang="nl_NL">Validation finished</val>
-		<val lang="zh_CN">Validation finished</val>
+		<val lang="ja_JP">検証が完了しました</val>
+		<val lang="nl_NL">Validatie voltooid</val>
+		<val lang="zh_CN">验证已完成</val>
 	</key>
 	<key value="Start_Push_Validation_Progress">
 		<comment>Start the push validation progress.</comment>
 		<val lang="en_US">Validation in progress</val>
-		<val lang="de_DE">Validation in progress</val>
+		<val lang="de_DE">Validierung in Bearbeitung</val>
 		<val lang="fr_FR">Validation en cours</val>
-		<val lang="ja_JP">Validation in progress</val>
-		<val lang="nl_NL">Validation in progress</val>
-		<val lang="zh_CN">Validation in progress</val>
+		<val lang="ja_JP">検証を処理中です</val>
+		<val lang="nl_NL">Validatie wordt uitgevoerd</val>
+		<val lang="zh_CN">验证进行中</val>
 	</key>
 	<key value="Failed_Push_Validation_Message_With_Stash">
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
 		<val lang="en_US">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="de_DE">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="de_DE">Validierungsprobleme sind in den Projektressourcen aufgetreten und das
+         Versteck (stash) wurde nicht angewendet.\nSie können das Versteck mit der "Verstecke
+         (stashes) auflisten" Aktion jederzeit ansehen und anwenden. Sie können in der Registerkarte
+         "{0}" im Ergebnisbereich angesehen werden.</val>
 		<val lang="fr_FR">Des problèmes de validation ont été rencontrés dans les ressources du projet et la remise n'a pas été appliquée.\nVous pouvez consulter et appliquer la remise à tout moment en utilisant l'action "Lister les remises", mais il est recommandé de résoudre d'abord les problèmes signalés. Vous pouvez les consulter dans l'onglet "{0}" de la zone Résultats.</val>
-		<val lang="ja_JP">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="nl_NL">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="zh_CN">Validation problems were encountered in the project resources and the stash was not applied.\nYou can view and apply the stash at any time using the "List stashes" action, but it is recommended to solve the reported problems first. They can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="ja_JP">プロジェクトリソースで検証の問題が発生し、一時退避が適用されませんでした。\n「一時退避を一覧表示する」アクションを使用していつでも一時退避を表示および適用できますが、最初に報告された問題を解決することをお勧めします。結果エリアの「{0}」タブで表示できます。</val>
+		<val lang="nl_NL">Validatieproblemen zijn ontstaan in de projectbronnen en opbergen is niet toegepast.\nU kunt het opbergen bekijken en op ieder moment de actie "Lijst van stashes maken" uitvoeren, maar aanbevolen wordt om de gerapporteerde problemen eerst op te lossen. Zij kunnen in de tab "{0}" in het veld Resultaten worden bekeken.</val>
+		<val lang="zh_CN">项目资源中遇到验证问题，未应用存储。\您可以随时使用“列出存储”查看和应用存储，但建议先解决报告的问题。可以在“结果”区域的“{0}”选项卡中查看它们。</val>
 	</key>
 	<key value="Not_Same_Project_Message">
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
-		<val lang="de_DE">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
+		<val lang="de_DE">Die aktuelle Arbeitskopie unterscheidet sich von dem in der Projektansicht
+         geladenen Projekt und kann nicht vor dem Senden (push) validiert werden\n\nMöchten Sie das
+         Projekt aus der Projektansicht laden und als aktuelle Arbeitskopie verwenden?</val>
 		<val lang="fr_FR">La copie de travail actuelle est différente du projet chargé dans la vue Projet et ne peut pas être validée avant le processus de push.\n\nVoulez-vous charger le projet de la vue Projet comme étant la copie de travail actuelle?</val>
-		<val lang="ja_JP">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
-		<val lang="nl_NL">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
-		<val lang="zh_CN">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
+		<val lang="ja_JP">現在の作業コピーは、プロジェクトビューに読み込まれたプロジェクトとは異なり、プッシュプロセスの前に検証できません。\n\nプロジェクトビューからプロジェクトを読み込んで、現在の作業コピーにしますか?</val>
+		<val lang="nl_NL">De huidige werkkopie is anders dan het in de Project-weergave geladen project en kan niet voor het push-proces worden gevalideerd.\n\nWilt u het project vanuit de Project-weergave laden en dit als huidige werkkopie gebruiken?</val>
+		<val lang="zh_CN">当前工作副本与“项目”视图中加载的项目不同，无法在推送之前进行验证。\\是否要从“项目”视图加载项目，使其成为当前工作副本？</val>
 	</key>
 	<key value="No_XPR_File_In_Project_Message">
 		<comment>The message presented to the user when the git staging project has not a .xpr file.</comment>
 		<val lang="en_US">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
-		<val lang="de_DE">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
+		<val lang="de_DE">Das aktuelle Projekt enthält keine ".xpr" Dateien und kann nicht vor dem
+         Senden (push) validiert werden.</val>
 		<val lang="fr_FR">Le projet actuel ne contient aucun fichier ".xpr" et ne peut être validé avant le processus de push.</val>
-		<val lang="ja_JP">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
-		<val lang="nl_NL">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
-		<val lang="zh_CN">The current project does not contain any ".xpr" files and cannot be validated before the push process.</val>
+		<val lang="ja_JP">現在のプロジェクトには「.xpr」ファイルが含まれていないため、プッシュプロセスの前に検証できません。</val>
+		<val lang="nl_NL">Het huidige project bevat geen ".xpr"-bestanden en kan niet voor het push-proces worden gevalideerd.</val>
+		<val lang="zh_CN">当前项目不包含任何“.xpr”文件，无法在推送过程之前进行验证。</val>
 	</key>
 	<key value="Load">
 		<comment>Load</comment>
 		<val lang="en_US">Load</val>
-		<val lang="de_DE">Load</val>
+		<val lang="de_DE">Laden</val>
 		<val lang="fr_FR">Charger</val>
-		<val lang="ja_JP">Load</val>
-		<val lang="nl_NL">Load</val>
-		<val lang="zh_CN">Load</val>
+		<val lang="ja_JP">読み込む</val>
+		<val lang="nl_NL">Laden</val>
+		<val lang="zh_CN">载入</val>
 	</key>
 	<key value="Push_Validation_Uncommited_Changes">
 		<comment>Displayed message when the push validation could be not performed because there are uncommited changes.</comment>
 		<val lang="en_US">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
-		<val lang="de_DE">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
+		<val lang="de_DE">Das aktuelle Projekt kann nicht validiert werden, weil es nicht gesendete
+         (uncommitted) Änderungen gibt.\nMöchten Sie die Änderungen verstecken (stash) und diese
+         nach dem Validierungsprozess wiederherstellen?</val>
 		<val lang="fr_FR">Le projet actuel ne peut pas être validé car il y a des changements hors commit.\nVoulez-vous remiser les changements et les restaurer après le processus de validation?</val>
-		<val lang="ja_JP">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
-		<val lang="nl_NL">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
-		<val lang="zh_CN">The current project cannot be validated because there are uncommitted changes.\nDo you want to stash the changes and restore them after the validation process?</val>
+		<val lang="ja_JP">コミットされていない変更があるため、現在のプロジェクトを検証できません。\n変更を一時退避して、検証プロセス後に復元しますか?</val>
+		<val lang="nl_NL">Het huidige project kan niet worden gevalideerd omdat niet-vastgelegde wijzigingen aanwezig zijn.\nWilt u de wijzigingen opbergen en deze na het validatieproces herstellen?</val>
+		<val lang="zh_CN">无法验证当前项目，存在未提交的更改。\是否要隐藏更改并在验证过程后还原它们？</val>
 	</key>
 	<key value="Failed_Push_Validation_Message">
 		<comment>Displayed message when problems on validation are detected on push operation.</comment>
 		<val lang="en_US">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="de_DE">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="de_DE">In den Projektressourcen sind Validierungsprobleme aufgetreten.\nSie können
+         sie im Ergebnisbereich in der Registerkarte "{0}" ansehen.</val>
 		<val lang="fr_FR">Des problèmes de validation ont été rencontrés dans les ressources du projet.\nIls peuvent être visualisés dans l'onglet "{0}" de la zone Résultats.</val>
-		<val lang="ja_JP">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="nl_NL">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="zh_CN">Validation problems were encountered in the project resources.\nThey can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="ja_JP">プロジェクトリソースで検証の問題が発生しました。これらは\n結果エリアの「{0}」タブで表示できます。</val>
+		<val lang="nl_NL">Validatieproblemen zijn in de projectbronnen ontstaan.\nZij kunnen in de tab "{0}" in het veld Resultaten worden bekeken.</val>
+		<val lang="zh_CN">项目资源中遇到验证问题。\可以在“结果”区域的“{0}”选项卡中查看它们。</val>
 	</key>
 	<key value="Push_Anyway">
 		<comment>Push anyway</comment>
 		<val lang="en_US">Push anyway</val>
-		<val lang="de_DE">Push anyway</val>
+		<val lang="de_DE">Trotzdem senden (push)</val>
 		<val lang="fr_FR">Effectuer le push quand même</val>
-		<val lang="ja_JP">Push anyway</val>
-		<val lang="nl_NL">Push anyway</val>
-		<val lang="zh_CN">Push anyway</val>
+		<val lang="ja_JP">とにかくプッシュする</val>
+		<val lang="nl_NL">Toch pushen</val>
+		<val lang="zh_CN">强行Push</val>
 	</key>
 	<key value="Reject_Push_On_Problems">
 		<comment>Label for reject push on validation problems option.</comment>
 		<val lang="en_US">Reject push when validation problems occur</val>
-		<val lang="de_DE">Reject push when validation problems occur</val>
+		<val lang="de_DE">Senden (push) ablehnen, wenn Validierungsprobleme auftreten</val>
 		<val lang="fr_FR">Rejeter le push en cas de problèmes de validation</val>
-		<val lang="ja_JP">Reject push when validation problems occur</val>
-		<val lang="nl_NL">Reject push when validation problems occur</val>
-		<val lang="zh_CN">Reject push when validation problems occur</val>
+		<val lang="ja_JP">検証の問題が発生したときにプッシュを拒否する</val>
+		<val lang="nl_NL">Push afwijzen in geval van validatieproblemen</val>
+		<val lang="zh_CN">验证到问题撤销Git Push操作</val>
 	</key>
 	<key value="Validate_Before_Push">
 		<comment>Label for validate files before commit option.</comment>
 		<val lang="en_US">Validate all files from the project's "Main Files" folder before pushing</val>
-		<val lang="de_DE">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="de_DE">Validiere alle Dateien aus dem "Hauptdateien" Verzeichnis des Projekts vor
+         dem Senden (push)</val>
 		<val lang="fr_FR">Valider tous les fichiers du dossier "Fichiers principaux" du projet avant d'effectuer un push</val>
-		<val lang="ja_JP">Validate all files from the project's "Main Files" folder before pushing</val>
-		<val lang="nl_NL">Validate all files from the project's "Main Files" folder before pushing</val>
-		<val lang="zh_CN">Validate all files from the project's "Main Files" folder before pushing</val>
+		<val lang="ja_JP">プッシュする前に、プロジェクトの「メインファイル」フォルダーからすべてのファイルを検証します。</val>
+		<val lang="nl_NL">Valideer voorafgaande aan het pushen alle bestanden vanuit de projectmap "Hoofdbestanden"</val>
+		<val lang="zh_CN">Git推送前验证项目“主文件”文件夹中的所有文件</val>
 	</key>
 	<key value="Pre_Push_Validation">
 		<comment>Title for problems occurred on a pre-push validation and presented by a dialog/view.</comment>
 		<val lang="en_US">Git pre-push validation</val>
-		<val lang="de_DE">Git pre-push validation</val>
+		<val lang="de_DE">Validieren vor dem Senden (Git pre-push)</val>
 		<val lang="fr_FR">Validation pré-push de Git</val>
-		<val lang="ja_JP">Git pre-push validation</val>
-		<val lang="nl_NL">Git pre-push validation</val>
-		<val lang="zh_CN">Git pre-push validation</val>
+		<val lang="ja_JP">Git 事前プッシュ検証</val>
+		<val lang="nl_NL">Git valideren voorafgaande aan pushen</val>
+		<val lang="zh_CN">Git Push前验证</val>
 	</key>
 	<key value="Validation">
 		<comment>Title for validation section</comment>
 		<val lang="en_US">Validation</val>
-		<val lang="de_DE">Validation</val>
+		<val lang="de_DE">Validierung</val>
 		<val lang="fr_FR" skipTranslation="true">Validation</val>
-		<val lang="ja_JP">Validation</val>
-		<val lang="nl_NL">Validation</val>
-		<val lang="zh_CN">Validation</val>
+		<val lang="ja_JP">検証</val>
+		<val lang="nl_NL">Validatie</val>
+		<val lang="zh_CN">验证</val>
 	</key>
 	<key value="Failed_Commit_Validation_Message">
 		<comment>Displayed message when problems on validation are detected.</comment>
 		<val lang="en_US">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="de_DE">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="de_DE">Validierungsprobleme sind bei den zu übergebenen (committed) Ressourcen
+         aufgetreten.\nSie können sie im Ergebnisbereich in der Registerkarte "{0}" ansehen.</val>
 		<val lang="fr_FR">Des problèmes de validation ont été rencontrés dans les ressources à commiter.\nIls peuvent être consultés dans l'onglet "{0}" de la zone Résultats.</val>
-		<val lang="ja_JP">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="nl_NL">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
-		<val lang="zh_CN">Validation problems were encountered in the resources to be committed.\nThey can be viewed in the "{0}" tab in the Results area.</val>
+		<val lang="ja_JP">コミットするリソースで検証の問題が発生しました。\n結果エリアの「{0}」タブで表示できます。</val>
+		<val lang="nl_NL">Validatieproblemen zijn in de vast te leggen bronnen ontstaan.\nZij kunnen in de tab "{0}" in het veld Resultaten worden bekeken.</val>
+		<val lang="zh_CN">要提交的资源中遇到验证问题。\可以在“结果”区域的“{0}”选项卡中查看它们。</val>
 	</key>
 	<key value="Pre_Commit_Validation">
 		<comment>Title for problems occurred on a pre-commit validation and presented by a dialog/view.</comment>
 		<val lang="en_US">Git pre-commit validation</val>
-		<val lang="de_DE">Git pre-commit validation</val>
+		<val lang="de_DE">Validieren vor dem Übergeben (Git pre-commit)</val>
 		<val lang="fr_FR">Validation pré-commit de Git</val>
-		<val lang="ja_JP">Git pre-commit validation</val>
-		<val lang="nl_NL">Git pre-commit validation</val>
-		<val lang="zh_CN">Git pre-commit validation</val>
+		<val lang="ja_JP">Git 事前コミット検証</val>
+		<val lang="nl_NL">Git valideren voorafgaande aan het vastleggen</val>
+		<val lang="zh_CN">Git提交前验证</val>
 	</key>
 	<key value="Reject_Commit_On_Problems">
 		<comment>Label for reject commit on validation problems option.</comment>
 		<val lang="en_US">Reject commit when validation problems occur</val>
-		<val lang="de_DE">Reject commit when validation problems occur</val>
+		<val lang="de_DE">Übergeben (commit) ablehnen, wenn Validierungsprobleme auftreten</val>
 		<val lang="fr_FR">Rejeter un commit en cas de problèmes de validation</val>
-		<val lang="ja_JP">Reject commit when validation problems occur</val>
-		<val lang="nl_NL">Reject commit when validation problems occur</val>
-		<val lang="zh_CN">Reject commit when validation problems occur</val>
+		<val lang="ja_JP">検証の問題が発生したときにコミットを拒否する</val>
+		<val lang="nl_NL">Vastleggen afwijzen in geval van validatieproblemen</val>
+		<val lang="zh_CN">存在问题撤销提交</val>
 	</key>
 	<key value="Validate_Before_Commit">
 		<comment>Label for validate files before commit option.</comment>
 		<val lang="en_US">Validate each file before committing</val>
-		<val lang="de_DE">Validate each file before committing</val>
+		<val lang="de_DE">Validiere jede Datei vor dem Übergeben (commit)</val>
 		<val lang="fr_FR">Valider chaque fichier avant le commit</val>
-		<val lang="ja_JP">Validate each file before committing</val>
-		<val lang="nl_NL">Validate each file before committing</val>
-		<val lang="zh_CN">Validate each file before committing</val>
+		<val lang="ja_JP">コミットする前に各ファイルを検証する</val>
+		<val lang="nl_NL">Valideer ieder bestand voorafgaande aan het vastleggen</val>
+		<val lang="zh_CN">提交前验证每个文件</val>
 	</key>
 	<key value="Merge_Branches_Question_Message">
 		<comment>The question message on the merge branches pop up dialog
 		</comment>
 		<val lang="en_US">Are you sure you want to merge "{0}" into
 			"{1}"?</val>
-		<val lang="de_DE">Are you sure you want to merge "{0}" into
-			"{1}"?</val>
+		<val lang="de_DE">Möchten Sie wirklich "{0}" in "{1}" verschmelzen (merge)?</val>
 		<val lang="fr_FR">Êtes-vous sûr de vouloir fusionner "{0}" avec
 			"{1}"?</val>
-		<val lang="ja_JP">Are you sure you want to merge "{0}" into
-			"{1}"?</val>
-		<val lang="nl_NL">Are you sure you want to merge "{0}" into
-			"{1}"?</val>
-		<val lang="zh_CN">Are you sure you want to merge "{0}" into
-			"{1}"?</val>
+		<val lang="ja_JP">「{0}」を「{1}」マージしますか?</val>
+		<val lang="nl_NL">Weet u zeker dat u "{0}" met "{1}" wilt samenvoegen?</val>
+		<val lang="zh_CN">确认是否要将“{0}”合并到“{1}”？</val>
 	</key>
 	<key value="Squash_Merge_Info">
 		<comment>The information about squash merge.
 		</comment>
 		<val lang="en_US">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
-		<val lang="de_DE">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="de_DE">Diese Operation wird alle Änderungen auf dem "{1}" Zweig (branch)
+         verschmelzen (merge), die seit der Abspaltung von "{0}" durchgeführt wurden, und wird alle
+         Änderungen in einem neuen Commit speichern, der an der Spitze des "{0}" Zweigs angewendet
+         wird.</val>
 		<val lang="fr_FR">Cette opération fusionnera tous les changements effectués sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}", et elle enregistrera les résultats dans un nouveau commit à appliquer au-dessus de la branche "{0}".</val>
-		<val lang="ja_JP">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
-		<val lang="nl_NL">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
-		<val lang="zh_CN">This operation will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new commit to be applied on top of the "{0}" branch.</val>
+		<val lang="ja_JP">この操作は、「{0}」分岐から分岐してから「{1}」分岐で行われたすべての変更をマージします。そして、「{0}」分岐の上に適用される新しいコミットに結果を記録します。</val>
+		<val lang="nl_NL">Deze handeling zal alle wijzigingen die sinds de afscheiding van de vertakking "{0}" in de vertakking "{1}" zijn aangebracht samenvoegen en de resultaten in een nieuwe, bovenop de vertakking "{0}" toe te passen vastlegging registreren.</val>
+		<val lang="zh_CN">将在“{1}”分支上所有更改进行合并，与“{0}”分支分离，并将结果记录在新提交中，以应用于“{0}”分支的顶部。</val>
 	</key>
 	<key value="Merge_Info">
 		<comment>The information about merge operation.</comment>
 		<val lang="en_US">This operation will merge changes on top of the "{0}" branch.  
 		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
-		<val lang="de_DE">This operation will merge changes on top of the "{0}" branch.  
-		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="de_DE">Diese Operation wird alle Änderungen an der Spitze des "{0}" Zweigs (branch)
+         verschmelzen (merge). Es wird alle durchgeführten Änderungen auf dem Zweig "{1}" seit der
+         Abspaltung vom "{0}" Zweig verschmelzen und wird die Änderungen in einem
+         Verschmelzungscommit (merge commit) speichern.</val>
 		<val lang="fr_FR">Cette opération fusionnera les changements au-dessus de la branche "{0}".  
 		Elle fusionnera tous les changements effectués sur la branche "{1}" depuis qu''elle a divergé de la branche "{0}", et elle enregistrera les résultats dans un nouveau commit de fusion.</val>
-		<val lang="ja_JP">This operation will merge changes on top of the "{0}" branch.  
-		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
-		<val lang="nl_NL">This operation will merge changes on top of the "{0}" branch.  
-		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
-		<val lang="zh_CN">This operation will merge changes on top of the "{0}" branch.  
-		It will merge all the changes made on the "{1}" branch since it diverged from the "{0}" branch, and it will record the results in a new merge commit.</val>
+		<val lang="ja_JP">この操作は、「{0}」分岐の上に変更をマージします。「{0}」分岐から分岐してから「{1}」分岐で行われたすべての変更をマージし、結果を新しいマージコミットに記録します。</val>
+		<val lang="nl_NL">Deze handeling zal wijzigingen bovenop de vertakking "{0}" samenvoegen. Deze handeling zal alle wijzigingen die sinds de afscheiding van de vertakking "{0}" in de vertakking "{1}" zijn aangebracht samenvoegen en de resultaten in een nieuwe vastlegging van de samenvoeging registreren.</val>
+		<val lang="zh_CN">将在“{0}”分支上进行合并。
+                        在“{1}”分支上所有更改进行合并，与“{0}”分支不同，并将结果记录在新的合并提交中。</val>
 	</key>
 	<key value="Set_Remote">
 		<comment>Set remote</comment>
 		<val lang="en_US">Set remote</val>
-		<val lang="de_DE">Set remote</val>
+		<val lang="de_DE">Remote setzen</val>
 		<val lang="fr_FR">Définir remote</val>
-		<val lang="ja_JP">Set remote</val>
-		<val lang="nl_NL">Set remote</val>
-		<val lang="zh_CN">Set remote</val>
+		<val lang="ja_JP">リモートを設定する</val>
+		<val lang="nl_NL">Extern instellen</val>
+		<val lang="zh_CN">设置远程</val>
 	</key>
 	<key value="Set_Remote_Branch">
 		<comment>Set remote branch.</comment>
 		<val lang="en_US">Set remote branch</val>
-		<val lang="de_DE">Set remote branch</val>
+		<val lang="de_DE">Remote-Zweig setzen</val>
 		<val lang="fr_FR">Définir la branche remote</val>
-		<val lang="ja_JP">Set remote branch</val>
-		<val lang="nl_NL">Set remote branch</val>
-		<val lang="zh_CN">Set remote branch</val>
+		<val lang="ja_JP">リモート分岐を設定する</val>
+		<val lang="nl_NL">Externe vertakking instellen</val>
+		<val lang="zh_CN">设置远程分支</val>
 	</key>
 	<key value="Clone">
 		<comment>Clone.</comment>
 		<val lang="en_US">Clone</val>
-		<val lang="de_DE">Clone</val>
+		<val lang="de_DE">Klonen</val>
 		<val lang="fr_FR" skipTranslation="true">Clone</val>
-		<val lang="ja_JP">Clone</val>
-		<val lang="nl_NL">Clone</val>
-		<val lang="zh_CN">Clone</val>
+		<val lang="ja_JP">複製する</val>
+		<val lang="nl_NL">Kloon</val>
+		<val lang="zh_CN">复制</val>
 	</key>
 	<key value="Track_Branch_Button_Text">
 		<comment>Text for track branch button.</comment>
 		<val lang="en_US">Track branch</val>
-		<val lang="de_DE">Track branch</val>
+		<val lang="de_DE">Zweig (branch) verfolgen</val>
 		<val lang="fr_FR">Suivre la branche</val>
-		<val lang="ja_JP">Track branch</val>
-		<val lang="nl_NL">Track branch</val>
-		<val lang="zh_CN">Track branch</val>
+		<val lang="ja_JP">分岐を追跡する</val>
+		<val lang="nl_NL">Vertakking bijhouden</val>
+		<val lang="zh_CN">跟踪分支</val>
 	</key>
 	<key value="Change">
 		<comment>Change</comment>
 		<val lang="en_US">Change</val>
-		<val lang="de_DE">Change</val>
+		<val lang="de_DE">Ändern</val>
 		<val lang="fr_FR">Modifier</val>
-		<val lang="ja_JP">Change</val>
-		<val lang="nl_NL">Change</val>
-		<val lang="zh_CN">Change</val>
+		<val lang="ja_JP">変更</val>
+		<val lang="nl_NL">Wijziging</val>
+		<val lang="zh_CN">修改</val>
 	</key>
 	<key value="Keep_Current_WC">
 		<comment>Keep current WC message.</comment>
 		<val lang="en_US">Keep current</val>
-		<val lang="de_DE">Keep current</val>
+		<val lang="de_DE">Aktuellen behalten</val>
 		<val lang="fr_FR">Conserver actuelle</val>
-		<val lang="ja_JP">Keep current</val>
-		<val lang="nl_NL">Keep current</val>
-		<val lang="zh_CN">Keep current</val>
+		<val lang="ja_JP">最新の状態に保つ</val>
+		<val lang="nl_NL">Huidige behouden</val>
+		<val lang="zh_CN">保持最新</val>
 	</key>
 	<key value="Squash_No_Commits_Message">
 		<comment>Message when no commits could be added with squash and merge action.</comment>
 		<val lang="en_US">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
-		<val lang="de_DE">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+		<val lang="de_DE">Der Befehl "Quetschen und Verschmelzen" (squash and merge) kann nicht auf
+         dem aktuellen Zweig (branch) angewendet werden, weil keine neuen Commits auf dem "{0}"
+         Zweig ermittelt werden konnten.</val>
 		<val lang="fr_FR">La commande squash and merge ne peut pas être appliquée sur la branche actuelle car aucun nouveau commit n''a été détecté sur la branche "{0}".</val>
-		<val lang="ja_JP">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
-		<val lang="nl_NL">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
-		<val lang="zh_CN">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>
+		<val lang="ja_JP">「{0}」分岐で新しいコミットが検出されなかったため、一時退避およびマージコマンドを現在の分岐に適用できません。</val>
+		<val lang="nl_NL">Het commando comprimeren en samenvoegen kan niet op de huidige vertakking worden toegepast, omdat geen nieuwe vastleggingen op de vertakking "{0}" zijn gedetecteerd.</val>
+		<val lang="zh_CN">无法对当前分支进行压缩和合并命令，因为在“{0}”分支上未检测到新的提交。</val>
 	</key>
 	<key value="Squash_No_Changes_Title">
 		<comment>Title for dialog when no changes could be added with squash and merge action.</comment>
 		<val lang="en_US">No changes detected</val>
-		<val lang="de_DE">No changes detected</val>
+		<val lang="de_DE">Keine Änderungen ermittelt</val>
 		<val lang="fr_FR">Aucune modification détectée</val>
-		<val lang="ja_JP">No changes detected</val>
-		<val lang="nl_NL">No changes detected</val>
-		<val lang="zh_CN">No changes detected</val>
+		<val lang="ja_JP">変化が検出されませんでした</val>
+		<val lang="nl_NL">Geen wijzigingen gedetecteerd</val>
+		<val lang="zh_CN">未检测到变更</val>
 	</key>
 	<key value="Squash_No_Changes_Message">
 		<comment>Message when no changes could be added with squash and merge action.</comment>
 		<val lang="en_US">"{0}" has no new commits since its last squash and merge.</val>
-		<val lang="de_DE">"{0}" has no new commits since its last squash and merge.</val>
+		<val lang="de_DE">"{0}" hat keine neuen Commits seit dem letzten "Quetschen und Verschmelzen"
+         (squash and merge)</val>
 		<val lang="fr_FR">"{0}" n''a pas de nouveaux commits depuis son dernier squash et merge.</val>
-		<val lang="ja_JP">"{0}" has no new commits since its last squash and merge.</val>
-		<val lang="nl_NL">"{0}" has no new commits since its last squash and merge.</val>
-		<val lang="zh_CN">"{0}" has no new commits since its last squash and merge.</val>
+		<val lang="ja_JP">「{0}」には、前回の一時退避およびマージ以降、新しいコミットはありません。</val>
+		<val lang="nl_NL">"{0}" heeft geen nieuwe vastleggingen sinds de laatste keer comprimeren en samenvoegen.</val>
+		<val lang="zh_CN">“{0}”自上次压缩和合并以来没有新提交。</val>
 	</key>
 	<key value="Push_to_create_and_track_remote_branch">
 		<comment>Tooltip message for the push button.</comment>
 		<val lang="en_US">The current local branch is not published. Push to create a "{0}" remote branch.</val>
-		<val lang="de_DE">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+		<val lang="de_DE">Der aktuelle lokale Zweig (branch) ist nicht publiziert. Senden (push) Sie
+         ihn, um einen "{0}" Remote-Zweig zu erzeugen.</val>
 		<val lang="fr_FR">La branche locale actuelle n''est pas publiée. Effectuez un push pour créer une branche remote "{0}".</val>
-		<val lang="ja_JP">The current local branch is not published. Push to create a "{0}" remote branch.</val>
-		<val lang="nl_NL">The current local branch is not published. Push to create a "{0}" remote branch.</val>
-		<val lang="zh_CN">The current local branch is not published. Push to create a "{0}" remote branch.</val>
+		<val lang="ja_JP">現在のローカル分岐は公開されていません。プッシュして「{0}」リモート分岐を作成します。</val>
+		<val lang="nl_NL">De huidige lokale vertakking wordt niet gepubliceerd. Push om een externe vertakking "{0}" aan te maken.</val>
+		<val lang="zh_CN">当前本地分支未发布。按下可创建“{0}”远程分支。</val>
 	</key>
 	<key value="Squash_Action_Name">
 		<comment>Name for squash and merge action</comment>
 		<val lang="en_US">Squash merge "{0}" into "{1}"</val>
-		<val lang="de_DE">Squash merge "{0}" into "{1}"</val>
+		<val lang="de_DE">Quetschen und verschmelzen (squash merge) "{0}" in "{1}"</val>
 		<val lang="fr_FR">Squash fusionne "{0}" dans "{1}".</val>
-		<val lang="ja_JP">Squash merge "{0}" into "{1}"</val>
-		<val lang="nl_NL">Squash merge "{0}" into "{1}"</val>
-		<val lang="zh_CN">Squash merge "{0}" into "{1}"</val>
+		<val lang="ja_JP">マージ「{0}」を「{1}」に一時退避する</val>
+		<val lang="nl_NL">"{0}" met "{1}" comprimeren en samenvoegen</val>
+		<val lang="zh_CN">压缩合并“{0}”到“{1}”</val>
 	</key>
 	<key value="Squash_And_Commit">
 		<comment>Squash and commit.</comment>
 		<val lang="en_US">Squash and commit</val>
-		<val lang="de_DE">Squash and commit</val>
+		<val lang="de_DE">Quetschen und senden (squash and commit)</val>
 		<val lang="fr_FR">Squash et commit</val>
-		<val lang="ja_JP">Squash and commit</val>
-		<val lang="nl_NL">Squash and commit</val>
-		<val lang="zh_CN">Squash and commit</val>
+		<val lang="ja_JP">一時退避およびコミットする</val>
+		<val lang="nl_NL">Comprimeren en vastleggen</val>
+		<val lang="zh_CN">压缩并提交</val>
 	</key>
 	<key value="Squash_Merge">
 		<comment>Squash merge.</comment>
 		<val lang="en_US">Squash merge</val>
-		<val lang="de_DE">Squash merge</val>
+		<val lang="de_DE">Quetschen und verschmelzen (squash merge)</val>
 		<val lang="fr_FR">Squash fusion</val>
-		<val lang="ja_JP">Squash merge</val>
-		<val lang="nl_NL">Squash merge</val>
-		<val lang="zh_CN">Squash merge</val>
+		<val lang="ja_JP">マージを一時退避する</val>
+		<val lang="nl_NL">Gecomprimeerd samenvoegen</val>
+		<val lang="zh_CN">压缩合并</val>
 	</key>
 	<key value="No_Remote_Exception_Message">
 		<comment>Message for exception that appears when a pull is executed
@@ -431,21 +447,15 @@
 		<val lang="en_US">Operation failed. A possible cause is that this branch
 			is not associated with a remote or may be hidden by permission
 			settings.</val>
-		<val lang="de_DE">Operation failed. A possible cause is that this branch
-			is not associated with a remote or may be hidden by permission
-			settings.</val>
+		<val lang="de_DE">Operation fehlgeschlagen. Eine mögliche Ursache ist, dass dieser Zweig
+         (branch) nicht mit einem entfernten Zweig (remote branch) assoziiert ist oder durch
+         Berechtigungseinstellungen versteckt ist.</val>
 		<val lang="fr_FR">L'opération a échoué. Une cause possible est que cette branche
 			n'est pas associée à un remote ou qu'elle est cachée par les paramètres
 			d'autorisation.</val>
-		<val lang="ja_JP">Operation failed. A possible cause is that this branch
-			is not associated with a remote or may be hidden by permission
-			settings.</val>
-		<val lang="nl_NL">Operation failed. A possible cause is that this branch
-			is not associated with a remote or may be hidden by permission
-			settings.</val>
-		<val lang="zh_CN">Operation failed. A possible cause is that this branch
-			is not associated with a remote or may be hidden by permission
-			settings.</val>
+		<val lang="ja_JP">操作に失敗しました。考えられる原因は、この分岐がリモートに関連付けられていないか、許可設定によって非表示になっている可能性があることです。</val>
+		<val lang="nl_NL">Bewerking mislukt. Een mogelijke oorzaak is dat deze vertakking niet aan een externe vertakking is gekoppeld of mogelijk door toestemmingsinstellingen is verborgen.</val>
+		<val lang="zh_CN">操作失败。可能的原因是此分支版本未与远程关联，或者此分支版本由于权限设置被隐藏。</val>
 	</key>
 		<key value="Invalid_remote">
 		<comment>Message shown when trying to clone from an invalid remote.
@@ -453,7 +463,7 @@
 		<val lang="en_US">Invalid remote</val>
 		<val lang="de_DE">Remote ungültig</val>
 		<val lang="fr_FR">Remote invalide</val>
-		<val lang="ja_JP">Invalid remote</val>
+		<val lang="ja_JP">リモートが無効です</val>
 		<val lang="nl_NL">Ongeldige externe repository</val>
 		<val lang="zh_CN">无效远程服务器</val>
 	</key>
@@ -464,7 +474,7 @@
 		<val lang="de_DE">Unter dieser URL wurde kein Remote-Repository gefunden.
 		</val>
 		<val lang="fr_FR">Aucun dépôt remote trouvé pour l'URL fournie.</val>
-		<val lang="ja_JP">No remote repository found for the provided URL.</val>
+		<val lang="ja_JP">指定されたURLのリモートリポジトリが見つかりません。</val>
 		<val lang="nl_NL">Geen externe repository gevonden bij deze url.</val>
 		<val lang="zh_CN">找不到提供的 URL 的远程存储库.</val>
 	</key>
@@ -474,7 +484,7 @@
 		<val lang="en_US">Checkout branch</val>
 		<val lang="de_DE">Branch auschecken</val>
 		<val lang="fr_FR">Extraction de la branche</val>
-		<val lang="ja_JP">Checkout branch</val>
+		<val lang="ja_JP">分岐をチェックアウトする</val>
 		<val lang="nl_NL">Branch uitchecken</val>
 		<val lang="zh_CN">检出分支</val>
 	</key>
@@ -483,7 +493,7 @@
 		<val lang="en_US">Yes</val>
 		<val lang="de_DE">Ja</val>
 		<val lang="fr_FR">Oui</val>
-		<val lang="ja_JP">Yes</val>
+		<val lang="ja_JP">はい</val>
 		<val lang="nl_NL">Ja</val>
 		<val lang="zh_CN">是的</val>
 	</key>
@@ -492,7 +502,7 @@
 		<val lang="en_US">No</val>
 		<val lang="de_DE">Nein</val>
 		<val lang="fr_FR">Non</val>
-		<val lang="ja_JP">No</val>
+		<val lang="ja_JP">いいえ</val>
 		<val lang="nl_NL">Nee</val>
 		<val lang="zh_CN">不</val>
 	</key>
@@ -501,7 +511,7 @@
 		<val lang="en_US">Pull status</val>
 		<val lang="de_DE">Pull-Status</val>
 		<val lang="fr_FR">Statut du pull</val>
-		<val lang="ja_JP">Pull status</val>
+		<val lang="ja_JP">プルステータス</val>
 		<val lang="nl_NL">Status ophalen</val>
 		<val lang="zh_CN">拉取状态</val>
 	</key>
@@ -510,7 +520,7 @@
 		<val lang="en_US">Please enter your SSH passphrase</val>
 		<val lang="de_DE">Bitte gib deinen SSH-Passphrase ein</val>
 		<val lang="fr_FR">Veuillez entrer votre passphrase SSH</val>
-		<val lang="ja_JP">Please enter your SSH passphrase</val>
+		<val lang="ja_JP">SSH パスフレーズを入力してください</val>
 		<val lang="nl_NL">Voer uw SSH wachtwoord in</val>
 		<val lang="zh_CN">请输入您的 SSH 密码</val>
 	</key>
@@ -520,7 +530,7 @@
 		<val lang="en_US">Working copy: </val>
 		<val lang="de_DE">Arbeitskopie: </val>
 		<val lang="fr_FR">Copie de travail: </val>
-		<val lang="ja_JP">Working copy: </val>
+		<val lang="ja_JP">作業コピー:</val>
 		<val lang="nl_NL">Werkkopie: </val>
 		<val lang="zh_CN">工作副本: </val>
 	</key>
@@ -529,7 +539,7 @@
 		<val lang="en_US">Push</val>
 		<val lang="de_DE">Senden (push)</val>
 		<val lang="fr_FR" skipTranslation="true">Push</val>
-		<val lang="ja_JP">Push</val>
+		<val lang="ja_JP">プッシュ</val>
 		<val lang="nl_NL">Pushen</val>
 		<val lang="zh_CN">推送</val>
 	</key>
@@ -538,7 +548,7 @@
 		<val lang="en_US">Pull</val>
 		<val lang="de_DE">Ziehen (pull)</val>
 		<val lang="fr_FR" skipTranslation="true">Pull</val>
-		<val lang="ja_JP">Pull</val>
+		<val lang="ja_JP">プル</val>
 		<val lang="nl_NL">Ophalen</val>
 		<val lang="zh_CN">拉取</val>
 	</key>
@@ -547,7 +557,7 @@
 		<val lang="en_US">Browse File System</val>
 		<val lang="de_DE">Im Dateisystem suchen</val>
 		<val lang="fr_FR">Parcourir le système de fichier</val>
-		<val lang="ja_JP">Browse File System</val>
+		<val lang="ja_JP">ファイルシステムを閲覧する</val>
 		<val lang="nl_NL">Bestandssysteem verkennen</val>
 		<val lang="zh_CN">浏览文件系统</val>
 	</key>
@@ -556,7 +566,7 @@
 		<val lang="en_US">Stage all</val>
 		<val lang="de_DE">Alle vormerken</val>
 		<val lang="fr_FR">Tout réserver</val>
-		<val lang="ja_JP">Stage all</val>
+		<val lang="ja_JP">すべてをステージングする</val>
 		<val lang="nl_NL">Stage alles</val>
 		<val lang="zh_CN">所有阶段</val>
 	</key>
@@ -565,7 +575,7 @@
 		<val lang="en_US">Unstage all</val>
 		<val lang="de_DE">Alle nicht mehr vormerken</val>
 		<val lang="fr_FR">Tout libérer</val>
-		<val lang="ja_JP">Unstage all</val>
+		<val lang="ja_JP">すべてをステージング解除する</val>
 		<val lang="nl_NL">Unstage alles</val>
 		<val lang="zh_CN">全部取消</val>
 	</key>
@@ -574,7 +584,7 @@
 		<val lang="en_US">Stage selected</val>
 		<val lang="de_DE">Auswahl vormerken</val>
 		<val lang="fr_FR">Réserver la sélection</val>
-		<val lang="ja_JP">Stage selected</val>
+		<val lang="ja_JP">ステージングが選択されました</val>
 		<val lang="nl_NL">Stage geselecteerde</val>
 		<val lang="zh_CN">已选择阶段</val>
 	</key>
@@ -583,7 +593,7 @@
 		<val lang="en_US">Unstage selected</val>
 		<val lang="de_DE">Auswahl nicht mehr vormerken</val>
 		<val lang="fr_FR">Libérer la sélection</val>
-		<val lang="ja_JP">Unstage selected</val>
+		<val lang="ja_JP">ステージング解除が選択されました</val>
 		<val lang="nl_NL">Unstage geselecteerde</val>
 		<val lang="zh_CN">取消暂存选中</val>
 	</key>
@@ -593,7 +603,7 @@
 		<val lang="en_US">File Created</val>
 		<val lang="de_DE">Datei erstellt</val>
 		<val lang="fr_FR">Fichier créé</val>
-		<val lang="ja_JP">File Created</val>
+		<val lang="ja_JP">ファイルが作成されました</val>
 		<val lang="nl_NL">Bestand aangemaakt</val>
 		<val lang="zh_CN">文件已创建</val>
 	</key>
@@ -603,7 +613,7 @@
 		<val lang="en_US">File Modified</val>
 		<val lang="de_DE">Datei geändert</val>
 		<val lang="fr_FR">Fichier modifié</val>
-		<val lang="ja_JP">File Modified</val>
+		<val lang="ja_JP">ファイルが変更されました</val>
 		<val lang="nl_NL">Bestand gewijzigd</val>
 		<val lang="zh_CN">文件修改</val>
 	</key>
@@ -613,7 +623,7 @@
 		<val lang="en_US">File Deleted</val>
 		<val lang="de_DE">Datei gelöscht</val>
 		<val lang="fr_FR">Fichier supprimé</val>
-		<val lang="ja_JP">File Deleted</val>
+		<val lang="ja_JP">ファイルが削除されました</val>
 		<val lang="nl_NL">Bestand verwijderd</val>
 		<val lang="zh_CN">文件已删除</val>
 	</key>
@@ -623,7 +633,7 @@
 		<val lang="en_US">Conflict</val>
 		<val lang="de_DE">Konflikt</val>
 		<val lang="fr_FR">Conflit</val>
-		<val lang="ja_JP">Conflict</val>
+		<val lang="ja_JP">競合</val>
 		<val lang="nl_NL">Conflict</val>
 		<val lang="zh_CN">冲突</val>
 	</key>
@@ -633,7 +643,7 @@
 		<val lang="en_US">Commit message</val>
 		<val lang="de_DE">Commit-Nachricht</val>
 		<val lang="fr_FR">Message de commit</val>
-		<val lang="ja_JP">Commit message</val>
+		<val lang="ja_JP">コミットメッセージ</val>
 		<val lang="nl_NL">Commitbericht</val>
 		<val lang="zh_CN">提交消息</val>
 	</key>
@@ -645,7 +655,7 @@
 		<val lang="en_US">Choose a previously used comment</val>
 		<val lang="de_DE">Wähle eine vorherige Commit-Nachricht</val>
 		<val lang="fr_FR">Choisir un commentaire déjà utilisé</val>
-		<val lang="ja_JP">Choose a previously used comment</val>
+		<val lang="ja_JP">以前に使用したコメントを選択する</val>
 		<val lang="nl_NL">Kies een eerder gebruikte opmerking</val>
 		<val lang="zh_CN">选择一个以前使用过的评论</val>
 	</key>
@@ -654,7 +664,7 @@
 		<val lang="en_US">Commit</val>
 		<val lang="de_DE">Commit</val>
 		<val lang="fr_FR" skipTranslation="true">Commit</val>
-		<val lang="ja_JP">Commit</val>
+		<val lang="ja_JP">コミット</val>
 		<val lang="nl_NL">Vastleggen</val>
 		<val lang="zh_CN">提交</val>
 	</key>
@@ -663,7 +673,7 @@
 		<val lang="en_US">Commit successful</val>
 		<val lang="de_DE">Commit erfolgreich</val>
 		<val lang="fr_FR">Commit réussi</val>
-		<val lang="ja_JP">Commit successful</val>
+		<val lang="ja_JP">正常にコミットされました</val>
 		<val lang="nl_NL">Commit succesvol</val>
 		<val lang="zh_CN">提交成功</val>
 	</key>
@@ -675,7 +685,7 @@
 			bestehen.</val>
 		<val lang="fr_FR">Impossible d'effectuer le commit en ayant des conflits.
 		</val>
-		<val lang="ja_JP">Cannot commit while having conflicts.</val>
+		<val lang="ja_JP">競合が発生している間はコミットできません。</val>
 		<val lang="nl_NL">Kan geen commit doen zolang er nog conflicten zijn.
 		</val>
 		<val lang="zh_CN">发生冲突时无法提交.</val>
@@ -693,8 +703,7 @@
 			Effectuez d'abord
 			un pull.
 		</val>
-		<val lang="ja_JP">Cannot push. Your current branch is behind. Pull first.
-		</val>
+		<val lang="ja_JP">プッシュできません。現在の分岐は後ろにあります。最初にプルします。</val>
 		<val lang="nl_NL">Kan niet pushen. Uw huidige branch ligt achter. Doe
 			eerst pull.</val>
 		<val lang="zh_CN">推送失败. 您当前的分支落后了. 先拉取.</val>
@@ -704,7 +713,7 @@
 		<val lang="en_US">Push successful</val>
 		<val lang="de_DE">Push erfolgreich</val>
 		<val lang="fr_FR">Push réussi</val>
-		<val lang="ja_JP">Push successful</val>
+		<val lang="ja_JP">プッシュが成功しました</val>
 		<val lang="nl_NL">Push succesvol</val>
 		<val lang="zh_CN">推送成功</val>
 	</key>
@@ -713,7 +722,7 @@
 		<val lang="en_US">Cannot push.</val>
 		<val lang="de_DE">Push nicht möglich.</val>
 		<val lang="fr_FR">Push impossible.</val>
-		<val lang="ja_JP">Cannot push.</val>
+		<val lang="ja_JP">プッシュできません。</val>
 		<val lang="nl_NL">Kan niet pushen.</val>
 		<val lang="zh_CN">不可推送.</val>
 	</key>
@@ -722,7 +731,7 @@
 		<val lang="en_US">There was nothing to push</val>
 		<val lang="de_DE">Es wurde nichts gepusht</val>
 		<val lang="fr_FR">Rien dans le push</val>
-		<val lang="ja_JP">There was nothing to push</val>
+		<val lang="ja_JP">プッシュするものがありませんでした</val>
 		<val lang="nl_NL">Er was niets om te pushen</val>
 		<val lang="zh_CN">没有什么可推送的</val>
 	</key>
@@ -731,7 +740,7 @@
 		<val lang="en_US">Pushing...</val>
 		<val lang="de_DE">Push läuft...</val>
 		<val lang="fr_FR">Push en cours...</val>
-		<val lang="ja_JP">Pushing...</val>
+		<val lang="ja_JP">プッシュ中...</val>
 		<val lang="nl_NL">Bezig met push ...</val>
 		<val lang="zh_CN">推动...</val>
 	</key>
@@ -742,7 +751,7 @@
 		<val lang="en_US">Repository is already up to date</val>
 		<val lang="de_DE">Repository ist bereits auf dem aktuellen Stand</val>
 		<val lang="fr_FR">Le dépôt est déjà à jour</val>
-		<val lang="ja_JP">Repository is already up to date</val>
+		<val lang="ja_JP">リポジトリは既に最新です</val>
 		<val lang="nl_NL">Repository is al bijgewerkt</val>
 		<val lang="zh_CN">存储库已经是最新的</val>
 	</key>
@@ -752,7 +761,7 @@
 		<val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand
 		</val>
 		<val lang="fr_FR">Pull réussi. Le dépôt est à jour</val>
-		<val lang="ja_JP">Pull successful. Repository up to date</val>
+		<val lang="ja_JP">プルに成功しましたリポジトリは最新です</val>
 		<val lang="nl_NL">Pull sucecesvol. Repository is bijgewerkt.</val>
 		<val lang="zh_CN">拉取成功. 存储库是最新的</val>
 	</key>
@@ -761,7 +770,7 @@
 		<val lang="en_US">Pulling...</val>
 		<val lang="de_DE">Pull läuft...</val>
 		<val lang="fr_FR">Pull en cours...</val>
-		<val lang="ja_JP">Pulling...</val>
+		<val lang="ja_JP">プル中...</val>
 		<val lang="nl_NL">Bezig met pull ...</val>
 		<val lang="zh_CN">拉取中...</val>
 	</key>
@@ -771,7 +780,7 @@
 		<val lang="en_US">Pull successful with conflicts: </val>
 		<val lang="de_DE">Beim Pullen sind Konflikte aufgetreten: </val>
 		<val lang="fr_FR">Pull réussi avec des conflits: </val>
-		<val lang="ja_JP">Pull successful with conflicts: </val>
+		<val lang="ja_JP">競合ありでプルが成功しました:</val>
 		<val lang="nl_NL">Pull succesvol met conflicten:</val>
 		<val lang="zh_CN">在冲突中拉取成功: </val>
 	</key>
@@ -781,7 +790,7 @@
 		<val lang="en_US">Open in compare editor</val>
 		<val lang="de_DE">Änderungen anzeigen</val>
 		<val lang="fr_FR">Ouvrir dans l'éditeur de comparaison</val>
-		<val lang="ja_JP">Open in compare editor</val>
+		<val lang="ja_JP">比較エディターで開く</val>
 		<val lang="nl_NL">Open in vergelijkingseditor</val>
 		<val lang="zh_CN">在对比编辑器中打开</val>
 	</key>
@@ -791,7 +800,7 @@
 		<val lang="en_US">Open</val>
 		<val lang="de_DE">Öffnen</val>
 		<val lang="fr_FR">Ouvrir</val>
-		<val lang="ja_JP">Open</val>
+		<val lang="ja_JP">開く</val>
 		<val lang="nl_NL">Openen</val>
 		<val lang="zh_CN">打开</val>
 	</key>
@@ -801,7 +810,7 @@
 		<val lang="en_US">Unstage</val>
 		<val lang="de_DE">Nicht mehr vormerken</val>
 		<val lang="fr_FR">Libérer</val>
-		<val lang="ja_JP">Unstage</val>
+		<val lang="ja_JP">ステージング解除する</val>
 		<val lang="nl_NL">Fasering stoppen</val>
 		<val lang="zh_CN">取消暂存</val>
 	</key>
@@ -811,7 +820,7 @@
 		<val lang="en_US">Stage</val>
 		<val lang="de_DE">Für Commit vormerken</val>
 		<val lang="fr_FR">Réserver</val>
-		<val lang="ja_JP">Stage</val>
+		<val lang="ja_JP">ステージングする</val>
 		<val lang="nl_NL">Faseren</val>
 		<val lang="zh_CN">阶段</val>
 	</key>
@@ -820,7 +829,7 @@
 		<val lang="en_US">Resolve Conflict</val>
 		<val lang="de_DE">Konflikt lösen</val>
 		<val lang="fr_FR">Résoudre les conflits</val>
-		<val lang="ja_JP">Resolve Conflict</val>
+		<val lang="ja_JP">競合を解決する</val>
 		<val lang="nl_NL">Conflict oplossen</val>
 		<val lang="zh_CN">解决冲突</val>
 	</key>
@@ -830,7 +839,7 @@
 		<val lang="en_US">Discard</val>
 		<val lang="de_DE">Änderung verwerfen</val>
 		<val lang="fr_FR">Abandonner</val>
-		<val lang="ja_JP">Discard</val>
+		<val lang="ja_JP">破棄する</val>
 		<val lang="nl_NL">Annuleren</val>
 		<val lang="zh_CN">取消</val>
 	</key>
@@ -842,7 +851,7 @@
 			wollen?</val>
 		<val lang="fr_FR">Êtes-vous sûr de vouloir abandonner vos modifications?
 		</val>
-		<val lang="ja_JP">Are you sure you want to discard your changes?</val>
+		<val lang="ja_JP">変更を破棄しますか?</val>
 		<val lang="nl_NL">Weet u zeker dat u uw wijzigingen ongedaan wilt maken?
 		</val>
 		<val lang="zh_CN">您确定要放弃您的更改吗?</val>
@@ -852,7 +861,7 @@
 		<val lang="en_US">Resolve Using "Mine"</val>
 		<val lang="de_DE">Konflikt lösen mit "Meins"</val>
 		<val lang="fr_FR">Résoudre en utilisant "La mienne"</val>
-		<val lang="ja_JP">Resolve Using "Mine"</val>
+		<val lang="ja_JP">「Mine」を使って解決する</val>
 		<val lang="nl_NL">Oplossen met "Mijn"</val>
 		<val lang="zh_CN">使用“我的”解决</val>
 	</key>
@@ -861,7 +870,7 @@
 		<val lang="en_US">Resolve Using "Theirs"</val>
 		<val lang="de_DE">Konflikt lösen mit "Ihres"</val>
 		<val lang="fr_FR">Résoudre en utilisant "La leur"</val>
-		<val lang="ja_JP">Resolve Using "Theirs"</val>
+		<val lang="ja_JP">「Theirs」を使って解決する</val>
 		<val lang="nl_NL">Oplossen met "Hun"</val>
 		<val lang="zh_CN">使用“他们的”来解决</val>
 	</key>
@@ -871,7 +880,7 @@
 		<val lang="en_US">Restart Merge</val>
 		<val lang="de_DE">Merge erneut starten</val>
 		<val lang="fr_FR">Relancer la fusion</val>
-		<val lang="ja_JP">Restart Merge</val>
+		<val lang="ja_JP">マージを再開する</val>
 		<val lang="nl_NL">Samenvoegen opnieuw starten</val>
 		<val lang="zh_CN">重新开始合并</val>
 	</key>
@@ -881,7 +890,7 @@
 		<val lang="en_US">Mark Resolved</val>
 		<val lang="de_DE">Als gelöst markieren</val>
 		<val lang="fr_FR">Marquer comme résolu</val>
-		<val lang="ja_JP">Mark Resolved</val>
+		<val lang="ja_JP">解決済みとしてマークする</val>
 		<val lang="nl_NL">Markeren als opgelost</val>
 		<val lang="zh_CN">标记已解决</val>
 	</key>
@@ -893,7 +902,7 @@
 		<val lang="en_US">The selected repository was not found</val>
 		<val lang="de_DE">Das ausgewählte Repository wurde nicht gefunden</val>
 		<val lang="fr_FR">Le dépôt sélectionné n'a pas été trouvé</val>
-		<val lang="ja_JP">The selected repository was not found</val>
+		<val lang="ja_JP">選択したリポジトリが見つかりませんでした</val>
 		<val lang="nl_NL">De geselecteerde repository is niet gevonden</val>
 		<val lang="zh_CN">未找到选定的存储库</val>
 	</key>
@@ -905,7 +914,7 @@
 		<val lang="en_US">Please select a git directory</val>
 		<val lang="de_DE">Bitte wählen Sie ein Git-Repository aus</val>
 		<val lang="fr_FR">Veuillez sélectionner un dépôt git</val>
-		<val lang="ja_JP">Please select a git directory</val>
+		<val lang="ja_JP">git ディレクトリを選択してください</val>
 		<val lang="nl_NL">Selecteer een git-repository</val>
 		<val lang="zh_CN">请选择一个git目录</val>
 	</key>
@@ -926,10 +935,7 @@
 			résoudre le conflit
 			en conservant votre version?
 		</val>
-		<val lang="ja_JP">You have not modified the local version. Do you want to
-			resolve the
-			conflict by keeping your version?
-		</val>
+		<val lang="ja_JP">ローカルバージョンは変更されていません。バージョンを維持することで競合を解決しますか?</val>
 		<val lang="nl_NL">U hebt uw lokale versie niet gewijzigd. Wilt u het
 			conflict oplossen door
 			uw lokale versie te behouden?
@@ -944,7 +950,7 @@
 		<val lang="en_US">Conflict Resolution</val>
 		<val lang="de_DE">Konflikt-Lösung</val>
 		<val lang="fr_FR">Résolution de conflits</val>
-		<val lang="ja_JP">Conflict Resolution</val>
+		<val lang="ja_JP">競合の解決</val>
 		<val lang="nl_NL">Conflictoplossing</val>
 		<val lang="zh_CN">解决冲突</val>
 	</key>
@@ -956,7 +962,7 @@
 		<val lang="en_US">Remote repository URL: </val>
 		<val lang="de_DE">Remote-URL: </val>
 		<val lang="fr_FR">URL du dépôt remote: </val>
-		<val lang="ja_JP">Remote repository URL: </val>
+		<val lang="ja_JP">リモートリポジトリ URL:</val>
 		<val lang="nl_NL">Externe repository url: </val>
 		<val lang="zh_CN">远程存储库 URL: </val>
 	</key>
@@ -971,8 +977,7 @@
 		</val>
 		<val lang="fr_FR">Ce dépôt n'a pas de remote. Veuillez en fournir un.
 		</val>
-		<val lang="ja_JP">This repository has no remotes. Please provide one.
-		</val>
+		<val lang="ja_JP">このリポジトリにはリモートがありません。1 つ提供してください。</val>
 		<val lang="nl_NL">Deze repository heeft geen externe repositories. Voeg
 			deze eerst
 			toe.
@@ -987,7 +992,7 @@
 		<val lang="en_US">New Git Project</val>
 		<val lang="de_DE">Neues Git-Projekt</val>
 		<val lang="fr_FR">Nouveau projet Git</val>
-		<val lang="ja_JP">New Git Project</val>
+		<val lang="ja_JP">新しい Git プロジェクト</val>
 		<val lang="nl_NL">Nieuw Git-project</val>
 		<val lang="zh_CN">新建 Git 项目</val>
 	</key>
@@ -997,7 +1002,7 @@
 		<val lang="en_US">Submodule: </val>
 		<val lang="de_DE">Submodul: </val>
 		<val lang="fr_FR">Sous-module: </val>
-		<val lang="ja_JP">Submodule: </val>
+		<val lang="ja_JP">サブモジュール:</val>
 		<val lang="nl_NL">Submodule:</val>
 		<val lang="zh_CN">子模块: </val>
 	</key>
@@ -1009,7 +1014,7 @@
 		<val lang="en_US">Submodules</val>
 		<val lang="de_DE">Submodule</val>
 		<val lang="fr_FR">Sous-modules</val>
-		<val lang="ja_JP">Submodules</val>
+		<val lang="ja_JP">サブモジュール</val>
 		<val lang="nl_NL">Submodules</val>
 		<val lang="zh_CN">子模块</val>
 	</key>
@@ -1021,7 +1026,7 @@
 		<val lang="en_US">Submodule</val>
 		<val lang="de_DE">Submodul</val>
 		<val lang="fr_FR">Sous-module</val>
-		<val lang="ja_JP">Submodule</val>
+		<val lang="ja_JP">サブモジュール</val>
 		<val lang="nl_NL">Submodule</val>
 		<val lang="zh_CN">子模块</val>
 	</key>
@@ -1030,7 +1035,7 @@
 		<val lang="en_US">Username: </val>
 		<val lang="de_DE">Benutzername: </val>
 		<val lang="fr_FR">Nom d'utilisateur: </val>
-		<val lang="ja_JP">Username: </val>
+		<val lang="ja_JP">ユーザー名:</val>
 		<val lang="nl_NL">Gebruikersnaam: </val>
 		<val lang="zh_CN">用户名: </val>
 	</key>
@@ -1039,7 +1044,7 @@
 		<val lang="en_US">Password: </val>
 		<val lang="de_DE">Passwort: </val>
 		<val lang="fr_FR">Mot de passe: </val>
-		<val lang="ja_JP">Password: </val>
+		<val lang="ja_JP">パスワード:</val>
 		<val lang="nl_NL">Wachtwoord: </val>
 		<val lang="zh_CN">密码: </val>
 	</key>
@@ -1051,7 +1056,7 @@
 		<val lang="en_US">No credentials found.</val>
 		<val lang="de_DE">Keine Zugangsdaten gefunden.</val>
 		<val lang="fr_FR">Aucun identifiant trouvé.</val>
-		<val lang="ja_JP">No credentials found.</val>
+		<val lang="ja_JP">資格情報が見つかりません。</val>
 		<val lang="nl_NL">Geen inloggegevens gevonden.</val>
 		<val lang="zh_CN">未找到凭据.</val>
 	</key>
@@ -1063,7 +1068,7 @@
 		<val lang="en_US">Up to date.</val>
 		<val lang="de_DE">Aktuell.</val>
 		<val lang="fr_FR">À jour.</val>
-		<val lang="ja_JP">Up to date.</val>
+		<val lang="ja_JP">最新の状態です。</val>
 		<val lang="nl_NL">Bijgewerkt.</val>
 		<val lang="zh_CN">更新到最新.</val>
 	</key>
@@ -1075,7 +1080,7 @@
 		<val lang="en_US">Detached HEAD on commit</val>
 		<val lang="de_DE">Detached HEAD an Commit</val>
 		<val lang="fr_FR">HEAD détaché lors du commit</val>
-		<val lang="ja_JP">Detached HEAD on commit</val>
+		<val lang="ja_JP">コミット時に HEAD を分離しました</val>
 		<val lang="nl_NL">HEAD tonen bij commit</val>
 		<val lang="zh_CN">提交时分离 HEAD </val>
 	</key>
@@ -1095,7 +1100,7 @@
 		<val lang="en_US">Git Diff</val>
 		<val lang="de_DE">Git-Diff</val>
 		<val lang="fr_FR" skipTranslation="true">Git Diff</val>
-		<val lang="ja_JP">Git Diff</val>
+		<val lang="ja_JP">Git 差分</val>
 		<val lang="nl_NL">Git-diff</val>
 		<val lang="zh_CN">Git 差异</val>
 	</key>
@@ -1105,7 +1110,7 @@
 		<val lang="en_US">Commit</val>
 		<val lang="de_DE">Commit</val>
 		<val lang="fr_FR" skipTranslation="true">Commit</val>
-		<val lang="ja_JP">Commit</val>
+		<val lang="ja_JP">コミット</val>
 		<val lang="nl_NL">Vastleggen</val>
 		<val lang="zh_CN">提交</val>
 	</key>
@@ -1119,7 +1124,7 @@
 		</val>
 		<val lang="fr_FR">Vous n'avez pas le droit d'effectuer un push dans ce
 			dépôt</val>
-		<val lang="ja_JP">You have no rights to push in this repository</val>
+		<val lang="ja_JP">このリポジトリにプッシュする権限がありません</val>
 		<val lang="nl_NL">U mist de bevoegdheden voor push naar deze repository
 		</val>
 		<val lang="zh_CN">您无权在此存储库中推送</val>
@@ -1132,7 +1137,7 @@
 		<val lang="en_US">You don't have rights to push</val>
 		<val lang="de_DE">Keine Push-Berechtigung</val>
 		<val lang="fr_FR">Vous n'avez pas les droits pour le push</val>
-		<val lang="ja_JP">You don't have rights to push</val>
+		<val lang="ja_JP">プッシュする権限がありません</val>
 		<val lang="nl_NL">U mist de bevoegdheden voor push</val>
 		<val lang="zh_CN">您无权推送</val>
 	</key>
@@ -1144,7 +1149,7 @@
 		<val lang="en_US">Switch to tree view</val>
 		<val lang="de_DE">Zur Baumansicht wechseln</val>
 		<val lang="fr_FR">Passer à la vue arborescente</val>
-		<val lang="ja_JP">Switch to tree view</val>
+		<val lang="ja_JP">ツリービューに切り替える</val>
 		<val lang="nl_NL">Boomweergave wijzigen</val>
 		<val lang="zh_CN">切换到树状视图</val>
 	</key>
@@ -1165,10 +1170,7 @@
 			identifiants pour la
 			synchronisation.
 		</val>
-		<val lang="ja_JP">This is a private repository. We need your credentials
-			for
-			synchronization.
-		</val>
+		<val lang="ja_JP">これはプライベートリポジトリです。同期には資格情報が必要です。</val>
 		<val lang="nl_NL">Dit is een privé-repository. We hebben uw inloggegevens
 			nodig voor
 			synchronisatie.
@@ -1180,7 +1182,7 @@
 		<val lang="en_US">Clone new repository</val>
 		<val lang="de_DE">Neues Repository klonen</val>
 		<val lang="fr_FR">Clone un nouveau dépôt</val>
-		<val lang="ja_JP">Clone new repository</val>
+		<val lang="ja_JP">新しいリポジトリを複製する</val>
 		<val lang="nl_NL">Nieuwe repository klonen</val>
 		<val lang="zh_CN">克隆新的存储库</val>
 	</key>
@@ -1192,7 +1194,7 @@
 		<val lang="en_US">Clone Repository</val>
 		<val lang="de_DE">Repository klonen</val>
 		<val lang="fr_FR">Clonage de dépôt</val>
-		<val lang="ja_JP">Clone Repository</val>
+		<val lang="ja_JP">リポジトリを複製する</val>
 		<val lang="nl_NL">Repository klonen</val>
 		<val lang="zh_CN">复制储存库</val>
 	</key>
@@ -1202,7 +1204,7 @@
 		<val lang="en_US">Repository URL</val>
 		<val lang="de_DE">Repository-URL</val>
 		<val lang="fr_FR">URL du dépôt</val>
-		<val lang="ja_JP">Repository URL</val>
+		<val lang="ja_JP">リポジトリ URL</val>
 		<val lang="nl_NL">Repository url</val>
 		<val lang="zh_CN">储存库URL</val>
 	</key>
@@ -1214,7 +1216,7 @@
 		<val lang="en_US">Destination path:</val>
 		<val lang="de_DE">Zielverzeichnis:</val>
 		<val lang="fr_FR">Chemin de destination:</val>
-		<val lang="ja_JP">Destination path:</val>
+		<val lang="ja_JP">宛先パス:</val>
 		<val lang="nl_NL">Doelpad:</val>
 		<val lang="zh_CN">目标路径:</val>
 	</key>
@@ -1224,7 +1226,7 @@
 		<val lang="en_US">Destination path is invalid</val>
 		<val lang="de_DE">Zielverzeichnis ist ungültig</val>
 		<val lang="fr_FR">Le chemin de destination est invalide</val>
-		<val lang="ja_JP">Destination path is invalid</val>
+		<val lang="ja_JP">宛先パスが無効です</val>
 		<val lang="nl_NL">Doelpad is niet geldig</val>
 		<val lang="zh_CN">目标路径无效</val>
 	</key>
@@ -1237,8 +1239,7 @@
 			leer.</val>
 		<val lang="fr_FR">Le chemin de destination existe déjà et n'est pas un
 			dossier vide.</val>
-		<val lang="ja_JP">The destination path already exists and is not an empty
-			folder.</val>
+		<val lang="ja_JP">宛先パスは既に存在し、空のフォルダーではありません。</val>
 		<val lang="nl_NL">Het doelpad bestaat al en is geen lege map.</val>
 		<val lang="zh_CN">目标路径已经存在，并且不是空文件夹.</val>
 	</key>
@@ -1248,7 +1249,7 @@
 		<val lang="en_US">Cloning repository</val>
 		<val lang="de_DE">Repository wird geklont</val>
 		<val lang="fr_FR">Clonage du dépôt</val>
-		<val lang="ja_JP">Cloning repository</val>
+		<val lang="ja_JP">リポジトリを複製しています</val>
 		<val lang="nl_NL">Bezig met klonen repository</val>
 		<val lang="zh_CN">克隆储存库</val>
 	</key>
@@ -1265,8 +1266,7 @@
 			une extraction
 			vers une branche.
 		</val>
-		<val lang="ja_JP">You are on a detached HEAD. We suggest you checkout a
-			branch.</val>
+		<val lang="ja_JP">分離された HEAD にいます。分岐をチェックアウトすることをお勧めします。</val>
 		<val lang="nl_NL">U zit op een losgekoppelde HEAD. We raden u uitchecken
 			in een branch
 			aan.
@@ -1290,10 +1290,7 @@
 			pas terminée.
 			Effectuez un commit pour finaliser la fusion.
 		</val>
-		<val lang="ja_JP">All conflicts were resolved, but you are still merging.
-			Commit to conclude
-			the merge.
-		</val>
+		<val lang="ja_JP">すべての競合は解決されましたが、まだマージ中です。コミットしてマージを完了します。</val>
 		<val lang="nl_NL">Alle conflicten zijn opgelost, maar u bent nog bezig met
 			samenvoegen.
 			Commit om het samenvoegen af te ronden.
@@ -4085,7 +4082,7 @@
 			fichier hors commit
 			suivants:
 		</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">Kan geen pull doen met rebase vanwege lokale wijzigingen
 			zonder commit in
 			de volgende bestanden:
@@ -4097,7 +4094,7 @@
 		<val lang="en_US">Continue rebase</val>
 		<val lang="de_DE">Rebase fortsetzen</val>
 		<val lang="fr_FR">Continuer le rebase</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">Doorgaan met rebase</val>
 		<val lang="zh_CN">继续变基</val>
 	</key>
@@ -4106,7 +4103,7 @@
 		<val lang="en_US">Abort rebase</val>
 		<val lang="de_DE">Rebase abbrechen</val>
 		<val lang="fr_FR">Abandonner le rebase</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">Rebase afbreken</val>
 		<val lang="zh_CN">中止变基</val>
 	</key>
@@ -4124,7 +4121,7 @@
 			fusion?\nLes
 			modifications hors commit de tous les fichiers seront rétablies.
 		</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">Weet u zeker dat u het samenvoegproces opnieuw wilt
 			starten?\nWijzigingen
 			zonder commit, worden in alle bestanden teruggedraaid.
@@ -4136,7 +4133,7 @@
 		<val lang="en_US">Mine</val>
 		<val lang="de_DE">Meins</val>
 		<val lang="fr_FR">La mienne</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">Mijn</val>
 		<val lang="zh_CN">我的</val>
 	</key>
@@ -4145,7 +4142,7 @@
 		<val lang="en_US">Theirs</val>
 		<val lang="de_DE">Ihres</val>
 		<val lang="fr_FR">La leur</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">Hun</val>
 		<val lang="zh_CN">他们的</val>
 	</key>
@@ -4154,7 +4151,7 @@
 		<val lang="en_US">the working branch</val>
 		<val lang="de_DE">der lokale Branch</val>
 		<val lang="fr_FR">la branche de travail</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">de werk-branch</val>
 		<val lang="zh_CN">工作分支</val>
 	</key>
@@ -4163,12 +4160,11 @@
 		<val lang="en_US">the upstream branch</val>
 		<val lang="de_DE">der Remote-Branch</val>
 		<val lang="fr_FR">la branche upstream</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">de upstream-branch</val>
 		<val lang="zh_CN">上游分支</val>
 	</key>
-	<key
-		value="Continue_resolving_rebase_conflict_using_mine_or_theirs">
+	<key value="Continue_resolving_rebase_conflict_using_mine_or_theirs">
 		<comment>Message shown when invoking "Resolve using Mine" or "Resolve
 			using Theirs" for a
 			conflict generated when trying to rebase.
@@ -4198,7 +4194,7 @@
 			le conflit en
 			utilisant "{0}" ({1})?
 		</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">U staat op het punt een rebase-conflict op te lossen. In
 			deze situatie
 			zijn de Git-definities van "Mijn" en "Hun" omgedraaid.\nDe voormalige,
@@ -4336,7 +4332,7 @@
 		<val lang="en_US">No changes.</val>
 		<val lang="de_DE">Keine Unterschiede.</val>
 		<val lang="fr_FR">Aucune modification.</val>
-		<val lang="ja_JP" />
+		<val lang="ja_JP"/>
 		<val lang="nl_NL">Geen wijzigingen.</val>
 		<val lang="zh_CN">没有变化.</val>
 	</key>
