@@ -24,16 +24,18 @@
 	<div>
 	  <h3>What's new in version 5.0.0</h3>
        <ol>
-          <li>Two options have been added in Preferences page to automatically validate the project before committing or pushing.</li>
-          <li>Added a <b> Squash merge "SELECTED_BRANCH" into "CURRENT_BRANCH" </b> action in the context menu for local branches in <i> Git Branch Manager </i>. This will add all changes from "SELECTED_BRANCH" to "CURRENT_BRANCH" in a single new commit.</li>
-          <li>If the local branch has not been published yet, the push button will be decorated with a <i>+</i> symbol and will have a tooltip to explain this.</li>
-          <li>An option has been added that automatically detects Oxygen projects from opened working copies and opens them in Project View.</li>
-          <li>Some dialogues have been improved to make them easier to understand.</li>
-          <li>Now, if an operation is in progress, the busy cursor will be displayed when hovering over <i>Git Staging</i> view.</li>
+          <li>A new <b>Validate each file before committing</b> option was added in the Git Client preferences page. Selecting this option enables automatic validation of each file before each commit.</li>
+          <li>A new <b>Validate all files from the project's "Main Files" folder before pushing</b> option was added in the Git Client preferences page. Selecting this option enables automatic validation of the files located in the Main Files folder before the push operation processes.</li>
+          <li>The integrated JGit library was upgraded to version 6.3, which brings support for ssh-agent forwarding.</li>
+          <li>An option has been added that automatically detects Oxygen projects from opened working copies to quickly open them in the Project View.</li>
+          <li>Added a <b>Squash merge "SELECTED_BRANCH" into "CURRENT_BRANCH"</b> action in the contextual menu for local branches in the <i>Git Branch Manager</i>. This will add all changes from the "SELECTED_BRANCH" to the "CURRENT_BRANCH" in a single new commit.</li>
+          <li>By default, the History view presents commits from all branches (both remote and local).</li><li>Tags can be deleted even if they have already been pushed to the remote repository.</li>
+          <li>If the local branch has not been published yet, the push button will be decorated with a <i>+</i> symbol and will have a tooltip to explain the context.</li>          
+          <li>A more helpful message is displayed when pulling and the local branch doesn't track a remote.</li>     
           <li>In tree view mode, if there are no changes, the empty folder with the name of the repository will no longer be displayed.</li>
-          <li>A better message is displayed now when pulling and the local branch doesn't track a remote.</li>     
-          <li>By default, commits will be presented for all branches (both remote and local), instead of the current branch.</li>
-          <li>The JGit component included in the Git Client was updated to version 6.3.0 which brings support for ssh-agent.</li>
+          <li>The <i>Git Staging</i> view now has a busy cursor when an operation is in progress.</li>
+          <li>Fixed an issue when authentication tokens were lost from options.</li>
+          <li>Some dialogues have been improved to make them easier to understand.</li>
           <li>Bug fixes and performance improvements.</li>
       </ol>
         </div>
