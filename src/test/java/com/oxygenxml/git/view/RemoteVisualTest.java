@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.net.URL;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -368,7 +369,11 @@ public class RemoteVisualTest extends GitTestBase {
       assertNotNull(confirmDialog);
       SwingUtilities.invokeLater(() -> confirmDialog.getOkButton().doClick());
     
-      flushAWT();
+      // Try a different approach to be sure the previous AWT code finished its execution.
+      Semaphore s = new Semaphore(0);
+      SwingUtilities.invokeLater(() -> s.release());
+      s.acquire();
+      
       assertEquals(1, model.getRowCount());
       assertEquals(firstRemoteName, (String)model.getValueAt(0, 0));
       assertEquals("https/custom_link.ro", (String)model.getValueAt(0, 1));
