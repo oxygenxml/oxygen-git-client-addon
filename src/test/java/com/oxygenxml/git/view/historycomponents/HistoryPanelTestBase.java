@@ -92,7 +92,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
     TableModelListener l = new TableModelListener() {
       @Override
       public void tableChanged(TableModelEvent e) {
-        if (e.getType() == TableModelEvent.INSERT) {
+        if (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.UPDATE) {
           s.release();
         }
       }
