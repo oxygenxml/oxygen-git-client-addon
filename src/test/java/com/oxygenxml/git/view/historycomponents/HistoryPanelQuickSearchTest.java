@@ -143,9 +143,10 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
-      historyTable.setRowSelectionInterval(0, 0);
-      
       JTable affectedFiles = historyPanel.getAffectedFilesTable();
+      
+      selectAndAssertRevision(historyTable, affectedFiles, 0, "[ Rename. , 3 Oct 2022 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]");
+      
       CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);
       List<FileStatus> changes = null;
       if (GitAccess.UNCOMMITED_CHANGES != commitDetails) {
