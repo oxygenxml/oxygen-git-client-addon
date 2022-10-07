@@ -175,6 +175,15 @@ public class BranchSelectionCombo extends JComboBox<String> {
    * Refresh.
    */
   public void refresh() {
+    updateBranchesPopup();
+    updateTooltipsText();
+  }
+
+
+  /**
+   * Updates branches tooltips text.
+   */
+  public void updateTooltipsText() {
     int pullsBehind = GIT_ACCESS.getPullsBehind();
     int pushesAhead = -1;
     try {
@@ -182,9 +191,6 @@ public class BranchSelectionCombo extends JComboBox<String> {
     } catch (RepoNotInitializedException e) {
       LOGGER.debug(e.getMessage(), e);
     }
-    
-    // update pop up
-    updateBranchesPopup();
     
     Repository repo = null;
     try {

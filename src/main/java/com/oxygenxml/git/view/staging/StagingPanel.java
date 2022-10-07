@@ -602,7 +602,7 @@ public class StagingPanel extends JPanel {
       stagedChangesPanel.update(status.getStagedFiles());
     });
   
-    branchSelectionCombo.refresh();
+    branchSelectionCombo.updateTooltipsText();
     toolbarPanel.ifPresent(ToolbarPanel::updateButtonsStates);
     gitActionsManager.refreshActionsStates();
   }
