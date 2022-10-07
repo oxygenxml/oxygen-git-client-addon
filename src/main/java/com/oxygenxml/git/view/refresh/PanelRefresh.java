@@ -37,7 +37,6 @@ import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
-import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 import com.oxygenxml.git.view.staging.ChangesPanel;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
@@ -125,7 +124,6 @@ public class PanelRefresh implements GitRefreshSupport {
 					  // refresh the buttons
 					  stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
 					  stagingPanel.updateToolbarsButtonsStates();
-					  Optional.ofNullable(stagingPanel.getBranchesCombo()).ifPresent(BranchSelectionCombo::refresh);
 						
 						GitStatus status = GitAccess.getInstance().getStatus();
 						updateFiles(
