@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -56,7 +55,6 @@ import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
-import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -146,7 +144,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			boolean isStagingPanelShowing = stagingPanel != null && stagingPanel.isShowing();
 			if (isStagingPanelShowing && refresh) {
 				gitRefreshSupport.call();
-				Optional.ofNullable(stagingPanel.getBranchesCombo()).ifPresent(BranchSelectionCombo::refresh);
 			}
 			refresh = false;
 		}
