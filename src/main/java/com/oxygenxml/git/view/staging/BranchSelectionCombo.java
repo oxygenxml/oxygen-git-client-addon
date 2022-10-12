@@ -49,8 +49,8 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Alex_Smarandache
  */
 public class BranchSelectionCombo extends JComboBox<String> {
-  
-  
+
+
   /**
    * Logger for logging.
    */
@@ -60,29 +60,29 @@ public class BranchSelectionCombo extends JComboBox<String> {
    * i18n
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
-  
+
   /**
    * Access to the Git API.
    */
   private static final GitAccess GIT_ACCESS = GitAccess.getInstance();
-  
+
   /**
    * <code>true</code> if the combo popup is showing.
    */
   private boolean isComboPopupShowing;
-  
+
   /**
    * <code>true</code> to inhibit branch selection listener.
    */
   private boolean inhibitBranchSelectionListener;
-  
+
   /**
    * The ID of the commit on which a detached HEAD is set.
    */
   private String detachedHeadId;
-  
-  
-  
+
+
+
   /**
    * Constructor.
    * 
@@ -90,13 +90,13 @@ public class BranchSelectionCombo extends JComboBox<String> {
    * @param isLabeled     <code>true</code> if the panel has a label attached.
    */
   public BranchSelectionCombo(final GitController gitController) {
-        
+
     this.addItemListener(event -> {
       if (!inhibitBranchSelectionListener && event.getStateChange() == ItemEvent.SELECTED) {
         treatBranchSelectedEvent(event);
       }
     });
-    
+
     this.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -111,7 +111,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
         isComboPopupShowing = false;
       }
     });
-    
+
     gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
@@ -127,11 +127,11 @@ public class BranchSelectionCombo extends JComboBox<String> {
         }
       }
     });
- 
-    
+
+
   }
 
-  
+
   /**
    * Treat a branch name selection event.
    * 
@@ -144,7 +144,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
     if (branchName.equals(currentBranchName)) {
       return;
     }
-    
+
     final RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
       SwingUtilities.invokeLater(() -> {
@@ -169,8 +169,8 @@ public class BranchSelectionCombo extends JComboBox<String> {
       tryCheckingOutBranch(currentBranchInfo, branchName);
     }
   }
- 
-  
+
+
   /**
    * Refresh.
    */
@@ -191,7 +191,8 @@ public class BranchSelectionCombo extends JComboBox<String> {
     } catch (RepoNotInitializedException e) {
       LOGGER.debug(e.getMessage(), e);
     }
-    
+
+
     Repository repo = null;
     try {
       repo = GIT_ACCESS.getRepository();
@@ -200,12 +201,12 @@ public class BranchSelectionCombo extends JComboBox<String> {
     }
 
     this.setEnabled(repo != null);
-    
+
     final BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     final String currentBranchName = branchInfo.getBranchName();
     if (branchInfo.isDetached()) {
       detachedHeadId = currentBranchName;
-      
+
       String tooltipText = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
           + " " + currentBranchName;
       if (repo != null && repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
@@ -225,7 +226,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
     }
   }
 
-  
+
   /**
    * Compute the branch tooltip text.
    * 
@@ -245,49 +246,49 @@ public class BranchSelectionCombo extends JComboBox<String> {
         isAnUpstreamBranchDefinedInConfig
         ? upstreamBranchFromConfig.substring(upstreamBranchFromConfig.lastIndexOf('/') + 1)
             : null;
-    Ref remoteBranchRefForUpstreamFromConfig =
-        isAnUpstreamBranchDefinedInConfig
-        ? RepoUtil.getRemoteBranch(upstreamShortestName)
-            : null;
-    boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
+        Ref remoteBranchRefForUpstreamFromConfig =
+            isAnUpstreamBranchDefinedInConfig
+            ? RepoUtil.getRemoteBranch(upstreamShortestName)
+                : null;
+            boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
 
-    branchTooltip = TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
-        + " <b>" + currentBranchName + "</b>.<br>"
-        + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
-        + " <b>"
-        + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig
-            ? upstreamBranchFromConfig
-                : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
-        + "</b>.<br>";
+            branchTooltip = TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
+                + " <b>" + currentBranchName + "</b>.<br>"
+                + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
+                + " <b>"
+                + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig
+                    ? upstreamBranchFromConfig
+                        : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
+                + "</b>.<br>";
 
-    String commitsBehindMessage = "";
-    String commitsAheadMessage = "";
-    if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
-      if (pullsBehind == 0) {
-        commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
-      } else if (pullsBehind == 1) {
-        commitsBehindMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_BEHIND);
-      } else {
-        commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
-      }
-      branchTooltip += commitsBehindMessage + "<br>";
+            String commitsBehindMessage = "";
+            String commitsAheadMessage = "";
+            if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
+              if (pullsBehind == 0) {
+                commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+              } else if (pullsBehind == 1) {
+                commitsBehindMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_BEHIND);
+              } else {
+                commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
+              }
+              branchTooltip += commitsBehindMessage + "<br>";
 
-      if (pushesAhead == 0) {
-        commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
-      } else if (pushesAhead == 1) {
-        commitsAheadMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_AHEAD);
-      } else {
-        commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
-      }
-      branchTooltip += commitsAheadMessage;
-    }
+              if (pushesAhead == 0) {
+                commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
+              } else if (pushesAhead == 1) {
+                commitsAheadMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_AHEAD);
+              } else {
+                commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
+              }
+              branchTooltip += commitsAheadMessage;
+            }
 
-    branchTooltip = TextFormatUtil.toHTML(branchTooltip);
-    
-    return branchTooltip;
+            branchTooltip = TextFormatUtil.toHTML(branchTooltip);
+
+            return branchTooltip;
   }
 
-  
+
   /**
    * Adds the branches given as a parameter to the branchSplitMenuButton.
    * 
@@ -297,33 +298,35 @@ public class BranchSelectionCombo extends JComboBox<String> {
     inhibitBranchSelectionListener = true;
     branches.forEach(branch -> this.addItem(branch));
     inhibitBranchSelectionListener = false;
-    
+
     if (detachedHeadId != null) {
       this.addItem(detachedHeadId);
     }
-    
+
     final String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
     this.setSelectedItem(currentBranchName);
   }
-  
-  
+
+
   /**
    * Updates the local branches in the combo popup.
    */
   private void updateBranchesPopup() {
     final boolean isVisible = isComboPopupShowing;
-    this.hidePopup();
+    final List<String> branches = getBranches();
 
-    this.removeAllItems();
-    addBranchesToCombo(getBranches());
-
-    this.revalidate();
-    if (isVisible) {
-      this.showPopup();
-    }
+    SwingUtilities.invokeLater(() -> {
+      this.hidePopup();
+      this.removeAllItems();
+      addBranchesToCombo(branches);
+      this.revalidate();
+      if (isVisible) {
+        this.showPopup();
+      }
+    });
   }
-  
-  
+
+
   /**
    * Gets all the local branches from the current repository.
    * 
@@ -338,8 +341,8 @@ public class BranchSelectionCombo extends JComboBox<String> {
     }
     return localBranches;
   }
-  
-  
+
+
   /**
    * The action performed for this Abstract Action
    * 
@@ -352,7 +355,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
       detachedHeadId = null;
       this.removeItem(oldBranchInfo.getBranchName());
     }
-    
+
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
         GIT_ACCESS.setBranch(newBranchName);
@@ -366,8 +369,8 @@ public class BranchSelectionCombo extends JComboBox<String> {
       }
     });
   }
-  
-  
+
+
   /**
    * Restore current branch selection in branches menu.
    */
@@ -382,8 +385,8 @@ public class BranchSelectionCombo extends JComboBox<String> {
       }
     }
   }
-  
-  
+
+
   /**
    * Returns the instance of JToolTip that should be usedto display the tooltip.Components typically would not override this method,but it can be used tocause different tooltips to be displayed differently.
    * <br>
@@ -395,8 +398,8 @@ public class BranchSelectionCombo extends JComboBox<String> {
   public JToolTip createToolTip() {
     return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
   }
-  
-  
+
+
   @Override
   public Dimension getMinimumSize() {
     return new Dimension(UIUtil.DUMMY_MIN_WIDTH, getPreferredSize().height);
