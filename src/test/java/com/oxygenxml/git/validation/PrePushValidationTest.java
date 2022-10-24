@@ -377,7 +377,7 @@ public class PrePushValidationTest extends GitTestBase {
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Error32.png\n" + 
         "targetFiles = null\n" + 
-        "message = Main_Files_Support_Not_Enabled\n" + 
+        "message = Failed_Push_Validation_Message\n" + 
         "questionMessage = null\n" + 
         "okButtonName = null\n" + 
         "cancelButtonName = Close\n" + 
