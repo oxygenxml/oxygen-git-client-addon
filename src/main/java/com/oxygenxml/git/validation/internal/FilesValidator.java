@@ -1,19 +1,14 @@
 package com.oxygenxml.git.validation.internal;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.util.validation.ValidationUtilAccess;
 
 /**
  * Used to validate files.
@@ -34,28 +29,6 @@ public class FilesValidator implements IValidator {
   private static final Logger LOGGER = LoggerFactory.getLogger(FilesValidator.class);
   
   /**
-   * Method to validate.
-   */
-  private Method validateMethod;
-
-  /**
-   * The problems collector instance.
-   * 
-   * @see ro.sync.exml.workspace.api.util.validation.ValidatorProblemCollector.
-   */
-  private Object problemsCollector;
-
-  /**
-   * The validation util access.
-   */
-  private Object validationUtilAccess;
-  
-  /**
-   * <code>true</code> if the validation service is available.
-   */
-  private boolean isValidatorServiceAvailable = true;
-  
-  /**
    * Used to filter problems to avoid exposing issues that are not related to validated files.
    */
   private IProblemFilter filter;
@@ -74,40 +47,6 @@ public class FilesValidator implements IValidator {
    */
   public FilesValidator(final ICollector collector) {
     this.collector = collector;
-    extractResources();
-  }
-
-  /**
-   * Extract methods and classes needed, using reflexion.
-   */
-  private void extractResources() {
-    try {
-      final PluginWorkspace pluginWorkspaceAccess = PluginWorkspaceProvider.getPluginWorkspace();
-      Method method = pluginWorkspaceAccess.getClass().getMethod("getValidationUtilAccess", new Class[0]);
-      validationUtilAccess = method.invoke(pluginWorkspaceAccess, new Object[0]);
-      Class valClass = Class.forName("ro.sync.exml.workspace.api.util.validation.ValidatorProblemCollector");
-      problemsCollector = Proxy.newProxyInstance(pluginWorkspaceAccess.getClass().getClassLoader(), new Class[] {
-          Class.forName("ro.sync.exml.workspace.api.util.validation.ValidatorProblemCollector")
-      }, new InvocationHandler() {
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-          if("problemsOccured".equals(method.getName())) {
-            DocumentPositionedInfo[] dpis = (DocumentPositionedInfo[]) args[0];
-            collector.add(dpis);
-          }
-          return null;
-        }
-      });
-      validateMethod = validationUtilAccess.getClass().getMethod("validateResources", Iterator.class, boolean.class, valClass);
-      final String NOT_SUPPORTED_FILE = (String) Class.forName("ro.sync.exml.workspace.api.util.validation.ValidationProblemsCodes")
-          .getField("NOT_SUPPORTED_FILE_WARNING").get(null);
-      collector.setFilter(dpi -> NOT_SUPPORTED_FILE != null ? !NOT_SUPPORTED_FILE.equals(dpi.getErrorKey()) : true);
-    } catch (Exception e) {
-      if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e.getMessage(), e);
-      }
-      isValidatorServiceAvailable = false;
-    }
   }
 
   /**
@@ -128,8 +67,10 @@ public class FilesValidator implements IValidator {
     if(isAvailable()) {
       collector.reset();
       try {
-        validateMethod.invoke(validationUtilAccess, files.iterator(), false, problemsCollector);
-      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        final PluginWorkspace pluginWorkspaceAccess = PluginWorkspaceProvider.getPluginWorkspace();
+        final ValidationUtilAccess validationUtilAccess = pluginWorkspaceAccess.getValidationUtilAccess();
+        validationUtilAccess.validateResources(files.iterator(), false, collector::add);
+      } catch (IllegalArgumentException e) {
         LOGGER.error(e.getMessage(), e);
       }
     }
@@ -142,7 +83,7 @@ public class FilesValidator implements IValidator {
 
   @Override
   public boolean isAvailable() {
-    return this.isValidatorServiceAvailable;
+    return true;
   }
 
 }
