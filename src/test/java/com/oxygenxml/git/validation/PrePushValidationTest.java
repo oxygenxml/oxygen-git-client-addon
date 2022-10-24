@@ -230,8 +230,8 @@ public class PrePushValidationTest extends GitTestBase {
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Warning32.png\n" + 
         "targetFiles = null\n" + 
-        "message = Failed_Push_Validation_Message_With_Stash\n" + 
-        "questionMessage = Push_Validation_Uncommited_Changes\n" + 
+        "message = Failed_Push_Validation_Message\n" + 
+        "questionMessage = null\n" + 
         "okButtonName = Push_Anyway\n" + 
         "cancelButtonName = Cancel\n" + 
         "showOkButton = true\n" + 
@@ -319,14 +319,11 @@ public class PrePushValidationTest extends GitTestBase {
   public void testPrePushValidationWhenPushIsRejected() throws Exception {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(true);
+    
+    initProjectController(FIRST_LOCAL_TEST_REPOSITORY, firstLocalRepo);
 
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
-
-    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    final ProjectController projectController = Mockito.mock(ProjectController.class);
-    Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
-        firstLocalRepo.getDirectory().toURI().toURL());
-    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+   
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
     dialogResult[0] = OKCancelDialog.RESULT_CANCEL;
