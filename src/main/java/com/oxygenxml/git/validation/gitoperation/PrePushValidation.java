@@ -25,7 +25,6 @@ import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
-import com.oxygenxml.git.validation.OxygenAPIWrapper;
 import com.oxygenxml.git.validation.internal.IPreOperationValidation;
 import com.oxygenxml.git.validation.internal.IValidator;
 import com.oxygenxml.git.validation.internal.ValidationListenersManager;
@@ -217,7 +216,8 @@ public class PrePushValidation implements IPreOperationValidation {
    */
   private List<URL> getMainFiles() throws MainFilesNotAvailableException {
     final List<URL> mainFiles = ImmutableList.copyOf(
-        OxygenAPIWrapper.getInstance().getMainFileResourcesIterator());
+        ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace())
+        .getProjectManager().getMainFileResourcesIterator());
     if(mainFiles.isEmpty()) {
       throw new MainFilesNotAvailableException();
     }

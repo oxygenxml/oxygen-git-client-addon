@@ -89,13 +89,6 @@ public class ValidationManager {
   }
 
   /**
-   * @return <code>true</code> if the validation support is available(for Oxygen 25 and newer).
-   */
-  public boolean isAvailable() {
-    return OxygenAPIWrapper.getInstance().isAvailable();
-  }  
-
-  /**
    * Check all staged files without missed or removed files.
    * <br>
    * If problems are detected, are presented for a user confirmation if the commit should be canceled or performed.

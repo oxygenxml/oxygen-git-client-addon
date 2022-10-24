@@ -27,7 +27,6 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
-import com.oxygenxml.git.validation.internal.FilesValidator;
 import com.oxygenxml.git.validation.internal.ICollector;
 import com.oxygenxml.git.validation.internal.IValidator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
@@ -41,6 +40,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectChangeListener;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.standalone.project.ProjectIndexer;
 import ro.sync.exml.workspace.api.standalone.project.ProjectPopupMenuCustomizer;
 import ro.sync.exml.workspace.api.standalone.project.ProjectRendererCustomizer;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -256,26 +256,6 @@ public class PrePushValidationTest extends GitTestBase {
     final ProjectController projectController = createProjectControllerForTest(
         repo.getDirectory().toURI().toURL(), mainFilesURL.iterator());
     Mockito.when(spw.getProjectManager()).thenReturn(projectController);
-    OxygenAPIWrapper.createNewInstance();
-  }
-
-
-  /**
-   * <p><b>Description:</b> @OxygenAPIWrapper usefully only when the getMainFiles is not accessible.</p>
-   * 
-   * <p><b>Bug ID:</b> EXM-50426</p>
-   * 
-   * @see OxygenAPIWrapper
-   * @see FilesValidator
-   *
-   * @author Alex_Smarandache
-   *
-   */ 
-  @Test
-  public void testOxygenAPIWrapper() throws Exception {
-    OxygenAPIWrapper.createNewInstance();
-    assertFalse("The classes marked with @see must be refactorized because the API is already available.", 
-        OxygenAPIWrapper.getInstance().isAvailable());
   }
 
   /**
@@ -813,8 +793,14 @@ public class PrePushValidationTest extends GitTestBase {
        * 
        * @return The main files iterator.
        */
+      @Override
       public Iterator<URL> getMainFileResourcesIterator() {
         return mainFilesIterator;
+      }
+
+      @Override
+      public ProjectIndexer getProjectIndexer() {
+        return null;
       }
     };
     

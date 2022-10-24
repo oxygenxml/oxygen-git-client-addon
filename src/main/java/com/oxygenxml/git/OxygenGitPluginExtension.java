@@ -311,9 +311,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 					OxygenGitPluginExtension.this,
 					gitActionsManager);
 			OperationUtil.installMouseBusyCursor(gitController, stagingPanel); 
-	    if(ValidationManager.getInstance().isAvailable()) {
-	      OperationUtil.installMouseBusyCursor(ValidationManager.getInstance(), stagingPanel); 
-	    }
+			OperationUtil.installMouseBusyCursor(ValidationManager.getInstance(), stagingPanel); 
 			gitRefreshSupport.setStagingPanel(stagingPanel);
 			installGitOperationsListener();
 		}

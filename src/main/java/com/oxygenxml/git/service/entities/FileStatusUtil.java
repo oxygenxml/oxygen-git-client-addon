@@ -38,7 +38,6 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileUtil;
-import com.oxygenxml.git.validation.OxygenAPIWrapper;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.UtilAccess;
@@ -390,8 +389,8 @@ public class FileStatusUtil {
     try {
       final URL fileURL = FileUtil.getFileURL(file.getFileLocation());
       return utilAccess.isUnhandledBinaryResourceURL(fileURL) 
-          || Objects.isNull(OxygenAPIWrapper.getInstance().getContentType(fileURL.toExternalForm()));
-    } catch (Throwable e) {
+          || Objects.isNull(utilAccess.getContentType(fileURL.toExternalForm()));
+    } catch (Exception e) {
       LOGGER.error(e.getMessage(), e);
       return false;
     }

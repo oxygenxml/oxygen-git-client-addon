@@ -18,7 +18,6 @@ import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.components.SectionPane;
 
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
@@ -164,10 +163,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         Tags.DETECT_AND_OPEN_XPR_FILES));
     mainPanel.add(detectAndOpenXprFiles, constraints);
 
-    // check if the validation support is available
-    if(ValidationManager.getInstance().isAvailable()) {
-      addValidationSection(mainPanel, constraints);
-    }
+    addValidationSection(mainPanel, constraints);
     
     // Empty panel to take up the rest of the space
     constraints.gridx = 0;
@@ -258,21 +254,19 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     
     detectAndOpenXprFiles.setSelected(OPTIONS_MANAGER.isDetectAndOpenXprFiles());
     
-    if(ValidationManager.getInstance().isAvailable()) {
-      boolean validateFilesBeforeCommit = OPTIONS_MANAGER.isFilesValidatedBeforeCommit();
-      validateBeforeCommit.setSelected(validateFilesBeforeCommit);
+    boolean validateFilesBeforeCommit = OPTIONS_MANAGER.isFilesValidatedBeforeCommit();
+    validateBeforeCommit.setSelected(validateFilesBeforeCommit);
 
-      boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
-      rejectCommitOnValidationProblems.setSelected(rejectCommitOnProblems);
-      rejectCommitOnValidationProblems.setEnabled(validateFilesBeforeCommit);
-      
-      boolean validateMainFilesBeforePush = OPTIONS_MANAGER.isMainFilesValidatedBeforePush();
-      validateBeforePush.setSelected(validateMainFilesBeforePush);
+    boolean rejectCommitOnProblems = OPTIONS_MANAGER.isCommitRejectedOnValidationProblems();
+    rejectCommitOnValidationProblems.setSelected(rejectCommitOnProblems);
+    rejectCommitOnValidationProblems.setEnabled(validateFilesBeforeCommit);
+    
+    boolean validateMainFilesBeforePush = OPTIONS_MANAGER.isMainFilesValidatedBeforePush();
+    validateBeforePush.setSelected(validateMainFilesBeforePush);
 
-      boolean rejectPushOnProblems = OPTIONS_MANAGER.isPushRejectedOnValidationProblems();
-      rejectPushOnValidationProblems.setSelected(rejectPushOnProblems);
-      rejectPushOnValidationProblems.setEnabled(validateMainFilesBeforePush);
-    }
+    boolean rejectPushOnProblems = OPTIONS_MANAGER.isPushRejectedOnValidationProblems();
+    rejectPushOnValidationProblems.setSelected(rejectPushOnProblems);
+    rejectPushOnValidationProblems.setEnabled(validateMainFilesBeforePush);
     
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {

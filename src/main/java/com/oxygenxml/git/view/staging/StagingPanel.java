@@ -186,9 +186,7 @@ public class StagingPanel extends JPanel {
       }
     });
     
-    if(ValidationManager.getInstance().isAvailable()) {
-      installValidationListener(); 
-    }
+    installValidationListener(); 
 
   }
 
