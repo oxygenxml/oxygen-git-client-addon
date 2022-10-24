@@ -464,8 +464,8 @@ public class PrePushValidationTest extends GitTestBase {
         "iconPath = /images/Warning32.png\n" + 
         "targetFiles = null\n" + 
         "message = null\n" + 
-        "questionMessage = Push_Validation_Uncommited_Changes\n" + 
-        "okButtonName = Stash_And_Continue\n" + 
+        "questionMessage = Not_Same_Project_Message\n" + 
+        "okButtonName = Load\n" + 
         "cancelButtonName = null\n" + 
         "showOkButton = true\n" + 
         "showCancelButton = true";
@@ -487,7 +487,7 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
 
-    initProjectController(SECOND_LOCAL_TEST_REPOSITORY, secondLocalRepo);
+    initProjectController(FIRST_LOCAL_TEST_REPOSITORY, firstLocalRepo);
 
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
@@ -577,6 +577,7 @@ public class PrePushValidationTest extends GitTestBase {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
 
+    initProjectController(SECOND_LOCAL_TEST_REPOSITORY, secondLocalRepo);
     StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     final ProjectController projectController = Mockito.mock(ProjectController.class);
     Mockito.when(projectController.getCurrentProjectURL()).thenReturn(
