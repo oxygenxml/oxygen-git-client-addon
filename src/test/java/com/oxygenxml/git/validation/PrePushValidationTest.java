@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
@@ -543,7 +545,7 @@ public class PrePushValidationTest extends GitTestBase {
         "cancelButtonName = null\n" + 
         "showOkButton = true\n" + 
         "showCancelButton = true";
-    assertEquals(expectedDialog, dialogToString[0]);
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> expectedDialog.equals(dialogToString[0]));
   }
 
   /**
