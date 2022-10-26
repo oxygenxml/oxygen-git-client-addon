@@ -8,7 +8,10 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.revplot.PlotCommit;
+
+import com.oxygenxml.git.view.history.graph.VisualCommitsList.VisualLane;
 
 /**
  * 
@@ -40,7 +43,11 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 	 */
 	private boolean shouldBePainted = true;
 	
-	
+	 /**
+	  * The string id for the last commit of current branch.
+	  */
+	 private String lastCommitIdForCurrentBranch;
+	 
 
 	/**
 	 * Constructor.
@@ -70,9 +77,11 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 		if(shouldBePainted && value != null) {
 			Graphics2D g2d = (Graphics2D)g;
 			g2d.setBackground(getBackground());
-			cellRender.paint((PlotCommit<VisualCommitsList.VisualLane>)value, 
+			final PlotCommit<VisualLane> currentCommit = (PlotCommit<VisualCommitsList.VisualLane>)value;
+			cellRender.paint(currentCommit, 
 					table.getRowHeight(), 
-					g2d
+					g2d,
+				  lastCommitIdForCurrentBranch != null && lastCommitIdForCurrentBranch.equals(currentCommit.getId().getName())
 		    );
 		}
 	}
@@ -85,4 +94,14 @@ public class CommitsGraphCellRender extends JPanel implements TableCellRenderer 
 		this.shouldBePainted = shouldBePainted;
 	}
 
+	/**
+	  * Setter. This commit will be painted special.
+	  * 
+	  * @param lastCommitIdForCurrentBranch The current commit of current local branch.
+	  */
+	 public void setLastCommitIdForCurrentBranch(@Nullable final String lastCommitIdForCurrentBranch) {
+	  this.lastCommitIdForCurrentBranch = lastCommitIdForCurrentBranch;
+	} 
+	 
+	 
 }

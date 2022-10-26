@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revplot.AbstractPlotRenderer;
 import org.eclipse.jgit.revplot.PlotCommit;
@@ -37,21 +38,27 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
   */
  private Color background;
  
+ /**
+  * <code>true</code> if the current commit is the last commit of current local branch.
+  */
+ private boolean isCurrentBranchLastCommit;
  
  
 /**
   * Paints the part of the graph specific to a commit.
   * 
-  * @param commit  The commit to paint. Must not be null.
-  * @param height  Total height (in pixels) of this cell.   
-  * @param g       The graphics.
+  * @param commit                     The commit to paint. Must not be null.
+  * @param height                     Total height (in pixels) of this cell.   
+  * @param g                          The graphics.
+  * @param isCurrentBranchLastCommit  <code>true</code> if the current commit is the last commit of current local branch.
   */
- public void paint(PlotCommit<VisualCommitsList.VisualLane> commit, int height, Graphics2D g) {
+ public void paint(@NonNull final PlotCommit<VisualCommitsList.VisualLane> commit, final int height, final Graphics2D g, final boolean isCurrentBranchLastCommit) {
 	 this.g = g;
 	 this.g.setRenderingHint(
 		        RenderingHints.KEY_ANTIALIASING,
 		        RenderingHints.VALUE_ANTIALIAS_ON);
 	 this.commit = commit;
+	 this.isCurrentBranchLastCommit = isCurrentBranchLastCommit;
 	 paintCommit(commit, height);
  }
  
@@ -67,12 +74,27 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  protected void drawCommitDot(final int x, final int y, final int w, 
    final int h) { 
 	 Color color = laneColor(commit.getLane());
-	 g.setColor(color);
-	 g.setStroke(new BasicStroke(2));
-	 g.fillOval(x + 1, y, w, h); 
-	 g.setColor(background);
-	 g.setStroke(new BasicStroke(1));
-	 g.drawOval(x + 1, y, w, h); 
+	 if(isCurrentBranchLastCommit) {
+     g.setColor(color);
+     g.setStroke(new BasicStroke(1));
+     g.setColor(background);
+     g.setStroke(new BasicStroke(7));
+     g.drawOval(x + 1, y, w, h);
+     g.setColor(color);
+     g.fillOval(x + 1, y, w + 1, h + 1); 
+     g.setStroke(new BasicStroke(5));
+     g.drawOval(x + 1, y, w, h);
+     g.setColor(background);
+     g.setStroke(new BasicStroke(2));
+     g.drawOval(x + 1, y, w, h); 
+	 } else {
+	   g.setColor(color);
+	   g.setStroke(new BasicStroke(2));
+	   g.fillOval(x + 1, y, w, h); 
+	   g.setColor(background);
+	   g.setStroke(new BasicStroke(1));
+	   g.drawOval(x + 1, y, w, h); 
+	 }
  } 
  
  
@@ -106,7 +128,6 @@ public class GraphRender extends AbstractPlotRenderer<VisualCommitsList.VisualLa
  public void setBackground(Color background) {
    this.background = background;
  }
- 
        
 }
 

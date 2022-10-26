@@ -862,10 +862,15 @@ public class HistoryPanel extends JPanel {
         Optional.ofNullable(contextualMenuPresenter).ifPresent(
             menuPresenter -> menuPresenter.setCommitsAheadAndBehind(commitsAheadAndBehind));
         // Compute the row height.
+        final String currentBranchName = gitAccess.getBranchInfo().getBranchName();
+        final Map<String, List<String>> localBranchesMap = gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_LOCAL);
         CommitMessageTableRenderer renderer = new CommitMessageTableRenderer(repo, commitsAheadAndBehind,
-            gitAccess.getBranchInfo().getBranchName(), getTagMap(repo),
-            gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_LOCAL),
+            currentBranchName, getTagMap(repo),
+            localBranchesMap,
             gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_REMOTE));
+        
+        updateGraphRenderLastCommitForCurrentBranch(commitCharacteristicsVector, currentBranchName, localBranchesMap);
+        
         final int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
 
         final HistoryCommitTableModel historyModel = new HistoryCommitTableModel(
@@ -909,6 +914,39 @@ public class HistoryPanel extends JPanel {
       if (historyTable.getModel().getRowCount() == 0) {
         PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(TRANSLATOR.getTranslation(Tags.GIT_HISTORY)
             + ": " + StringUtils.toLowerCase(TRANSLATOR.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
+      }
+    }
+  }
+  
+  /**
+   * Update the last commit of the current branch set in graph cell render.
+   * 
+   * @param commitCharacteristicsVector The commits.
+   * @param currentBranchName           The current branch name.
+   * @param localBranchesMap            A map of the local branches.
+   */
+  private void updateGraphRenderLastCommitForCurrentBranch(
+      final List<CommitCharacteristics> commitCharacteristicsVector, 
+      final String currentBranchName,
+      final Map<String, List<String>> localBranchesMap) {
+    final int noOfCommits = commitCharacteristicsVector.size();
+    for(int i = 0; i < noOfCommits; i++) {
+      boolean foundCurrentHeadCommit = false;
+      final CommitCharacteristics commit = commitCharacteristicsVector.get(i);
+      final List<String> currentCommitBranchesAndTags = localBranchesMap.get(commit.getCommitAbbreviatedId());
+      if(currentCommitBranchesAndTags != null) {
+        final int noOfTags = currentCommitBranchesAndTags.size();
+        for(int j = 0; j < noOfTags; j++) {
+          final String currentTag = currentCommitBranchesAndTags.get(j);
+          if(currentTag != null && currentTag.equals(currentBranchName)) {
+            graphCellRender.setLastCommitIdForCurrentBranch(commit.getCommitId());
+            foundCurrentHeadCommit = true;
+            break;
+          }
+        }
+      }
+      if(foundCurrentHeadCommit) {
+        break;
       }
     }
   }
