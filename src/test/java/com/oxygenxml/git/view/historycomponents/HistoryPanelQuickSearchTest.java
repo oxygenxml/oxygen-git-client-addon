@@ -145,7 +145,7 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       model.filterChanged("alex rename");
       JTable affectedFiles = historyPanel.getAffectedFilesTable();
       
-      selectAndAssertRevision(historyTable, affectedFiles, 0, "[ Rename. , 3 Oct 2022 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]");
+      selectAndAssertRevision(historyTable, affectedFiles, 0, "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]");
       
       CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);
       List<FileStatus> changes = null;
