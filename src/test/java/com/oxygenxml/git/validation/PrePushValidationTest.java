@@ -1,7 +1,9 @@
 package com.oxygenxml.git.validation;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.validation.gitoperation.GitValidationUtil;
 import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
 import com.oxygenxml.git.validation.internal.ICollector;
 import com.oxygenxml.git.validation.internal.IValidator;
@@ -46,6 +49,9 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectIndexer;
 import ro.sync.exml.workspace.api.standalone.project.ProjectPopupMenuCustomizer;
 import ro.sync.exml.workspace.api.standalone.project.ProjectRendererCustomizer;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
+import ro.sync.exml.workspace.api.util.ImageHolder;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Contains tests for pre-push validation.
@@ -484,9 +490,10 @@ public class PrePushValidationTest extends GitTestBase {
   public void testPrePushValidationWhenUncommitedChangesExist() throws Exception {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
-    commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
-
+    commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.xml", "");
+  
     initProjectController(FIRST_LOCAL_TEST_REPOSITORY, firstLocalRepo);
+    initUtilAccess();
 
     // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
     final int[] dialogResult = new int[1];
@@ -534,6 +541,7 @@ public class PrePushValidationTest extends GitTestBase {
         validator, null));
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(gitAccess.hasFilesChanged());
+    assertTrue(GitValidationUtil.hasUncommitedChanges(true));
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
@@ -545,7 +553,119 @@ public class PrePushValidationTest extends GitTestBase {
         "cancelButtonName = null\n" + 
         "showOkButton = true\n" + 
         "showCancelButton = true";
-    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> expectedDialog.equals(dialogToString[0]));
+     Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> expectedDialog.equals(dialogToString[0]));
+  }
+
+  /**
+   * Sometimes is needed to override some methods from util access because it is mocked before.
+   */
+  private void initUtilAccess() {
+    final UtilAccess originalUtilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+    final UtilAccess newUtilAccess =  new UtilAccess() {
+      
+      @Override
+      public String uncorrectURL(String url) {
+        return originalUtilAccess.uncorrectURL(url);
+      }
+      
+      @Override
+      public URL removeUserCredentials(URL url) {
+       return originalUtilAccess.removeUserCredentials(url);
+      }
+      
+      @Override
+      public void removeCustomEditorVariablesResolver(EditorVariablesResolver resolver) {
+       originalUtilAccess.removeCustomEditorVariablesResolver(resolver);
+      }
+      
+      @Override
+      public ImageHolder optimizeImage(URL imageUrl) throws IOException {
+        return originalUtilAccess.optimizeImage(imageUrl);
+      }
+      
+      @Override
+      public String makeRelative(URL baseURL, URL childURL) {
+        return originalUtilAccess.makeRelative(baseURL, childURL);
+      }
+      
+      @Override
+      public File locateFile(URL url) {
+        return originalUtilAccess.locateFile(url);
+      }
+      
+      @Override
+      public boolean isUnhandledBinaryResourceURL(URL url) {
+        return false;
+      }
+      
+      @Override
+      public boolean isSupportedImageURL(URL url) {
+        return originalUtilAccess.isSupportedImageURL(url);
+      }
+      
+      @Override
+      public String getFileName(String urlPath) {
+        return originalUtilAccess.getFileName(urlPath);
+      }
+      
+      @Override
+      public String getExtension(URL url) {
+       return originalUtilAccess.getExtension(url);
+      }
+      
+      @Override
+      public String getContentType(String systemID) {
+        return systemID;
+      }
+      
+      @Override
+      public String expandEditorVariables(String pathWithEditorVariables, URL currentEditedURL,
+          boolean expandAskEditorVariables) {
+        return originalUtilAccess.expandEditorVariables(pathWithEditorVariables, currentEditedURL, expandAskEditorVariables);
+      }
+      
+      @Override
+      public String expandEditorVariables(String pathWithEditorVariables, URL currentEditedURL) {
+        return originalUtilAccess.expandEditorVariables(pathWithEditorVariables, currentEditedURL);
+      }
+      
+      @Override
+      public String encrypt(String toEncrypt) {
+        return originalUtilAccess.encrypt(toEncrypt);
+      }
+      
+      @Override
+      public String decrypt(String toDecrypt) {
+        return originalUtilAccess.decrypt(toDecrypt);
+      }
+      
+      @Override
+      public Reader createReader(URL url, String defaultEncoding) throws IOException {
+        return originalUtilAccess.createReader(url, defaultEncoding);
+      }
+      
+      @Override
+      public BufferedImage createImage(String imageUrl) throws IOException {
+        return originalUtilAccess.createImage(imageUrl);
+      }
+      
+      @Override
+      public String correctURL(String url) {
+        return originalUtilAccess.correctURL(url);
+      }
+      
+      @Override
+      public URL convertFileToURL(File file) throws MalformedURLException {
+        return originalUtilAccess.convertFileToURL(file);
+      }
+      
+      @Override
+      public void addCustomEditorVariablesResolver(EditorVariablesResolver resolver) {
+        originalUtilAccess.addCustomEditorVariablesResolver(resolver);
+      }
+    };
+    
+    Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess()).thenReturn(newUtilAccess);
   }
 
   /**
