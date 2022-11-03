@@ -9,6 +9,15 @@
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
 	
+	<key value="Open_SSH_Support_Page">
+		<comment>Open SSH support page.</comment>
+		<val lang="en_US">Open SSH support page</val>
+		<val lang="de_DE">Open SSH support page</val>
+		<val lang="fr_FR">Open SSH support page</val>
+		<val lang="ja_JP">Open SSH support page</val>
+		<val lang="nl_NL">Open SSH support page</val>
+		<val lang="zh_CN">Open SSH support page</val>
+	</key>
 	<key value="Current">
 		<comment>current</comment>
 		<val lang="en_US">current</val>

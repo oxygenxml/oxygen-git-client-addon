@@ -109,6 +109,8 @@ public class GitActionsMenuBar implements MenuBarCustomizer, UpdateActionsStates
 		settingsMenu.setIcon(Icons.getIcon(Icons.SETTINGS));
 	  settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getOpenPreferencesAction()));
 	  settingsMenu.addSeparator();
+	  settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getOpenSShSupportPageAction()));
+    settingsMenu.addSeparator();
 		settingsMenu.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getResetAllCredentialsAction()));
 		gitMenu.add(settingsMenu);
 	}

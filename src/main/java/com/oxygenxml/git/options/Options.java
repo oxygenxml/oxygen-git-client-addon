@@ -291,4 +291,25 @@ public interface Options {
    * @param rejectPushOnValidationProblems <code>true</code> to reject push on validation problems.
    */
   public void setRejectPushOnValidationProblems(final boolean rejectPushOnValidationProblems) ;
+  
+  /**
+   * @param useSshAgent <code>true</code> to use SSH agent.
+   */
+  public void setUseSshAgent(final boolean useSshAgent);
+  
+  /**
+   * @return <code>true</code> if the SSH agent should be used.
+   */
+  public boolean getUseSshAgent();
+  
+  /**
+   * @param defaultSshAgent Set the default SSH agent.
+   */
+  public void setDefaultSshAgent(final String defaultSshAgent);
+  
+  /**
+   * @return Get the default SSH agent.
+   */
+  public String getDefaultSshAgent();
+  
 }

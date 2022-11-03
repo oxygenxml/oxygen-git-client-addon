@@ -1958,5 +1958,10 @@ public class Tags {
    */
   public static final String CURRENT = "Current";
   
+  /**
+   * English: Open SSH support page.
+   */
+  public static final String OPEN_SSH_SUPPORT_PAGE = "Open_SSH_Support_Page";
+  
 }
 

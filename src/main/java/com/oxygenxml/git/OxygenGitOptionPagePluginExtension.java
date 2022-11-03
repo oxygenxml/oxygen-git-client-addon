@@ -371,6 +371,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    * 
    * @since 24.0
    */
+  @Override
   public String[] getProjectLevelOptionKeys() {
     return new String[] {
         OptionTags.NOTIFY_ABOUT_NEW_REMOTE_COMMITS,
