@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableSet;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
+import com.oxygenxml.git.auth.sshagent.GitClientSshdSessionFactory;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.editorvars.GitEditorVariablesResolver;
 import com.oxygenxml.git.options.OptionsManager;
@@ -235,8 +236,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 			if (!"true".equals(System.getProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS))) {
 				org.eclipse.jgit.transport.SshSessionFactory.setInstance(
-						new org.eclipse.jgit.transport.sshd.SshdSessionFactory(null, new ResolvingProxyDataFactory()));
-			}
+				    new GitClientSshdSessionFactory(new ResolvingProxyDataFactory()));
+			} 
 
 			AuthenticationInterceptor.install();
 
