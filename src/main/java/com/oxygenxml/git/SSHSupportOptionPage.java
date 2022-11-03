@@ -10,7 +10,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import com.oxygenxml.git.auth.sshagent.SSHAgent;
-import com.oxygenxml.git.options.OptionTags;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
@@ -85,7 +84,13 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   private void setInitialStates() {
     useSshSupport.setSelected(OPTIONS_MANAGER.getUseSshAgent());
     defaultAgent.setEnabled(useSshSupport.isSelected());
-    defaultAgent.setSelectedItem(OPTIONS_MANAGER.getDefaultSshAgent());
+    final String sshAgentName = OPTIONS_MANAGER.getDefaultSshAgent();
+    final SSHAgent sshAgent = SSHAgent.getByName(sshAgentName);
+    if(PlatformDetectionUtil.isWin()) {
+      defaultAgent.setSelectedItem(SSHAgent.isForWin(sshAgent) ? sshAgent : SSHAgent.WIN_WIN32_OPENSSH);
+    } else {
+      defaultAgent.setSelectedItem(SSHAgent.UNIX_DEFAULT_SSH_AGENT);
+    }
   }
 
   /**
@@ -97,11 +102,11 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   private void addDefaultSshAgentCombo(JPanel mainPanel, GridBagConstraints constraints) {
     constraints.gridx = 0;
     constraints.gridy++;
-    constraints.fill = GridBagConstraints.NONE;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.gridheight = 1;
     constraints.gridwidth = 1;
     constraints.anchor = GridBagConstraints.LINE_START;
-    constraints.weightx = 0;
+    constraints.weightx = 0.2;
     constraints.weighty = 0;
     constraints.insets = new Insets(0, NESTED_OPTION_INSET + COMBO_LEFT_INSET, 0, 0);
 
@@ -110,7 +115,9 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
     for(final SSHAgent agent : agents) {
       defaultAgent.addItem(agent);
     }
-
+    
+    defaultAgent.setMinimumSize(defaultAgent.getPreferredSize());
+  
     mainPanel.add(defaultAgent, constraints);
   }
 
@@ -167,7 +174,6 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   public void apply(PluginWorkspace pluginWorkspace) {
     OPTIONS_MANAGER.setDefaultSshAgent(defaultAgent.getSelectedItem().toString());
     OPTIONS_MANAGER.setUseSshAgent(useSshSupport.isSelected());
-
   }
 
   /**
@@ -176,7 +182,7 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   @Override
   public void restoreDefaults() {
     useSshSupport.setSelected(true);
-    defaultAgent.setSelectedIndex(0);
+    defaultAgent.setSelectedItem(PlatformDetectionUtil.isWin() ? SSHAgent.WIN_WIN32_OPENSSH : SSHAgent.UNIX_DEFAULT_SSH_AGENT);  
   }
 
   /**
@@ -205,9 +211,6 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    */
   @Override
   public String[] getProjectLevelOptionKeys() {
-    return new String[] {
-        OptionTags.USE_SSH_AGENT,
-        OptionTags.DEFAULT_SSH_AGENT
-    };
+    return new String[0];
   }
 }
