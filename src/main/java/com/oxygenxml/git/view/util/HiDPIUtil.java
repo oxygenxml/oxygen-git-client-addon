@@ -17,7 +17,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.lang.reflect.Method;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
@@ -37,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
+
+import ro.sync.ui.hidpi.RetinaDetector;
 
 /**
  * Class that holds utility methods used when HiDPI is detected.
@@ -409,17 +410,7 @@ public class HiDPIUtil {
    * must explicitly change its font and use double sized icons. 
    */
   public static boolean isRetinaNoImplicitSupport() {
-    boolean isRetinaNoImplicitSupport = false;
-    try {
-      Class<?> retinaDetectorClass = Class.forName("ro.sync.ui.hidpi.RetinaDetector");
-      Method getInstanceMethod = retinaDetectorClass.getMethod("getInstance");
-      Object retinaDetectorObj = getInstanceMethod.invoke(null);
-      Method isRetinaNoImplicitSupportMethod = retinaDetectorClass.getMethod("isRetinaNoImplicitSupport");
-      isRetinaNoImplicitSupport = (boolean) isRetinaNoImplicitSupportMethod.invoke(retinaDetectorObj);
-    } catch (Exception e) {
-     LOGGER.debug(e.getMessage(), e);
-    }
-    return isRetinaNoImplicitSupport;
+    return RetinaDetector.getInstance().isRetinaNoImplicitSupport();
   }
   
   /**
@@ -427,17 +418,7 @@ public class HiDPIUtil {
    * On Mac OS X with retina display this factor is 2.  
    */
   public static float getScalingFactor() {
-    float scalingFactor = 1.0f;
-    try {
-      Class<?> retinaDetectorClass = Class.forName("ro.sync.ui.hidpi.RetinaDetector");
-      Method getInstanceMethod = retinaDetectorClass.getMethod("getInstance");
-      Object retinaDetectorObj = getInstanceMethod.invoke(null);
-      Method getScalingFactorMethod = retinaDetectorClass.getMethod("getScalingFactor");
-      scalingFactor = (float) getScalingFactorMethod.invoke(retinaDetectorObj);
-    } catch (Exception e) {
-     LOGGER.debug(e.getMessage(), e);
-    }
-    return scalingFactor;
+    return RetinaDetector.getInstance().getIconScalingFactor();
   }
   
 }

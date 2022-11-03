@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.util;
 
 import java.awt.Color;
-import java.lang.reflect.Method;
 
 import javax.swing.JComponent;
 
@@ -12,6 +11,8 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+
+import ro.sync.ui.theme.SAThemeColorProvider;
 
 /**
  * Utility class for renderers.
@@ -73,19 +74,8 @@ public class RendererUtil {
    * @return the color.
    */
   public static Color getInactiveSelectionColor(JComponent comp, Color defaultColor) {
-    Color inactiveBgColor = defaultColor;
-    try {
-      Class<?> colorProviderClass = Class.forName("ro.sync.ui.theme.SAThemeColorProvider");
-      Object colorProvider = colorProviderClass.getDeclaredConstructor().newInstance();
-      Method getInactiveSelBgColorMethod = colorProviderClass.getMethod("getInactiveSelectionBgColor");
-      int[] rgb = (int[]) getInactiveSelBgColorMethod.invoke(colorProvider);
-      inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
-    } catch (Exception e) {
-      if (comp.isDoubleBuffered()) {
-        LOGGER.debug(e.getMessage(), e);
-      }
-    }
-    return inactiveBgColor;
+    int[] rgb = new SAThemeColorProvider().getInactiveSelectionBgColor();
+    return new Color(rgb[0], rgb[1], rgb[2]);
   }
   
 }
