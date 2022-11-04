@@ -12,9 +12,9 @@ import org.eclipse.jgit.annotations.Nullable;
 public enum SSHAgent {
 
   /**
-   * Windows Pageagent SSH.
+   * Windows Pageant SSH.
    */
-  WIN_PAGEAGENT("Pageagent", "\\\\.\\pageant"),
+  WIN_PAGEANT("Pageant", "\\\\.\\pageant"),
 
   /**
    * Windows Win32 OpenSSh.
@@ -74,14 +74,14 @@ public enum SSHAgent {
    * @return <code>true</code> if the agent is for Windows.
    */
   public static boolean isForWin(final SSHAgent sshAgent) {
-    return WIN_PAGEAGENT == sshAgent || WIN_WIN32_OPENSSH == sshAgent;
+    return WIN_PAGEANT == sshAgent || WIN_WIN32_OPENSSH == sshAgent;
   }
 
   /**
    * @return All Windows SSH agents supported.
    */
   public static SSHAgent[] getWindowsSSHAgents() {
-    final SSHAgent[] agents= {WIN_PAGEAGENT, WIN_WIN32_OPENSSH};
+    final SSHAgent[] agents= {WIN_PAGEANT, WIN_WIN32_OPENSSH};
     return agents;
   }
 
@@ -104,8 +104,8 @@ public enum SSHAgent {
   public static SSHAgent getByName(final String name) {
     SSHAgent toReturn;
     switch(name) {
-      case "Pageagent": {
-        toReturn = SSHAgent.WIN_PAGEAGENT;
+      case "Pageant": {
+        toReturn = SSHAgent.WIN_PAGEANT;
         break;
       }
       case "Win32 Open SSH": {
