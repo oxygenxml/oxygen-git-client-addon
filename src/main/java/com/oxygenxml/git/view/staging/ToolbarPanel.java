@@ -450,6 +450,8 @@ public class ToolbarPanel extends JPanel {
     buttonMenu.add(gitActionsManager.getEditConfigAction());
     buttonMenu.addSeparator();
     buttonMenu.add(gitActionsManager.getOpenPreferencesAction());
+    buttonMenu.add(gitActionsManager.getOpenSShSupportPageAction());
+    buttonMenu.addSeparator();
     buttonMenu.add(gitActionsManager.getResetAllCredentialsAction());
     
     return tempMoreActionsButton;    
