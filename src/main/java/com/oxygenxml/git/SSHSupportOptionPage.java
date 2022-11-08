@@ -5,12 +5,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 
 import com.oxygenxml.git.auth.sshagent.SSHAgent;
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
@@ -29,11 +31,11 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    * Inset value for nested/subordinated options. 
    */
   private static final int NESTED_OPTION_INSET = 15;
-
+  
   /**
-   * The left inset of a combo box.
+   * The title of the page.
    */
-  private static final int COMBO_LEFT_INSET = new JCheckBox().getInsets().left; 
+  private static final String PAGE_TITLE = "SSH Agent";
 
   /**
    * Page key.
@@ -46,19 +48,24 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   private static final OptionsManager OPTIONS_MANAGER = OptionsManager.getInstance();
 
   /**
-   * The Translator instance
-   */
-  private static final Translator TRANSLATOR = Translator.getInstance();
-
-  /**
    * When selected, use the SSH support.
    */
   private JCheckBox useSshSupport;
-
+  
   /**
-   * When SSH support is used, the selected item is also used for SSH agent. 
+   * Radio button for Pageant SSH agent.
    */
-  private JComboBox<SSHAgent> defaultAgent;
+  private JRadioButton usePageantSshAgent;
+  
+  /**
+   * Radio button for Win32 SSH Agent.
+   */
+  private JRadioButton useWin32SshAgent;
+  
+  /**
+   * <code>true</code> if the page is for Windows.
+   */
+  private boolean isForWin = false;
 
 
   /**
@@ -70,7 +77,10 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
     final GridBagConstraints constraints = new GridBagConstraints();
 
     addUseSshSupportOption(mainPanel, constraints);
-    addDefaultSshAgentCombo(mainPanel, constraints);
+    isForWin = PlatformDetectionUtil.isWin();
+    if(isForWin) {
+      addDefaultSshAgentSelector(mainPanel, constraints);
+    }
     addEmptySpace(mainPanel, constraints);
 
     setInitialStates();
@@ -83,14 +93,22 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    */
   private void setInitialStates() {
     useSshSupport.setSelected(OPTIONS_MANAGER.getUseSshAgent());
-    defaultAgent.setEnabled(useSshSupport.isSelected());
     final String sshAgentName = OPTIONS_MANAGER.getDefaultSshAgent();
     final SSHAgent sshAgent = SSHAgent.getByName(sshAgentName);
-    if(PlatformDetectionUtil.isWin()) {
-      defaultAgent.setSelectedItem(SSHAgent.isForWin(sshAgent) ? sshAgent : SSHAgent.WIN_WIN32_OPENSSH);
-    } else {
-      defaultAgent.setSelectedItem(SSHAgent.UNIX_DEFAULT_SSH_AGENT);
-    }
+    if(isForWin) {
+      if(SSHAgent.isForWin(sshAgent)) {
+        if(sshAgent == SSHAgent.WIN_PAGEANT) {
+          usePageantSshAgent.setSelected(true);
+          useWin32SshAgent.setSelected(false);
+        } else {
+          usePageantSshAgent.setSelected(false);
+          useWin32SshAgent.setSelected(true);
+        }
+      } else {
+        usePageantSshAgent.setSelected(false);
+        useWin32SshAgent.setSelected(true);
+      }
+    } 
   }
 
   /**
@@ -99,7 +117,7 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    * @param mainPanel    The main panel.
    * @param constraints  The constraints.
    */
-  private void addDefaultSshAgentCombo(JPanel mainPanel, GridBagConstraints constraints) {
+  private void addDefaultSshAgentSelector(JPanel mainPanel, GridBagConstraints constraints) {
     constraints.gridx = 0;
     constraints.gridy++;
     constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -108,17 +126,17 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
     constraints.anchor = GridBagConstraints.LINE_START;
     constraints.weightx = 0.2;
     constraints.weighty = 0;
-    constraints.insets = new Insets(0, NESTED_OPTION_INSET + COMBO_LEFT_INSET, 0, 0);
-
-    defaultAgent = new JComboBox<>();
-    final SSHAgent[] agents = PlatformDetectionUtil.isWin() ? SSHAgent.getWindowsSSHAgents() : SSHAgent.getUnixSSHAgents();
-    for(final SSHAgent agent : agents) {
-      defaultAgent.addItem(agent);
-    }
+    constraints.insets = new Insets(0, NESTED_OPTION_INSET, 0, 0);
     
-    defaultAgent.setMinimumSize(defaultAgent.getPreferredSize());
-  
-    mainPanel.add(defaultAgent, constraints);
+    usePageantSshAgent = new JRadioButton(SSHAgent.WIN_PAGEANT.getName());
+    useWin32SshAgent   = new JRadioButton(SSHAgent.WIN_WIN32_OPENSSH.getName());
+    
+    usePageantSshAgent.addItemListener(l -> useWin32SshAgent.setSelected(useSshSupport.isSelected() && !usePageantSshAgent.isSelected()));
+    useWin32SshAgent.addItemListener(l -> usePageantSshAgent.setSelected(useSshSupport.isSelected() && !useWin32SshAgent.isSelected()));
+      
+    mainPanel.add(usePageantSshAgent, constraints);
+    constraints.gridy++;
+    mainPanel.add(useWin32SshAgent, constraints);
   }
 
   /**
@@ -159,11 +177,37 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
     constraints.weighty = 0;
     constraints.insets = new Insets(0, 0, 0, 0);
 
-    useSshSupport = new JCheckBox("Use SSH Agent");
-    useSshSupport.addItemListener(event -> defaultAgent.setEnabled(useSshSupport.isSelected()));
+    useSshSupport = new JCheckBox(Translator.getInstance().getTranslation(Tags.USE_SSH_SUPPORT));
+    useSshSupport.addItemListener(event -> SwingUtilities.invokeLater(this::updateDefaultSshAgentUsed));
 
     mainPanel.add(useSshSupport, constraints);
 
+  }
+
+  /**
+   * Update the selection after use SSH support check box selection change.
+   */
+  private void updateDefaultSshAgentUsed() {
+    if(isForWin && usePageantSshAgent != null && useWin32SshAgent != null) {
+      if(!useSshSupport.isSelected()) {
+        usePageantSshAgent.setSelected(false);
+        useWin32SshAgent.setSelected(false);
+      } else {
+        final String defaultSshAgent = OPTIONS_MANAGER.getDefaultSshAgent();
+        if(SSHAgent.isForWin(SSHAgent.getByName(defaultSshAgent))) {
+          if(SSHAgent.WIN_PAGEANT.getName().equals(defaultSshAgent)) {
+            usePageantSshAgent.setSelected(true);
+            useWin32SshAgent.setSelected(false);
+          } else {
+            usePageantSshAgent.setSelected(false);
+            useWin32SshAgent.setSelected(true);
+          }
+        } else {
+          usePageantSshAgent.setSelected(false);
+          useWin32SshAgent.setSelected(true);
+        }
+      }
+    }
   }
 
 
@@ -172,8 +216,15 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    */
   @Override
   public void apply(PluginWorkspace pluginWorkspace) {
-    OPTIONS_MANAGER.setDefaultSshAgent(defaultAgent.getSelectedItem().toString());
-    OPTIONS_MANAGER.setUseSshAgent(useSshSupport.isSelected());
+    final boolean useSshSupportSelected = useSshSupport.isSelected();
+    OPTIONS_MANAGER.setUseSshAgent(useSshSupportSelected);
+    if(useSshSupportSelected) {
+      if(isForWin) {
+        OPTIONS_MANAGER.setDefaultSshAgent(usePageantSshAgent.isSelected() ? SSHAgent.WIN_PAGEANT.getName() : SSHAgent.WIN_WIN32_OPENSSH.getName());
+      } else {
+        OPTIONS_MANAGER.setDefaultSshAgent(SSHAgent.UNIX_DEFAULT_SSH_AGENT.getName());
+      }
+    }
   }
 
   /**
@@ -182,7 +233,10 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   @Override
   public void restoreDefaults() {
     useSshSupport.setSelected(true);
-    defaultAgent.setSelectedItem(PlatformDetectionUtil.isWin() ? SSHAgent.WIN_WIN32_OPENSSH : SSHAgent.UNIX_DEFAULT_SSH_AGENT);  
+    if(isForWin) {
+      usePageantSshAgent.setSelected(false);
+      useWin32SshAgent.setSelected(true);
+    }
   }
 
   /**
@@ -190,7 +244,7 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    */
   @Override
   public String getTitle() {
-    return "SSH Agent";
+    return PAGE_TITLE;
   }
 
   /**

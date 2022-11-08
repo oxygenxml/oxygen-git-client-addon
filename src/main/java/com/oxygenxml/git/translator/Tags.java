@@ -1963,5 +1963,10 @@ public class Tags {
    */
   public static final String OPEN_SSH_SUPPORT_PAGE = "Open_SSH_Support_Page";
   
+  /**
+   * The option to use SSH support.
+   */
+  public static final String USE_SSH_SUPPORT = "Use_SSH_support"; 
+  
 }
 
