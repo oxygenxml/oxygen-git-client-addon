@@ -87,9 +87,10 @@ public class GitClientSshdSessionFactory extends SshdSessionFactory {
           if(!SSHAgent.isForWin(sshAgent)) {
             sshAgent = SSHAgent.WIN_WIN32_OPENSSH;
           }
-          final SSHAgent finalSSHAg = sshAgent;
-          if (getSupportedConnectors().stream().anyMatch(d -> finalSSHAg.getIdentityAgent().equals(d.getIdentityAgent()))) {
-            agentConnection = sshAgent.getIdentityAgent();
+   
+          final String identityAgentStr = sshAgent != null ? sshAgent.getIdentityAgent() : null;
+          if (identityAgentStr != null && getSupportedConnectors().stream().anyMatch(d -> identityAgentStr.equals(d.getIdentityAgent()))) {
+            agentConnection = identityAgentStr;
           }
         } else {
           final Collection<ConnectorDescriptor> connectors = getSupportedConnectors();
