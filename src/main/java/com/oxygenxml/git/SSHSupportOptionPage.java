@@ -4,11 +4,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.SwingUtilities;
 
 import com.oxygenxml.git.auth.sshagent.SSHAgent;
 import com.oxygenxml.git.options.OptionsManager;
@@ -67,6 +67,11 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    */
   private boolean isForWin = false;
 
+  /**
+   * The buttons group.
+   */
+  private ButtonGroup buttonsGroup;
+
 
   /**
    * @see ro.sync.exml.plugin.option.OptionPagePluginExtension#init(ro.sync.exml.workspace.api.PluginWorkspace)
@@ -97,16 +102,9 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
     final SSHAgent sshAgent = SSHAgent.getByName(sshAgentName);
     if(isForWin) {
       if(SSHAgent.isForWin(sshAgent)) {
-        if(sshAgent == SSHAgent.WIN_PAGEANT) {
-          usePageantSshAgent.setSelected(true);
-          useWin32SshAgent.setSelected(false);
-        } else {
-          usePageantSshAgent.setSelected(false);
-          useWin32SshAgent.setSelected(true);
-        }
+        buttonsGroup.setSelected(sshAgent == SSHAgent.WIN_PAGEANT ? usePageantSshAgent.getModel() : useWin32SshAgent.getModel(), true);
       } else {
-        usePageantSshAgent.setSelected(false);
-        useWin32SshAgent.setSelected(true);
+        buttonsGroup.setSelected(useWin32SshAgent.getModel(), true);
       }
     } 
   }
@@ -131,13 +129,27 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
     usePageantSshAgent = new JRadioButton(SSHAgent.WIN_PAGEANT.getName());
     useWin32SshAgent   = new JRadioButton(SSHAgent.WIN_WIN32_OPENSSH.getName());
     
-    usePageantSshAgent.addItemListener(l -> useWin32SshAgent.setSelected(useSshSupport.isSelected() && !usePageantSshAgent.isSelected()));
-    useWin32SshAgent.addItemListener(l -> usePageantSshAgent.setSelected(useSshSupport.isSelected() && !useWin32SshAgent.isSelected()));
+    usePageantSshAgent.addItemListener(l -> {
+      if(usePageantSshAgent.isSelected() && !useSshSupport.isSelected()) {
+        useSshSupport.setSelected(true);
+      }
+    });
+    
+    useWin32SshAgent.addItemListener(l -> {
+      if(useWin32SshAgent.isSelected() && !useSshSupport.isSelected()) {
+        useSshSupport.setSelected(true);
+      }
+    });
+    
+    buttonsGroup = new ButtonGroup();
+    buttonsGroup.add(usePageantSshAgent);
+    buttonsGroup.add(useWin32SshAgent);
       
     mainPanel.add(usePageantSshAgent, constraints);
     constraints.gridy++;
     mainPanel.add(useWin32SshAgent, constraints);
   }
+     
 
   /**
    * Add empty space for a better page organization.
@@ -178,7 +190,7 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
     constraints.insets = new Insets(0, 0, 0, 0);
 
     useSshSupport = new JCheckBox(Translator.getInstance().getTranslation(Tags.USE_SSH_SUPPORT));
-    useSshSupport.addItemListener(event -> SwingUtilities.invokeLater(this::updateDefaultSshAgentUsed));
+    useSshSupport.addItemListener(event -> updateDefaultSshAgentUsed());
 
     mainPanel.add(useSshSupport, constraints);
 
@@ -190,21 +202,16 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   private void updateDefaultSshAgentUsed() {
     if(isForWin && usePageantSshAgent != null && useWin32SshAgent != null) {
       if(!useSshSupport.isSelected()) {
-        usePageantSshAgent.setSelected(false);
-        useWin32SshAgent.setSelected(false);
+        buttonsGroup.clearSelection();
       } else {
+        if(usePageantSshAgent.isSelected() || useWin32SshAgent.isSelected()) {
+          return;
+        }
         final String defaultSshAgent = OPTIONS_MANAGER.getDefaultSshAgent();
         if(SSHAgent.isForWin(SSHAgent.getByName(defaultSshAgent))) {
-          if(SSHAgent.WIN_PAGEANT.getName().equals(defaultSshAgent)) {
-            usePageantSshAgent.setSelected(true);
-            useWin32SshAgent.setSelected(false);
-          } else {
-            usePageantSshAgent.setSelected(false);
-            useWin32SshAgent.setSelected(true);
-          }
+          buttonsGroup.setSelected(SSHAgent.WIN_PAGEANT.getName().equals(defaultSshAgent) ? usePageantSshAgent.getModel() : useWin32SshAgent.getModel(), true);
         } else {
-          usePageantSshAgent.setSelected(false);
-          useWin32SshAgent.setSelected(true);
+          buttonsGroup.setSelected(useWin32SshAgent.getModel(), true);
         }
       }
     }
