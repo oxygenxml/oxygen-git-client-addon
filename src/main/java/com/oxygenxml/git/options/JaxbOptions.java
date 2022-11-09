@@ -153,6 +153,18 @@ public class JaxbOptions implements Options {
 	 */
 	@XmlElement(name = "isAutoPushWhenCommitting")
 	private boolean isAutoPushWhenCommitting = false;
+	
+  /**
+   * <code>true</code> to use SSH agent.
+   */
+  @XmlElement(name = "useSshAgent")
+  private boolean useSshAgent = true;
+  
+  /**
+   * The default SSH agent.
+   */
+  @XmlElement(name = "defaultSshAgent")
+  private String defaultSshAgent = "";
 
 	@Override
   public boolean isAutoPushWhenCommitting() {
@@ -462,6 +474,27 @@ public class JaxbOptions implements Options {
   @Override
   public void setRejectPushOnValidationProblems(boolean rejectPushOnValidationProblems) {
     this.rejectPushOnValidationProblems = rejectPushOnValidationProblems;
+  }
+  
+  
+  @Override
+  public void setDefaultSshAgent(final String defaultSshAgent) {
+    this.defaultSshAgent = defaultSshAgent;
+  }
+  
+  @Override
+  public void setUseSshAgent(boolean useSshAgent) {
+    this.useSshAgent = useSshAgent;
+  }
+
+  @Override
+  public boolean getUseSshAgent() {
+    return useSshAgent;
+  }
+
+  @Override
+  public String getDefaultSshAgent() {
+    return defaultSshAgent;
   }
   
   @Override

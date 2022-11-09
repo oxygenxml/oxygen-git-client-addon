@@ -731,6 +731,34 @@ public class OptionsManager {
   }
   
   /**
+   * @param useSshAgent <code>true</code> to use SSH agent.
+   */
+  public void setUseSshAgent(final boolean useSshAgent) {
+    getOptions().setUseSshAgent(useSshAgent);
+  }
+  
+  /**
+   * @return <code>true</code> if the SSH agent should be used.
+   */
+  public boolean getUseSshAgent() {
+    return getOptions().getUseSshAgent();
+  }
+  
+  /**
+   * @param defaultSshAgent Set the default SSH agent.
+   */
+  public void setDefaultSshAgent(final String defaultSshAgent) {
+    getOptions().setDefaultSshAgent(defaultSshAgent);
+  }
+  
+  /**
+   * @return Get the default SSH agent.
+   */
+  public String getDefaultSshAgent() {
+    return getOptions().getDefaultSshAgent();
+  }
+  
+  /**
    * Remove credentials from a given host. 
    * The credentials will be removed for both, token and user + password authentication.
    * 

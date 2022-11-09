@@ -524,7 +524,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
         currentRepo = GitAccess.getInstance().getRepository().getDirectory().getParentFile();
       }
       if(currentRepo != null) {
-        toReturn = currentRepo.equals(detectRepositoryInProject(new File(proposedFile.toURI())));
+        toReturn = currentRepo.equals(detectRepositoryInProject(proposedFile));
       }
     } catch(NoRepositorySelected e) {
       if(LOGGER.isDebugEnabled()) {

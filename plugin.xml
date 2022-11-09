@@ -21,6 +21,7 @@
     <extension type="WorkspaceAccess" class="com.oxygenxml.git.OxygenGitPluginExtension"/>
     <extension type="URLHandler" class="com.oxygenxml.git.protocol.CustomProtocolURLHandlerExtension"/>
     <extension type="OptionPage" class="com.oxygenxml.git.OxygenGitOptionPagePluginExtension"/>
+    <extension type="OptionPage" class="com.oxygenxml.git.SSHSupportOptionPage"/>
     
     <!-- The main side-view of the Git Client add-on. -->
     <view id="GitStagingView" initialSide="WEST" initialRow="0" initialState="docked">

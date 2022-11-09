@@ -150,5 +150,15 @@ public class OptionTags {
    * The tag option for "Detect and open xpr files from opened working copies".
    */
   public static final String DETECT_AND_OPEN_XPR_FILES = "com.oxygenxml.git.detect.and.open.xpr.files";
+  
+  /**
+   * The tag option for use SSH agent.
+   */
+  public static final String USE_SSH_AGENT = "com.oxygenxml.git.use.ssh.agent";
+  
+  /**
+   * The tag option for default SSH agent.
+   */
+  public static final String DEFAULT_SSH_AGENT = "com.oxygenxml.git.default.ssh.agent";
 
 }

@@ -527,5 +527,27 @@ public class TagBasedOptions implements Options {
   public void setRejectPushOnValidationProblems(boolean rejectPushOnValidationProblems) {
     wsOptionsStorage.setOption(OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS, String.valueOf(rejectPushOnValidationProblems));  
   }
+
+  @Override
+  public void setUseSshAgent(final boolean useSshAgent) {
+    wsOptionsStorage.setOption(OptionTags.USE_SSH_AGENT, String.valueOf(useSshAgent));
+    
+  }
+
+  @Override
+  public boolean getUseSshAgent() {
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(
+        OptionTags.USE_SSH_AGENT, TRUE));
+  }
+
+  @Override
+  public void setDefaultSshAgent(String defaultSshAgent) {
+    wsOptionsStorage.setOption(OptionTags.DEFAULT_SSH_AGENT, defaultSshAgent);
+  }
+
+  @Override
+  public String getDefaultSshAgent() {
+    return wsOptionsStorage.getOption(OptionTags.DEFAULT_SSH_AGENT, "");
+  }
   
 }
