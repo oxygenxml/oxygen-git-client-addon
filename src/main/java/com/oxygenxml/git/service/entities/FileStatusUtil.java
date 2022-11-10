@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileUtil;
 
@@ -49,7 +50,7 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  *
  */
 public class FileStatusUtil {
-  
+
   /**
    * Logger for logging.
    */
@@ -63,7 +64,7 @@ public class FileStatusUtil {
     // nothing.
   }
 
-  
+
   /**
    * Computer files statues for specified tree walk and commit.
    *
@@ -87,7 +88,7 @@ public class FileStatusUtil {
     return compute(repository, walk, commit, oldCommit, commit.getParents(),
         markTreeFilters);
   }
-  
+
 
   /**
    * Computer files statues for specified tree walk and commit.
@@ -131,30 +132,30 @@ public class FileStatusUtil {
       RenameDetector detector = new RenameDetector(repository);
       detector.addAll(entries);
       List<DiffEntry> renames = detector.compute(walk.getObjectReader(),NullProgressMonitor.INSTANCE);
-      
+
       for (DiffEntry fileDiff : renames) { 
         final FileStatus currentFileStatus = new FileStatusOverDiffEntry
             (fileDiff, commitName, oldCommitName);
         filesToReturn.add(currentFileStatus);
         cleanDiffEntries(fileDiff, xentries);
       }
-      
+
       addFiles(filesToReturn, xentries, commitName, oldCommitName);
-      
+
     } else { 
-    	// This case is for merge commits, this file extraction method is a bit slower than before. 
-    	// It should be seen in the future if a faster way can be found to generate affected files in merge commits.
-        try {
-          filesToReturn.addAll(getChanges(repository, commit, oldCommit));
-        } catch (IOException | GitAPIException e) {
-         
-        }
-      }    
+      // This case is for merge commits, this file extraction method is a bit slower than before. 
+      // It should be seen in the future if a faster way can be found to generate affected files in merge commits.
+      try {
+        filesToReturn.addAll(getChanges(repository, commit, oldCommit));
+      } catch (IOException | GitAPIException e) {
+
+      }
+    }    
 
     return filesToReturn;
   }
-  
-  
+
+
   /**
    * Clean diff entries from xentries list raported to file diff. If the list has an element with the same old and new path, this element will be removed from list.
    * 
@@ -162,16 +163,16 @@ public class FileStatusUtil {
    * @param xentries The list with diff entry.
    */
   private static void cleanDiffEntries(DiffEntry fileDiff, List<DiffEntry> xentries) {
-	  for (Iterator<DiffEntry> xentriesIterator = xentries.iterator(); xentriesIterator.hasNext();) {
-		  DiffEntry n = xentriesIterator.next();
-		  if (fileDiff.getOldPath().equals(n.getOldPath()) || 
-				  fileDiff.getNewPath().equals(n.getNewPath())) {
-			  xentriesIterator.remove();
-		  }
-	  }
+    for (Iterator<DiffEntry> xentriesIterator = xentries.iterator(); xentriesIterator.hasNext();) {
+      DiffEntry n = xentriesIterator.next();
+      if (fileDiff.getOldPath().equals(n.getOldPath()) || 
+          fileDiff.getNewPath().equals(n.getNewPath())) {
+        xentriesIterator.remove();
+      }
+    }
   }
-  
-  
+
+
   /**
    * Add the file status for each diff entry from xentries.
    * 
@@ -180,14 +181,14 @@ public class FileStatusUtil {
    */
   private static void addFiles(final List<FileStatus> files, 
       final List<DiffEntry> xentries, final String commit, final String oldCommit) {
-	  for (DiffEntry fileDiff : xentries) {  
-	    final FileStatus currentFileStatus = new FileStatusOverDiffEntry
+    for (DiffEntry fileDiff : xentries) {  
+      final FileStatus currentFileStatus = new FileStatusOverDiffEntry
           (fileDiff, commit, oldCommit);
-	    files.add(currentFileStatus);
-	  }
+      files.add(currentFileStatus);
+    }
   }
 
-  
+
   /**
    * Compute and return the objects id of current commit trees.
    *   
@@ -198,12 +199,12 @@ public class FileStatusUtil {
    */
   private static ObjectId[] trees(final RevCommit commit, final RevCommit[] parents) {
     final ObjectId[] toReturn = new ObjectId[parents.length + 1];
-   
+
     for (int i = 0; i < toReturn.length - 1; i++) {
       toReturn[i] = parents[i].getTree().getId();
     }
     toReturn[toReturn.length - 1] = commit.getTree().getId();
-    
+
     return toReturn;
   }
 
@@ -228,8 +229,8 @@ public class FileStatusUtil {
 
     return toReturn;
   }
-  
-  
+
+
   /**
    * Computes a list of files statues URLs.
    * 
@@ -244,15 +245,15 @@ public class FileStatusUtil {
     files.forEach(file -> {
       try {
         filesURL.add(computeGitURLs ? computeFileStatusURL(file) :
-            FileUtil.getFileURL(file.getFileLocation()));
+          FileUtil.getFileURL(file.getFileLocation()));
       } catch (NoRepositorySelected | MalformedURLException e) {
         LOGGER.debug(e.getMessage(), e);
       }
     });
-      
+
     return filesURL;
   }
-  
+
   /**
    * Computes URL for the given file.
    * 
@@ -266,7 +267,7 @@ public class FileStatusUtil {
   public static URL computeFileStatusURL(final FileStatus file) throws MalformedURLException, NoRepositorySelected {
     URL fileURL = null;
     final String fileLocation = file.getFileLocation();
-    if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.CHANGED) {
+    if (shouldComputeGitURL(file)) {
       // A file from the INDEX. We need a special URL to access it.
       fileURL = GitRevisionURLHandler.encodeURL(
           VersionIdentifier.INDEX_OR_LAST_COMMIT,
@@ -275,11 +276,25 @@ public class FileStatusUtil {
       // We must open a local copy.
       fileURL = FileUtil.getFileURL(fileLocation);
     }
-    
+
     return fileURL;
   }
 
-  
+  /**
+   * Checks if is needed to compute or not a Git URL for the given files. 
+   * If the file is from index and a new change is present to the unstaged files, a Git URL should be computed.
+   * 
+   * @param file The file status.
+   * 
+   * @return <code>true</code> if a Git URL should be computed.
+   */
+  private static boolean shouldComputeGitURL(final FileStatus file) {
+    return (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.CHANGED) 
+        && GitAccess.getInstance().getUnstagedFiles().stream().anyMatch(fileStatus-> 
+          fileStatus.getFileLocation() != null && fileStatus.getFileLocation().equals(file.getFileLocation())
+        );
+  }
+
   /**
    * Checks the change type to see if it represents a rename.
    * 
@@ -292,7 +307,7 @@ public class FileStatusUtil {
         || diffChange == ChangeType.COPY;
   }
 
-  
+
   /**
    * Gets all the files changed between two revisions.
    * 
@@ -357,7 +372,7 @@ public class FileStatusUtil {
     return collect;
   }
 
-  
+
   /**
    * Remove all files statues with the given extension.
    * 
@@ -374,7 +389,7 @@ public class FileStatusUtil {
     }
     return files;
   }
-  
+
   /**
    * Check if a file is unreachable.
    * <br>
@@ -394,6 +409,6 @@ public class FileStatusUtil {
       LOGGER.error(e.getMessage(), e);
       return false;
     }
-   
+
   }
 }
