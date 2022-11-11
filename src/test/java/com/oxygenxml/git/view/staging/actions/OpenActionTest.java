@@ -28,7 +28,7 @@ public class OpenActionTest {
   public void urlFileComputingTest() {
     final GitAccess gitAccessMock = PowerMockito.mock(GitAccess.class);
     PowerMockito.mockStatic(GitAccess.class);
-    BDDMockito.given(GitAccess.getInstance()).willReturn(gitAccessMock);
+    BDDMockito.given(gitAccessMock.getInstance()).willReturn(gitAccessMock);
     Whitebox.setInternalState(GitAccess.class, "instance", gitAccessMock);
     assertTrue(true);
   }
