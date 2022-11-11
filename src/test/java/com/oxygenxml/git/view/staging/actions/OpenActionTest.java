@@ -1,15 +1,10 @@
 package com.oxygenxml.git.view.staging.actions;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.GitAccess;
 
@@ -19,18 +14,14 @@ import com.oxygenxml.git.service.GitAccess;
  * @author alex_smarandache
  *
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.swing.*", "javax.management.*", "javax.script.*",  "javax.xml.*", "org.xml.*"})
-@PrepareForTest(GitAccess.class)
 public class OpenActionTest {
 
   @Test
   public void urlFileComputingTest() {
-    final GitAccess gitAccessMock = PowerMockito.mock(GitAccess.class);
-    PowerMockito.mockStatic(GitAccess.class);
-    BDDMockito.given(gitAccessMock.getInstance()).willReturn(gitAccessMock);
-    Whitebox.setInternalState(GitAccess.class, "instance", gitAccessMock);
-    assertTrue(true);
+    try (final MockedStatic<GitAccess> gitAccessMock = Mockito.mockStatic(GitAccess.class)) {
+      gitAccessMock.when(GitAccess::getInstance).thenReturn(gitAccessMock);
+      assertEquals(GitAccess.getInstance(), gitAccessMock);
+    }
   }
   
 }
