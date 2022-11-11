@@ -33,11 +33,6 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
   private static final int NESTED_OPTION_INSET = 15;
   
   /**
-   * The title of the page.
-   */
-  private static final String PAGE_TITLE = "SSH Agent";
-
-  /**
    * Page key.
    */
   public static final String KEY = "Git_client_plugin_ssh_support_page";
@@ -251,7 +246,7 @@ public class SSHSupportOptionPage extends OptionPagePluginExtension {
    */
   @Override
   public String getTitle() {
-    return PAGE_TITLE;
+    return Translator.getInstance().getTranslation(Tags.SSH_CONNECTIONS);
   }
 
   /**

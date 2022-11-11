@@ -8,14 +8,23 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="SSH_Connections">
+		<comment>English: SSH Connections.</comment>
+		<val lang="en_US">SSH Connections</val>
+		<val lang="de_DE">SSH Connections</val>
+		<val lang="fr_FR">SSH Connections</val>
+		<val lang="ja_JP">SSH Connections</val>
+		<val lang="nl_NL">SSH Connections</val>
+		<val lang="zh_CN">SSH Connections</val>
+	</key>
 	<key value="Use_SSH_support">
 		<comment>The option to use SSH support.</comment>
-		<val lang="en_US">Use SSH agent for SSH connections</val>
-		<val lang="de_DE">Use SSH agent for SSH connections</val>
-		<val lang="fr_FR">Use SSH agent for SSH connections</val>
-		<val lang="ja_JP">Use SSH agent for SSH connections</val>
-		<val lang="nl_NL">Use SSH agent for SSH connections</val>
-		<val lang="zh_CN">Use SSH agent for SSH connections</val>
+		<val lang="en_US">Use SSH agent</val>
+		<val lang="de_DE">Use SSH agent</val>
+		<val lang="fr_FR">Use SSH agent</val>
+		<val lang="ja_JP">Use SSH agent</val>
+		<val lang="nl_NL">Use SSH agent</val>
+		<val lang="zh_CN">Use SSH agent</val>
 	</key>
 	<key value="Current">
 		<comment>current</comment>

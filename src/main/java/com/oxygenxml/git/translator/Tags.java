@@ -1963,5 +1963,10 @@ public class Tags {
    */
   public static final String USE_SSH_SUPPORT = "Use_SSH_support"; 
   
+  /**
+   * English: SSH Connections.
+   */
+  public static final String SSH_CONNECTIONS = "SSH_Connections"; 
+  
 }
 
