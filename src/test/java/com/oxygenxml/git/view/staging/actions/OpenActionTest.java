@@ -5,10 +5,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import com.oxygenxml.git.service.GitAccess;
 
@@ -19,15 +20,16 @@ import com.oxygenxml.git.service.GitAccess;
  *
  */
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.swing.*", "javax.management.*", "javax.script.*",  "javax.xml.*", "org.xml.*"})
 @PrepareForTest(GitAccess.class)
 public class OpenActionTest {
 
   @Test
   public void urlFileComputingTest() {
-    final GitAccess gitAccessMock = Mockito.mock(GitAccess.class);
+    final GitAccess gitAccessMock = PowerMockito.mock(GitAccess.class);
     PowerMockito.mockStatic(GitAccess.class);
     BDDMockito.given(GitAccess.getInstance()).willReturn(gitAccessMock);
-    PowerMockito.verifyStatic(GitAccess.class);
+    Whitebox.setInternalState(GitAccess.class, "instance", gitAccessMock);
     assertTrue(true);
   }
   
