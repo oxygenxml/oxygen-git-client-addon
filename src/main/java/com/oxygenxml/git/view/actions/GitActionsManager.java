@@ -25,7 +25,6 @@ import com.oxygenxml.git.view.actions.internal.ListStashesAction;
 import com.oxygenxml.git.view.actions.internal.ManageRemoteRepositoriesAction;
 import com.oxygenxml.git.view.actions.internal.OpenPreferencesAction;
 import com.oxygenxml.git.view.actions.internal.OpenRepositoryAction;
-import com.oxygenxml.git.view.actions.internal.OpenSSHSupportPageAction;
 import com.oxygenxml.git.view.actions.internal.PullAction;
 import com.oxygenxml.git.view.actions.internal.PushAction;
 import com.oxygenxml.git.view.actions.internal.ResetAllCredentialsAction;
@@ -156,11 +155,6 @@ public class GitActionsManager  {
 	 * Action to open preferences page for Git Plugin.
 	 */
 	private OpenPreferencesAction openPreferencesAction;
-	
-	/**
-   * Action to open preferences page for SSH support.
-   */
-  private OpenSSHSupportPageAction openSShSupportPageAction;
 	
 	/**
 	 * Action to reset all credentials.
@@ -476,18 +470,6 @@ public class GitActionsManager  {
 
 		return openPreferencesAction;
 	}
-	
-	/**
-   * @return The action that opens SSH support page.
-   */
-  @NonNull
-  public AbstractAction getOpenSShSupportPageAction() {
-    if(openSShSupportPageAction == null) {
-      openSShSupportPageAction = new OpenSSHSupportPageAction();
-    }
-
-    return openSShSupportPageAction;
-  }
 	
 	
 	/**
