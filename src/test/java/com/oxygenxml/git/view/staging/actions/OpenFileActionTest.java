@@ -22,7 +22,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
  * @author alex_smarandache
  *
  */
-public class OpenActionTest {
+public class OpenFileActionTest {
 
   /**
    * <p><b>Description:</b> Tests computing URL when open a file from contextual menu in Git Staging.</p>
@@ -34,7 +34,7 @@ public class OpenActionTest {
    */
   @Test
   public void urlFileComputingTest() throws Exception {
-    final File wc = new File("/src/test/resources/openactiontest");
+    final File wc = new File("target/test-resources/OpenFileActionTest");
     assertTrue(wc.mkdirs());
     try (final MockedStatic<GitAccess> gitAccessStaticMock = Mockito.mockStatic(GitAccess.class)) {
       final GitAccess mockedGitAccess = Mockito.mock(GitAccess.class);
