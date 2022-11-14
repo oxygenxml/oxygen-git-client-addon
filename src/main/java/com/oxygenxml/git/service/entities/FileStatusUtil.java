@@ -265,19 +265,8 @@ public class FileStatusUtil {
    * @throws NoRepositorySelected
    */
   public static URL computeFileStatusURL(final FileStatus file) throws MalformedURLException, NoRepositorySelected {
-    URL fileURL = null;
-    final String fileLocation = file.getFileLocation();
-    if (shouldComputeGitURL(file)) {
-      // A file from the INDEX. We need a special URL to access it.
-      fileURL = GitRevisionURLHandler.encodeURL(
-          VersionIdentifier.INDEX_OR_LAST_COMMIT,
-          fileLocation);
-    } else {
-      // We must open a local copy.
-      fileURL = FileUtil.getFileURL(fileLocation);
-    }
-
-    return fileURL;
+    return shouldComputeGitURL(file) ? GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT,
+        file.getFileLocation()) : FileUtil.getFileURL(file.getFileLocation());
   }
 
   /**
@@ -291,8 +280,9 @@ public class FileStatusUtil {
   private static boolean shouldComputeGitURL(final FileStatus file) {
     return (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.CHANGED) 
         && GitAccess.getInstance().getUnstagedFiles().stream().anyMatch(fileStatus-> 
-          fileStatus.getFileLocation() != null && fileStatus.getFileLocation().equals(file.getFileLocation())
-        );
+          fileStatus.getFileLocation() != null && fileStatus.getFileLocation().equals(file.getFileLocation()))
+        && GitAccess.getInstance().getStagedFiles().stream().anyMatch(fileStatus-> 
+          fileStatus.getFileLocation() != null && fileStatus.getFileLocation().equals(file.getFileLocation()));
   }
 
   /**
