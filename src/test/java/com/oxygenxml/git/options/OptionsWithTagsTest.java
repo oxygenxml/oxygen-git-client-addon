@@ -8,8 +8,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -223,8 +225,15 @@ public class OptionsWithTagsTest {
   @Test
   public void testProjectLevelOptions() throws Exception {
     Field[] fields = OptionTags.class.getFields();
+    final Set<String> fieldsNameExceptions = new HashSet<>(); // These options should not be saved at project level.
+    fieldsNameExceptions.add("USE_SSH_AGENT");
+    fieldsNameExceptions.add("DEFAULT_SSH_AGENT");
     
-    String dump = Arrays.stream(fields).map((Field f) -> f.getName()).collect(Collectors.joining("\n"));
+    String dump = Arrays.stream(fields)
+        .filter(field -> !fieldsNameExceptions.contains(field.getName()))
+        .map((Field f) -> f.getName())
+        .collect(Collectors.joining("\n"));
+    
     assertEquals(
         "A new option was added. If the option is displayed in the preferences page OxygenGitOptionPagePluginExtension then "
         + " it must be placed in OxygenGitOptionPagePluginExtension.getProjectLevelOptionKeys() to save it at project level.",
