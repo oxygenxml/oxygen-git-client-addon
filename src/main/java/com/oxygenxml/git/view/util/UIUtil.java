@@ -33,6 +33,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 
+import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -422,5 +423,29 @@ public class UIUtil {
    */
   public static Optional<JToolTip> createMultilineTooltip(JComponent component) {
 	 return Optional.of(OxygenUIComponentsFactory.installMultilineTooltip(component));
+  }
+  
+  /**
+   * Creates a split pane and puts the two components in it.
+   * 
+   * @param splitType       {@link JideSplitPane#HORIZONTAL_SPLIT} or
+   *                        {@link JideSplitPane#VERTICAL_SPLIT}
+   * @param firstComponent  Fist component to add.
+   * @param secondComponent Second component to add.
+   * 
+   * @return The split pane.
+   */
+  public static JideSplitPane createSplitPane(int splitType, JComponent firstComponent, JComponent secondComponent) {
+    final JideSplitPane splitPane = new JideSplitPane(splitType);
+
+    splitPane.add(firstComponent);
+    splitPane.add(secondComponent);
+
+    splitPane.setDividerSize(5);
+    splitPane.setContinuousLayout(true);
+    splitPane.setOneTouchExpandable(false);
+    splitPane.setBorder(null);
+
+    return splitPane;
   }
 }

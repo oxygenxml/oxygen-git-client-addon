@@ -29,7 +29,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -297,9 +296,9 @@ public class HistoryPanel extends JPanel {
     topPanel.add(historyInfoLabel, constr);
     createAndAddToolbarToTopPanel(topPanel, constr);
 
-    JPanel infoBoxesSplitPane = createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
+    JPanel infoBoxesSplitPane = UIUtil.createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
         affectedFilesTableScrollPane);
-    JideSplitPane centerSplitPane = createSplitPane(JideSplitPane.VERTICAL_SPLIT, historyTableScrollPane,
+    JideSplitPane centerSplitPane = UIUtil.createSplitPane(JideSplitPane.VERTICAL_SPLIT, historyTableScrollPane,
         infoBoxesSplitPane);
     centerSplitPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
@@ -667,31 +666,6 @@ public class HistoryPanel extends JPanel {
     if (!alreadySelected) {
       table.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
     }
-  }
-
-  
-  /**
-   * Creates a split pane and puts the two components in it.
-   * 
-   * @param splitType       {@link JideSplitPane#HORIZONTAL_SPLIT} or
-   *                        {@link JideSplitPane#VERTICAL_SPLIT}
-   * @param firstComponent  Fist component to add.
-   * @param secondComponent Second component to add.
-   * 
-   * @return The split pane.
-   */
-  private JideSplitPane createSplitPane(int splitType, JComponent firstComponent, JComponent secondComponent) {
-    JideSplitPane splitPane = new JideSplitPane(splitType);
-
-    splitPane.add(firstComponent);
-    splitPane.add(secondComponent);
-
-    splitPane.setDividerSize(5);
-    splitPane.setContinuousLayout(true);
-    splitPane.setOneTouchExpandable(false);
-    splitPane.setBorder(null);
-
-    return splitPane;
   }
   
 

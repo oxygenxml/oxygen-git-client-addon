@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -40,6 +42,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -77,21 +80,6 @@ public class ListStashesDialog extends OKCancelDialog {
    * The translator.
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
-
-  /**
-   * The default width for table.
-   */
-  private static final int FILES_LIST_DEFAULT_WIDTH = 300;
-
-  /**
-   * The default width for table.
-   */
-  private static final int STASHES_TABLE_DEFAULT_WIDTH = 600;
-
-  /**
-   * The default height for table.
-   */
-  private static final int STASHES_TABLE_DEFAULT_HEIGHT = 275;
   
   /**
    * The minimum dialog width.
@@ -102,6 +90,21 @@ public class ListStashesDialog extends OKCancelDialog {
    * The minimum dialog height.
    */
   private static final int DIALOG_MINIMUM_HEIGHT = 250;
+  
+  /**
+   * The preferred dialog width.
+   */
+  private static final int DIALOG_PREFERRED_WIDTH = 750;
+  
+  /**
+   * The preferred dialog height.
+   */
+  private static final int DIALOG_PREFERRED_HEIGHT = 350;
+  
+  /**
+   * The minimum size for a table.
+   */
+  private static final Dimension TABLE_MIN_SIZE = new Dimension(200, 200);
   
   /**
    * Extra width for column icon.
@@ -205,6 +208,7 @@ public class ListStashesDialog extends OKCancelDialog {
     
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     setMinimumSize(new Dimension(DIALOG_MINIMUM_WIDTH, DIALOG_MINIMUM_HEIGHT));
+    setPreferredSize(new Dimension(DIALOG_MINIMUM_WIDTH, DIALOG_MINIMUM_HEIGHT));
     
     getOkButton().setVisible(false);
     getCancelButton().setText(TRANSLATOR.getTranslation(Tags.CLOSE));
@@ -218,71 +222,27 @@ public class ListStashesDialog extends OKCancelDialog {
    * @return a JPanel for the stashes list.
    */
   private JPanel createStashesPanel() {
-    JPanel stashesPanel = new JPanel(new GridBagLayout());
-
+    final JPanel stashesPanel = new JPanel(new GridBagLayout());
+    final GridBagConstraints constraints = new GridBagConstraints();
     createAllActions();
-
-    JLabel stashesLabel = new JLabel(TRANSLATOR.getTranslation(Tags.STASHES) + ":");
-    GridBagConstraints constraints = new GridBagConstraints();
+    
+    stashesTable = (Table) createStashesTable();
+    affectedFilesTable = createAffectedFilesTable();
+    
     constraints.gridx = 0;
     constraints.gridy = 0;
     constraints.gridwidth = 1;
     constraints.gridheight = 1;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING,
-        UIConstants.COMPONENT_LEFT_LARGE_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING,
-        0);
-    constraints.weightx = 1;
-    constraints.weighty = 0;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    stashesPanel.add(stashesLabel, constraints);
-    
-    JLabel tableTitleLabel = new JLabel(TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":");
-    constraints.gridx++;
-    constraints.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING,
-        UIConstants.COMPONENT_LEFT_LARGE_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING,
-        0);
-    stashesPanel.add(tableTitleLabel, constraints);
-    
-    stashesTable = (Table) createStashesTable();
-    JScrollPane tableStashesScrollPane = new JScrollPane(stashesTable);
-    tableStashesScrollPane.setPreferredSize(new Dimension(STASHES_TABLE_DEFAULT_WIDTH, STASHES_TABLE_DEFAULT_HEIGHT));
-    tableStashesScrollPane.setMinimumSize(tableStashesScrollPane.getPreferredSize());
-    tableStashesScrollPane.setMaximumSize(tableStashesScrollPane.getPreferredSize());
-    constraints.gridx = 0;
-    constraints.gridy++;
-    constraints.weightx = 1;
-    constraints.weighty = 1;
-    constraints.insets = new Insets(
-        0, 
-        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
-        0, 
-        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
-    constraints.fill = GridBagConstraints.BOTH;
-    stashesPanel.add(tableStashesScrollPane, constraints);
-
-    affectedFilesTable = createAffectedFilesTable();
-    JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
-    changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, STASHES_TABLE_DEFAULT_HEIGHT));
-    changesOfStashScrollPane.setMinimumSize(changesOfStashScrollPane.getPreferredSize());
-    changesOfStashScrollPane.setMaximumSize(changesOfStashScrollPane.getPreferredSize());
-    constraints.gridx++;
     constraints.weightx = 1;
     constraints.weighty = 1;
     constraints.fill = GridBagConstraints.BOTH;
-    constraints.insets = new Insets(
-        0, 
-        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
-        0, 
-        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
-    stashesPanel.add(changesOfStashScrollPane, constraints);
-
-    JPanel stashesTableButtons = createUnderStashesPanel();
-    constraints.gridx = 0;
+    final JideSplitPane stashesSplitPane = UIUtil.createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, 
+        createTablePanel(stashesTable, TRANSLATOR.getTranslation(Tags.STASHES) + ":"),
+        createTablePanel(affectedFilesTable, TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":"));
+    stashesPanel.add(stashesSplitPane, constraints);
+    
+    final JPanel stashesTableButtons = createUnderStashesPanel();
     constraints.gridy++;
     constraints.weightx = 1;
     constraints.weighty = 0;
@@ -292,16 +252,68 @@ public class ListStashesDialog extends OKCancelDialog {
         UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
         0, 
         UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
+    
+    // Customize the split pane.
+    this.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentShown(ComponentEvent e) {
+        final int width = stashesSplitPane.getWidth();
+        stashesSplitPane.setDividerLocation(0, (int) (width * 0.65));
+        removeComponentListener(this);
+      }
+    });
+    
     stashesPanel.add(stashesTableButtons, constraints);
-
-    JPanel emptyPanel = new JPanel();
-    constraints.gridx++;
-    constraints.insets = new Insets(0, 0, 0, 0);
-    stashesPanel.add(emptyPanel, constraints);
-
+    stashesPanel.setMinimumSize(new Dimension(DIALOG_MINIMUM_WIDTH, DIALOG_MINIMUM_HEIGHT));
+    stashesPanel.setPreferredSize(new Dimension(DIALOG_PREFERRED_WIDTH, DIALOG_PREFERRED_HEIGHT));
+    
     stashesTable.setRowSelectionInterval(0, 0);
     
     return stashesPanel;
+  }
+
+  /**
+   * Create a table panel with a label before it.
+   * 
+   * @param table          The table.
+   * @param labelMessage   The message of the label.
+   * 
+   * @return The created panel.
+   */
+  private JPanel createTablePanel(final JTable table, final String labelMessage) {
+    final JPanel panel = new JPanel(new GridBagLayout());
+    final GridBagConstraints gbc = new GridBagConstraints();
+    
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridheight = 1;
+    gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        0);
+    final JLabel stashesLabel = new JLabel(labelMessage);
+    panel.add(stashesLabel, gbc);
+    
+    gbc.gridx = 0;
+    gbc.gridy++;
+    gbc.weightx = 1;
+    gbc.weighty = 1;
+    gbc.insets = new Insets(
+        0, 
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
+    gbc.fill = GridBagConstraints.BOTH;
+    panel.add(new JScrollPane(table), gbc);
+    panel.setMinimumSize(TABLE_MIN_SIZE);
+    
+    return panel;
   }
 
 
@@ -454,13 +466,22 @@ public class ListStashesDialog extends OKCancelDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.WEST;
-    panel.add(deleteAfterApplyingCheckBox, constraints);
-
     JPanel buttonsPanel = createButtonsPanel();
+    panel.add(buttonsPanel, constraints);
+    
     constraints.gridx++;
     constraints.weightx = 1;
-    constraints.anchor = GridBagConstraints.EAST;
-    panel.add(buttonsPanel, constraints);
+    panel.add(new JPanel(), constraints);
+    
+    
+    constraints.gridy++;
+    constraints.gridx = 0;
+    constraints.weightx = 0;
+    panel.add(deleteAfterApplyingCheckBox, constraints);
+    
+    constraints.gridx++;
+    constraints.weightx = 1;
+    panel.add(new JPanel(), constraints);
     
     return panel;
   }
@@ -485,7 +506,7 @@ public class ListStashesDialog extends OKCancelDialog {
     constraints.anchor = GridBagConstraints.WEST;
     constraints.insets = new Insets(
         0, 
-        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
+        0, 
         0, 
         0);
 
@@ -493,6 +514,11 @@ public class ListStashesDialog extends OKCancelDialog {
     buttonsPanel.add(applyButton, constraints);
 
     constraints.gridx ++;
+    constraints.insets = new Insets(
+        0, 
+        UIConstants.COMPONENT_LEFT_PADDING, 
+        0, 
+        0);
     deleteSelectedButton = createDeleteButton();
     buttonsPanel.add(deleteSelectedButton, constraints);
 
