@@ -239,7 +239,9 @@ public class ListStashesDialog extends OKCancelDialog {
     constraints.fill = GridBagConstraints.BOTH;
     final JideSplitPane stashesSplitPane = UIUtil.createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, 
         createTablePanel(stashesTable, TRANSLATOR.getTranslation(Tags.STASHES) + ":"),
-        createTablePanel(affectedFilesTable, TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":"));
+        createTablePanel(affectedFilesTable, TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":"),
+        this, 
+        0.65);
     stashesPanel.add(stashesSplitPane, constraints);
     
     final JPanel stashesTableButtons = createUnderStashesPanel();

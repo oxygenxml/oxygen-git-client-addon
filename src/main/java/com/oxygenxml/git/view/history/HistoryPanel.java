@@ -297,21 +297,10 @@ public class HistoryPanel extends JPanel {
     createAndAddToolbarToTopPanel(topPanel, constr);
 
     JPanel infoBoxesSplitPane = UIUtil.createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
-        affectedFilesTableScrollPane);
+        affectedFilesTableScrollPane, null, 0);
     JideSplitPane centerSplitPane = UIUtil.createSplitPane(JideSplitPane.VERTICAL_SPLIT, historyTableScrollPane,
-        infoBoxesSplitPane);
+        infoBoxesSplitPane, this, 0.6);
     centerSplitPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-
-    // Customize the split pane.
-    this.addComponentListener(new ComponentAdapter() {
-      @Override
-      public void componentShown(ComponentEvent e) {
-        int h = centerSplitPane.getHeight();
-        centerSplitPane.setDividerLocation(0, (int) (h * 0.6));
-
-        removeComponentListener(this);
-      }
-    });
 
     gitCtrl.addGitListener(new GitEventAdapter() {
       @Override

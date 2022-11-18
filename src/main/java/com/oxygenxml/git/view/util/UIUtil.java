@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.util;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -8,6 +9,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
+
+import org.eclipse.jgit.annotations.NonNull;
+import org.eclipse.jgit.annotations.Nullable;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
@@ -432,10 +438,18 @@ public class UIUtil {
    *                        {@link JideSplitPane#VERTICAL_SPLIT}
    * @param firstComponent  Fist component to add.
    * @param secondComponent Second component to add.
+   * @param mainContainer   The main container for this split pane. Used to set split pane position.
+   * @param dividerPosition The divider position, between 0 and 1. If it is less or equal then 0, no divider location will be set. 
+   * If it has value 0.3 for example, the first component will have 30% from space and the second 70%. 
    * 
-   * @return The split pane.
+   * @return The created split pane.
    */
-  public static JideSplitPane createSplitPane(int splitType, JComponent firstComponent, JComponent secondComponent) {
+  public static JideSplitPane createSplitPane(
+      final int splitType, 
+      @NonNull final JComponent firstComponent, 
+      @NonNull final JComponent secondComponent, 
+      @Nullable final Component mainContainer,
+      final double dividerPosition) {
     final JideSplitPane splitPane = new JideSplitPane(splitType);
 
     splitPane.add(firstComponent);
@@ -446,6 +460,18 @@ public class UIUtil {
     splitPane.setOneTouchExpandable(false);
     splitPane.setBorder(null);
 
+    if(mainContainer != null && dividerPosition > 0) {
+      final double dividerLocationPosition = dividerPosition > 1 ? 1 : dividerPosition; 
+      mainContainer.addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentShown(ComponentEvent e) {
+          final int size = splitType == JideSplitPane.HORIZONTAL_SPLIT ? splitPane.getWidth() : splitPane.getHeight();
+          splitPane.setDividerLocation(0, (int) (size * dividerLocationPosition));
+          mainContainer.removeComponentListener(this);
+        }
+      });
+      
+    }
     return splitPane;
   }
 }
