@@ -479,11 +479,8 @@ public class ListStashesDialog extends OKCancelDialog {
     constraints.gridy++;
     constraints.gridx = 0;
     constraints.weightx = 0;
+    constraints.insets = new Insets(11, 0, 0, 0);
     panel.add(deleteAfterApplyingCheckBox, constraints);
-    
-    constraints.gridx++;
-    constraints.weightx = 1;
-    panel.add(new JPanel(), constraints);
     
     return panel;
   }
