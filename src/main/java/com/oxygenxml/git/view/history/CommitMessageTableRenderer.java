@@ -22,10 +22,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -58,20 +57,14 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   private static final int HORIZONTAL_INSET = 3;
 
   /**
-   * The maximum length for a branch or tag name.
+   * The maximum length to which a branch/tag name can be shortened.
    */
   private static final int MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH = 50;
   
   /**
-   * The maximum length for a branch or tag name.
+   * The minimum length to which a branch/tag name can be shortened.
    */
   private static final int MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW = 5;
-
-  /**
-   * Logger for logging.
-   */
-  @SuppressWarnings("unused")
-  private static final Logger LOGGER =  LoggerFactory.getLogger(CommitMessageTableRenderer.class);
 
   /**
    * Git repository.
@@ -117,7 +110,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   /**
    * The list of labels for current commit.
    */
-  private final List<JLabel> commitLabels = new ArrayList<>();
+  private List<JLabel> commitLabels = new ArrayList<>();
   
   /**
    * The delta for current message.
@@ -264,7 +257,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       commitMessageToRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
       comp = new ApplicationLabel(commitMessageToRender); 
     } else if (repository != null) {
-      putAllLabelsForCurrentCommitOnList(table, commitCharacteristics);
+      commitLabels = computeLabelsForCurrentCommit(table, commitCharacteristics);
       
       comp = new ApplicationLabel(commitMessageToRender); 
       if(!commitMessageToRender.isBlank()) {
@@ -313,15 +306,19 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
   /**
    * Short the labels to respect the available width.
-   * 
+   * <br>
+   * Found the maximum value between [{MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW}, {MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH}] for which the labels 
+   * can be shortened so that they do not exceed the available size. If no value is okay, the labels will be shortened to a {MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW} maximum length.
+   *  
    * @param availableWidth The available width for commit labels.
    */
   private void processingCommitLabelsToFitByWidth(final int availableWidth) { 
-    // use binary search algorithm to find the best value 
     int left = MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW;
     int right = MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH;
     int current = 0;
     int currentLabelsWidth = 0;
+    
+    // use binary search algorithm to find the best value 
     while(left < right) {
       current = (left + right) / 2;
       currentLabelsWidth = shortenLabelsText(current);
@@ -333,9 +330,12 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         break;
       }
     }
-    
+   
+    // checks and adjust current labels width not to exceed the available size
     if(current > MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW && currentLabelsWidth > availableWidth) {
-      while(--current > MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW && shortenLabelsText(current) > availableWidth);
+      do {
+        current--;
+      } while(current > MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW && shortenLabelsText(current) > availableWidth);
     }
     
   }
@@ -345,35 +345,31 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * 
    * @param table                  The current table.
    * @param commitCharacteristics  The current commit.
+   * 
+   * @return The computed list with all commit labels or an empty list.
    */
-  private void putAllLabelsForCurrentCommitOnList(final JTable table,
+  @NonNull
+  private List<JLabel> computeLabelsForCurrentCommit(final JTable table,
       final CommitCharacteristics commitCharacteristics) {
+    final List<JLabel> commitLabelsList = new ArrayList<>();
     String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
     boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
 
     List<String> tagList = tagMap.get(abbreviatedId);
     Color tagBackgroundColor = isDarkTheme ? UIUtil.TAG_GRAPHITE_BACKGROUND 
         : UIUtil.TAG_LIGHT_BACKGROUND;
-    createAndPutBranchOrTagLabelOnList(tagList, tagBackgroundColor, table.getForeground());
+    createAndPutBranchOrTagLabelOnList(commitLabelsList, tagList, tagBackgroundColor, table.getForeground());
 
     List<String> localBranchList = localBranchMap.get(abbreviatedId);
-    createAndPutBranchOrTagLabelOnList(localBranchList, table.getBackground(), table.getForeground());
+    createAndPutBranchOrTagLabelOnList(commitLabelsList, localBranchList, table.getBackground(), table.getForeground());
 
     List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
     Color remoteBackgroundColor = isDarkTheme ? UIUtil.REMOTE_BRANCH_GRAPHITE_BACKGROUND 
         : UIUtil.REMOTE_BRANCH_LIGHT_BACKGROUND;
 
-    createAndPutBranchOrTagLabelOnList(remoteBranchList, remoteBackgroundColor, table.getForeground());
-  }
-  
-  /**
-   * Wrapper for an integer value to can update this value in lambda expressions.
-   * 
-   * @author alex_smarandache
-   *
-   */
-  private class IntegerWrapper {
-    int value = 0;
+    createAndPutBranchOrTagLabelOnList(commitLabelsList, remoteBranchList, remoteBackgroundColor, table.getForeground());
+    
+    return commitLabelsList;
   }
 
   /**
@@ -386,27 +382,26 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * @return The sum of all new labels.
    */
   private int shortenLabelsText(final int maxLabelLength) {
-    final IntegerWrapper labelsTotalWidth = new IntegerWrapper();
-    commitLabels.forEach(commitLabel -> {
+    return commitLabels.stream().mapToInt(commitLabel -> {
       final String name = commitLabel.getToolTipText(); 
       final String shortenName = name.length() > maxLabelLength ? 
           (name.substring(0, maxLabelLength - "...".length()) + "...") 
           : name;
       commitLabel.setText(shortenName);
-      labelsTotalWidth.value += commitLabel.getPreferredSize().width;
-    });
-    
-    return labelsTotalWidth.value;
+      return commitLabel.getPreferredSize().width;
+    }).sum();
   }
 
   /**
    * Add Label to "Commit Message" column: tag or local/remote branch to te list of current commit labels.
    * 
+   * @param commitLabels     The collection to add the commit labels.
    * @param nameForLabelList List of tags or branches corresponding the commit.
    * @param backgroundColor  The background color.
    * @param foregroundColor  The foreground color.
    */
   private void createAndPutBranchOrTagLabelOnList(
+      List<JLabel> commitLabels,
       List<String> nameForLabelList,
       Color backgroundColor,
       Color foregroundColor) {
