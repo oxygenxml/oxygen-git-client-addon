@@ -136,7 +136,7 @@ public class JaxbOptions implements Options {
 	 * Option about what to do when opening a prject in Oxygen and detecting a Git repository.
 	 */
 	@XmlElement(name = "whenRepoDetectedInProject")
-	private WhenRepoDetectedInProject whenRepoDetectedInProject = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
+	private WhenRepoDetectedInProject whenRepoDetectedInProject = WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC;
 	
 	/**
 	 * <code>true</code> to update submodules on pull.

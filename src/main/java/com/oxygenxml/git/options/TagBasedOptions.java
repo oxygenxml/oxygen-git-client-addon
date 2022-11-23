@@ -293,7 +293,7 @@ public class TagBasedOptions implements Options {
 
   @Override
   public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
-    String whenRepoDetected = wsOptionsStorage.getOption(OptionTags.WHEN_REPO_DETECTED_IN_PROJECT, String.valueOf(WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC));
+    String whenRepoDetected = wsOptionsStorage.getOption(OptionTags.WHEN_REPO_DETECTED_IN_PROJECT, String.valueOf(WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC));
     return WhenRepoDetectedInProject.valueOf(whenRepoDetected);
   }
 
