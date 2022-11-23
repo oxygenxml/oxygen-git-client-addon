@@ -32,8 +32,8 @@ public class CommitMessageRenderTest {
     commitLabels.add(l1);
     
     final JLabel l2 = new JLabel();
-    l2.setText("1234567890");
-    l2.setToolTipText("1234567890");
+    l2.setText("123456");
+    l2.setToolTipText("123456");
     commitLabels.add(l2);
     
     final JLabel l3 = new JLabel();
