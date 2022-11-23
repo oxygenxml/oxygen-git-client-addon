@@ -26,6 +26,7 @@ import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.RoundedLineBorder;
@@ -110,7 +111,8 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   /**
    * The list of labels for current commit.
    */
-  private List<JLabel> commitLabels = new ArrayList<>();
+  @VisibleForTesting
+  protected List<JLabel> commitLabels = new ArrayList<>();
   
   /**
    * The delta for current message.
@@ -312,7 +314,8 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    *  
    * @param availableWidth The available width for commit labels.
    */
-  private void processingCommitLabelsToFitByWidth(final int availableWidth) { 
+  @VisibleForTesting
+  protected void processingCommitLabelsToFitByWidth(final int availableWidth) { 
     int left = MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW;
     int right = MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH;
     int current = 0;
@@ -337,7 +340,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         current--;
       } while(current > MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW && shortenLabelsText(current) > availableWidth);
     }
-    
+
   }
 
   /**
