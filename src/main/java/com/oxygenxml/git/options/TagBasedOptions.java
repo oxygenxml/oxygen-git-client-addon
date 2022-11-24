@@ -549,5 +549,16 @@ public class TagBasedOptions implements Options {
   public String getDefaultSshAgent() {
     return wsOptionsStorage.getOption(OptionTags.DEFAULT_SSH_AGENT, "");
   }
+
+  @Override
+  public void setStashIncludeUntracked(boolean stashIncludeUntracked) {
+    wsOptionsStorage.setOption(OptionTags.STASH_INCLUDE_UNTRACKED, String.valueOf(stashIncludeUntracked)); 
+  }
+
+  @Override
+  public boolean getStashIncludeUntracked() {
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(
+        OptionTags.STASH_INCLUDE_UNTRACKED, TRUE));
+  }
   
 }

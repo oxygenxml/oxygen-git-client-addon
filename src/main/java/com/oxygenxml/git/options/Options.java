@@ -312,4 +312,14 @@ public interface Options {
    */
   public String getDefaultSshAgent();
   
+  /**
+   * @param includeUntrackedFiles <code>true</code> if the stash should include the untracked files.
+   */
+  public void setStashIncludeUntracked(final boolean stashIncludeUntracked);
+  
+  /**
+   * @return <code>true</code> if the stash should include the untracked files.
+   */
+  public boolean getStashIncludeUntracked();
+  
 }

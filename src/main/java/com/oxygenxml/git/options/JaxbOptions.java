@@ -165,6 +165,12 @@ public class JaxbOptions implements Options {
    */
   @XmlElement(name = "defaultSshAgent")
   private String defaultSshAgent = "";
+  
+  /**
+   * <code>true</code> if the stash should include the untracked files.
+   */
+  @XmlElement(name = "stashIncludeUntracked")
+  private boolean stashIncludeUntracked = true;
 
 	@Override
   public boolean isAutoPushWhenCommitting() {
@@ -564,6 +570,17 @@ public class JaxbOptions implements Options {
         + isAutoPushWhenCommitting + ", validateFilesBeforeCommit=" + validateFilesBeforeCommit + ", rejectCommitOnValidationProblems=" 
         + rejectCommitOnValidationProblems + ", validateMainFilesBeforePush=" + validateMainFilesBeforePush + 
         ", rejectPushOnValidationProblems=" + rejectPushOnValidationProblems + "]";
+  }
+
+  @Override
+  public void setStashIncludeUntracked(boolean stashIncludeUntracked) {
+    this.stashIncludeUntracked = stashIncludeUntracked;
+    
+  }
+
+  @Override
+  public boolean getStashIncludeUntracked() {
+    return stashIncludeUntracked;
   }
 
 }

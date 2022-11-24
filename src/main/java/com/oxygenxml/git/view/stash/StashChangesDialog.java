@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.options.OptionTags;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -22,7 +22,6 @@ import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.TextField;
 
@@ -135,17 +134,9 @@ public class StashChangesDialog extends OKCancelDialog {
     constraints.weightx = 0;
     constraints.fill = GridBagConstraints.NONE;
     
-    WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
-    if(optionsStorage != null) {
-      includeUntrackedCheckBox.setSelected(
-              Boolean.parseBoolean(optionsStorage.getOption(OptionTags.STASH_INCLUDE_UNTRACKED, Boolean.toString(true))));
-      includeUntrackedCheckBox.addItemListener(
-          e -> optionsStorage.setOption(
-              OptionTags.STASH_INCLUDE_UNTRACKED,
-              Boolean.toString(includeUntrackedCheckBox.isSelected())));
-    } else {
-      includeUntrackedCheckBox.setSelected(true);
-    }
+    includeUntrackedCheckBox.setSelected(OptionsManager.getInstance().getStashIncludeUntracked());
+    includeUntrackedCheckBox.addItemListener(
+        e -> OptionsManager.getInstance().setStashIncludeUntracked(includeUntrackedCheckBox.isSelected()));
 
     panel.add(includeUntrackedCheckBox, constraints);
     

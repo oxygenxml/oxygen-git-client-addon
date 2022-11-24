@@ -68,6 +68,7 @@ public class DefaultOptionsValuesTest {
     assertFalse(options.isAutoPushWhenCommitting());
     assertTrue(options.isCheckoutNewlyCreatedLocalBranch());
     assertFalse(options.isNotifyAboutNewRemoteCommits());
+    assertTrue(options.getStashIncludeUntracked());
   }
 
 }

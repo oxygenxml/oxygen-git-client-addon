@@ -759,6 +759,20 @@ public class OptionsManager {
   }
   
   /**
+   * @param includeUntrackedFiles <code>true</code> if the stash should include the untracked files.
+   */
+  public void setStashIncludeUntracked(final boolean stashIncludeUntracked) {
+    getOptions().setStashIncludeUntracked(stashIncludeUntracked);
+  }
+  
+  /**
+   * @return <code>true</code> if the stash should include the untracked files.
+   */
+  public boolean getStashIncludeUntracked() {
+    return getOptions().getStashIncludeUntracked();
+  }
+  
+  /**
    * Remove credentials from a given host. 
    * The credentials will be removed for both, token and user + password authentication.
    * 
