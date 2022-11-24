@@ -117,7 +117,7 @@ public class OptionTags {
   public static final String STASH_INCLUDE_UNTRACKED = "com.oxygenxml.git.stash.include.untracked";
   
   /**
-   * <code>true</code> if the create new branch option is selected.
+   * <code>true</code> if should create a new branch when checkout a commit.
    */
   public static final String CHECKOUT_COMMIT_SELECT_NEW_BRANCH = "com.oxygenxml.git.checkout.commit.select.new.branch";
   

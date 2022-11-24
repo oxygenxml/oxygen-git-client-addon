@@ -788,6 +788,20 @@ public class OptionsManager {
   }
   
   /**
+   * @param createBranchWhenCheckoutCommit <code>true</code> if should create a new branch when checkout a commit.
+   */
+  public void setCreateBranchWhenCheckoutCommit(final boolean createBranchWhenCheckoutCommit) {
+    getOptions().setCreateBranchWhenCheckoutCommit(createBranchWhenCheckoutCommit);
+  }
+  
+  /**
+   * @return <code>true</code> if should create a new branch when checkout a commit.
+   */ 
+  public boolean getCreateBranchWhenCheckoutCommit() {
+    return getOptions().getCreateBranchWhenCheckoutCommit();
+  }
+  
+  /**
    * Remove credentials from a given host. 
    * The credentials will be removed for both, token and user + password authentication.
    * 

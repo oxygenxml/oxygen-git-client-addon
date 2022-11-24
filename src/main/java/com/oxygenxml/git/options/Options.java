@@ -333,4 +333,14 @@ public interface Options {
    */
   public HistoryStrategy getHistoryStrategy();
   
+  /**
+   * @param createBranchWhenCheckoutCommit <code>true</code> if should create a new branch when checkout a commit.
+   */
+  public void setCreateBranchWhenCheckoutCommit(final boolean createBranchWhenCheckoutCommit);
+  
+  /**
+   * @return <code>true</code> if should create a new branch when checkout a commit.
+   */ 
+  public boolean getCreateBranchWhenCheckoutCommit();
+  
 }

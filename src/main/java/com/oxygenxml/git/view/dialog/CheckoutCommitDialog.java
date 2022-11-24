@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.options.OptionTags;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -42,7 +42,6 @@ import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
@@ -90,11 +89,6 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	private JPanel createBranchPanel;
 
 	/**
-	 * Informative warning message about deteached HEAD.
-	 */
-	private JLabel warningAboutDeteachedHEAD;
-
-	/**
 	 * The error message area.
 	 */
 	private final JTextArea errorMessageTextArea = UIUtil.createMessageArea("");
@@ -113,12 +107,6 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	 * Contains the previous branch name.
 	 */
 	private String previousBranchNameUpdate = "";
-	
-	/**
-	 * Contains the options storage.
-	 */
-	private WSOptionsStorage optionsStorage;
-
 	
 
 	/**
@@ -207,7 +195,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 		buttonGroup.add(detachedHEADRadio);
 
 		// Warning about detached HEAD.
-		warningAboutDeteachedHEAD = new JLabel();
+		final JLabel warningAboutDeteachedHEAD = new JLabel();
 		gbc.insets = new Insets(0, LEFT_INDENT, 0, 0);
 		warningAboutDeteachedHEAD.setText(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(
 				Tags.DETACHED_HEAD_WARNING_MESSAGE)));
@@ -235,17 +223,12 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 
 		setOkButtonText(TRANSLATOR.getTranslation(Tags.CHECKOUT));
 
-		optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
-	    if(optionsStorage != null) {
-	    	boolean selectNewBranchRadio = Boolean.parseBoolean(optionsStorage.getOption(OptionTags.CHECKOUT_COMMIT_SELECT_NEW_BRANCH, Boolean.toString(true)));
-	    	if(selectNewBranchRadio) {
-	    	   createNewBranchRadio.doClick();
-	    	} else {
-	    		detachedHEADRadio.doClick();
-	    	}
-	    } else {
-	    	createNewBranchRadio.doClick();
-	    }
+		boolean selectNewBranchRadio = OptionsManager.getInstance().getCreateBranchWhenCheckoutCommit();
+    if(selectNewBranchRadio) {
+       createNewBranchRadio.doClick();
+    } else {
+      detachedHEADRadio.doClick();
+    }
 	    
 	}
 
@@ -273,9 +256,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 			}
 		});
 		
-		optionsStorage.setOption(
-	              OptionTags.CHECKOUT_COMMIT_SELECT_NEW_BRANCH,
-	              Boolean.toString(createNewBranchRadio.isSelected()));
+		OptionsManager.getInstance().setCreateBranchWhenCheckoutCommit(createNewBranchRadio.isSelected());
 	}
 
 

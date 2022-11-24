@@ -44,33 +44,65 @@ public class DefaultOptionsValuesTest {
    * @param options The options to check.
    */
   private void assertAllDefaultOptions(final Options options) {
+    int counter = 0;
     assertTrue(options.getCommitMessages().getMessages().isEmpty());
+    counter++;
     assertEquals(PullType.MERGE_FF, options.getDefaultPullType());
+    counter++;
     assertEquals("", options.getDefaultSshAgent());
+    counter++;
     assertEquals("DestinationPaths [paths=[]]", options.getDestinationPaths().toString());
+    counter++;
     assertEquals(false, options.getDetectAndOpenXprFiles());
+    counter++;
     assertEquals("", options.getPassphrase());
+    counter++;
     assertTrue(options.getPersonalAccessTokensList().getPersonalAccessTokens().isEmpty());
+    counter++;
     assertTrue(options.getProjectsTestsForGit().getPaths().isEmpty());
+    counter++;
     assertFalse(options.getRejectCommitOnValidationProblems());
+    counter++;
     assertFalse(options.getRejectPushOnValidationProblems());
+    counter++;
     assertTrue(options.getRepositoryLocations().getLocations().isEmpty());
+    counter++;
     assertEquals("", options.getSelectedRepository());
+    counter++;
     assertTrue(options.getSshPromptAnswers().isEmpty());
+    counter++;
     assertEquals(ResourcesViewMode.FLAT_VIEW, options.getStagedResViewMode());
+    counter++;
     assertEquals(ResourcesViewMode.FLAT_VIEW, options.getUnstagedResViewMode());
+    counter++;
     assertTrue(options.getUpdateSubmodulesOnPull());
+    counter++;
     assertTrue(options.getUserCredentialsList().getCredentials().isEmpty());
+    counter++;
     assertTrue(options.getUseSshAgent());
+    counter++;
     assertFalse(options.getValidateFilesBeforeCommit());
+    counter++;
     assertFalse(options.getValidateMainFilesBeforePush());
+    counter++;
     assertTrue(options.getWarnOnChangeCommitId().isEmpty());
+    counter++;
     assertEquals(WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC, options.getWhenRepoDetectedInProject());
+    counter++;
     assertEquals(HistoryStrategy.ALL_BRANCHES, options.getHistoryStrategy());
+    counter++;
     assertFalse(options.isAutoPushWhenCommitting());
+    counter++;
     assertTrue(options.isCheckoutNewlyCreatedLocalBranch());
+    counter++;
     assertFalse(options.isNotifyAboutNewRemoteCommits());
+    counter++;
     assertTrue(options.getStashIncludeUntracked());
+    counter++;
+    assertTrue(options.getCreateBranchWhenCheckoutCommit());
+    counter++;
+    assertEquals("Probably a new option has been added, test its default value in this test and increment the counter.",
+        OptionTags.class.getFields().length, counter);
   }
 
 }

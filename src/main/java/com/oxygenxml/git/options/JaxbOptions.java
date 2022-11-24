@@ -178,6 +178,12 @@ public class JaxbOptions implements Options {
    */
   @XmlElement(name = "stashIncludeUntracked")
   private boolean stashIncludeUntracked = true;
+  
+  /**
+   * <code>true</code> if should create a new branch when checkout a commit.
+   */
+  @XmlElement(name = "createBranchWhenCheckoutCommit")
+  private boolean createBranchWhenCheckoutCommit = true;
 
 	@Override
   public boolean isAutoPushWhenCommitting() {
@@ -598,6 +604,16 @@ public class JaxbOptions implements Options {
   @Override
   public HistoryStrategy getHistoryStrategy() {
     return historyStrategy;
+  }
+
+  @Override
+  public void setCreateBranchWhenCheckoutCommit(final boolean createBranchWhenCheckoutCommit) {
+    this.createBranchWhenCheckoutCommit = createBranchWhenCheckoutCommit;
+  }
+
+  @Override
+  public boolean getCreateBranchWhenCheckoutCommit() {
+    return createBranchWhenCheckoutCommit;
   }
 
 }

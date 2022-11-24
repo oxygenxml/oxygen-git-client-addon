@@ -572,5 +572,16 @@ public class TagBasedOptions implements Options {
     return HistoryStrategy.getStrategy(wsOptionsStorage.getOption(OptionTags.HISTORY_STRATEGY, 
         HistoryStrategy.ALL_BRANCHES.toString()));
   }
+
+  @Override
+  public void setCreateBranchWhenCheckoutCommit(final boolean createBranchWhenCheckoutCommit) {
+    wsOptionsStorage.setOption(
+        OptionTags.CHECKOUT_COMMIT_SELECT_NEW_BRANCH, Boolean.toString(createBranchWhenCheckoutCommit));
+  }
+
+  @Override
+  public boolean getCreateBranchWhenCheckoutCommit() {
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.CHECKOUT_COMMIT_SELECT_NEW_BRANCH, TRUE));
+  }
   
 }
