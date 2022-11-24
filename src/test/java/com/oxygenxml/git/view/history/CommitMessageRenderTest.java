@@ -23,7 +23,6 @@ public class CommitMessageRenderTest {
    */
   @Test
   public void testShortenCommitLabels() {
-    final CommitMessageTableRenderer render = new CommitMessageTableRenderer(null, null, null, null, null, null);
     final List<JLabel> commitLabels = new ArrayList<>();
     
     final JLabel l1 = new JLabel();
@@ -43,20 +42,18 @@ public class CommitMessageRenderTest {
     
     int commitLabelsMaxWidth = (l1.getPreferredSize().width + l2.getPreferredSize().width + l3.getPreferredSize().width) / 3;
     
-    render.commitLabels = commitLabels;
+    CommitMessageTableRenderer.processingCommitLabelsToFitByWidth(commitLabels, commitLabelsMaxWidth);
     
-    render.processingCommitLabelsToFitByWidth(commitLabelsMaxWidth);
-    
-    assertTrue(render.commitLabels.stream().mapToInt(l -> l.getPreferredSize().width).sum() <= commitLabelsMaxWidth);
-    assertTrue(render.commitLabels.get(0).getToolTipText().length() > render.commitLabels.get(0).getText().length());
-    assertEquals(render.commitLabels.get(1).getToolTipText().length(), render.commitLabels.get(1).getText().length());
-    assertTrue(render.commitLabels.get(2).getToolTipText().length() > render.commitLabels.get(2).getText().length());
+    assertTrue(commitLabels.stream().mapToInt(l -> l.getPreferredSize().width).sum() <= commitLabelsMaxWidth);
+    assertTrue(commitLabels.get(0).getToolTipText().length() > commitLabels.get(0).getText().length());
+    assertEquals(commitLabels.get(1).getToolTipText().length(), commitLabels.get(1).getText().length());
+    assertTrue(commitLabels.get(2).getToolTipText().length() > commitLabels.get(2).getText().length());
     
     commitLabelsMaxWidth *= 5;
-    render.processingCommitLabelsToFitByWidth(commitLabelsMaxWidth);
-    assertEquals(render.commitLabels.get(0).getToolTipText(), render.commitLabels.get(0).getText());
-    assertEquals(render.commitLabels.get(1).getToolTipText(), render.commitLabels.get(1).getText());
-    assertEquals(render.commitLabels.get(2).getToolTipText(), render.commitLabels.get(2).getText());
+    CommitMessageTableRenderer.processingCommitLabelsToFitByWidth(commitLabels, commitLabelsMaxWidth);
+    assertEquals(commitLabels.get(0).getToolTipText(), commitLabels.get(0).getText());
+    assertEquals(commitLabels.get(1).getToolTipText(), commitLabels.get(1).getText());
+    assertEquals(commitLabels.get(2).getToolTipText(), commitLabels.get(2).getText());
   }
 
 }

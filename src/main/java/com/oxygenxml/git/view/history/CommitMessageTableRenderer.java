@@ -111,8 +111,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   /**
    * The list of labels for current commit.
    */
-  @VisibleForTesting
-  protected List<JLabel> commitLabels = new ArrayList<>();
+  private List<JLabel> commitLabels = new ArrayList<>();
   
   /**
    * The delta for current message.
@@ -262,7 +261,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       commitLabels = computeLabelsForCurrentCommit(table, commitCharacteristics);
       
       comp = new ApplicationLabel(commitMessageToRender); 
-      if(!commitMessageToRender.isBlank()) {
+      if(!commitMessageToRender.trim().isEmpty()) {
         comp.setToolTipText(commitMessageToRender);
       }
       
@@ -273,7 +272,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         if(commitMessageWidth < labelsMaxWidth) {
           labelsMaxWidth = Math.max(availableWidth - commitMessageWidth - MESSAGE_DELTA, labelsMaxWidth);
         }
-        processingCommitLabelsToFitByWidth(labelsMaxWidth);
+        processingCommitLabelsToFitByWidth(commitLabels, labelsMaxWidth);
       }
       
       addAllCommitLabels(constr);
@@ -312,10 +311,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * Found the maximum value between [{MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW}, {MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH}] for which the labels 
    * can be shortened so that they do not exceed the available size. If no value is okay, the labels will be shortened to a {MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW} maximum length.
    *  
+   * @param commitLabels   The labels for current commit.
    * @param availableWidth The available width for commit labels.
    */
   @VisibleForTesting
-  protected void processingCommitLabelsToFitByWidth(final int availableWidth) { 
+  protected static void processingCommitLabelsToFitByWidth(final List<JLabel> commitLabels, final int availableWidth) { 
     int left = MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW;
     int right = MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH;
     int current = 0;
@@ -324,7 +324,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
     // use binary search algorithm to find the best value 
     while(left < right) {
       current = (left + right) / 2;
-      currentLabelsWidth = shortenLabelsText(current);
+      currentLabelsWidth = shortenLabelsText(commitLabels, current);
       if(currentLabelsWidth > availableWidth) {
         right = current - 1;
       } else if(currentLabelsWidth < availableWidth) {
@@ -338,7 +338,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
     if(current > MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW && currentLabelsWidth > availableWidth) {
       do {
         current--;
-      } while(current > MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW && shortenLabelsText(current) > availableWidth);
+      } while(current > MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW && shortenLabelsText(commitLabels, current) > availableWidth);
     }
 
   }
@@ -380,11 +380,12 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * <br><br>
    * !!! IMPORTANT !!! The complete name should be set on the tooltip text which is used as original text.
    * 
+   * @param commitLabels   The labels for current commit.
    * @param maxLabelLength The maximum length for a label.
    * 
    * @return The sum of all new labels.
    */
-  private int shortenLabelsText(final int maxLabelLength) {
+  private static int shortenLabelsText(final List<JLabel> commitLabels, final int maxLabelLength) {
     return commitLabels.stream().mapToInt(commitLabel -> {
       final String name = commitLabel.getToolTipText(); 
       final String shortenName = name.length() > maxLabelLength ? 
