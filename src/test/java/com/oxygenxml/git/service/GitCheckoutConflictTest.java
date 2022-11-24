@@ -157,7 +157,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
 
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
 
-    WSOptionsStorage mockedWsOptionsStorage = new TestWsOptionsStorage();
+    WSOptionsStorage mockedWsOptionsStorage = new WSOptionsStorageTestAdapter();
     Mockito.doAnswer(invocation -> mockedWsOptionsStorage).when(pluginWSMock).getOptionsStorage();
     
     XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);

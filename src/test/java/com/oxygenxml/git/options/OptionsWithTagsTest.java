@@ -236,7 +236,8 @@ public class OptionsWithTagsTest {
     
     assertEquals(
         "A new option was added. If the option is displayed in the preferences page OxygenGitOptionPagePluginExtension then "
-        + " it must be placed in OxygenGitOptionPagePluginExtension.getProjectLevelOptionKeys() to save it at project level.",
+        + " it must be placed in OxygenGitOptionPagePluginExtension.getProjectLevelOptionKeys() to save it at project level."
+            + "\n See also: com.oxygenxml.git.options.DefaultOptionsValuesTest",
         "AUTO_PUSH_WHEN_COMMITTING\n"
         + "NOTIFY_ABOUT_NEW_REMOTE_COMMITS\n"
         + "CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH\n"
@@ -264,4 +265,5 @@ public class OptionsWithTagsTest {
         + "REJECT_PUSH_ON_VALIDATION_PROBLEMS\n"
         + "DETECT_AND_OPEN_XPR_FILES", dump);
   }
+
 }

@@ -564,7 +564,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       }
     }).when(projectCtrlMock).refreshFolders(Mockito.any());
     
-    WSOptionsStorage wsOptions = new TestWsOptionsStorage();
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
     Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
     
     installGitProtocol();

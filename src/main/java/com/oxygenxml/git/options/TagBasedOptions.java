@@ -178,7 +178,7 @@ public class TagBasedOptions implements Options {
 
   @Override
   public boolean isCheckoutNewlyCreatedLocalBranch() {
-    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH, FALSE));
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.CHECKOUT_NEWLY_CREATED_LOCAL_BRANCH, TRUE));
   }
 
   @Override
