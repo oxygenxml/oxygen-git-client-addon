@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 /**
@@ -321,5 +322,15 @@ public interface Options {
    * @return <code>true</code> if the stash should include the untracked files.
    */
   public boolean getStashIncludeUntracked();
+  
+  /**
+   * @param historyStrategy The new default history presentation strategy.
+   */
+  public void setHistoryStrategy(final HistoryStrategy historyStrategy);
+  
+  /**
+   * @return The default history presentation strategy.
+   */
+  public HistoryStrategy getHistoryStrategy();
   
 }

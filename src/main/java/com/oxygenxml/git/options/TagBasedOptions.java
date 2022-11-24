@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
@@ -559,6 +560,17 @@ public class TagBasedOptions implements Options {
   public boolean getStashIncludeUntracked() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(
         OptionTags.STASH_INCLUDE_UNTRACKED, TRUE));
+  }
+
+  @Override
+  public void setHistoryStrategy(final HistoryStrategy historyStrategy) {
+    wsOptionsStorage.setOption(OptionTags.HISTORY_STRATEGY, historyStrategy.toString());
+  }
+
+  @Override
+  public HistoryStrategy getHistoryStrategy() {
+    return HistoryStrategy.getStrategy(wsOptionsStorage.getOption(OptionTags.HISTORY_STRATEGY, 
+        HistoryStrategy.ALL_BRANCHES.toString()));
   }
   
 }

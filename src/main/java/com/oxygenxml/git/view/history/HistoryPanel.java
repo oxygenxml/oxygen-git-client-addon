@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.options.OptionTags;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -89,7 +89,6 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
-import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -108,11 +107,6 @@ public class HistoryPanel extends JPanel {
    * History label right inset.
    */
   private static final int INFO_HISTORY_WIDTH_INSET = 20;
-  
-  /**
-   * Filter width.
-   */
-  private static final int FILTER_WIDTH = 100;
   
   /**
    * Logger for logging.
@@ -207,11 +201,6 @@ public class HistoryPanel extends JPanel {
   private final SplitMenuButton presentHistoryStrategyButton; 
   
   /**
-   * Contains the options storage.
-   */
-  private final WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
-  
-  /**
    * <code>true</code> if the branch has uncommited changes.
    */
   private boolean hasUncommitedChanges  = false;
@@ -241,8 +230,7 @@ public class HistoryPanel extends JPanel {
     
     graphCellRender = new CommitsGraphCellRender();
   
-    currentStrategy = HistoryStrategy.getStrategy(optionsStorage.getOption(OptionTags.HISTORY_STRATEGY, 
-        HistoryStrategy.ALL_BRANCHES.toString()));
+    currentStrategy = OptionsManager.getInstance().getHistoryStrategy();
     
     if(currentStrategy == null) {
       currentStrategy = HistoryStrategy.ALL_BRANCHES;
@@ -454,7 +442,7 @@ public class HistoryPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				currentStrategy = strategy;
 				button.setText(strategy.toString());
-				optionsStorage.setOption(OptionTags.HISTORY_STRATEGY, strategy.toString());
+				OptionsManager.getInstance().setHistoryStrategy(strategy);
 				scheduleRefreshHistory();
 			}
 			

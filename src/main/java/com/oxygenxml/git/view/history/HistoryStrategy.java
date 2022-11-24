@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.history;
 
+import javax.xml.bind.annotation.XmlEnum;
+
 import org.eclipse.jgit.annotations.Nullable;
 
 import com.oxygenxml.git.translator.Tags;
@@ -11,6 +13,7 @@ import com.oxygenxml.git.translator.Translator;
  * @author alex_smarandache
  *
  */
+@XmlEnum
 public enum HistoryStrategy {
 
   /**

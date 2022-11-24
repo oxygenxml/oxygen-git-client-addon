@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 /**
@@ -137,6 +138,12 @@ public class JaxbOptions implements Options {
 	 */
 	@XmlElement(name = "whenRepoDetectedInProject")
 	private WhenRepoDetectedInProject whenRepoDetectedInProject = WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC;
+	
+	/**
+	 * The default strategy option for git history presentation.
+	 */
+	@XmlElement(name = "historyStrategy")
+	private HistoryStrategy historyStrategy = HistoryStrategy.ALL_BRANCHES;
 	
 	/**
 	 * <code>true</code> to update submodules on pull.
@@ -573,7 +580,7 @@ public class JaxbOptions implements Options {
   }
 
   @Override
-  public void setStashIncludeUntracked(boolean stashIncludeUntracked) {
+  public void setStashIncludeUntracked(final boolean stashIncludeUntracked) {
     this.stashIncludeUntracked = stashIncludeUntracked;
     
   }
@@ -581,6 +588,16 @@ public class JaxbOptions implements Options {
   @Override
   public boolean getStashIncludeUntracked() {
     return stashIncludeUntracked;
+  }
+
+  @Override
+  public void setHistoryStrategy(final HistoryStrategy historyStrategy) {
+    this.historyStrategy = historyStrategy;
+  }
+
+  @Override
+  public HistoryStrategy getHistoryStrategy() {
+    return historyStrategy;
   }
 
 }

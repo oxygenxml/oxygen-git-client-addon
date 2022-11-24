@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.service.WSOptionsStorageTestAdapter;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 /**
@@ -65,6 +66,7 @@ public class DefaultOptionsValuesTest {
     assertFalse(options.getValidateMainFilesBeforePush());
     assertTrue(options.getWarnOnChangeCommitId().isEmpty());
     assertEquals(WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC, options.getWhenRepoDetectedInProject());
+    assertEquals(HistoryStrategy.ALL_BRANCHES, options.getHistoryStrategy());
     assertFalse(options.isAutoPushWhenCommitting());
     assertTrue(options.isCheckoutNewlyCreatedLocalBranch());
     assertFalse(options.isNotifyAboutNewRemoteCommits());

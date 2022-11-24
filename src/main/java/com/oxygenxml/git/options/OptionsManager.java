@@ -15,6 +15,7 @@ import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInPr
 import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -770,6 +771,20 @@ public class OptionsManager {
    */
   public boolean getStashIncludeUntracked() {
     return getOptions().getStashIncludeUntracked();
+  }
+  
+  /**
+   * @param historyStrategy The new default history presentation strategy.
+   */
+  public void setHistoryStrategy(final HistoryStrategy historyStrategy) {
+    getOptions().setHistoryStrategy(historyStrategy);
+  }
+  
+  /**
+   * @return The default history presentation strategy.
+   */
+  public HistoryStrategy getHistoryStrategy() {
+    return getOptions().getHistoryStrategy();
   }
   
   /**
