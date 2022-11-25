@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JComboBox;
 
@@ -59,6 +60,12 @@ public class ProjectHelper {
    * The git access instance.
    */
   private final GitAccess gitAccess;
+  
+  /**
+   * <code>true</code> only if the repository was changed in the last Oxygen project switching detection and the method 
+   * is called for the first time after that.
+   */
+  private AtomicBoolean wasRepoJustChanged = new AtomicBoolean(false);
 
   /**
    * Hidden constructor.
@@ -203,6 +210,14 @@ public class ProjectHelper {
   }
   
   /**
+   * @return <code>true</code> only if the repository was changed in the last Oxygen project switching detection and the method 
+   * is called for the first time after that.
+   */
+  public boolean wasRepoJustChanged() {
+    return wasRepoJustChanged.getAndSet(false);
+  }
+  
+  /**
    * Checks the current loaded project and:
    * 
    * 1. load it if it contains a Git project and the Oxygen > Git preferences allow it.
@@ -212,7 +227,7 @@ public class ProjectHelper {
    */
   public boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel) {
     boolean repoChanged = false;
-    if (stagingPanel != null && stagingPanel.hasFocus()) {
+    if (stagingPanel != null) {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       // Can be null from tests.
       if (pluginWS.getUtilAccess() != null) {
@@ -233,6 +248,7 @@ public class ProjectHelper {
       }      
     }
    
+    wasRepoJustChanged.set(repoChanged);
     return repoChanged;
   }
   

@@ -106,9 +106,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		LOGGER.debug("Start refresh on thread.");
 
 		boolean isAfterRestart = !ProjectHelper.getInstance().wasProjectLoaded();
-		// No point in refreshing if we've just changed the repository.
-		boolean repoChanged = ProjectHelper.getInstance().loadRepositoryFromOxygenProject(stagingPanel);
-		if (!repoChanged || isAfterRestart) {
+		if (!ProjectHelper.getInstance().wasRepoJustChanged() || isAfterRestart) {
 			try {
 				Repository repository = gitAccess.getRepository();
 				if (repository != null) {

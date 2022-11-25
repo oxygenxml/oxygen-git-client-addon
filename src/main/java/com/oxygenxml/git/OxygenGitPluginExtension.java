@@ -218,6 +218,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  this.pluginWorkspaceAccess = pluginWS;
 	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
+		addProjectChangeListener();
 		
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
@@ -270,7 +271,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			// Listens on the save event in the Oxygen editor and invalidates the cache.
 			GitAccess.getInstance().getStatusCache().installEditorsHook(pluginWS);
 			
-
 			// Present the view to the user if it is the first run of the plugin
 			final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
 			parentFrame.addComponentListener(new ComponentAdapter() {
@@ -364,6 +364,14 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		});
   }
 
+  /**
+   * Add this listener to automatically detect the Oxygen projects switching and update the current repository.
+   */
+  private void addProjectChangeListener() {
+    pluginWorkspaceAccess.getProjectManager().addProjectChangeListener(
+        (oldProjectURL, newProjectURL) -> ProjectHelper.getInstance().loadRepositoryFromOxygenProject(stagingPanel));
+  }
+  
 	/**
 	 * Treat detached HEAD.
 	 * 
