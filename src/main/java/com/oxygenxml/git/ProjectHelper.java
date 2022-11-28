@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import javax.swing.JComboBox;
 
@@ -225,7 +226,7 @@ public class ProjectHelper {
    * 
    * @return <code>true</code> if the repository changed.
    */
-  public boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel) {
+  private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel) {
     boolean repoChanged = false;
     if (stagingPanel != null) {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
@@ -280,6 +281,19 @@ public class ProjectHelper {
     }
 
     return lastProjectXPRFile;
+  }
+  
+  /**
+   * Installs a listener to automatically detect the Oxygen projects switching and update the current repository.
+   * <br>
+   * The strategy is get by the com.oxygenxml.git.options.OptionsManager.getWhenRepoDetectedInProject() method.
+   * 
+   * @param pluginWS                Standalone plugin workspace to install the listener.
+   * @param stagingPanelSupplier    A supplier for the staging panel to use to switch project.
+   */
+  public void installUpdateProjectOnChangeListener(final StandalonePluginWorkspace pluginWS, final Supplier<StagingPanel> stagingPanelSupplier) {
+    pluginWS.getProjectManager().addProjectChangeListener(
+        (oldProjectURL, newProjectURL) -> loadRepositoryFromOxygenProject(stagingPanelSupplier.get()));
   }
  
 }

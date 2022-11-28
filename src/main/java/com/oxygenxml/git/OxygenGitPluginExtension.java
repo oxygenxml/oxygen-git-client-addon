@@ -218,7 +218,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  this.pluginWorkspaceAccess = pluginWS;
 	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
-		addProjectChangeListener();
+		ProjectHelper.getInstance().installUpdateProjectOnChangeListener(pluginWS, () -> stagingPanel);
 		
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
@@ -362,14 +362,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 				}
 			}
 		});
-  }
-
-  /**
-   * Add this listener to automatically detect the Oxygen projects switching and update the current repository.
-   */
-  private void addProjectChangeListener() {
-    pluginWorkspaceAccess.getProjectManager().addProjectChangeListener(
-        (oldProjectURL, newProjectURL) -> ProjectHelper.getInstance().loadRepositoryFromOxygenProject(stagingPanel));
   }
   
 	/**
