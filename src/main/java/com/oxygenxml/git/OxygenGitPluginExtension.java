@@ -126,8 +126,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    GitOperation.CHECKOUT_FILE,
 	    GitOperation.CHECKOUT_COMMIT,
 	    GitOperation.CREATE_TAG,
-	    GitOperation.DELETE_TAG,
-	    GitOperation.DISCARD
+	    GitOperation.DELETE_TAG
 	);
 	
 	/**
