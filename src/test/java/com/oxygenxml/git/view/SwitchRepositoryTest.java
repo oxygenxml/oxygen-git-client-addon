@@ -18,6 +18,7 @@ import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectChangeListener;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
@@ -103,12 +104,14 @@ public class SwitchRepositoryTest extends GitTestBase {
       }).when(projectCtrlMock).addProjectChangeListener(Mockito.any());
       Mockito.when(projectCtrlMock.getCurrentProjectURL()).thenReturn(project1URL);
       Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
+      PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
 
       ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(project1URL, project2URL);
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project2File.getParentFile().getAbsolutePath()));
     } finally {
+      ProjectHelper.getInstance().reset();
       project1File.getParentFile().delete();
       project2File.getParentFile().delete();
     }
@@ -152,15 +155,19 @@ public class SwitchRepositoryTest extends GitTestBase {
       Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
       Mockito.when(pluginWSMock.showConfirmDialog( Mockito.anyString(), 
           Mockito.anyString(), Mockito.any(String[].class),  Mockito.any(int[].class))).thenReturn(0); // answer to update the repository
+      PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+      
       ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(project1URL, project2URL);
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project2File.getParentFile().getAbsolutePath()));
+      
       Mockito.when(pluginWSMock.showConfirmDialog( Mockito.anyString(), 
           Mockito.anyString(), Mockito.any(String[].class),  Mockito.any(int[].class))).thenReturn(1); // answer to doesn't update the repository
       projectListener[0].projectChanged(project2URL, project1URL);
       assertEquals(project2File.getParentFile().getAbsolutePath(), gitAccess.getWorkingCopy().getAbsolutePath());
     } finally {
+      ProjectHelper.getInstance().reset();
       project1File.getParentFile().delete();
       project2File.getParentFile().delete();
     }
@@ -204,6 +211,8 @@ public class SwitchRepositoryTest extends GitTestBase {
       Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
       Mockito.when(pluginWSMock.showConfirmDialog( Mockito.anyString(), 
           Mockito.anyString(), Mockito.any(String[].class),  Mockito.any(int[].class))).thenReturn(0); // No dialog should be displayed but check this by return the ok answer
+      PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
       ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(project1URL, project2URL);
@@ -213,6 +222,7 @@ public class SwitchRepositoryTest extends GitTestBase {
       projectListener[0].projectChanged(project2URL, project1URL);
       assertEquals(project1File.getParentFile().getAbsolutePath(), gitAccess.getWorkingCopy().getAbsolutePath());
     } finally {
+      ProjectHelper.getInstance().reset();
       project1File.getParentFile().delete();
       project2File.getParentFile().delete();
     }

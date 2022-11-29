@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -302,6 +303,15 @@ public class ProjectHelper {
             }
           }
         });
+  }
+  
+  /**
+   * Reset fields.
+   */
+  @TestOnly
+  public void reset() {
+    lastOpenedProject = null;
+    lastProjectXPRFile = null;
   }
  
 }
