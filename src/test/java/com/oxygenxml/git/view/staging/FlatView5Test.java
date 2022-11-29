@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -115,7 +117,7 @@ public class FlatView5Test extends FlatViewTestBase {
     SwingUtilities.invokeLater(() -> commitPanel.getCommitButton().doClick());
     waitForSchedulerBetter();
     flushAWT();
-    assertEquals(1, GitAccess.getInstance().getPushesAhead());
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 1 == GitAccess.getInstance().getPushesAhead());
     assertFalse(amendBtn.isSelected());
     assertEquals("", commitPanel.getCommitMessageArea().getText());
     
