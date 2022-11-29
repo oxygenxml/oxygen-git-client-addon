@@ -2,6 +2,7 @@ package com.oxygenxml.git;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -220,35 +221,34 @@ public class ProjectHelper {
   
   /**
    * Checks the current loaded project and:
-   * 
+   * <br>
    * 1. load it if it contains a Git project and the Oxygen > Git preferences allow it.
+   * <br>
    * 2. create a new Git repo if the project doesn't contains a Git project and the user agrees.
+   * <br>
+   * 
+   * @param stagingPanel  The Staging panel view.
+   * @param newProjectURL The new URL of the current opened project.
    * 
    * @return <code>true</code> if the repository changed.
+   * 
+   * @throws URISyntaxException When URI problems occurs.
    */
-  private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel) {
+  private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) throws URISyntaxException {
     boolean repoChanged = false;
-    if (stagingPanel != null) {
-      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
-      // Can be null from tests.
-      if (pluginWS.getUtilAccess() != null) {
-        String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
-        if (projectDir != null && !projectDir.equals(lastOpenedProject)) {
-          String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
-          File projectFile = new File(projectDir, projectName); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
-          File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
-          if (detectedRepo == null) {
-            repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
-          } else {
-            repoChanged = tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel()
-                .getWorkingCopyCombo());
-          }
-          lastProjectXPRFile = null;
-        }
-        lastOpenedProject = projectDir;
-      }      
+    if(stagingPanel != null) {
+      File projectFile = new File(newProjectURL.toURI()); 
+      String projectDir = projectFile.getParent();
+      if (!projectDir.equals(lastOpenedProject)) {
+        File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
+        repoChanged = detectedRepo == null ? createNewRepoIfUserAgrees(projectDir,  projectFile.getName()) :
+          tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel()
+              .getWorkingCopyCombo());
+        lastProjectXPRFile = null;
+      }
+      lastOpenedProject = projectDir;      
     }
-   
+    
     wasRepoJustChanged.set(repoChanged);
     return repoChanged;
   }
@@ -288,12 +288,20 @@ public class ProjectHelper {
    * <br>
    * The strategy is get by the com.oxygenxml.git.options.OptionsManager.getWhenRepoDetectedInProject() method.
    * 
-   * @param pluginWS                Standalone plugin workspace to install the listener.
+   * @param projectCtrl             The project controller to install the listener.
    * @param stagingPanelSupplier    A supplier for the staging panel to use to switch project.
    */
-  public void installUpdateProjectOnChangeListener(final StandalonePluginWorkspace pluginWS, final Supplier<StagingPanel> stagingPanelSupplier) {
-    pluginWS.getProjectManager().addProjectChangeListener(
-        (oldProjectURL, newProjectURL) -> loadRepositoryFromOxygenProject(stagingPanelSupplier.get()));
+  public void installUpdateProjectOnChangeListener(final ProjectController projectCtrl, final Supplier<StagingPanel> stagingPanelSupplier) {
+    projectCtrl.addProjectChangeListener(
+        (oldProjectURL, newProjectURL) -> {
+          try {
+            loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL);
+          } catch (URISyntaxException e) {
+            if(LOGGER.isDebugEnabled()) {
+              LOGGER.debug(e.getMessage(), e);
+            }
+          }
+        });
   }
  
 }
