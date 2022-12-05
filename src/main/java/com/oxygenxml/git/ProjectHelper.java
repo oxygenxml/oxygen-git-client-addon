@@ -296,6 +296,10 @@ public class ProjectHelper {
     projectCtrl.addProjectChangeListener(
         (oldProjectURL, newProjectURL) -> {
           try {
+            final WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
+            if(whatToDo == WhenRepoDetectedInProject.DO_NOTHING) {
+              return;
+            }
             loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL);
           } catch (URISyntaxException e) {
             if(LOGGER.isDebugEnabled()) {
