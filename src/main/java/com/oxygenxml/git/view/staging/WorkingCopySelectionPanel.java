@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -517,7 +518,8 @@ public class WorkingCopySelectionPanel extends JPanel {
     URI currentXPRuri = null;
     StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     try {
-      currentXPRuri = spw.getProjectManager().getCurrentProjectURL().toURI();
+      Optional<URL> projectURLOpt = Optional.ofNullable(spw.getProjectManager().getCurrentProjectURL());
+      currentXPRuri = projectURLOpt.isPresent() ? projectURLOpt.get().toURI() : null;
     } catch (URISyntaxException e) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug(e.getMessage(),e);
