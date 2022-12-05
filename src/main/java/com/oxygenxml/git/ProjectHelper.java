@@ -104,29 +104,32 @@ public class ProjectHelper {
    * @return <code>true</code> if repository was changed.
    */
   public boolean tryToSwitchToRepo(final File repoDir, final JComboBox<String> wcComboBox) {
+    final WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
     boolean repoChanged = false;
-    try {
-      File currentRepo = null;
-      if (gitAccess.isRepoInitialized()) {
-        currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
-      }
-      if (currentRepo == null || !FileUtil.same(currentRepo, repoDir)) {
-        if (wcComboBox.isPopupVisible()) {
-          wcComboBox.setPopupVisible(false);
+    if(whatToDo != WhenRepoDetectedInProject.DO_NOTHING) {
+      try {
+        File currentRepo = null;
+        if (gitAccess.isRepoInitialized()) {
+          currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
         }
-
-        WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
-        String projectDirPath = FileUtil.getCanonicalPath(repoDir);
-        if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
-          repoChanged = switchToProjectRepoIfUserAgrees(projectDirPath);
-        } else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
-          GitAccess.getInstance().setRepositoryAsync(projectDirPath);
-          repoChanged = true;
+        if (currentRepo == null || !FileUtil.same(currentRepo, repoDir)) {
+          if (wcComboBox.isPopupVisible()) {
+            wcComboBox.setPopupVisible(false);
+          }
+          
+          String projectDirPath = FileUtil.getCanonicalPath(repoDir);
+          if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
+            repoChanged = switchToProjectRepoIfUserAgrees(projectDirPath);
+          } else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
+            GitAccess.getInstance().setRepositoryAsync(projectDirPath);
+            repoChanged = true;
+          }
         }
+      } catch (NoRepositorySelected e) {
+        LOGGER.warn(e.getMessage(), e);
       }
-    } catch (NoRepositorySelected e) {
-      LOGGER.warn(e.getMessage(), e);
     }
+    
     return repoChanged;
   }
   
@@ -296,10 +299,6 @@ public class ProjectHelper {
     projectCtrl.addProjectChangeListener(
         (oldProjectURL, newProjectURL) -> {
           try {
-            final WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
-            if(whatToDo == WhenRepoDetectedInProject.DO_NOTHING) {
-              return;
-            }
             loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL);
           } catch (URISyntaxException e) {
             if(LOGGER.isDebugEnabled()) {
