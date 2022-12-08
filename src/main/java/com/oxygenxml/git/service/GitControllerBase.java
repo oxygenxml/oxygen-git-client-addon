@@ -1,5 +1,7 @@
 package com.oxygenxml.git.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -8,9 +10,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -28,6 +34,12 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Beniamin Savu
  */
 public abstract class GitControllerBase {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitControllerBase.class);
+
   /**
    * Translator for the UI.
    */
@@ -307,6 +319,17 @@ public abstract class GitControllerBase {
    * @param filesStatuses The resources to discard.
    */
   private void discard(List<FileStatus> filesStatuses) {
+    final String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+    filesStatuses.stream() // needed to be removed because they don't disappear
+      .filter(fileStatus -> fileStatus.getChangeType() == GitChangeType.UNTRACKED || fileStatus.getChangeType() == GitChangeType.ADD)
+      .forEach(fileStatus -> {
+        final File fileToDiscard = new File(selectedRepository, fileStatus.getFileLocation());    
+        try {
+          FileUtils.forceDelete(fileToDiscard);
+        } catch (IOException e) {
+          LOGGER.error(e.getMessage(), e);
+        }
+      });
     gitAccess.resetAll(filesStatuses);
     List<String> paths = new LinkedList<>();
     for (FileStatus file : filesStatuses) {

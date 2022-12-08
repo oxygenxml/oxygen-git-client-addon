@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.staging.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +9,6 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,14 +101,9 @@ public class DiscardAction extends AbstractAction {
     for (FileStatus file : allSelectedResources) {
       if (file.getChangeType() == GitChangeType.ADD
           || file.getChangeType() == GitChangeType.UNTRACKED) {
-        try {
-          File fileToDiscard = new File(selectedRepository, file.getFileLocation());
-          FileUtils.forceDelete(fileToDiscard);
+          File fileToDiscard = new File(selectedRepository, file.getFileLocation());       
           // Collect the parent folders. We'll later have to find the common ancestor and refresh it.
           deletedFilesParentDirs.add(fileToDiscard.getParentFile());
-        } catch (IOException e1) {
-          LOGGER.error(e1.getMessage(), e1);
-        }
       } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
         discardSubmodule(file, foldersToRefresh, selectedRepository);
       } else if (file.getChangeType() == GitChangeType.REMOVED
