@@ -24,14 +24,14 @@
         <div>
           <h3>What's new in version 5.1.0</h3>
           <ol>
-            <li>Added a new options page for SHH Connections which adds support for using SSH agents.</li>
-	    <li>Now the commit dot in the <b>Git History</b> graph associated with the head of the current branch is painted differently to be easier to see.</li>
-	    <li>Improvement of the Oxygen project change detection mechanism. Now it is faster and it is not necessary for the <b>Git Staging</b> view to be displayed.</li>
-            <li>The presentation of the labels associated with a commit in <b>Git History</b> has been improved to avoid truncation of names when it is not necessary.</li>
-	    <li>Now the "List stashes" dialog allows resizing the tables for "Stashes" and "Affected files" without resizing the entire dialog.</li>
-	    <li>The "Open" action from the context menu of files in <b>Git Staging</b> uses the URL of the current local working copy as much as possible.</li>
-	    <li>A problem was solved when after the discard action on an untracked/added file it was still presented in <b>Git Staging</b> even though it was deleted on the disk.</li>
-            <li>Bug fixes and performance improvements.</li>
+            <li>A new options page was added for SHH Connections and it adds support for using SSH agents.</li>
+            <li>The commit dot in the <b>Git History</b> graph associated with the head of the current branch is now painted differently to make it easier to see.</li>
+            <li>The Oxygen project change detection mechanism was improved. It is now faster and the <b>Git Staging</b> view no longer needs to be displayed.</li>
+            <li>The presentation of the labels associated with a commit in the <b>Git History</b> view has been improved to avoid truncation of names when it is not necessary.</li>
+            <li>The "List stashes" dialog box now allows you to resize the tables for "Stashes" and "Affected files" without resizing the entire dialog box.</li>
+            <li>The "Open" action from the contextual menu in the <b>Git Staging</b> view now uses the URL of the current local working copy as much as possible.</li>
+            <li>A problem was solved where after the discard action on an untracked/added file was still presented in the <b>Git Staging</b> view even though it was deleted on disk.</li>
+            <li>Implemented various bug fixes and performance improvements.</li>
 	  </ol>
 	</div>       
 	<div>
