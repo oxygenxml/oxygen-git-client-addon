@@ -24,7 +24,8 @@
         <div>
           <h3>What's new in version 5.1.0</h3>
           <ol>
-            <li>A new options page was added for SHH Connections and it adds support for using SSH agents.</li>
+            <li>A new options page was added for SHH Connections to control SSH agent usage.</li>
+            <li>Fixed an issue in which SSH agent was not used by default.</li>
             <li>The commit dot in the <b>Git History</b> graph associated with the head of the current branch is now painted differently to make it easier to see.</li>
             <li>The Oxygen project change detection mechanism was improved. It is now faster and the <b>Git Staging</b> view no longer needs to be displayed.</li>
             <li>The presentation of the labels associated with a commit in the <b>Git History</b> view has been improved to avoid truncation of names when it is not necessary.</li>
