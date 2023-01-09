@@ -1968,5 +1968,15 @@ public class Tags {
    */
   public static final String SSH_CONNECTIONS = "SSH_Connections"; 
   
+  /**
+   * English: Ask user to create a new repository.
+   */
+  public static final String ASK_USER_TO_CREATE_NEW_REPOSITORY = "Ask_User_To_Create_New_Repository";
+  
+  /**
+   * English: Prompts the user to decide if they want to create a Git repository in the current project.
+   */
+  public static final String ASK_USER_TO_CREATE_NEW_REPOSITORY_TOOLTIP = "Ask_User_To_Create_New_Repository_Tooltip";
+  
 }
 

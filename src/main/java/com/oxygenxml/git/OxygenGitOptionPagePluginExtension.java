@@ -93,6 +93,11 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   private JCheckBox detectAndOpenXprFiles;
   
   /**
+   * If is selected, the user will be asked to create a new repository if it was not created.
+   */
+  private JCheckBox askToCreateNewRepoIfNotCreated;
+  
+  /**
    * CheckBox for the option to notify the user about new commits in the remote.
    */
   private JCheckBox notifyAboutRemoteCommitsCheckBox;
@@ -162,6 +167,12 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     detectAndOpenXprFiles = new JCheckBox(TRANSLATOR.getTranslation(
         Tags.DETECT_AND_OPEN_XPR_FILES));
     mainPanel.add(detectAndOpenXprFiles, constraints);
+    
+    // Option that detects and opens xpr files in the project view
+    constraints.gridy ++;
+    askToCreateNewRepoIfNotCreated = new JCheckBox(TRANSLATOR.getTranslation(Tags.ASK_USER_TO_CREATE_NEW_REPOSITORY));
+    askToCreateNewRepoIfNotCreated.setToolTipText(TRANSLATOR.getTranslation(Tags.ASK_USER_TO_CREATE_NEW_REPOSITORY_TOOLTIP));
+    mainPanel.add(askToCreateNewRepoIfNotCreated, constraints);
 
     addValidationSection(mainPanel, constraints);
     
@@ -320,6 +331,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     OPTIONS_MANAGER.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
     OPTIONS_MANAGER.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
     OPTIONS_MANAGER.setDetectAndOpenXprFiles(detectAndOpenXprFiles.isSelected());
+    OPTIONS_MANAGER.setAskUserToCreateNewRepoIfNotExist(askToCreateNewRepoIfNotCreated.isSelected());
     OPTIONS_MANAGER.setValidateFilesBeforeCommit(validateBeforeCommit.isSelected());
     OPTIONS_MANAGER.setRejectCommitOnValidationProblems(rejectCommitOnValidationProblems.isSelected());
     OPTIONS_MANAGER.setValidateMainFilesBeforePush(validateBeforePush.isSelected());
@@ -346,6 +358,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     rejectCommitOnValidationProblems.setSelected(false);
     validateBeforePush.setSelected(false);
     rejectPushOnValidationProblems.setSelected(false);
+    askToCreateNewRepoIfNotCreated.setSelected(false);
   }
 
   /**
@@ -381,7 +394,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
         OptionTags.REJECT_COMMIT_ON_VALIDATION_PROBLEMS,
         OptionTags.VALIDATE_MAIN_FILES_BEFORE_PUSH,
         OptionTags.REJECT_PUSH_ON_VALIDATION_PROBLEMS,
-        OptionTags.DETECT_AND_OPEN_XPR_FILES
+        OptionTags.DETECT_AND_OPEN_XPR_FILES,
+        OptionTags.ASK_USER_TO_CREATE_REPO
     };
   }
 }

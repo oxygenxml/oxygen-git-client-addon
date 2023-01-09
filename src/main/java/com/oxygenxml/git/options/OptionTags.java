@@ -160,5 +160,10 @@ public class OptionTags {
    * The tag option for default SSH agent.
    */
   public static final String DEFAULT_SSH_AGENT = "com.oxygenxml.git.default.ssh.agent";
+  
+  /**
+   * The tag option to ask user to create a new repository if ti was not created before.
+   */
+  public static final String ASK_USER_TO_CREATE_REPO = "com.oxygenxml.git.ask.user.to.create.repo";
 
 }

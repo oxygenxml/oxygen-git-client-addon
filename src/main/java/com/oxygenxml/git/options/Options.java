@@ -343,4 +343,13 @@ public interface Options {
    */ 
   public boolean getCreateBranchWhenCheckoutCommit();
   
+  /**
+   * @param askUserToCreateNewRepoIfNotExist <code>true</code> to ask the user to create a new repository if it not exists.
+   */
+  public void setAskUserToCreateNewRepoIfNotExist(final boolean askUserToCreateNewRepoIfNotExist);
+  
+  /**
+   * @return <code>true</code> to ask the user to create a new repository if it not exists.
+   */
+  public boolean getAskUserToCreateNewRepoIfNotExist();
 }

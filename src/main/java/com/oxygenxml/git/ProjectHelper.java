@@ -175,7 +175,7 @@ public class ProjectHelper {
     boolean repoChanged = false;
     // Fast check to see if this is actually not a Git repository.
     final OptionsManager optionsManager = OptionsManager.getInstance();
-    if (!optionsManager.getProjectsTestedForGit().contains(projectDir)) {
+    if (optionsManager.getAskUserToCreateNewRepoIfNotExist() && !optionsManager.getProjectsTestedForGit().contains(projectDir)) {
       StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       int response = pluginWS.showConfirmDialog(
           TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),

@@ -802,6 +802,20 @@ public class OptionsManager {
   }
   
   /**
+   * @param askUserToCreateNewRepoIfNotExist <code>true</code> to ask the user to create a new repository if it not exists.
+   */
+  public void setAskUserToCreateNewRepoIfNotExist(final boolean askUserToCreateNewRepoIfNotExist) {
+    getOptions().setAskUserToCreateNewRepoIfNotExist(askUserToCreateNewRepoIfNotExist);
+  }
+  
+  /**
+   * @return <code>true</code> to ask the user to create a new repository if it not exists.
+   */
+  public boolean getAskUserToCreateNewRepoIfNotExist() {
+    return getOptions().getAskUserToCreateNewRepoIfNotExist();
+  }
+  
+  /**
    * Remove credentials from a given host. 
    * The credentials will be removed for both, token and user + password authentication.
    * 

@@ -52,6 +52,11 @@ public class JaxbOptions implements Options {
 	private boolean validateFilesBeforeCommit = false;
 	
 	/**
+   * <code>true</code> to ask the user to create a new repository if it not exists.
+   */
+  private boolean askUserToCreateNewRepoIfNotExist = false;
+	
+	/**
 	 * <code>true</code> to reject commit on validation problems.
 	 */
 	private boolean rejectCommitOnValidationProblems = false;
@@ -614,6 +619,16 @@ public class JaxbOptions implements Options {
   @Override
   public boolean getCreateBranchWhenCheckoutCommit() {
     return createBranchWhenCheckoutCommit;
+  }
+
+  @Override
+  public void setAskUserToCreateNewRepoIfNotExist(boolean askUserToCreateNewRepoIfNotExist) {
+    this.askUserToCreateNewRepoIfNotExist = askUserToCreateNewRepoIfNotExist;
+  }
+
+  @Override
+  public boolean getAskUserToCreateNewRepoIfNotExist() {
+    return askUserToCreateNewRepoIfNotExist;
   }
 
 }

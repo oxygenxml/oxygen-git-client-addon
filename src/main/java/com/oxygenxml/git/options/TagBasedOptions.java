@@ -583,5 +583,16 @@ public class TagBasedOptions implements Options {
   public boolean getCreateBranchWhenCheckoutCommit() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.CHECKOUT_COMMIT_SELECT_NEW_BRANCH, TRUE));
   }
+
+  @Override
+  public void setAskUserToCreateNewRepoIfNotExist(boolean askUserToCreateNewRepoIfNotExist) {
+    wsOptionsStorage.setOption(
+        OptionTags.ASK_USER_TO_CREATE_REPO, Boolean.toString(askUserToCreateNewRepoIfNotExist));
+  }
+
+  @Override
+  public boolean getAskUserToCreateNewRepoIfNotExist() {
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.ASK_USER_TO_CREATE_REPO, FALSE));
+  }
   
 }
