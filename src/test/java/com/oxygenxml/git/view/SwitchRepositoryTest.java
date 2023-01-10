@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -14,6 +15,8 @@ import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
@@ -62,12 +65,70 @@ public class SwitchRepositoryTest extends GitTestBase {
     createRepository(LOCAL_REPO);
     createRepository(LOCAL_REPO2);
 
-    // Init UI
     GitController gitCtrl = new GitController();
     GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
   }
- 
+
+  /**
+   * <p><b>Description:</b> Tests if the user is asked to create a new repository if there is no Git project and option is checked.</p>
+   * <p><b>Bug ID:</b> EXM-52054</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */ 
+  public void testAskUserToCreateNewRepo() throws Exception {
+    final File parentFile = new File("target/test-resources/SwitchRepositoryTest/norepo");
+    parentFile.mkdirs();
+    final File projectFile = new File(parentFile, "local.xpr");
+    assertTrue(projectFile.createNewFile());
+    final URL projectURL = projectFile.toURI().toURL();
+    
+    try(final MockedStatic<RepoUtil> repoUtilStaticMock = Mockito.mockStatic(RepoUtil.class)) {
+      repoUtilStaticMock.when(() -> RepoUtil.detectRepositoryInProject(Mockito.any(File.class))).thenReturn(null);
+
+      final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+      final ProjectChangeListener projectListener[] = new ProjectChangeListener[1];
+
+      OptionsManager.getInstance().setWhenRepoDetectedInProject(WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC);
+      OptionsManager.getInstance().setAskUserToCreateNewRepoIfNotExist(true);
+
+      final ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);  
+      Mockito.doAnswer(new Answer<Void>() {
+        @Override
+        public Void answer(InvocationOnMock invocation) throws Throwable {
+          projectListener[0] = (ProjectChangeListener)invocation.getArgument(0);
+          return null;
+        }
+      }).when(projectCtrlMock).addProjectChangeListener(Mockito.any());
+      Mockito.when(projectCtrlMock.getCurrentProjectURL()).thenReturn(projectURL);
+      final boolean dialogWasFound[] = { false };
+      Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
+      Mockito.when(pluginWSMock.showConfirmDialog(
+          Mockito.anyString(), Mockito.anyString(), Mockito.any(String[].class), Mockito.any(int[].class))).then(args -> {
+            dialogWasFound[0] = Tags.CHECK_PROJECTXPR_IS_GIT_TITLE.equals(args.getArgument(0)) && Tags.CHECK_PROJECTXPR_IS_GIT.equals(args.getArgument(1));
+            return 1;
+          });
+      PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+
+      ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
+      assertNotNull(projectListener[0]);
+      projectListener[0].projectChanged(null, projectURL);
+   
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> dialogWasFound[0]);
+      dialogWasFound[0] = false;
+      OptionsManager.getInstance().setAskUserToCreateNewRepoIfNotExist(false);
+      ProjectHelper.getInstance().reset();
+      projectListener[0].projectChanged(null, projectURL);
+      Awaitility.await().atLeast(Duration.ONE_HUNDRED_MILLISECONDS).atMost(Duration.ONE_SECOND).until(() -> !dialogWasFound[0]);
+      
+    } finally {
+      ProjectHelper.getInstance().reset();
+      projectFile.getParentFile().delete();
+    }
+  }
+  
   /**
    * <p><b>Description:</b> Tests the strategy when the current repository should be auto-switched on project update.</p>
    * <p><b>Bug ID:</b> EXM-47264</p>

@@ -25,6 +25,6 @@ For more information about this add-on, read the [Git Client Add-on topic](https
 
 ## Copyright and License
 
-Copyright 2022 Syncro Soft SRL.
+Copyright 2023 Syncro Soft SRL.
 
 This project is licensed under [Apache License 2.0](https://github.com/oxygenxml/oxygen-git-plugin/blob/master/LICENSE)
