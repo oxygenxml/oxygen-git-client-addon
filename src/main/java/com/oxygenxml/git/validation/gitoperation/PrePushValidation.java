@@ -1,7 +1,6 @@
 package com.oxygenxml.git.validation.gitoperation;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jgit.annotations.Nullable;
@@ -133,11 +133,14 @@ public class PrePushValidation implements IPreOperationValidation {
    * @return <code>true</code> if the push operation could be performed, <code>false</code> otherwise.
    */
   private boolean validateProject(final StandalonePluginWorkspace standalonePluginWorkspace) {
-    boolean performPush = true; 
     final URL currentProjectURL = standalonePluginWorkspace.getProjectManager().getCurrentProjectURL(); 
+    boolean performPush = true; 
+  
     Optional<RevCommit> stash = Optional.empty();
+    final File currentProjectFile = currentProjectURL != null ? 
+        PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(currentProjectURL) : null;
     try {
-      if(currentProjectURL == null ||!RepoUtil.isEqualsWithCurrentRepo(new File(currentProjectURL.toURI()))) {
+      if(Objects.isNull(currentProjectFile) || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
         performPush = treatNotSameProjectCase(standalonePluginWorkspace);
       } 
       List<URL> mainFiles = new ArrayList<>(); 
@@ -175,9 +178,6 @@ public class PrePushValidation implements IPreOperationValidation {
             new ValidationOperationInfo(ValidationOperationType.PRE_PUSH_VALIDATION)));
       }
 
-    } catch (URISyntaxException e) {
-      standalonePluginWorkspace.showErrorMessage(e.getMessage());
-      performPush = false;
     } finally {
       removeStashIfNeeded(stash);
     }

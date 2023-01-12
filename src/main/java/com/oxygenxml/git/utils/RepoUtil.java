@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -291,8 +290,8 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
         File file = null;
         if (FileUtil.isURL(path)) {
           try {
-            file = new File(new URL(path).toURI());
-          } catch (MalformedURLException | URISyntaxException e) {
+            file = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(new URL(path));
+          } catch (MalformedURLException e) {
             LOGGER.error(e.getMessage(), e);
           }
         } else  if (".".equals(path)) {

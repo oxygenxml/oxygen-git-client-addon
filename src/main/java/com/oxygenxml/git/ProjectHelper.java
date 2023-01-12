@@ -240,7 +240,7 @@ public class ProjectHelper {
    */
   private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) throws URISyntaxException {
     boolean repoChanged = false;
-    if(stagingPanel != null) {
+    if(stagingPanel != null && FileUtil.isURLForLocalFile(newProjectURL)) {
       File projectFile = new File(newProjectURL.toURI()); 
       String projectDir = projectFile.getParent();
       if (!projectDir.equals(lastOpenedProject)) {

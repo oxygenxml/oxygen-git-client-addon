@@ -519,7 +519,7 @@ public class WorkingCopySelectionPanel extends JPanel {
     StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     try {
       Optional<URL> projectURLOpt = Optional.ofNullable(spw.getProjectManager().getCurrentProjectURL());
-      currentXPRuri = projectURLOpt.isPresent() ? projectURLOpt.get().toURI() : null;
+      currentXPRuri = projectURLOpt.isPresent() && FileUtil.isURLForLocalFile(projectURLOpt.get()) ? projectURLOpt.get().toURI() : null;
     } catch (URISyntaxException e) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug(e.getMessage(),e);

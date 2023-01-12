@@ -645,4 +645,15 @@ public class FileUtil {
     return foundFiles;
   }
   
+  /**
+   * Checks if the given URL is for a local file.
+   * 
+   * @param url The URL to be checked.
+   * 
+   * @return <code>true</code> if the URL is for file.
+   */
+  public static boolean isURLForLocalFile(final URL url) {
+    return PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(url) != null;
+  }
+  
 }
