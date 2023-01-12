@@ -279,6 +279,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     rejectPushOnValidationProblems.setSelected(rejectPushOnProblems);
     rejectPushOnValidationProblems.setEnabled(validateMainFilesBeforePush);
     
+    askToCreateNewRepoIfNotCreated.setSelected(OPTIONS_MANAGER.getAskUserToCreateNewRepoIfNotExist());
+    
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {
       case ASK_TO_SWITCH_TO_WC:
