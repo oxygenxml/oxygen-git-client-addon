@@ -240,17 +240,19 @@ public class ProjectHelper {
    */
   private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) throws URISyntaxException {
     boolean repoChanged = false;
-    if(stagingPanel != null && FileUtil.isURLForLocalFile(newProjectURL)) {
-      File projectFile = new File(newProjectURL.toURI()); 
-      String projectDir = projectFile.getParent();
-      if (!projectDir.equals(lastOpenedProject)) {
-        File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
-        repoChanged = detectedRepo == null ? createNewRepoIfUserAgrees(projectDir,  projectFile.getName()) :
-          tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel()
-              .getWorkingCopyCombo());
-        lastProjectXPRFile = null;
-      }
-      lastOpenedProject = projectDir;      
+    if(stagingPanel != null) {
+      final File projectFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(newProjectURL);
+      if(projectFile != null) {
+        String projectDir = projectFile.getParent();
+        if (!projectDir.equals(lastOpenedProject)) {
+          File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
+          repoChanged = detectedRepo == null ? createNewRepoIfUserAgrees(projectDir,  projectFile.getName()) :
+            tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel()
+                .getWorkingCopyCombo());
+          lastProjectXPRFile = null;
+        }
+        lastOpenedProject = projectDir;      
+      } 
     }
     
     wasRepoJustChanged.set(repoChanged);

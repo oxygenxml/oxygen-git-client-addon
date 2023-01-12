@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jgit.annotations.Nullable;
@@ -140,7 +139,7 @@ public class PrePushValidation implements IPreOperationValidation {
     final File currentProjectFile = currentProjectURL != null ? 
         PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(currentProjectURL) : null;
     try {
-      if(Objects.isNull(currentProjectFile) || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
+      if(currentProjectFile == null || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
         performPush = treatNotSameProjectCase(standalonePluginWorkspace);
       } 
       List<URL> mainFiles = new ArrayList<>(); 
