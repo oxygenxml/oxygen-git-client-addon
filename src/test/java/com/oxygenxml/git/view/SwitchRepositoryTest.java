@@ -25,6 +25,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectChangeListener;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Tests the strategies of Working Copy update on the case when the project opened in Project View is changed.
@@ -89,6 +90,9 @@ public class SwitchRepositoryTest extends GitTestBase {
       repoUtilStaticMock.when(() -> RepoUtil.detectRepositoryInProject(Mockito.any(File.class))).thenReturn(null);
 
       final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+      final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+      Mockito.when(utilAccessMock.locateFile(Mockito.any(URL.class))).then(args -> new File(((URL)args.getArgument(0)).toURI()));
+      Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
       final ProjectChangeListener projectListener[] = new ProjectChangeListener[1];
 
       OptionsManager.getInstance().setWhenRepoDetectedInProject(WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC);
@@ -153,6 +157,9 @@ public class SwitchRepositoryTest extends GitTestBase {
       final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
       final ProjectChangeListener projectListener[] = new ProjectChangeListener[1];
 
+      final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+      Mockito.when(utilAccessMock.locateFile(Mockito.any(URL.class))).then(args -> new File(((URL)args.getArgument(0)).toURI()));
+      Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
       OptionsManager.getInstance().setWhenRepoDetectedInProject(WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC);
 
       final ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);  
@@ -202,6 +209,9 @@ public class SwitchRepositoryTest extends GitTestBase {
       final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
       final ProjectChangeListener projectListener[] = new ProjectChangeListener[1];
 
+      final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+      Mockito.when(utilAccessMock.locateFile(Mockito.any(URL.class))).then(args -> new File(((URL)args.getArgument(0)).toURI()));
+      Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
       OptionsManager.getInstance().setWhenRepoDetectedInProject(WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC);
 
       final ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);  
@@ -257,7 +267,10 @@ public class SwitchRepositoryTest extends GitTestBase {
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project1File.getParentFile().getAbsolutePath()));
       final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
       final ProjectChangeListener projectListener[] = new ProjectChangeListener[1];
-
+      
+      final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+      Mockito.when(utilAccessMock.locateFile(Mockito.any(URL.class))).then(args -> new File(((URL)args.getArgument(0)).toURI()));
+      Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
       OptionsManager.getInstance().setWhenRepoDetectedInProject(WhenRepoDetectedInProject.DO_NOTHING);
 
       final ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);  
