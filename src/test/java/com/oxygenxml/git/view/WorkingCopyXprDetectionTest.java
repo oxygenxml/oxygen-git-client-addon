@@ -28,6 +28,7 @@ import ro.sync.basic.io.FileSystemUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Contains tests for xpr files detection.
@@ -61,6 +62,10 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
       return true;
     });
 
+    final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+    Mockito.when(utilAccessMock.locateFile(Mockito.any(URL.class))).then(args -> new File(((URL)args.getArgument(0)).toURI()));
+    Mockito.when(pluginWS.getUtilAccess()).thenReturn(utilAccessMock);
+    
     final JFrame frame = new JFrame();
     Mockito.when(pluginWS.getParentFrame()).thenReturn(frame);
 
