@@ -145,13 +145,12 @@ public class ProjectHelper {
     final PluginWorkspace pluginWS =
         PluginWorkspaceProvider.getPluginWorkspace();
     int response = pluginWS.showConfirmDialog(
-        TRANSLATOR.getTranslation(Tags.CHANGE_WORKING_COPY),
-        MessageFormat.format(
-            TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
-            projectDir),
+        TRANSLATOR.getTranslation(Tags.LOAD_REPOSITORY),
+        new StringBuilder(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE), projectDir))
+          .append("\n\n").append(TRANSLATOR.getTranslation(Tags.ASK_LOAD_REPOSITORY)).toString(),
         new String[] {
-            TRANSLATOR.getTranslation(Tags.CHANGE),
-            TRANSLATOR.getTranslation(Tags.KEEP_CURRENT_WC)
+            TRANSLATOR.getTranslation(Tags.YES),
+            TRANSLATOR.getTranslation(Tags.NO)
         },
         new int[] { 0, 1 });
     if (response == 0) {

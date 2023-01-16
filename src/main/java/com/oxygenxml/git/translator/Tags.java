@@ -527,9 +527,9 @@ public class Tags {
 	public static final String CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE = "Change_to_project_repo_confirm_message";
 	
 	/**
-	 * "Change working copy"
+	 * The title of the load repository dialog when change projects.
 	 */
-	public static final String CHANGE_WORKING_COPY = "Change_working_copy";
+	public static final String LOAD_REPOSITORY = "Load_Repository";
 
 	/**
 	 * The text displayed in the dialog that appears near the combo box
@@ -1794,9 +1794,9 @@ public class Tags {
   public static final String SQUASH_NO_COMMITS_DETECTED_MESSAGE = "Squash_No_Commits_Message";
   
   /**
-   * Keep current WC message.
+   * Keep current repository message.
    */
-  public static final String KEEP_CURRENT_WC = "Keep_Current_WC";
+  public static final String KEEP_CURRENT_REPOSITORY = "Keep_Current_Repository";
   
   /**
    * Set WC message.
@@ -1977,6 +1977,11 @@ public class Tags {
    * English: Prompts the user to decide if they want to create a Git repository in the current project.
    */
   public static final String ASK_USER_TO_CREATE_NEW_REPOSITORY_TOOLTIP = "Ask_User_To_Create_New_Repository_Tooltip";
+  
+  /**
+   * This tag is used to ask for repository loading.
+   */
+  public static final String ASK_LOAD_REPOSITORY = "Ask_Load_Repository";
   
 }
 

@@ -8,6 +8,45 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+		<key value="Keep_Current_Repository">
+		<comment>Keep current repository message.</comment>
+		<val lang="en_US">Keep current repository</val>
+		<val lang="de_DE">Keep current repository</val>
+		<val lang="fr_FR">Keep current repository</val>
+		<val lang="ja_JP">Keep current repository</val>
+		<val lang="nl_NL">Keep current repository</val>
+		<val lang="zh_CN">Keep current repository</val>
+	</key>
+		<key value="Load_Repository">
+		<comment>The title of the load repository dialog when change projects.</comment>
+		<val lang="en_US">Load Git repository</val>
+		<val lang="de_DE">Load Git repository</val>
+		<val lang="fr_FR">Load Git repository</val>
+		<val lang="ja_JP">Load Git repository</val>
+		<val lang="nl_NL">Load Git repository</val>
+		<val lang="zh_CN">Load Git repository</val>
+	</key>
+	<key value="Change_to_project_repo_confirm_message">
+		<comment>Confirmation message for changing the current working copy to
+			the project folder,
+			which is also a Git repository.
+		</comment>
+		<val lang="en_US">The following directory was detected as being a local Git repository:\n"{0}".</val>
+		<val lang="de_DE">The following directory was detected as being a local Git repository:\n"{0}".</val>
+		<val lang="fr_FR">The following directory was detected as being a local Git repository:\n"{0}".</val>
+		<val lang="ja_JP">The following directory was detected as being a local Git repository:\n"{0}".</val>
+		<val lang="nl_NL">The following directory was detected as being a local Git repository:\n"{0}"</val>
+		<val lang="zh_CN">The following directory was detected as being a local Git repository:\n"{0}"</val>
+	</key>
+	<key value="Ask_Load_Repository">
+		<comment>This tag is used to ask for repository loading.</comment>
+		<val lang="en_US">Do you want to load it?</val>
+		<val lang="de_DE">Do you want to load it?</val>
+		<val lang="fr_FR">Do you want to load it?</val>
+		<val lang="ja_JP">Do you want to load it?</val>
+		<val lang="nl_NL">Do you want to load it?</val>
+		<val lang="zh_CN">Do you want to load it?</val>
+	</key>
 	<key value="Ask_User_To_Create_New_Repository_Tooltip">
 		<comment>English: Prompts the user to decide if they want to create a Git repository in the current project.</comment>
 		<val lang="en_US">Prompts the user to decide if they want to create a Git repository in the current project.</val>
@@ -3951,40 +3990,6 @@
 		<val lang="ja_JP">ファイルの名前が変更されました</val>
 		<val lang="nl_NL">Bestandsnaam gewijzigd</val>
 		<val lang="zh_CN">文件重命名</val>
-	</key>
-	<key value="Change_working_copy">
-		<comment>"Change working copy" label.</comment>
-		<val lang="en_US">Change working copy</val>
-		<val lang="de_DE">Wechsle Arbeitsverzeichnis</val>
-		<val lang="fr_FR">Changer de copie de travail</val>
-		<val lang="ja_JP">作業コピーを変更する</val>
-		<val lang="nl_NL">Werkkopie wijzigen</val>
-		<val lang="zh_CN">更改工作副本</val>
-	</key>
-	<key value="Change_to_project_repo_confirm_message">
-		<comment>Confirmation message for changing the current working copy to
-			the project folder,
-			which is also a Git repository.
-		</comment>
-		<val lang="en_US">The "{0}" directory was detected as being a local Git
-			repository. Do you
-			want to set it as the current working copy?
-		</val>
-		<val lang="de_DE">Das Verzeichnis "{0}" wurde als lokales Git-Repository
-			erkannt. Soll es
-			als aktuelles Arbeitsverzeichnis verwendet werden?
-		</val>
-		<val lang="fr_FR">Le dépôt "{0}" a été détecté comme un dépôt Git local.
-			Voulez-vous le
-			définir comme la copie de travail actuelle?
-		</val>
-		<val lang="ja_JP">"{0}" ディレクトリはローカル Git リポジトリとして検出されました。現在の作業コピーとして設定しますか?
-		</val>
-		<val lang="nl_NL">De map "{0}" is een lokale Git-repository. Wilt u deze
-			als uw huidige
-			werkkopie instellen?
-		</val>
-		<val lang="zh_CN">检测到“{0}”目录是本地 Git 存储库. 是否要将其设置为当前工作副本?</val>
 	</key>
 	<key value="Clear_history">
 		<comment>"Clear history" label.</comment>
