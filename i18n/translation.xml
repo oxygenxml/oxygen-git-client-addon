@@ -7,16 +7,6 @@
 		<language description="Japanese" lang="ja_JP" localeDescription="日本語"/>
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
-	</languageList>
-		<key value="Keep_Current_Repository">
-		<comment>Keep current repository message.</comment>
-		<val lang="en_US">Keep current repository</val>
-		<val lang="de_DE">Keep current repository</val>
-		<val lang="fr_FR">Keep current repository</val>
-		<val lang="ja_JP">Keep current repository</val>
-		<val lang="nl_NL">Keep current repository</val>
-		<val lang="zh_CN">Keep current repository</val>
-	</key>
 		<key value="Load_Repository">
 		<comment>The title of the load repository dialog when change projects.</comment>
 		<val lang="en_US">Load Git repository</val>
@@ -438,15 +428,6 @@
 		<val lang="ja_JP">変更</val>
 		<val lang="nl_NL">Wijziging</val>
 		<val lang="zh_CN">修改</val>
-	</key>
-	<key value="Keep_Current_WC">
-		<comment>Keep current WC message.</comment>
-		<val lang="en_US">Keep current</val>
-		<val lang="de_DE">Aktuellen behalten</val>
-		<val lang="fr_FR">Conserver actuelle</val>
-		<val lang="ja_JP">最新の状態に保つ</val>
-		<val lang="nl_NL">Huidige behouden</val>
-		<val lang="zh_CN">保持最新</val>
 	</key>
 	<key value="Squash_No_Commits_Message">
 		<comment>Message when no commits could be added with squash and merge action.</comment>
