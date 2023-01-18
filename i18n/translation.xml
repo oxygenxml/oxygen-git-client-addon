@@ -421,15 +421,6 @@
 		<val lang="nl_NL">Vertakking bijhouden</val>
 		<val lang="zh_CN">跟踪分支</val>
 	</key>
-	<key value="Change">
-		<comment>Change</comment>
-		<val lang="en_US">Change</val>
-		<val lang="de_DE">Ändern</val>
-		<val lang="fr_FR">Modifier</val>
-		<val lang="ja_JP">変更</val>
-		<val lang="nl_NL">Wijziging</val>
-		<val lang="zh_CN">修改</val>
-	</key>
 	<key value="Squash_No_Commits_Message">
 		<comment>Message when no commits could be added with squash and merge action.</comment>
 		<val lang="en_US">The squash and merge command cannot be applied on the current branch because no new commits were detected on the "{0}" branch.</val>

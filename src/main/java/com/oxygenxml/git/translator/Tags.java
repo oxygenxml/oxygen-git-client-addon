@@ -1794,11 +1794,6 @@ public class Tags {
   public static final String SQUASH_NO_COMMITS_DETECTED_MESSAGE = "Squash_No_Commits_Message";
   
   /**
-   * Set WC message.
-   */
-  public static final String CHANGE = "Change";
-  
-  /**
    * Set remote.
    */
   public static final String SET_REMOTE = "Set_Remote";
