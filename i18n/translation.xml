@@ -7,7 +7,8 @@
 		<language description="Japanese" lang="ja_JP" localeDescription="日本語"/>
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
-		<key value="Load_Repository">
+	</languageList>
+	<key value="Load_Repository">
 		<comment>The title of the load repository dialog when change projects.</comment>
 		<val lang="en_US">Load Git repository</val>
 		<val lang="de_DE">Load Git repository</val>
