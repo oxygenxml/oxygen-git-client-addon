@@ -325,13 +325,15 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
       if (FileUtil.isGitRepository(file)) {
         repoDir = file;
       } else if (file.isDirectory()) {
-        File[] listFiles = file.listFiles();
-        for (int i = 0; i < listFiles.length; i++) {
-          repoDir = detectRepositoryDownwards(listFiles[i]);
-          if (repoDir != null) {
-            break;
+        File[] innerFiles = file.listFiles();
+        if(innerFiles != null) {
+          for (int i = 0; i < innerFiles.length; i++) {
+            repoDir = detectRepositoryDownwards(innerFiles[i]);
+            if (repoDir != null) {
+              break;
+            }
           }
-        }
+        }  
       }
     }
     
