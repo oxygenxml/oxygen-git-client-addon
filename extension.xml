@@ -22,6 +22,14 @@
             for comparing and merging changes. </p>
         </div>
         <div>
+          <h3>What's new in version 5.1.1</h3>
+          <ol>
+            <li>Corrected a message that created confusion in the <i>Merge branches</i> dialog box.</li>
+            <li>Fixed an issue where Oxygen failed to start when there was no project open in the <i>Project view</i>.</li>
+            <li>Implemented other bug fixes.</li>
+	  </ol>
+	</div>      
+        <div>
           <h3>What's new in version 5.1.0</h3>
           <ol>
             <li>A new options page was added for SHH Connections to control SSH agent usage.</li>
