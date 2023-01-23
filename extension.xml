@@ -24,9 +24,9 @@
         <div>
           <h3>What's new in version 5.1.1</h3>
           <ol>
-            <li>Correction of the message in the Merge branches dialog when the 2 branches were reversed and confusion was created.</li>
-            <li>Solving a problem in which Oxygen was blocked in some cases if there was no open project in Git Staging.</li>
-            <li>Other bugs fixed.</li>
+            <li>Corrected a message that created confusion in the <i>Merge branches</i> dialog box.</li>
+            <li>Fixed an issue where Oxygen failed to start when there was no project open in the <i>Project view</i>.</li>
+            <li>Implemented other bug fixes.</li>
 	  </ol>
 	</div>      
         <div>
