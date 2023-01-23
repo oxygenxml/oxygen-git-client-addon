@@ -22,6 +22,14 @@
             for comparing and merging changes. </p>
         </div>
         <div>
+          <h3>What's new in version 5.1.1</h3>
+          <ol>
+            <li>Correction of the message in the Merge branches dialog when the 2 branches were reversed and confusion was created.</li>
+            <li>Solving a problem in which Oxygen was blocked in some cases if there was no open project in Git Staging.</li>
+            <li>Other bugs fixed.</li>
+	  </ol>
+	</div>      
+        <div>
           <h3>What's new in version 5.1.0</h3>
           <ol>
             <li>A new options page was added for SHH Connections to control SSH agent usage.</li>
