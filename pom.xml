@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>oxygen-git-client-addon</artifactId>
-	<version>5.1.0-SNAPSHOT</version>
+	<version>5.1.1-SNAPSHOT</version>
     
 	<developers>
 		<developer>
