@@ -529,7 +529,7 @@ public class Tags {
 	/**
 	 * The title of the load repository dialog when change projects.
 	 */
-	public static final String LOAD_REPOSITORY = "Load_Repository";
+	public static final String DETECTED_LOCAL_GIT_REPO = "Detected_Local_Git_Repo";
 
 	/**
 	 * The text displayed in the dialog that appears near the combo box
@@ -1882,6 +1882,11 @@ public class Tags {
    * The message presented to the user when the git staging project has not a .xpr file.
    */
   public static final String NO_XPR_FILE_FOUND_MESSAGE = "No_XPR_File_In_Project_Message";
+  
+  /**
+   * English: Don't Load.
+   */
+  public static final String DONT_LOAD = "Do_Not_Load";
   
   /**
    * Load.

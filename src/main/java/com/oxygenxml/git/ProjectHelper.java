@@ -119,7 +119,7 @@ public class ProjectHelper {
           
           String projectDirPath = FileUtil.getCanonicalPath(repoDir);
           if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
-            repoChanged = switchToProjectRepoIfUserAgrees(projectDirPath);
+            repoChanged = switchToProjectRepoIfUserAgrees(repoDir);
           } else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
             GitAccess.getInstance().setRepositoryAsync(projectDirPath);
             repoChanged = true;
@@ -136,25 +136,25 @@ public class ProjectHelper {
   /**
    * Switch to the given repository if the user agrees.
    * 
-   * @param projectDir  The project directory.
+   * @param repositoryDir  The repository directory.
    * 
    * @return <code>true</code> if repository changed.
    */
-  private boolean switchToProjectRepoIfUserAgrees(String projectDir) {
+  private boolean switchToProjectRepoIfUserAgrees(File repositoryDir) {
     boolean repoChanged = false;
     final PluginWorkspace pluginWS =
         PluginWorkspaceProvider.getPluginWorkspace();
     int response = pluginWS.showConfirmDialog(
-        TRANSLATOR.getTranslation(Tags.LOAD_REPOSITORY),
-        new StringBuilder(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE), projectDir))
-          .append("\n\n").append(TRANSLATOR.getTranslation(Tags.ASK_LOAD_REPOSITORY)).toString(),
+        TRANSLATOR.getTranslation(Tags.DETECTED_LOCAL_GIT_REPO),
+        new StringBuilder(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE), repositoryDir.getAbsolutePath()))
+          .append("\n\n").append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.ASK_LOAD_REPOSITORY), repositoryDir.getName())).toString(),
         new String[] {
-            TRANSLATOR.getTranslation(Tags.YES),
-            TRANSLATOR.getTranslation(Tags.NO)
+            TRANSLATOR.getTranslation(Tags.LOAD),
+            TRANSLATOR.getTranslation(Tags.DONT_LOAD)
         },
         new int[] { 0, 1 });
     if (response == 0) {
-      GitAccess.getInstance().setRepositoryAsync(projectDir);
+      GitAccess.getInstance().setRepositoryAsync(FileUtil.getCanonicalPath(repositoryDir));
       repoChanged = true;
     }
 

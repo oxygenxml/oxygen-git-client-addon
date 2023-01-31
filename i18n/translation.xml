@@ -8,35 +8,44 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
-	<key value="Load_Repository">
+	<key value="Detected_Local_Git_Repo">
 		<comment>The title of the load repository dialog when change projects.</comment>
-		<val lang="en_US">Load Git repository</val>
-		<val lang="de_DE">Load Git repository</val>
-		<val lang="fr_FR">Load Git repository</val>
-		<val lang="ja_JP">Load Git repository</val>
-		<val lang="nl_NL">Load Git repository</val>
-		<val lang="zh_CN">Load Git repository</val>
+		<val lang="en_US">Local Git repository detected</val>
+		<val lang="de_DE">Local Git repository detected</val>
+		<val lang="fr_FR">Local Git repository detected</val>
+		<val lang="ja_JP">Local Git repository detected</val>
+		<val lang="nl_NL">Local Git repository detected</val>
+		<val lang="zh_CN">Local Git repository detected</val>
+	</key>
+	<key value="Do_Not_Load">
+		<comment>English:Don't Load.</comment>
+		<val lang="en_US">Don't Load</val>
+		<val lang="de_DE">Don't Load</val>
+		<val lang="fr_FR">Don't Load</val>
+		<val lang="ja_JP">Don't Load</val>
+		<val lang="nl_NL">Don't Load</val>
+		<val lang="zh_CN">Don't Load</val>
 	</key>
 	<key value="Change_to_project_repo_confirm_message">
 		<comment>Confirmation message for changing the current working copy to
 			the project folder,
 			which is also a Git repository.
 		</comment>
-		<val lang="en_US">The following directory was detected as being a local Git repository:\n"{0}".</val>
-		<val lang="de_DE">The following directory was detected as being a local Git repository:\n"{0}".</val>
-		<val lang="fr_FR">The following directory was detected as being a local Git repository:\n"{0}".</val>
-		<val lang="ja_JP">The following directory was detected as being a local Git repository:\n"{0}".</val>
-		<val lang="nl_NL">The following directory was detected as being a local Git repository:\n"{0}"</val>
-		<val lang="zh_CN">The following directory was detected as being a local Git repository:\n"{0}"</val>
+		<val lang="en_US">A local Git repository was detected in the following directory:\n"{0}".</val>
+		<val lang="de_DE">A local Git repository was detected in the following directory:\n"{0}".</val>
+		<val lang="fr_FR">A local Git repository was detected in the following directory:\n"{0}".</val>
+		<val lang="ja_JP">A local Git repository was detected in the following directory:\n"{0}".</val>
+		<val lang="nl_NL">A local Git repository was detected in the following directory:\n"{0}"</val>
+		<val lang="zh_CN">A local Git repository was detected in the following directory:\n"{0}"</val>
 	</key>
 	<key value="Ask_Load_Repository">
 		<comment>This tag is used to ask for repository loading.</comment>
-		<val lang="en_US">Do you want to load it?</val>
-		<val lang="de_DE">Do you want to load it?</val>
-		<val lang="fr_FR">Do you want to load it?</val>
-		<val lang="ja_JP">Do you want to load it?</val>
-		<val lang="nl_NL">Do you want to load it?</val>
-		<val lang="zh_CN">Do you want to load it?</val>
+		<val lang="en_US">Do you want to load "{0}" in the Git Client as the new repository?</val>
+		<val lang="de_DE">Do you want to load "{0}" in the Git Client as the new repository?</val>
+		<val lang="fr_FR">Do you want to load "{0}" in the Git Client as the new repository?</val>
+		<val lang="ja_JP">Do you want to load "{0}" in the Git Client as the new repository?</val>
+		<val lang="nl_NL">Do you want to load "{0}" in the Git Client as the new repository?</val>
+		<val lang="zh_CN">Do you want to load "{0}" in the Git Client as the new repository?</val>
 	</key>
 	<key value="Ask_User_To_Create_New_Repository_Tooltip">
 		<comment>English: Prompts the user to decide if they want to create a Git repository in the current project.</comment>
