@@ -12,7 +12,7 @@
 		<comment>The title of the load repository dialog when change projects.</comment>
 		<val lang="en_US">Local Git repository detected</val>
 		<val lang="de_DE">Local Git repository detected</val>
-		<val lang="fr_FR">Local Git repository detected</val>
+		<val lang="fr_FR">Dépôt Git local détecté</val>
 		<val lang="ja_JP">Local Git repository detected</val>
 		<val lang="nl_NL">Local Git repository detected</val>
 		<val lang="zh_CN">Local Git repository detected</val>
@@ -21,7 +21,7 @@
 		<comment>English:Don't Load.</comment>
 		<val lang="en_US">Don't Load</val>
 		<val lang="de_DE">Don't Load</val>
-		<val lang="fr_FR">Don't Load</val>
+		<val lang="fr_FR">Ne pas charger</val>
 		<val lang="ja_JP">Don't Load</val>
 		<val lang="nl_NL">Don't Load</val>
 		<val lang="zh_CN">Don't Load</val>
@@ -33,7 +33,7 @@
 		</comment>
 		<val lang="en_US">A local Git repository was detected in the following directory:\n"{0}".</val>
 		<val lang="de_DE">A local Git repository was detected in the following directory:\n"{0}".</val>
-		<val lang="fr_FR">A local Git repository was detected in the following directory:\n"{0}".</val>
+		<val lang="fr_FR">Un dépôt Git local a été détecté dans le répertoire suivant:\n"{0}".</val>
 		<val lang="ja_JP">A local Git repository was detected in the following directory:\n"{0}".</val>
 		<val lang="nl_NL">A local Git repository was detected in the following directory:\n"{0}"</val>
 		<val lang="zh_CN">A local Git repository was detected in the following directory:\n"{0}"</val>
@@ -42,7 +42,7 @@
 		<comment>This tag is used to ask for repository loading.</comment>
 		<val lang="en_US">Do you want to load "{0}" in the Git Client as the new repository?</val>
 		<val lang="de_DE">Do you want to load "{0}" in the Git Client as the new repository?</val>
-		<val lang="fr_FR">Do you want to load "{0}" in the Git Client as the new repository?</val>
+		<val lang="fr_FR">Voulez-vous charger "{0}" dans le client Git comme nouveau dépôt?</val>
 		<val lang="ja_JP">Do you want to load "{0}" in the Git Client as the new repository?</val>
 		<val lang="nl_NL">Do you want to load "{0}" in the Git Client as the new repository?</val>
 		<val lang="zh_CN">Do you want to load "{0}" in the Git Client as the new repository?</val>
@@ -51,7 +51,7 @@
 		<comment>English: Prompts the user to decide if they want to create a Git repository in the current project.</comment>
 		<val lang="en_US">Prompts the user to decide if they want to create a Git repository in the current project.</val>
 		<val lang="de_DE">Prompts the user to decide if they want to create a Git repository in the current project.</val>
-		<val lang="fr_FR">Prompts the user to decide if they want to create a Git repository in the current project.</val>
+		<val lang="fr_FR">Demande à l'utilisateur de décider s'il veut créer un dépôt Git dans le projet actuel.</val>
 		<val lang="ja_JP">Prompts the user to decide if they want to create a Git repository in the current project.</val>
 		<val lang="nl_NL">Prompts the user to decide if they want to create a Git repository in the current project.</val>
 		<val lang="zh_CN">Prompts the user to decide if they want to create a Git repository in the current project.</val>
@@ -60,7 +60,7 @@
 		<comment>English: Ask user to create a new repository</comment>
 		<val lang="en_US">Ask user to create a new repository</val>
 		<val lang="de_DE">Ask user to create a new repository</val>
-		<val lang="fr_FR">Ask user to create a new repository</val>
+		<val lang="fr_FR">Demander à l'utilisateur de créer un nouveau dépôt</val>
 		<val lang="ja_JP">Ask user to create a new repository</val>
 		<val lang="nl_NL">Ask user to create a new repository</val>
 		<val lang="zh_CN">Ask user to create a new repository</val>
@@ -69,7 +69,7 @@
 		<comment>English: SSH Connections.</comment>
 		<val lang="en_US">SSH Connections</val>
 		<val lang="de_DE">SSH Connections</val>
-		<val lang="fr_FR">SSH Connections</val>
+		<val lang="fr_FR">Connexions SSH</val>
 		<val lang="ja_JP">SSH Connections</val>
 		<val lang="nl_NL">SSH Connections</val>
 		<val lang="zh_CN">SSH Connections</val>
@@ -78,7 +78,7 @@
 		<comment>The option to use SSH support.</comment>
 		<val lang="en_US">Use SSH agent</val>
 		<val lang="de_DE">Use SSH agent</val>
-		<val lang="fr_FR">Use SSH agent</val>
+		<val lang="fr_FR">Utiliser l'agent SSH</val>
 		<val lang="ja_JP">Use SSH agent</val>
 		<val lang="nl_NL">Use SSH agent</val>
 		<val lang="zh_CN">Use SSH agent</val>
