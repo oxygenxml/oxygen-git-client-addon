@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
@@ -21,6 +20,7 @@ import org.junit.Test;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 
 import ro.sync.basic.io.FileSystemUtil;
 
@@ -126,8 +126,8 @@ public class GitCloneTest extends GitTestBase {
     } finally {
       // Free the resources and clean the destination folders
       GitAccess.getInstance().closeRepo();
-      FileUtils.deleteDirectory(cloneDest);
-      FileUtils.deleteDirectory(cloneDest2);
+      FileUtil.deleteRecursivelly(cloneDest);
+      FileUtil.deleteRecursivelly(cloneDest2);
     }
   }
   
@@ -178,7 +178,7 @@ public class GitCloneTest extends GitTestBase {
     push("", "");
     
     File cloneDest = new File("target/test-resources/GitCloneTest/testCloneSubmodules-remoteCS-2");
-    FileUtils.deleteDirectory(cloneDest);
+    FileUtil.deleteRecursivelly(cloneDest);
     // Clone the remote.
     gitAccess.clone(
         new URIish(localRepoP.getDirectory().toURI().toURL()),

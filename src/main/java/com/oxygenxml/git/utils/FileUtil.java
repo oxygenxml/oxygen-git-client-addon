@@ -656,4 +656,27 @@ public class FileUtil {
     return PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(url) != null;
   }
   
+  /**
+   *  Deletes recursively the specified directory.
+   * 
+   *@param  file   The file or directory to be deleted.
+   */
+  public static void deleteRecursivelly(File file) {
+    if (!file.exists()) {
+      // Nothing to do.
+      return;
+    }
+    if (file.isDirectory()) {
+      File[] files = file.listFiles();
+      if (files != null) {
+        for (int i = 0; i < files.length; i++) {
+          deleteRecursivelly(files[i]);
+        }
+      }
+      file.delete();
+    } else {
+      file.delete();
+    }
+  }
+  
 }

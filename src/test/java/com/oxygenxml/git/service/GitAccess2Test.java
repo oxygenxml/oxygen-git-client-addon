@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.eclipse.jgit.lib.Repository;
 
+import com.oxygenxml.git.utils.FileUtil;
+
 import junit.framework.TestCase;
 
 /**
@@ -38,7 +40,7 @@ public class GitAccess2Test extends TestCase {
       assertEquals(GitAccess.DEFAULT_BRANCH_NAME, branchName);
 
     } finally {
-      org.apache.commons.io.FileUtils.deleteDirectory(newRepoDirectory);
+      FileUtil.deleteRecursivelly(newRepoDirectory);
     }
 
   }

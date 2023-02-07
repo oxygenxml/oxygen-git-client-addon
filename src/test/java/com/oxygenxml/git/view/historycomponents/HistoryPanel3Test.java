@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTable;
 
-import org.apache.commons.io.FileUtils;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Repository;
@@ -23,6 +22,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
@@ -132,7 +132,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       assertEquals(expected, dump);
     } finally {
       GitAccess.getInstance().closeRepo();
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
   
@@ -200,7 +200,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
     } finally {
       GitAccess.getInstance().closeRepo();
       sleep(100);
-      FileUtils.deleteDirectory(repoDir);
+      FileUtil.deleteRecursivelly(repoDir);
     }
   }
   

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -16,6 +15,7 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -80,11 +80,7 @@ public class GitAccessRestoreLastCommitTest extends TestCase {
 	protected void tearDown() {
 	  gitAccess.cleanUp();
 	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-	  try {
-	    FileUtils.deleteDirectory(dirToDelete);
-	  } catch (IOException e) {
-	    e.printStackTrace();
-	  }
+	  FileUtil.deleteRecursivelly(dirToDelete);
 	}
 
 	public void testRestoreLastCommit() throws IOException {

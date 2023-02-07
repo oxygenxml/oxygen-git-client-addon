@@ -7,10 +7,10 @@ import java.util.List;
 
 import javax.swing.JTable;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
@@ -107,7 +107,7 @@ public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
       assertEquals(1, noOfRefreshes);
     } finally {
       GitAccess.getInstance().closeRepo();
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
 }

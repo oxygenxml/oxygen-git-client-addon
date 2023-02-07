@@ -1,13 +1,12 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
-import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 
 /**
  * Push test cases.
@@ -94,12 +93,8 @@ public class GitAccessPush2Test extends GitTestBase {
    */
   private void deleteTestResources() {
     File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-      dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
-      FileUtils.deleteDirectory(dirToDelete);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    FileUtil.deleteRecursivelly(dirToDelete);
+    dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
+    FileUtil.deleteRecursivelly(dirToDelete);
   }
 }

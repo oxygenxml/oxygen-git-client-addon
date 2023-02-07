@@ -3,7 +3,6 @@ package com.oxygenxml.git.view;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Repository;
@@ -11,6 +10,7 @@ import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.event.GitController;
@@ -179,13 +179,9 @@ public class RefreshComponentsTest extends GitTestBase {
    */
   private void deleteTestResources() {
     File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-      dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
-      FileUtils.deleteDirectory(dirToDelete);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    FileUtil.deleteRecursivelly(dirToDelete);
+    dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
+    FileUtil.deleteRecursivelly(dirToDelete);
   }
 
 }

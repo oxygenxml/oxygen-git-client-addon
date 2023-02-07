@@ -7,10 +7,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 
 import junit.framework.TestCase;
 
@@ -31,7 +30,7 @@ public class GitAccessUnstageFilesTest extends TestCase {
 	
 	 public void tearDown() throws Exception {
 	    gitAccess.cleanUp();
-	    FileUtils.deleteDirectory(testDIr);
+	    FileUtil.deleteRecursivelly(testDIr);
 	  }
 
 	public void testGetUnstagedFilesForModifyFiles() {

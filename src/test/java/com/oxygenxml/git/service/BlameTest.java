@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.text.Highlighter.Highlight;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -22,6 +21,7 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.ProjectAndEditorPageMenuActionsUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.blame.BlamePerformer;
 import com.oxygenxml.git.view.history.HistoryController;
@@ -153,7 +153,7 @@ public class BlameTest extends GitTestBase{
     } finally {
       GitAccess.getInstance().closeRepo();
       
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
   
@@ -308,7 +308,7 @@ public class BlameTest extends GitTestBase{
     } finally {
       GitAccess.getInstance().closeRepo();
       
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
   
@@ -458,7 +458,7 @@ public class BlameTest extends GitTestBase{
       assertEquals(expected, actual);
     } finally {
       GitAccess.getInstance().closeRepo();
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
 

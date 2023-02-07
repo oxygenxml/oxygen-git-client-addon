@@ -7,12 +7,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 
 import junit.framework.TestCase;
 
@@ -37,11 +37,7 @@ public class GitAccessRemoveTest extends TestCase {
 	protected void tearDown() {
 	  gitAccess.closeRepo();
 	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-	  try {
-	    FileUtils.deleteDirectory(dirToDelete);
-	  } catch (IOException e) {
-	    e.printStackTrace();
-	  }
+	  FileUtil.deleteRecursivelly(dirToDelete);
 	}
 
 	@Test

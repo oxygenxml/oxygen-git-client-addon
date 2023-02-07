@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -19,6 +18,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.SubmoduleAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
@@ -126,7 +126,7 @@ public class RefreshProjectTest extends TestCase {
           repoDir.getCanonicalFile().getAbsolutePath(),
           refreshedFolder.getAbsolutePath());
     } finally {
-      FileUtils.deleteDirectory(repoDir);
+      FileUtil.deleteRecursivelly(repoDir);
     }
   }
 
@@ -183,7 +183,7 @@ public class RefreshProjectTest extends TestCase {
           repoDir.getCanonicalFile().getAbsolutePath(),
           refreshedFolder.getAbsolutePath());
     } finally {
-      FileUtils.deleteDirectory(repoDir);
+      FileUtil.deleteRecursivelly(repoDir);
     }
   }
   
@@ -231,7 +231,7 @@ public class RefreshProjectTest extends TestCase {
           subModule.getCanonicalFile().getAbsolutePath(),
           refreshedFolder.getAbsolutePath());
     } finally {
-      FileUtils.deleteDirectory(repoDir);
+      FileUtil.deleteRecursivelly(repoDir);
     }
   }
 

@@ -10,12 +10,12 @@ import java.util.concurrent.ScheduledFuture;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.FileHistoryPresenter;
@@ -142,7 +142,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     } finally {
       GitAccess.getInstance().closeRepo();
 
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
 
   }
@@ -250,7 +250,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     } finally {
       GitAccess.getInstance().closeRepo();
 
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
 
   }

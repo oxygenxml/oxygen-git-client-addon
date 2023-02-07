@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -20,6 +19,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
@@ -94,11 +94,7 @@ public class GitAccessStashTest extends TestCase {
   protected void tearDown() {
     gitAccess.closeRepo();
     File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    FileUtil.deleteRecursivelly(dirToDelete);
   }
 
 

@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -55,12 +54,8 @@ public class FileHelperTest extends TestCase {
 	}
 	
 	protected void tearDown() {
-	  try {
-	    File dir = new File(LOCAL_TEST_REPOSITPRY);
-	    FileUtils.deleteDirectory(dir);
-	  } catch (IOException e) {
-	    e.printStackTrace();
-	  }
+	  File dir = new File(LOCAL_TEST_REPOSITPRY);
+    FileUtil.deleteRecursivelly(dir);
 	}
 
 	/**

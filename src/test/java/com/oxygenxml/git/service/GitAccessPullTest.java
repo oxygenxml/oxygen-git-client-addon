@@ -1,10 +1,8 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -18,6 +16,7 @@ import org.junit.Test;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.PullType;
 
 public class GitAccessPullTest extends GitTestBase{
@@ -172,15 +171,11 @@ public class GitAccessPullTest extends GitTestBase{
 		localRepo2.close();
 		remoteRepo.close();
 		File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
-		try {
-			FileUtils.deleteDirectory(dirToDelete);
-			dirToDelete = new File(REMOTE_TEST_REPOSITORY);
-			FileUtils.deleteDirectory(dirToDelete);
-			dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
-			FileUtils.deleteDirectory(dirToDelete);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		FileUtil.deleteRecursivelly(dirToDelete);
+		dirToDelete = new File(REMOTE_TEST_REPOSITORY);
+		FileUtil.deleteRecursivelly(dirToDelete);
+		dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
+		FileUtil.deleteRecursivelly(dirToDelete);
 	}
 
 	/**

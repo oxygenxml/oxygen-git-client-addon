@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -21,6 +20,7 @@ import org.mockito.Mockito;
 
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
@@ -78,12 +78,8 @@ public class GitAccesTagsTest extends TestCase {
     gitAccess.cleanUp();
     File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
     File dirToDelete2 = new File(REPOSITORY_TEST_CLONE);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-      FileUtils.deleteDirectory(dirToDelete2);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    FileUtil.deleteRecursivelly(dirToDelete);
+    FileUtil.deleteRecursivelly(dirToDelete2);
   }
   
   /**

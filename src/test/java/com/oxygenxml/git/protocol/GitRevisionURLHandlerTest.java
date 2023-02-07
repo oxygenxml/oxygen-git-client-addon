@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
 
@@ -14,6 +13,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
@@ -125,7 +125,7 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
     } finally {
       GitAccess.getInstance().closeRepo();
       
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
   

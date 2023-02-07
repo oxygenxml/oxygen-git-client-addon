@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -24,6 +23,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.PullType;
 
 public class GitAccessPushTest extends GitTestBase {
@@ -177,18 +177,14 @@ public class GitAccessPushTest extends GitTestBase {
 		flushAWT();
 		secondLocalRepo.close();
 		flushAWT();
-		try {
-		  File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITPRY);
-			FileUtils.deleteDirectory(dirToDelete);
-			flushAWT();
-			dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
-			FileUtils.deleteDirectory(dirToDelete);
-			flushAWT();
-			dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITPRY);
-			FileUtils.deleteDirectory(dirToDelete);
-			flushAWT();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	  File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITPRY);
+		FileUtil.deleteRecursivelly(dirToDelete);
+		flushAWT();
+		dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
+		FileUtil.deleteRecursivelly(dirToDelete);
+		flushAWT();
+		dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITPRY);
+		FileUtil.deleteRecursivelly(dirToDelete);
+		flushAWT();
 	}
 }

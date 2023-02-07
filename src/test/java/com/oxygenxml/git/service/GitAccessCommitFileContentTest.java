@@ -3,7 +3,6 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.PrintWriter;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -21,6 +20,7 @@ import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.PullType;
 
 import junit.framework.TestCase;
@@ -312,11 +312,11 @@ public class GitAccessCommitFileContentTest extends TestCase {
 		localRepo2.close();
 		remoteRepo.close();
 		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-		FileUtils.deleteDirectory(dirToDelete);
+		FileUtil.deleteRecursivelly(dirToDelete);
 		dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
-		FileUtils.deleteDirectory(dirToDelete);
+		FileUtil.deleteRecursivelly(dirToDelete);
 		dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
-		FileUtils.deleteDirectory(dirToDelete);
+		FileUtil.deleteRecursivelly(dirToDelete);
 		
 		super.tearDown();
 	}

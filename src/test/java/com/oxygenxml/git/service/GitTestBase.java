@@ -39,7 +39,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-import org.apache.commons.io.FileUtils;
 import org.awaitility.Awaitility;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -72,6 +71,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
@@ -284,12 +284,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * @throws IllegalStateException 
    */
   protected Repository createRepository(String repositoryPath) throws NoRepositorySelected, IllegalStateException, GitAPIException {
-    try {
-      File dirToDelete = new File(repositoryPath, ".git");
-      FileUtils.deleteDirectory(dirToDelete);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    File dirToDelete = new File(repositoryPath, ".git");
+    FileUtil.deleteRecursivelly(dirToDelete);
     
     GitAccess gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(repositoryPath);
@@ -762,7 +758,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     if (repository != null) {
       String absolutePath = repository.getWorkTree().getAbsolutePath();
       File dirToDelete = new File(absolutePath);
-      FileUtils.deleteDirectory(dirToDelete);
+      FileUtil.deleteRecursivelly(dirToDelete);
     }
   }
   

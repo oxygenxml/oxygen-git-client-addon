@@ -31,6 +31,7 @@ import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
@@ -217,15 +218,11 @@ public class GitAccessConflictTest extends TestCase {
     localRepo2.close();
     remoteRepo.close();
     File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITPRY);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-      dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
-      FileUtils.deleteDirectory(dirToDelete);
-      dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
-      FileUtils.deleteDirectory(dirToDelete);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    FileUtil.deleteRecursivelly(dirToDelete);
+    dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
+    FileUtil.deleteRecursivelly(dirToDelete);
+    dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
+    FileUtil.deleteRecursivelly(dirToDelete);
   }
   
   @Test

@@ -29,7 +29,7 @@ public class RepoUtilTest extends GitTestBase {
   public void tearDown() throws Exception {
     super.tearDown();
     
-    org.apache.commons.io.FileUtils.deleteDirectory(workDir);
+    FileUtil.deleteRecursivelly(workDir);
   }
 
   /**

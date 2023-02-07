@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
@@ -77,7 +78,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     } finally {
       GitAccess.getInstance().closeRepo();
       
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
   
@@ -148,7 +149,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       waitForScheduler();
       flushAWT();
       
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
 
@@ -218,7 +219,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     } finally {
       GitAccess.getInstance().closeRepo();
       
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
     }
   }
 
@@ -283,7 +284,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       GitAccess.getInstance().cleanUp();
       waitForScheduler();
       flushAWT();
-      FileUtils.deleteDirectory(wcTree);
+      FileUtil.deleteRecursivelly(wcTree);
       flushAWT();
     }
   }
@@ -301,8 +302,8 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     File wcTree = new File("target/gen/GitHistoryTest_testHistoryRemote");
     File remoteDir = new File("target/gen/GitHistoryTest_testHistoryRemote_RemoteRepo");
     
-    FileUtils.deleteDirectory(wcTree);
-    FileUtils.deleteDirectory(remoteDir);
+    FileUtil.deleteRecursivelly(wcTree);
+    FileUtil.deleteRecursivelly(remoteDir);
     
     RepoGenerationScript.generateRepository(script, wcTree);
     Repository remoteRepository = null;
@@ -382,7 +383,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
             expected, dump);
       } finally {
         GitAccess.getInstance().closeRepo();
-        FileUtils.deleteDirectory(wcTree);
+        FileUtil.deleteRecursivelly(wcTree);
       }
     }
 

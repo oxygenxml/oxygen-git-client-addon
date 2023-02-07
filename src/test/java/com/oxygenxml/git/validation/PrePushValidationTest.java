@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.eclipse.jgit.annotations.NonNull;
@@ -30,6 +29,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.validation.gitoperation.GitValidationUtil;
 import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
 import com.oxygenxml.git.validation.internal.ICollector;
@@ -154,16 +154,12 @@ public class PrePushValidationTest extends GitTestBase {
     firstLocalRepo.close();
     remoteRepo.close();
     secondLocalRepo.close();
-    try {
-      File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
-      FileUtils.deleteDirectory(dirToDelete);
-      dirToDelete = new File(REMOTE_TEST_REPOSITORY);
-      FileUtils.deleteDirectory(dirToDelete);
-      dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
-      FileUtils.deleteDirectory(dirToDelete);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
+    FileUtil.deleteRecursivelly(dirToDelete);
+    dirToDelete = new File(REMOTE_TEST_REPOSITORY);
+    FileUtil.deleteRecursivelly(dirToDelete);
+    dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
+    FileUtil.deleteRecursivelly(dirToDelete);
 
     super.tearDown();
   }
