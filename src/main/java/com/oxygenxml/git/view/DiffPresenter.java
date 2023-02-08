@@ -7,12 +7,14 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 
 import javax.swing.JFrame;
 
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -35,6 +37,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -66,16 +69,31 @@ public class DiffPresenter {
 	}
 
 	/**
+   * Perform different actions depending on the file change type. If the file is
+   * a conflict file then a 3-way diff is presented. If the file is a modified
+   * one then a 2-way diff is presented. And if a file is added then the file is
+   * opened or removed only one side of the diff panel is populated.
+   * 
+   * @param fileStatus       Changes. 
+   * @param gitCtrl          Git controller.
+   * 
+   */
+	public static void showDiff(FileStatus fileStatus, GitControllerBase gitCtrl) {
+	  showDiff(fileStatus, gitCtrl, null);
+	}
+	
+	/**
 	 * Perform different actions depending on the file change type. If the file is
 	 * a conflict file then a 3-way diff is presented. If the file is a modified
 	 * one then a 2-way diff is presented. And if a file is added then the file is
 	 * opened or removed only one side of the diff panel is populated.
 	 * 
-	 * @param fileStatus Changes. 
-	 * @param gitCtrl    Git controller.
+	 * @param fileStatus       Changes. 
+	 * @param gitCtrl          Git controller.
+	 * @param refreshManager   Responsible to  refresh components after file modification in diff if it is a local one.
 	 * 
 	 */
-	public static void showDiff(FileStatus fileStatus, GitControllerBase gitCtrl) {
+	public static void showDiff(FileStatus fileStatus, GitControllerBase gitCtrl, @Nullable final GitRefreshSupport refreshManager) {
 	  try {
 	    GitChangeType changeType = fileStatus.getChangeType();
 	    switch (changeType) {
@@ -83,10 +101,10 @@ public class DiffPresenter {
 	        showConflictDiff(fileStatus, gitCtrl);
 	        break;
 	      case CHANGED:
-	        showDiffIndexWithHead(fileStatus.getFileLocation());
+	        showDiffIndexWithHead(refreshManager, fileStatus.getFileLocation());
 	        break;
 	      case MODIFIED:
-	        showDiffViewForModified(fileStatus.getFileLocation());
+	        showDiffViewForModified(fileStatus.getFileLocation(), refreshManager);
 	        break;
 	      case ADD:
 	      case UNTRACKED:
@@ -176,35 +194,74 @@ public class DiffPresenter {
 	/**
 	 * Presents a 2-way diff
 	 * 
-	 * @param path The path of the file to compare. Relative to the working tree.
+	 * @param path               The path of the file to compare. Relative to the working tree.
+	 * @param refreshSupport     Used for refreshes when needed.
 	 * 
 	 * @throws NoRepositorySelected 
+	 * @throws URISyntaxException 
 	 */
-	private static void showDiffViewForModified(String path) throws NoRepositorySelected {
+	private static void showDiffViewForModified(String path, @Nullable final GitRefreshSupport refreshSupport) throws NoRepositorySelected, URISyntaxException {
 	  // The local (WC) version.
 		URL fileURL = FileUtil.getFileURL(path);
 		URL lastCommitedFileURL = null;
 
 		try {
-			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
-			    VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
+		  lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
+		      VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
 		} catch (MalformedURLException e1) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(e1.getMessage(), e1);
-			}
+		  if (LOGGER.isDebugEnabled()) {
+		    LOGGER.debug(e1.getMessage(), e1);
+		  }
 		}
-		
-		showDiffFrame(fileURL, lastCommitedFileURL, lastCommitedFileURL, path);
+
+		// time stamp used for detecting if the file was changed in the diff view
+		final long diffStartedTimeStamp = new File(fileURL.toURI()).lastModified();
+
+		final Optional<JFrame> frame = showDiffFrame(fileURL, lastCommitedFileURL, lastCommitedFileURL, path);
+		refreshIfFileWasModified(refreshSupport, diffStartedTimeStamp, frame, fileURL);
 	}
+
+	/**
+	 * Call refresh support if the file was modified.
+	 * 
+	 * @param refreshSupport          Responsible for refresh management.
+	 * @param diffStartedTimeStamp    The time when the file was modified before diff showing. 
+	 * @param frame                   Used to show the differences.
+	 * @param fileURL                 The URL of the file.
+	 */
+  private static void refreshIfFileWasModified(@Nullable final GitRefreshSupport refreshSupport, final long diffStartedTimeStamp,
+      final Optional<JFrame> frame, final URL fileURL) {
+    frame.ifPresent(d -> 
+		d.addComponentListener(new ComponentAdapter() {
+		  @Override
+		  public void componentHidden(ComponentEvent e) {
+		    long diffClosedTimeStamp = 0;
+		    try {
+		      diffClosedTimeStamp = new File(fileURL.toURI()).lastModified();
+		      if(diffStartedTimeStamp < diffClosedTimeStamp && refreshSupport != null) {
+		        refreshSupport.call();
+		      }
+		    } catch (URISyntaxException e1) {
+		      if (LOGGER.isDebugEnabled()) {
+		        LOGGER.debug(e1.getMessage(), e1);
+		      }
+		    } 
+		  }
+		}));
+  }
+
+	
 	
   /**
    * Presents a 2-way diff
    * 
-   * @param path The path of the file to compare. Relative to the working tree.
+   * @param path            The path of the file to compare. Relative to the working tree.
+   * @param refreshManager  Used for refreshes when needed.
    *  
    * @throws NoRepositorySelected 
+   * @throws URISyntaxException 
    */
-  private static void showDiffIndexWithHead(String path) throws NoRepositorySelected {    
+  private static void showDiffIndexWithHead(@Nullable final GitRefreshSupport refreshManager, String path) throws NoRepositorySelected, URISyntaxException { 
     // The local (WC) version.
     URL leftSideURL = FileUtil.getFileURL(path);
     URL rightSideURL = null;
@@ -219,8 +276,10 @@ public class DiffPresenter {
       }
     }
 
-    showDiffFrame(leftSideURL, rightSideURL, rightSideURL, path);
-
+     // time stamp used for detecting if the file was changed in the diff view
+    final long diffStartedTimeStamp = new File(leftSideURL.toURI()).lastModified();
+    final Optional<JFrame> frame = showDiffFrame(leftSideURL, rightSideURL, rightSideURL, path);
+    refreshIfFileWasModified(refreshManager, diffStartedTimeStamp, frame, leftSideURL);
   }
 
 	/**

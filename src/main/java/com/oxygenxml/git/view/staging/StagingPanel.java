@@ -266,8 +266,8 @@ public class StagingPanel extends JPanel {
     this.setLayout(new GridBagLayout());
 
     // Creates the panels objects that will be in the staging panel
-    unstagedChangesPanel = new ChangesPanel(gitController, historyController, false);
-    stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
+    unstagedChangesPanel = new ChangesPanel(gitController, historyController, false, refreshSupport);
+    stagedChangesPanel = new ChangesPanel(gitController, historyController, true, refreshSupport);
     workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController, false);
     branchSelectionCombo = new BranchSelectionCombo(gitController);
     commitPanel = new CommitAndStatusPanel(gitController);

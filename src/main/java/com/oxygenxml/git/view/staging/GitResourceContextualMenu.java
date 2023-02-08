@@ -24,6 +24,7 @@ import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.history.HistoryController;
+import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.staging.actions.DiscardAction;
 import com.oxygenxml.git.view.staging.actions.OpenAction;
@@ -115,6 +116,11 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	 * Show blame action.
 	 */
 	private AbstractAction blameAction;
+	
+  /**
+   * Responsible for repository and UI refreshes.
+   */
+  private final GitRefreshSupport refreshManager;
 
 
   /**
@@ -126,16 +132,19 @@ public class GitResourceContextualMenu extends JPopupMenu {
    * @param isStage               <code>true</code> if we create the menu for the staged resources,
    *                                  <code>false</code> for the unstaged resources.
 	 * @param repoStateOptional     Repository state.
+	 * @param refreshManager      Responsible for refresh when needed.
    */
   public GitResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
       GitControllerBase gitController,
       HistoryController historyController,
       boolean isStage,
-      Optional<RepositoryState> repoStateOptional) {
+      Optional<RepositoryState> repoStateOptional, 
+      final GitRefreshSupport refreshSupport) {
     this.gitCtrl = gitController;
     this.historyController = historyController;
     this.repoState = repoStateOptional.orElse(null);
+    this.refreshManager = refreshSupport;
     populateMenu(selResProvider, isStage);
   }
 
@@ -241,7 +250,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
             TRANSLATOR.getTranslation(Tags.OPEN_IN_COMPARE)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        DiffPresenter.showDiff(selectedLeaves.get(0), gitCtrl);
+        DiffPresenter.showDiff(selectedLeaves.get(0), gitCtrl, refreshManager);
       }
     };
 

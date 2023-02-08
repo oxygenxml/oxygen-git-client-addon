@@ -66,6 +66,7 @@ import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.HistoryController;
+import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.staging.actions.StageUnstageResourceAction;
 import com.oxygenxml.git.view.util.TreeUtil;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -222,6 +223,11 @@ public class ChangesPanel extends JPanel {
 	 * History interface.
 	 */
   private final HistoryController historyController;
+  
+  /**
+   * Responsible for repository and UI refreshes.
+   */
+  private final GitRefreshSupport refreshManager;
 
 	/**
 	 * Constructor.
@@ -229,14 +235,17 @@ public class ChangesPanel extends JPanel {
 	 * @param gitController       Git controller.
 	 * @param historyController   History interface.
 	 * @param forStagedResources  <code>true</code> if for staged resources.
+	 * @param refreshManager      Responsible for refresh when needed.
 	 */
 	public ChangesPanel(
 	    GitControllerBase gitController, 
 	    HistoryController historyController, 
-	    boolean forStagedResources) {
+	    boolean forStagedResources, 
+	    final GitRefreshSupport refreshManager) {
 		this.historyController = historyController;
 		this.forStagedResources = forStagedResources;
 		this.gitController = gitController;
+		this.refreshManager = refreshManager;
 		
 		tree = createTree();
 		// ==== EXM-41138 hack: expand/collapse on second mouse released ====
@@ -949,7 +958,8 @@ public class ChangesPanel extends JPanel {
         gitController,
         historyController,
         forStagedResources,
-        RepoUtil.getRepoState());
+        RepoUtil.getRepoState(), 
+        refreshManager);
     contextualMenu.addPopupMenuListener(popupMenuListener);
     contextualMenu.show(tree, x, y);
   }
@@ -1104,7 +1114,8 @@ public class ChangesPanel extends JPanel {
         gitController,
         historyController,
         forStagedResources,
-        RepoUtil.getRepoState());
+        RepoUtil.getRepoState(), 
+        refreshManager);
     
     contextualMenu.addPopupMenuListener(popupMenuListener);
     
@@ -1120,7 +1131,7 @@ public class ChangesPanel extends JPanel {
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		int convertedRow = filesTable.convertRowIndexToModel(row);
 		FileStatus file = model.getUnstageFile(convertedRow);
-		DiffPresenter.showDiff(file, gitController);
+		DiffPresenter.showDiff(file, gitController, refreshManager);
 	}
 
 	/**
