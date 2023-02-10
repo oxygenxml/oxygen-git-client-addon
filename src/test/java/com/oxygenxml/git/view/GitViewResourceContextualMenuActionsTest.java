@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
-import org.junit.Test;
 
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
@@ -55,7 +54,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -102,7 +101,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -149,7 +148,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -195,7 +194,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -250,7 +249,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        Optional.of(RepositoryState.MERGING));
+        Optional.of(RepositoryState.MERGING), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -306,7 +305,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        Optional.of(RepositoryState.MERGING));
+        Optional.of(RepositoryState.MERGING), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -362,7 +361,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        Optional.of(RepositoryState.MERGING));
+        Optional.of(RepositoryState.MERGING), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -408,7 +407,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -458,7 +457,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -508,7 +507,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -557,7 +556,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -604,7 +603,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -651,7 +650,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -697,7 +696,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -747,7 +746,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -797,7 +796,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -846,7 +845,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -896,7 +895,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For unstaged resources
         false,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -946,7 +945,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
@@ -992,7 +991,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         gitCtrl, null,
         // For staged resources
         true,
-        Optional.of(RepositoryState.SAFE));
+        Optional.of(RepositoryState.SAFE), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
@@ -1045,7 +1044,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        Optional.of(RepositoryState.MERGING));
+        Optional.of(RepositoryState.MERGING), null);
     
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
