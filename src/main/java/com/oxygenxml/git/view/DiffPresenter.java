@@ -101,7 +101,7 @@ public class DiffPresenter {
 	        showConflictDiff(fileStatus, gitCtrl);
 	        break;
 	      case CHANGED:
-	        showDiffIndexWithHead(fileStatus.getFileLocation(), refreshManager);
+	        showDiffIndexWithHead(fileStatus.getFileLocation());
 	        break;
 	      case MODIFIED:
 	        showDiffViewForModified(fileStatus.getFileLocation(), refreshManager);
@@ -256,12 +256,11 @@ public class DiffPresenter {
    * Presents a 2-way diff
    * 
    * @param path            The path of the file to compare. Relative to the working tree.
-   * @param refreshManager  Used for refreshes when needed.
    *  
    * @throws NoRepositorySelected 
    * @throws URISyntaxException 
    */
-  private static void showDiffIndexWithHead(String path, @Nullable final GitRefreshSupport refreshManager) throws NoRepositorySelected, URISyntaxException { 
+  private static void showDiffIndexWithHead(String path) throws NoRepositorySelected { 
     // The local (WC) version.
     URL leftSideURL = FileUtil.getFileURL(path);
     URL rightSideURL = null;
@@ -276,10 +275,7 @@ public class DiffPresenter {
       }
     }
 
-     // time stamp used for detecting if the file was changed in the diff view
-    final long diffStartedTimeStamp = new File(leftSideURL.toURI()).lastModified();
-    final Optional<JFrame> frame = showDiffFrame(leftSideURL, rightSideURL, rightSideURL, path);
-    refreshIfFileWasModified(refreshManager, diffStartedTimeStamp, frame, leftSideURL);
+    showDiffFrame(leftSideURL, rightSideURL, rightSideURL, path);
   }
 
 	/**
