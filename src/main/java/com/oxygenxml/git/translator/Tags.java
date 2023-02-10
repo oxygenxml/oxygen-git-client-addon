@@ -1884,7 +1884,7 @@ public class Tags {
   public static final String NO_XPR_FILE_FOUND_MESSAGE = "No_XPR_File_In_Project_Message";
   
   /**
-   * English: Don't Load.
+   * English: Don't load.
    */
   public static final String DONT_LOAD = "Do_Not_Load";
   

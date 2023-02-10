@@ -18,13 +18,13 @@
 		<val lang="zh_CN">Local Git repository detected</val>
 	</key>
 	<key value="Do_Not_Load">
-		<comment>English:Don't Load.</comment>
-		<val lang="en_US">Don't Load</val>
-		<val lang="de_DE">Don't Load</val>
+		<comment>English:Don't load.</comment>
+		<val lang="en_US">Don't load</val>
+		<val lang="de_DE">Don't load</val>
 		<val lang="fr_FR">Ne pas charger</val>
-		<val lang="ja_JP">Don't Load</val>
-		<val lang="nl_NL">Don't Load</val>
-		<val lang="zh_CN">Don't Load</val>
+		<val lang="ja_JP">Don't load</val>
+		<val lang="nl_NL">Don't load</val>
+		<val lang="zh_CN">Don't load</val>
 	</key>
 	<key value="Change_to_project_repo_confirm_message">
 		<comment>Confirmation message for changing the current working copy to
