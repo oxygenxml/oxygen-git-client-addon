@@ -101,7 +101,7 @@ public class DiffPresenter {
 	        showConflictDiff(fileStatus, gitCtrl);
 	        break;
 	      case CHANGED:
-	        showDiffIndexWithHead(refreshManager, fileStatus.getFileLocation());
+	        showDiffIndexWithHead(fileStatus.getFileLocation(), refreshManager);
 	        break;
 	      case MODIFIED:
 	        showDiffViewForModified(fileStatus.getFileLocation(), refreshManager);
@@ -261,7 +261,7 @@ public class DiffPresenter {
    * @throws NoRepositorySelected 
    * @throws URISyntaxException 
    */
-  private static void showDiffIndexWithHead(@Nullable final GitRefreshSupport refreshManager, String path) throws NoRepositorySelected, URISyntaxException { 
+  private static void showDiffIndexWithHead(String path, @Nullable final GitRefreshSupport refreshManager) throws NoRepositorySelected, URISyntaxException { 
     // The local (WC) version.
     URL leftSideURL = FileUtil.getFileURL(path);
     URL rightSideURL = null;
