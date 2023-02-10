@@ -238,6 +238,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     final JTextArea prePushValidInfo = new JTextArea(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION_INFO));
     prePushValidInfo.setLineWrap(true);
     prePushValidInfo.setWrapStyleWord(true);
+    prePushValidInfo.setEditable(false);
     constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.weightx = 1;
     mainPanel.add(prePushValidInfo, constraints);
