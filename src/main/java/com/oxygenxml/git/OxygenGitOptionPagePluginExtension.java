@@ -239,6 +239,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     prePushValidInfo.setLineWrap(true);
     prePushValidInfo.setWrapStyleWord(true);
     prePushValidInfo.setEditable(false);
+    prePushValidInfo.setFocusable(false);
     constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.weightx = 1;
     mainPanel.add(prePushValidInfo, constraints);
