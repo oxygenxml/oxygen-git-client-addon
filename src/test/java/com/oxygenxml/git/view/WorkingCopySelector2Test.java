@@ -148,6 +148,8 @@ public class WorkingCopySelector2Test extends JFCTestCase {
 
       assertEquals("[" + badWcTree.getAbsolutePath() + "]", removedRepositories.toString());
       
+      throw new Exception(bld.toString());
+      
     } finally {
       frame.setVisible(false);
       frame.dispose();
