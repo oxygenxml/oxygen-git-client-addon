@@ -582,6 +582,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		    workingCopyCombo.removeItem(CLEAR_HISTORY_ENTRY);
 		  }
 		  workingCopyCombo.setSelectedItem(null);
+		  workingCopyCombo.setToolTipText(null);
 		}
 
 
@@ -609,6 +610,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 							// this path is not exactly an working copy (no .git in it)
 							workingCopyCombo.setEditable(true);
 							workingCopyCombo.setSelectedItem(absolutePath);
+							workingCopyCombo.setToolTipText(absolutePath);
 							workingCopyCombo.setEditable(false);
 						} else {
 							// Add it on the first position. 
@@ -625,6 +627,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 							// Select it.
 							workingCopyCombo.setSelectedItem(absolutePath);
+							workingCopyCombo.setToolTipText(absolutePath);
 						}
 					} finally {
 						inhibitRepoUpdate = false;
