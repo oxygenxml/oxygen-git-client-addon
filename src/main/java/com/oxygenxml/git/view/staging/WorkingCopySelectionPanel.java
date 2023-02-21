@@ -125,7 +125,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 			@Override
 			public void hierarchyChanged(HierarchyEvent e
 					) {
-				if (shouldInitializeWorkingCopyCombo(e)) {
+				if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0
+						&& WorkingCopySelectionPanel.this.isShowing()) {
 					initializeWorkingCopyCombo();
 					removeHierarchyListener(this);
 				}
@@ -134,18 +135,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 	}
 
 
-	/**
-	 * Checks if the combo box should be initialized or not on a hierarchy event.
-	 * 
-	 * @param e The hierarchy event.
-	 * 
-	 * @return <code>true</code> if the WC combo should be intialized or not.
-	 */
-	protected boolean shouldInitializeWorkingCopyCombo(final HierarchyEvent e) {
-	  return (e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0
-        && this.isShowing();
-	}
-	
 	/**
 	 * Creates the components and adds listeners to some of them. Basically this
 	 * creates the panel

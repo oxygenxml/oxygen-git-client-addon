@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view;
 
-import java.awt.event.HierarchyEvent;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -101,11 +100,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
     JFrame frame = new JFrame();
     try {
       WorkingCopySelectionPanel wcPanel = 
-          new WorkingCopySelectionPanel(new GitController(), true) {
-        protected boolean shouldInitializeWorkingCopyCombo(HierarchyEvent e) { 
-          return true; 
-        }
-      };
+          new WorkingCopySelectionPanel(new GitController(), true);
       frame.getContentPane().add(wcPanel);
       frame.pack();
       // Showing the WC panel also initializes the combo
