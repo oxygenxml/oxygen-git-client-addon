@@ -121,9 +121,6 @@ public class WorkingCopySelector2Test extends JFCTestCase {
               "",
               sb.toString());
       
-      final StringBuilder bld = new StringBuilder();
-      bld.append(workingCopyCombo.getToolTipText());
-      System.out.println(workingCopyCombo.getToolTipText());
       // Select the bad WC.
       workingCopyCombo.setSelectedItem(badWcTree.getAbsolutePath());
       
@@ -143,8 +140,6 @@ public class WorkingCopySelector2Test extends JFCTestCase {
               sb.toString());
       
       assertEquals(null, workingCopyCombo.getSelectedItem());
-      bld.append('\n');
-      bld.append(workingCopyCombo.getToolTipText());
 
       assertEquals("[" + badWcTree.getAbsolutePath() + "]", removedRepositories.toString());
       
