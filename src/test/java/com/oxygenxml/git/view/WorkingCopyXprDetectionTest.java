@@ -91,6 +91,8 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
 
       SwingUtilities.invokeAndWait(() -> frame.setVisible(true));
       sleep(100);
+      
+      assertNull(wcPanel.getWorkingCopyCombo().getToolTipText());
 
       File repository1 = new File(dir, localRepository1);
       instance.createNewRepository(repository1.getPath());
@@ -120,6 +122,8 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
       assertEquals("First repo should be set in the working copy combo",
           repository1.getAbsolutePath(),
           wcPanel.getWorkingCopyCombo().getSelectedItem());
+      assertEquals("The tooltip must be also updated", 
+          repository1.getAbsolutePath(), wcPanel.getWorkingCopyCombo().getToolTipText());
       
       //Switching to the second repo shouldn't open the dialog
       wcPanel.getWorkingCopyCombo().setSelectedItem(repository2.getAbsolutePath());
@@ -129,6 +133,8 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
       assertEquals("Second repo should be set in the working copy combo",
           repository2.getAbsolutePath(),
           wcPanel.getWorkingCopyCombo().getSelectedItem());
+      assertEquals("The tooltip must be also updated", 
+          repository2.getAbsolutePath(), wcPanel.getWorkingCopyCombo().getToolTipText());
       
     } finally {
       FileSystemUtil.deleteRecursivelly(files.get(mainDirectoryIndex));
