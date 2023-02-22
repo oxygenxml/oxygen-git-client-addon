@@ -158,7 +158,7 @@ public class JaxbOptions implements Options {
 	/**
    * <code>true</code> to detect and open xpr files from opened working copies
    */
-  private boolean detectAndOpenXprFiles = false;
+  private boolean detectAndOpenXprFiles = true;
 	
   /**
 	 * <code>true</code> to automatically push to remote when committing.

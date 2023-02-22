@@ -311,7 +311,7 @@ public class TagBasedOptions implements Options {
   
   @Override
   public boolean getDetectAndOpenXprFiles() {
-    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.DETECT_AND_OPEN_XPR_FILES, FALSE));
+    return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.DETECT_AND_OPEN_XPR_FILES, TRUE));
   }
   
   @Override

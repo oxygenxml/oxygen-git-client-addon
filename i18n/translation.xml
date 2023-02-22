@@ -8,6 +8,15 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Detect_And_Open_Xpr_Files">
+		<comment>Detect and open xpr files from opened working copies option.</comment>
+		<val lang="en_US">Detect and open Oxygen projects(.xpr) from opened repositories</val>
+		<val lang="de_DE">Detect and open Oxygen projects(.xpr) from opened repositories</val>
+		<val lang="fr_FR">Detect and open Oxygen projects(.xpr) from opened repositories</val>
+		<val lang="ja_JP">Detect and open Oxygen projects(.xpr) from opened repositoriesく</val>
+		<val lang="nl_NL">Detect and open Oxygen projects(.xpr) from opened repositories</val>
+		<val lang="zh_CN">Detect and open Oxygen projects(.xpr) from opened repositories</val>
+	</key>
 	<key value="Ask_Load_Repository">
 		<comment>This tag is used to ask for repository loading.</comment>
 		<val lang="en_US">Do you want to load "{0}" as the current repository in the Git Client?</val>
@@ -118,16 +127,6 @@
 		<val lang="ja_JP">プロジェクトを切り替える</val>
 		<val lang="nl_NL">Project wisselen</val>
 		<val lang="zh_CN">切换项目</val>
-	</key>
-	<key value="Detect_And_Open_Xpr_Files">
-		<comment>Detect and open xpr files from opened working copies option.</comment>
-		<val lang="en_US">Detect and open Oxygen projects (.xpr) from opened working copies</val>
-		<val lang="de_DE">Oxygen-Projekte (.xpr) in den geöffneten Arbeitskopien ermitteln und
-         öffnen</val>
-		<val lang="fr_FR">Détecter et ouvrir les projets Oxygen (.xpr) à partir des copies de travail ouvertes</val>
-		<val lang="ja_JP">開いている作業コピーから Oxygen プロジェクト (.xpr) を検出して開く</val>
-		<val lang="nl_NL">Oxygen-projecten (.xpr) detecteren en vanuit geopende werkkopieën openen</val>
-		<val lang="zh_CN">从打开的工作副本中检测并打开Oxygen项目（.xpr）</val>
 	</key>
 	<key value="Delete_Pushed_Tag_Dialog_Message">
 		<comment>Question message that appears when a pushed tag is trying to be deleted.</comment>
