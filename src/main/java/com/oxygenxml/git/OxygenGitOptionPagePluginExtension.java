@@ -356,7 +356,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void restoreDefaults() {
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
     updateSubmodulesOnPull.setSelected(true);
-    detectAndOpenXprFiles.setSelected(false);
+    detectAndOpenXprFiles.setSelected(true);
     autoSwitchToWCRadio.setSelected(true);
     validateBeforeCommit.setSelected(false);
     rejectCommitOnValidationProblems.setSelected(false);
