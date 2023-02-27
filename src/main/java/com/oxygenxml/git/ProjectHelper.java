@@ -1,14 +1,18 @@
 package com.oxygenxml.git;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -24,12 +28,14 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.view.staging.OpenProjectDialog;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Contains methods for projects processing.
@@ -317,5 +323,76 @@ public class ProjectHelper {
     lastOpenedProject = null;
     lastProjectXPRFile = null;
   }
+  
+  /**
+   * This method will open an Oxygen project file(.xpr) located inside the current repository directory.
+   * <br>
+   * If a single project file is found, this will be loaded.
+   * <br>
+   * If multiple project files are found, the user can select the desired file.
+   *  
+   * @param repositoryDir The current repository main directory.
+   * 
+   * @return <code>true</code> if the repository was loaded, <code>false</code> otherwise.
+   */
+  public static boolean openOxygenProjectFromLoadedRepository(final File repositoryDir) {
+    boolean toReturn = false;
+    List<File> xprFiles = FileUtil.findAllFilesByExtension(repositoryDir, ".xpr");
+    URL xprUrl = getXprURLfromXprFiles(xprFiles);
+    if (xprUrl != null) {
+      PluginWorkspaceProvider.getPluginWorkspace().open(xprUrl);
+      toReturn = true;
+    }
+    return toReturn;
+  }
  
+  /**
+   * Get the project file URL from a list of project files.
+   * A dialog will be displayed for choosing one project if there are multiple files
+   *  
+   * @param xprFiles The project files 
+   * 
+   * @return A URL for the project or <code>null</code> if the URL is malformed or xprFiles is empty
+   */
+  private static URL getXprURLfromXprFiles(final List<File> xprFiles) {
+    URL xprUrl = null;
+    URI currentXprURI = getCurrentXprURI();
+    try {
+      if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) {
+        if (xprFiles.size() == 1) {
+          xprUrl = xprFiles.get(0).toURI().toURL();
+        } else {
+          OpenProjectDialog dialog= new OpenProjectDialog(
+              (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+              xprFiles);
+          dialog.setVisible(true);
+          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+            xprUrl = dialog.getSelectedFile().toURI().toURL();
+          } 
+        }
+      }
+    } catch (MalformedURLException e) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e.getMessage(), e);
+      }
+    }
+    return xprUrl;
+  }
+  
+  /**
+   * @return The uri of the current project(xpr) or <code>null</code>
+   */
+  private static URI getCurrentXprURI(){
+    URI currentXPRuri = null;
+    StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    try {
+      Optional<URL> projectURLOpt = Optional.ofNullable(spw.getProjectManager().getCurrentProjectURL());
+      currentXPRuri = projectURLOpt.isPresent() && FileUtil.isURLForLocalFile(projectURLOpt.get()) ? projectURLOpt.get().toURI() : null;
+    } catch (URISyntaxException e) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e.getMessage(),e);
+      }
+    }
+    return currentXPRuri;
+  }
 }
