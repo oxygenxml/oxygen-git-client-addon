@@ -16,7 +16,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
@@ -622,7 +621,6 @@ public class FileUtil {
    * 
    * @return A list of all the files with the given extension
    */
-  @NonNull
   public static List<File> findAllFilesByExtension(File wcDir, String extension) {
     return findAllFilesByExtension(wcDir, new ArrayList<>(), extension);
   }

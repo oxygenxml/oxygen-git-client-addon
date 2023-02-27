@@ -456,7 +456,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		      updateComboboxModelAfterRepositoryChanged();
 		      if (OptionsManager.getInstance().isDetectAndOpenXprFiles() && info instanceof WorkingCopyGitEventInfo) {
 		        File wcDirectory = ((WorkingCopyGitEventInfo) info).getWorkingCopy();
-		        ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(wcDirectory);
+		        ProjectHelper.openOxygenProjectFromLoadedRepository(wcDirectory);
 		      }
 		    };
 		    if (!SwingUtilities.isEventDispatchThread()) {

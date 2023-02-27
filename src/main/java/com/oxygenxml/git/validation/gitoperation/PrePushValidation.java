@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -238,25 +237,20 @@ public class PrePushValidation implements IPreOperationValidation {
         .setOkButtonName(TRANSLATOR.getTranslation(Tags.LOAD))
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
     if(performPush) {
-      try {
-        final int projectLoadResult = ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(
-            GitAccess.getInstance().getRepository().getDirectory().getParentFile());
-        if(projectLoadResult == -1) {
-          MessagePresenterProvider 
-          .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
-          .setMessage(TRANSLATOR.getTranslation(Tags.NO_XPR_FILE_FOUND_MESSAGE))
-          .setOkButtonVisible(false)
-          .setCancelButtonName(Tags.CLOSE)
-          .buildAndShow();
-          performPush = false;
-        } else if(projectLoadResult == 0) {
-          performPush = false;
-        }
-      } catch (NoRepositorySelected e) {
-        LOGGER.error(e.getMessage(), e); // should not happen
+      final Optional<File> currentProjectXprFile = Optional.ofNullable(
+          ProjectHelper.getInstance().findXPRFromCurrentGitProject());
+      performPush = currentProjectXprFile.isPresent();
+      if(performPush) {
+        standalonePluginWorkspace.getProjectManager().loadProject(currentProjectXprFile.get());
+      } else {
+        MessagePresenterProvider 
+        .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
+        .setMessage(TRANSLATOR.getTranslation(Tags.NO_XPR_FILE_FOUND_MESSAGE))
+        .setOkButtonVisible(false)
+        .setCancelButtonName(Tags.CLOSE)
+        .buildAndShow();
       }
     }
-    
     return performPush;
   }
 
