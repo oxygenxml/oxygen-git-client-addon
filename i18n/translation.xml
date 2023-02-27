@@ -8,6 +8,15 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Not_Same_Project_Message">
+		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
+		<val lang="en_US">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
+		<val lang="de_DE">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
+		<val lang="fr_FR">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
+		<val lang="ja_JP">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
+		<val lang="nl_NL">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
+		<val lang="zh_CN">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
+	</key>
 	<key value="Detect_And_Open_Xpr_Files">
 		<comment>Detect and open xpr files from opened working copies option.</comment>
 		<val lang="en_US">Detect and open Oxygen projects(.xpr) from opened repositories</val>
@@ -218,17 +227,6 @@
 		<val lang="ja_JP">プロジェクトリソースで検証の問題が発生し、一時退避が適用されませんでした。\n「一時退避を一覧表示する」アクションを使用していつでも一時退避を表示および適用できますが、最初に報告された問題を解決することをお勧めします。結果エリアの「{0}」タブで表示できます。</val>
 		<val lang="nl_NL">Validatieproblemen zijn ontstaan in de projectbronnen en opbergen is niet toegepast.\nU kunt het opbergen bekijken en op ieder moment de actie "Lijst van stashes maken" uitvoeren, maar aanbevolen wordt om de gerapporteerde problemen eerst op te lossen. Zij kunnen in de tab "{0}" in het veld Resultaten worden bekeken.</val>
 		<val lang="zh_CN">项目资源中遇到验证问题，未应用存储。\您可以随时使用“列出存储”查看和应用存储，但建议先解决报告的问题。可以在“结果”区域的“{0}”选项卡中查看它们。</val>
-	</key>
-	<key value="Not_Same_Project_Message">
-		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
-		<val lang="en_US">The current working copy is different than the project loaded in the Project view and cannot be validated before the push process.\n\nDo you want to load the project from the Project view to be the current working copy?</val>
-		<val lang="de_DE">Die aktuelle Arbeitskopie unterscheidet sich von dem in der Projektansicht
-         geladenen Projekt und kann nicht vor dem Senden (push) validiert werden\n\nMöchten Sie das
-         Projekt aus der Projektansicht laden und als aktuelle Arbeitskopie verwenden?</val>
-		<val lang="fr_FR">La copie de travail actuelle est différente du projet chargé dans la vue Projet et ne peut pas être validée avant le processus de push.\n\nVoulez-vous charger le projet de la vue Projet comme étant la copie de travail actuelle?</val>
-		<val lang="ja_JP">現在の作業コピーは、プロジェクトビューに読み込まれたプロジェクトとは異なり、プッシュプロセスの前に検証できません。\n\nプロジェクトビューからプロジェクトを読み込んで、現在の作業コピーにしますか?</val>
-		<val lang="nl_NL">De huidige werkkopie is anders dan het in de Project-weergave geladen project en kan niet voor het push-proces worden gevalideerd.\n\nWilt u het project vanuit de Project-weergave laden en dit als huidige werkkopie gebruiken?</val>
-		<val lang="zh_CN">当前工作副本与“项目”视图中加载的项目不同，无法在推送之前进行验证。\\是否要从“项目”视图加载项目，使其成为当前工作副本？</val>
 	</key>
 	<key value="No_XPR_File_In_Project_Message">
 		<comment>The message presented to the user when the git staging project has not a .xpr file.</comment>
