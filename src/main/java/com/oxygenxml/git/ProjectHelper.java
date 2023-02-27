@@ -333,15 +333,22 @@ public class ProjectHelper {
    *  
    * @param repositoryDir The current repository main directory.
    * 
-   * @return <code>true</code> if the repository was loaded, <code>false</code> otherwise.
+   * @return <code>1</code> if the repository was loaded, 
+   * <code>0</code> if the user refuse the project loading, 
+   * <code>-1</code> if there was no project file to be loaded found.
    */
-  public static boolean openOxygenProjectFromLoadedRepository(final File repositoryDir) {
-    boolean toReturn = false;
+  public int openOxygenProjectFromLoadedRepository(final File repositoryDir) {
+    int toReturn = 0;
     List<File> xprFiles = FileUtil.findAllFilesByExtension(repositoryDir, ".xpr");
-    URL xprUrl = getXprURLfromXprFiles(xprFiles);
-    if (xprUrl != null) {
-      PluginWorkspaceProvider.getPluginWorkspace().open(xprUrl);
-      toReturn = true;
+    if(xprFiles.isEmpty()) {
+      toReturn = -1;
+    } else {
+      URL xprUrl = getXprURLfromXprFiles(xprFiles);
+      if (xprUrl != null) {
+        final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+        pluginWS.getProjectManager().loadProject(pluginWS.getUtilAccess().locateFile(xprUrl));
+        toReturn = 1;
+      }
     }
     return toReturn;
   }
@@ -354,7 +361,7 @@ public class ProjectHelper {
    * 
    * @return A URL for the project or <code>null</code> if the URL is malformed or xprFiles is empty
    */
-  private static URL getXprURLfromXprFiles(final List<File> xprFiles) {
+  private URL getXprURLfromXprFiles(final List<File> xprFiles) {
     URL xprUrl = null;
     URI currentXprURI = getCurrentXprURI();
     try {
@@ -382,7 +389,7 @@ public class ProjectHelper {
   /**
    * @return The uri of the current project(xpr) or <code>null</code>
    */
-  private static URI getCurrentXprURI(){
+  private URI getCurrentXprURI(){
     URI currentXPRuri = null;
     StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     try {
