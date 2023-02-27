@@ -57,10 +57,6 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
     final String dir = "target/test-resources/WorkingCopyXprDetection";
 
     final StandalonePluginWorkspace pluginWS = Mockito.mock(StandalonePluginWorkspace.class);
-    Mockito.when(pluginWS.open(Mockito.any(URL.class))).thenAnswer(invocation -> {
-      currentProject[0] = new File(((URL)invocation.getArgument(0)).toURI()).getPath();
-      return true;
-    });
 
     final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
     Mockito.when(utilAccessMock.locateFile(Mockito.any(URL.class))).then(args -> new File(((URL)args.getArgument(0)).toURI()));
@@ -81,6 +77,10 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
     final ProjectController projectManager = Mockito.mock(ProjectController.class);
     Mockito.when(projectManager.getCurrentProjectURL()).thenReturn(files.get(localRepo2Index).toURI().toURL());
     Mockito.when(pluginWS.getProjectManager()).thenReturn(projectManager);
+    Mockito.doAnswer(invocation -> {
+      currentProject[0] = ((File)invocation.getArgument(0)).getPath();
+      return null;
+    }).when(projectManager).loadProject(Mockito.any(File.class));
     PluginWorkspaceProvider.setPluginWorkspace(pluginWS);
 
     try {

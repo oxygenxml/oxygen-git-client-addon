@@ -53,7 +53,7 @@ public class DefaultOptionsValuesTest {
     counter++;
     assertEquals("DestinationPaths [paths=[]]", options.getDestinationPaths().toString());
     counter++;
-    assertEquals(false, options.getDetectAndOpenXprFiles());
+    assertTrue(options.getDetectAndOpenXprFiles());
     counter++;
     assertEquals("", options.getPassphrase());
     counter++;
