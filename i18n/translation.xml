@@ -12,7 +12,7 @@
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
 		<val lang="de_DE">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
-		<val lang="fr_FR">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
+		<val lang="fr_FR">Le fichier de projet actuellement chargé dans la vue Projet n'a pas pu être trouvé dans le dépôt local chargé dans le client Git et ne peut donc pas être validé avant le processus de push.\n\nVoulez-vous charger le projet du dépôt local dans la vue Projet afin que le processus de validation puisse se poursuivre?</val>
 		<val lang="ja_JP">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
 		<val lang="nl_NL">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
 		<val lang="zh_CN">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>
@@ -21,7 +21,7 @@
 		<comment>Detect and open xpr files from opened working copies option.</comment>
 		<val lang="en_US">Detect and open Oxygen projects(.xpr) from opened repositories</val>
 		<val lang="de_DE">Detect and open Oxygen projects(.xpr) from opened repositories</val>
-		<val lang="fr_FR">Detect and open Oxygen projects(.xpr) from opened repositories</val>
+		<val lang="fr_FR">Détecter et ouvrir des projets Oxygen(.xpr) à partir de dépôts ouverts</val>
 		<val lang="ja_JP">Detect and open Oxygen projects(.xpr) from opened repositoriesく</val>
 		<val lang="nl_NL">Detect and open Oxygen projects(.xpr) from opened repositories</val>
 		<val lang="zh_CN">Detect and open Oxygen projects(.xpr) from opened repositories</val>
@@ -30,7 +30,7 @@
 		<comment>This tag is used to ask for repository loading.</comment>
 		<val lang="en_US">Do you want to load "{0}" as the current repository in the Git Client?</val>
 		<val lang="de_DE">Do you want to load "{0}" as the current repository in the Git Client?</val>
-		<val lang="fr_FR">Do you want to load "{0}" as the current repository in the Git Client?</val>
+		<val lang="fr_FR">Voulez-vous charger "{0}" comme dépôt actuel dans le client Git?</val>
 		<val lang="ja_JP">Do you want to load "{0}" as the current repository in the Git Client?</val>
 		<val lang="nl_NL">Do you want to load "{0}" as the current repository in the Git Client?</val>
 		<val lang="zh_CN">Do you want to load "{0}" as the current repository in the Git Client?</val>
