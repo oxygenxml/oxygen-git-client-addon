@@ -141,7 +141,7 @@ public class PrePushValidation implements IPreOperationValidation {
         PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(currentProjectURL) : null;
     try {
       if(currentProjectFile == null || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
-        performPush = treatNotSameProjectCase(standalonePluginWorkspace);
+        performPush = treatNotSameProjectCase();
       } 
       List<URL> mainFiles = new ArrayList<>(); 
       
@@ -227,11 +227,9 @@ public class PrePushValidation implements IPreOperationValidation {
   /**
    * This case occurs when the project loaded "Project" View is not the same with project loaded in Git Staging.
    * 
-   * @param standalonePluginWorkspace The Standalone Plugin Workspace.
-   * 
    * @return <code>true</code> if the push can be performed.
    */
-  private boolean treatNotSameProjectCase(final StandalonePluginWorkspace standalonePluginWorkspace) {
+  private boolean treatNotSameProjectCase() {
     boolean performPush = MessagePresenterProvider 
         .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
         .setQuestionMessage(TRANSLATOR.getTranslation(Tags.NOT_SAME_PROJECT_MESSAGE))

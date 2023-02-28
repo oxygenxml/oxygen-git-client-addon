@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JButton;
+
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.eclipse.jgit.annotations.NonNull;
@@ -29,6 +31,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.validation.gitoperation.GitValidationUtil;
 import com.oxygenxml.git.validation.gitoperation.PrePushValidation;
@@ -461,6 +464,100 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
     assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
     assertTrue(ValidationManager.getInstance().checkPushValid());
+    final String expectedDialog = "title = Pre_Push_Validation\n" + 
+        "iconPath = /images/Warning32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = null\n" + 
+        "questionMessage = Not_Same_Project_Message\n" + 
+        "okButtonName = Load\n" + 
+        "cancelButtonName = null\n" + 
+        "showOkButton = true\n" + 
+        "showCancelButton = true";
+    assertEquals(expectedDialog, dialogToString[0]);
+  }
+  
+  /**
+   * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
+   * is enabled and the push should not be rejected on validation problem and the not same project is loaded 
+   * in "Project" View and Git Staging and are found multiple projects that can be loaded.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-51988</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushValidationMultipleProjectsFound() throws Exception {
+    // Enable push validation and disable reject push option
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+    
+    final File file = new File(FIRST_LOCAL_TEST_REPOSITORY + "/test2.xpr");
+    file.createNewFile();
+
+    initProjectController(SECOND_LOCAL_TEST_REPOSITORY, secondLocalRepo);
+
+    // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        }); 
+
+    commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
+
+    // Detects if the "Push anyway" button is available and the dialog is shows.
+    final String dialogToString[] = new String[1];
+    
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_push", DialogType.ERROR) {
+
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogToString[0] = dialogInfo.toString();
+        return dialog;
+      }
+    });
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
+    final boolean wasValidationPassed[] = new boolean[1];
+    assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
+    assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
+    new Thread(() -> {
+      wasValidationPassed[0] = ValidationManager.getInstance().checkPushValid();    
+    }).start();
+    final OKCancelDialog dialogFound = (OKCancelDialog)findDialog(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE);
+    assertNotNull(dialogFound);
+    final JButton openButton = findFirstButton(dialogFound, Tags.OPEN);
+    assertNotNull(openButton);
+    openButton.doClick();
+    
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> wasValidationPassed[0]);
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Warning32.png\n" + 
         "targetFiles = null\n" + 
