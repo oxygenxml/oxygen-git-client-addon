@@ -19,12 +19,12 @@
 	</key>
 	<key value="Detect_And_Open_Xpr_Files">
 		<comment>Detect and open xpr files from opened working copies option.</comment>
-		<val lang="en_US">Detect and open Oxygen projects(.xpr) from opened repositories</val>
-		<val lang="de_DE">Detect and open Oxygen projects(.xpr) from opened repositories</val>
-		<val lang="fr_FR">Détecter et ouvrir des projets Oxygen(.xpr) à partir de dépôts ouverts</val>
-		<val lang="ja_JP">Detect and open Oxygen projects(.xpr) from opened repositoriesく</val>
-		<val lang="nl_NL">Detect and open Oxygen projects(.xpr) from opened repositories</val>
-		<val lang="zh_CN">Detect and open Oxygen projects(.xpr) from opened repositories</val>
+		<val lang="en_US">Detect and open Oxygen projects (.xpr) from opened repositories</val>
+		<val lang="de_DE">Detect and open Oxygen projects (.xpr) from opened repositories</val>
+		<val lang="fr_FR">Détecter et ouvrir des projets Oxygen (.xpr) à partir de dépôts ouverts</val>
+		<val lang="ja_JP">Detect and open Oxygen projects (.xpr) from opened repositoriesく</val>
+		<val lang="nl_NL">Detect and open Oxygen projects (.xpr) from opened repositories</val>
+		<val lang="zh_CN">Detect and open Oxygen projects (.xpr) from opened repositories</val>
 	</key>
 	<key value="Ask_Load_Repository">
 		<comment>This tag is used to ask for repository loading.</comment>
