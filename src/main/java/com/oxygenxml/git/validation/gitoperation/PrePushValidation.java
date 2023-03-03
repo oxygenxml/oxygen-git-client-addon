@@ -7,9 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -195,6 +199,25 @@ public class PrePushValidation implements IPreOperationValidation {
     List<URL> mainFiles = Collections.emptyList();
     try {
       mainFiles = getMainFiles();
+      final List<File> notFoundMainFiles = mainFiles.stream().map(fileURL -> 
+      PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(fileURL))
+          .filter(file -> !file.exists()).collect(Collectors.toList());
+      if(!notFoundMainFiles.isEmpty()) {
+        final Map<String, String> notFoundFilesWithTooltips = new HashMap<>();
+        for(File file : notFoundMainFiles) {
+          notFoundFilesWithTooltips.put(file.getName(), file.getAbsolutePath());
+        }
+        MessagePresenterProvider
+        .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
+        .setMessage("Validation cannot be performed because there are main files that cannot be found. Make sure all main files exist and try again.\r\n" + 
+            "\r\n" + 
+            "Main files that cannot be found:")
+        .setOkButtonVisible(false)
+        .setTargetFilesWithTooltips(notFoundFilesWithTooltips)
+        .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+        .buildAndShow();
+        mainFiles.clear();
+      }
     } catch (MainFilesNotAvailableException e) {
       MessagePresenterProvider
       .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
@@ -214,6 +237,7 @@ public class PrePushValidation implements IPreOperationValidation {
    * 
    * @throws MainFilesNotAvailableException  When the project has no Main files.
    */
+  @NonNull
   private List<URL> getMainFiles() throws MainFilesNotAvailableException {
     final List<URL> mainFiles = ImmutableList.copyOf(
         ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace())

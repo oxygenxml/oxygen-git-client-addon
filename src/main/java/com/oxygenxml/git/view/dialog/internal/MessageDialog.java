@@ -6,7 +6,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -169,27 +171,43 @@ public class MessageDialog extends OKCancelDialog {
     }
     
     // Files
-    if (info.targetFiles != null) {
-      Collections.sort(info.targetFiles, String.CASE_INSENSITIVE_ORDER);
+    if (info.targetFiles != null || info.targetFilesWithTooltips != null) {
       DefaultListModel<String> model = new DefaultListModel<>();
-      for (String listElement : info.targetFiles) {
-        model.addElement(listElement);
-      }
-      
-      JList<String> filesList = new JList<>(model);
-      filesList.setCellRenderer(new DefaultListCellRenderer() {
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-          try {
-            File workingCopyAbsolute = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
-            File absoluteFile = new File(workingCopyAbsolute, (String) value); // NOSONAR: no vulnerability here
-            setToolTipText(absoluteFile.toString());
-          } catch (NoRepositorySelected e) {
-            LOGGER.error(e.getMessage(), e);
-          }
-          return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+      JList<String> filesList = null;
+      if(info.targetFiles != null) {
+        Collections.sort(info.targetFiles, String.CASE_INSENSITIVE_ORDER);
+        for (String listElement : info.targetFiles) {
+          model.addElement(listElement);
         }
-      });
+        filesList = new JList<>(model);
+        filesList.setCellRenderer(new DefaultListCellRenderer() {
+          @Override
+          public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            try {
+              File workingCopyAbsolute = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
+              File absoluteFile = new File(workingCopyAbsolute, (String) value); // NOSONAR: no vulnerability here
+              setToolTipText(absoluteFile.toString());
+            } catch (NoRepositorySelected e) {
+              LOGGER.error(e.getMessage(), e);
+            }
+            return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+          }
+        });
+      } else {
+        final List<String> filesRelativePath = new ArrayList<>(info.targetFilesWithTooltips.keySet());
+        Collections.sort(filesRelativePath, String.CASE_INSENSITIVE_ORDER);
+        for (String listElement : filesRelativePath) {
+          model.addElement(listElement);
+        }
+        filesList = new JList<>(model);
+        filesList.setCellRenderer(new DefaultListCellRenderer() {
+          @Override
+          public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            setToolTipText(info.targetFilesWithTooltips.get((String)value));
+            return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+          }
+        });
+      }
       
       JScrollPane scollPane = new JScrollPane(filesList);
       scollPane.setPreferredSize(new Dimension(FILES_SCROLLPANE_PREFERRED_WIDTH, FILES_SCROLLPANE_PREFERRED_HEIGHT));

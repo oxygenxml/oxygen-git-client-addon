@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.dialog.internal;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jgit.annotations.NonNull;
 
@@ -66,13 +67,30 @@ public class MessageDialogBuilder {
 
   /**
    * Set the new target files to be presented.
-   * 
+   * <br>
+   * Note: the targetFilesWithToolTips attribute will be set <code>null</code> when call this method.
    * @param targetFiles The new files.
    * 
    * @return This dialog builder.
    */
   public MessageDialogBuilder setTargetFiles(final List<String> targetFiles) {
     dialogInfo.targetFiles = targetFiles;
+    dialogInfo.targetFilesWithTooltips = null;
+    return this;
+  }
+  
+  /**
+   * Set the new target files and the tooltip for these. Contains the target files and their tooltips.
+   * <br>
+   * Note: the targetFiles attribute will be set <code>null</code> when call this method.
+   * 
+   * @param targetFilesWithTooltips
+   * 
+   * @return This dialog builder.
+   */
+  public MessageDialogBuilder setTargetFilesWithTooltips(final Map<String, String> targetFilesWithTooltips) {
+    dialogInfo.targetFiles = null;
+    dialogInfo.targetFilesWithTooltips = targetFilesWithTooltips;
     return this;
   }
 

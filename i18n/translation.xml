@@ -8,6 +8,15 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Pre_Push_Main_Files_Not_Found_Message">
+		<comment>This message occurs when pre push validation failed because there are some main files not found.</comment>
+		<val lang="en_US">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
+		<val lang="de_DE">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
+		<val lang="fr_FR">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
+		<val lang="ja_JP">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:く</val>
+		<val lang="nl_NL">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
+		<val lang="zh_CN">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
+	</key>
 	<key value="Not_Same_Project_Message">
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The project file that is currently loaded in the Project view could not be found in the local repository that is loaded in the Git Client and thus, cannot be validated before the push process.\n\nDo you want to load the project from the local repository into the Project view so that the validation process can proceed?</val>

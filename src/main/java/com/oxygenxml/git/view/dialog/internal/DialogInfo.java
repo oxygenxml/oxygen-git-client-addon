@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.dialog.internal;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains necessary information for a @MessageDialog construction.
@@ -19,6 +20,14 @@ import java.util.List;
    * Icon path for dialog.
    */
   String iconPath;
+  
+  /**
+   * Contains the target files and their tooltips.
+   * <br>
+   * <code>Key:</code> The relative path of the file.
+   * <code>Value:</code> The tooltip for the file.
+   */
+  Map<String, String> targetFilesWithTooltips;
   
   /**
    * Files that relate to the message.

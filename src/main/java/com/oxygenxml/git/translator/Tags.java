@@ -1974,6 +1974,11 @@ public class Tags {
   public static final String ASK_USER_TO_CREATE_NEW_REPOSITORY_TOOLTIP = "Ask_User_To_Create_New_Repository_Tooltip";
   
   /**
+   * This message occurs when pre push validation failed because there are some main files not found.
+   */
+  public static final String PRE_PUSH_MAIN_FILES_NOT_FOUND_MESSAGE = "Pre_Push_Main_Files_Not_Found_Message";
+  
+  /**
    * This tag is used to ask for repository loading.
    */
   public static final String ASK_LOAD_REPOSITORY = "Ask_Load_Repository";
