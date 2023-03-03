@@ -209,9 +209,7 @@ public class PrePushValidation implements IPreOperationValidation {
         }
         MessagePresenterProvider
         .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
-        .setMessage("Validation cannot be performed because there are main files that cannot be found. Make sure all main files exist and try again.\r\n" + 
-            "\r\n" + 
-            "Main files that cannot be found:")
+        .setMessage(TRANSLATOR.getTranslation(Tags.PRE_PUSH_MAIN_FILES_NOT_FOUND_MESSAGE))
         .setOkButtonVisible(false)
         .setTargetFilesWithTooltips(notFoundFilesWithTooltips)
         .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
