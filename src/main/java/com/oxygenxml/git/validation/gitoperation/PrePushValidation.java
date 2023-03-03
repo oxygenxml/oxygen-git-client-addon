@@ -214,7 +214,7 @@ public class PrePushValidation implements IPreOperationValidation {
         .setTargetFilesWithTooltips(notFoundFilesWithTooltips)
         .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
         .buildAndShow();
-        mainFiles.clear();
+        mainFiles = Collections.emptyList();
       }
     } catch (MainFilesNotAvailableException e) {
       MessagePresenterProvider

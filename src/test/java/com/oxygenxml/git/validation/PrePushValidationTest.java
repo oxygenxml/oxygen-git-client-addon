@@ -932,6 +932,89 @@ public class PrePushValidationTest extends GitTestBase {
         "showCancelButton = true";
     assertEquals(expectedDialog, dialogToString[0]);
   }
+  
+  /**
+   * <p><b>Description:</b> This test cover pre-push validation behavior for case when at least one main file was not found.</p>
+   * 
+   * <p><b>Bug ID:</b> EXM-52337</p>
+   *
+   * @author Alex_Smarandache
+   *
+   */ 
+  @Test
+  public void testPrePushValidationWhenMainFileNotFound() throws Exception {
+    OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
+    OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
+    // Disable main files support
+    commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
+
+    // Configure the custom project controller.
+    final StandalonePluginWorkspace spw =  (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final List<URL> mainFilesURLs = new ArrayList<>();
+    mainFilesURLs.add(new File(FIRST_LOCAL_TEST_REPOSITORY).toURI().toURL());
+    mainFilesURLs.add(new File("blabla").toURI().toURL());
+    final ProjectController projectController = createProjectControllerForTest(
+        firstLocalRepo.getDirectory().toURI().toURL(), mainFilesURLs.iterator());
+    Mockito.when(spw.getProjectManager()).thenReturn(projectController);
+
+    // Create a custom dialog to return a custom result. Usefully to simulate a dialog showing.
+    final int[] dialogResult = new int[1];
+    dialogResult[0] = OKCancelDialog.RESULT_OK;
+    final MessageDialog dialog = Mockito.mock(MessageDialog.class);
+    Mockito.when(dialog.getResult()).then((Answer<Integer>) 
+        invocation -> {
+          return dialogResult[0];
+        }); 
+
+    final String dialogToString[] = new String[1];
+
+    MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
+        "test_push", DialogType.ERROR) {
+
+      @Override
+      public MessageDialog buildAndShow() {
+        dialogToString[0] = dialogInfo.toString();
+        return dialog;
+      }
+    });
+
+    // Create a custom collector constructed to behave as if it contains validation problems
+    final ICollector collector = Mockito.mock(ICollector.class);
+    Mockito.when(collector.isEmpty()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(collector.getAll()).then((Answer<DocumentPositionedInfo[]>) 
+        invocation -> {
+          return new DocumentPositionedInfo[0];
+        }); 
+
+    // A custom validator that is always available and return the custom collector created before
+    final IValidator validator = Mockito.mock(IValidator.class);
+    Mockito.when(validator.isAvailable()).then((Answer<Boolean>) 
+        invocation -> {
+          return true;
+        });
+    Mockito.when(validator.getCollector()).then((Answer<ICollector>) 
+        invocation -> {
+          return collector;
+        });
+    ValidationManager.getInstance().setPrePushValidator(new PrePushValidation(
+        validator, null));
+    assertTrue(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace);
+    assertTrue(ValidationManager.getInstance().isPrePushValidationEnabled());
+    assertFalse(ValidationManager.getInstance().checkPushValid());
+    final String expectedDialog = "title = Pre_Push_Validation\n" + 
+        "iconPath = /images/Error32.png\n" + 
+        "targetFiles = null\n" + 
+        "message = Pre_Push_Main_Files_Not_Found_Message\n" + 
+        "questionMessage = null\n" + 
+        "okButtonName = null\n" + 
+        "cancelButtonName = Close\n" + 
+        "showOkButton = false\n" + 
+        "showCancelButton = true";
+    assertEquals(expectedDialog, dialogToString[0]);
+  }
 
   /**
    * Create a custom project controller used in tests.
