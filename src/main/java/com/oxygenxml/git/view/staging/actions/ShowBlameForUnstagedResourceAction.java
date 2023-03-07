@@ -19,7 +19,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.history.HistoryController;
-import com.oxygenxml.git.view.staging.ChangesPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;

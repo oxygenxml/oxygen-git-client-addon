@@ -66,10 +66,6 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private final GitAccess gitAccess = GitAccess.getInstance();
 	/**
-	 * The last opened project in the Project side-view.
-	 */
-	private String lastOpenedProject;
-	/**
 	 * Translation support.
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
@@ -286,8 +282,8 @@ public class PanelRefresh implements GitRefreshSupport {
 		List<FileStatus> filesInModel = panelToUpdate.getFilesStatuses();
 
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("New files      " + newfiles);
-			LOGGER.debug("Files in model " + filesInModel);
+			LOGGER.debug("New files      {}", newfiles);
+			LOGGER.debug("Files in model {}", filesInModel);
 		}
 
 		// Quick change detection.

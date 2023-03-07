@@ -388,7 +388,9 @@ public class BranchSelectionCombo extends JComboBox<String> {
 
 
   /**
-   * Returns the instance of JToolTip that should be usedto display the tooltip.Components typically would not override this method,but it can be used tocause different tooltips to be displayed differently.
+   * Returns the instance of JToolTip that should be used to display the tooltip. 
+   * Components typically would not override this method,but it can be used to cause different tooltips
+   * to be displayed differently.
    * <br>
    * Overrides: createToolTip() in JComponent
    * 

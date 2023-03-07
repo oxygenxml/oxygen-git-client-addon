@@ -232,10 +232,10 @@ public class StagingPanel extends JPanel {
       public void finished(ValidationOperationInfo info) {
         if(info.getOperation() == ValidationOperationType.PRE_PUSH_VALIDATION) {
           if(commitPanel != null) {
-            SwingUtilities.invokeLater(() -> {
-              commitPanel.setStatusMessage(Translator.getInstance().getTranslation(
-                  Tags.END_PUSH_VALIDATION_PROGRESS));
-            });
+            SwingUtilities.invokeLater(() -> 
+                commitPanel.setStatusMessage(
+                    Translator.getInstance().getTranslation(
+                    Tags.END_PUSH_VALIDATION_PROGRESS)));
           }
           toolbarPanel.ifPresent(ToolbarPanel::updateButtonsStates);
         }
@@ -423,8 +423,8 @@ public class StagingPanel extends JPanel {
             }
             updateToolbarsButtonsStates();
             if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Notify " + fileInWorkPath);
-              LOGGER.debug("WC " + selectedRepositoryPath);
+              LOGGER.debug("Notify {}", fileInWorkPath);
+              LOGGER.debug("WC {}", selectedRepositoryPath);
             }
 
             Collection<String> affectedFiles = Collections.singletonList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
@@ -567,9 +567,7 @@ public class StagingPanel extends JPanel {
    */
   public void handlePushPullEvent(PushPullEvent pushPullEvent, boolean started) {
     if (started) {
-      SwingUtilities.invokeLater(() -> {
-        treatPushPullStarted(pushPullEvent);
-      });
+      SwingUtilities.invokeLater(() -> treatPushPullStarted(pushPullEvent));
     } else {
       treatPushPullFinished(pushPullEvent);
       if (pushPullEvent.hasConficts()) {

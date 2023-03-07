@@ -29,11 +29,6 @@ public class FilesValidator implements IValidator {
   private static final Logger LOGGER = LoggerFactory.getLogger(FilesValidator.class);
   
   /**
-   * Used to filter problems to avoid exposing issues that are not related to validated files.
-   */
-  private IProblemFilter filter;
-  
-  /**
    * Constructor.
    */
   public FilesValidator() {

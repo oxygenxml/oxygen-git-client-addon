@@ -308,8 +308,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   /**
    * Short the labels to respect the available width.
    * <br>
-   * Found the maximum value between [{MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW}, {MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH}] for which the labels 
-   * can be shortened so that they do not exceed the available size. If no value is okay, the labels will be shortened to a {MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW} maximum length.
+   * Found the maximum value between [{MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW}, {MAX_BRANCH_OR_TAG_NAME_LENGTH_HIGH}]
+   * for which the labels can be shortened so that they do not exceed the available size.
+   * If no value is okay, the labels will be shortened to a {MAX_BRANCH_OR_TAG_NAME_LENGTH_LOW} maximum length.
    *  
    * @param commitLabels   The labels for current commit.
    * @param availableWidth The available width for commit labels.

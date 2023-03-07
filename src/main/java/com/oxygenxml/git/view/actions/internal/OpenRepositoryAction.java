@@ -3,8 +3,6 @@ package com.oxygenxml.git.view.actions.internal;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import javax.swing.AbstractAction;
-
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
