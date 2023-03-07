@@ -825,8 +825,7 @@ public class OptionsManager {
    */
   private void removeHostCredentials(final String host, 
       final List<UserAndPasswordCredentials> credentials, 
-      final List<PersonalAccessTokenInfo> personalAccessTokens)
-  {  
+      final List<PersonalAccessTokenInfo> personalAccessTokens) {  
     if (credentials != null) {
       for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
         UserAndPasswordCredentials alreadyHere = iterator.next();

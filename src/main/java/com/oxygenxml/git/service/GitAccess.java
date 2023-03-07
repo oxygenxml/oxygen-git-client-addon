@@ -420,24 +420,24 @@ public class GitAccess {
 	 */
   private void logSshKeyLoadingData() {
     // Debug data for the SSH key load location.
-    LOGGER.debug("Java env user home: " + System.getProperty("user.home"));
+    LOGGER.debug("Java env user home: {}", System.getProperty("user.home"));
     try {
       Repository repository = getRepository();
-      LOGGER.debug("Load repository " + repository.getDirectory());
+      LOGGER.debug("Load repository: {}", repository.getDirectory());
       
       FS fs = repository.getFS();
       if (fs != null) {
         File userHome = fs.userHome();
-        LOGGER.debug("User home " + userHome);
+        LOGGER.debug("User home: {}", userHome);
 
         File sshDir = new File(userHome, ".ssh");
 
         boolean exists = sshDir.exists();
-        LOGGER.debug("SSH dir exists " + exists);
+        LOGGER.debug("SSH dir exists: {}", exists);
         if (exists) {
           File[] listFiles = sshDir.listFiles();
 					for (File listFile : listFiles) {
-						LOGGER.debug("SSH resource path " + listFile);
+						LOGGER.debug("SSH resource path: {}" , listFile);
 					}
         }
       } else {
@@ -455,7 +455,7 @@ public class GitAccess {
    */
   private void fireOperationAboutToStart(GitEventInfo info) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Fire operation about to start: " + info);
+      LOGGER.debug("Fire operation about to start: {}", info);
     }
     listeners.fireOperationAboutToStart(info);
   }
@@ -467,7 +467,7 @@ public class GitAccess {
    */
   private void fireOperationSuccessfullyEnded(GitEventInfo info) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Fire operation successfully ended: " + info);
+      LOGGER.debug("Fire operation successfully ended: {}", info);
     }
     listeners.fireOperationSuccessfullyEnded(info);
   }
@@ -480,7 +480,8 @@ public class GitAccess {
    */
   void fireOperationFailed(GitEventInfo info, Throwable t) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
+      LOGGER.debug("Fire operation failed: {}", info); 
+      LOGGER.debug("Failure reason: {}", t.getMessage());
     }
     listeners.fireOperationFailed(info, t);
   }
@@ -562,7 +563,7 @@ public class GitAccess {
     if (git != null) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("PUBLIC - GET UNSTAGED FILES");
-        LOGGER.debug("Prepare fot JGit status, in paths " + paths);
+        LOGGER.debug("Prepare fot JGit status, in paths: {}", paths);
       }
       
       if (paths != null && !paths.isEmpty()) {
@@ -789,7 +790,7 @@ public class GitAccess {
     String host = repoURL.getHost();
     boolean shouldStopTryingLogin = false;
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
+      LOGGER.debug("START LISTING REMOTE BRANCHES FOR: {}", repoURL);
     }
     do {
       SSHCapableUserCredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(host);
@@ -801,7 +802,7 @@ public class GitAccess {
             .setCredentialsProvider(credentialsProvider)
             .call();
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("BRANCHES: " + remoteRefs);
+          LOGGER.debug("BRANCHES: {}", remoteRefs);
         }
         shouldStopTryingLogin = true;
       } catch (TransportException ex) {
@@ -1075,7 +1076,7 @@ public class GitAccess {
   private void treatRebaseResult(PullResponse pullResponseToReturn, RebaseResult rebaseResult) throws CheckoutConflictException, RebaseUncommittedChangesException {
     RebaseResult.Status status = rebaseResult.getStatus();
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Rebase result status: " + status);
+      LOGGER.debug("Rebase result status: {}", status);
     }
     
     switch (status) {
@@ -1129,8 +1130,8 @@ public class GitAccess {
   private void treatMergeResult(PullResponse pullResponse, MergeResult mergeResult) throws CheckoutConflictException {
     if (mergeResult != null) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Merge result: " + mergeResult);
-        LOGGER.debug("Merge result status: " + mergeResult.getMergeStatus());
+        LOGGER.debug("Merge result: {}", mergeResult);
+        LOGGER.debug("Merge result status: {}", mergeResult.getMergeStatus());
       }
 
       if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
@@ -1165,8 +1166,8 @@ public class GitAccess {
         LOGGER.debug("NOW LOG MERGE FAILURE PATHS:");
         Set<String> keySet = failingPaths.keySet();
         for (String string : keySet) {
-          LOGGER.debug("  Path: " + string);
-          LOGGER.debug("  Reason: " + failingPaths.get(string));
+          LOGGER.debug("  Path: {}", string);
+          LOGGER.debug("  Reason: {}", failingPaths.get(string));
         }
       }
     }
@@ -1188,11 +1189,17 @@ public class GitAccess {
 					fetchResultStringBuilder.append("\n\n");
 				}
 				fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.ERROR)).append(": ");
-				fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CANNOT_LOCK_REF), trackingRefUpdate.getLocalName())).append(" ");
+				fetchResultStringBuilder.append(
+				    MessageFormat.format(
+				        TRANSLATOR.getTranslation(Tags.CANNOT_LOCK_REF),
+				        trackingRefUpdate.getLocalName())).append(" ");
 				try {
 					String repoDir = getRepository().getDirectory().getAbsolutePath();
 					File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock"); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
-					fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())).append(" ");
+					fetchResultStringBuilder.append(
+					    MessageFormat.format(
+					        TRANSLATOR.getTranslation(Tags.UNABLE_TO_CREATE_FILE),
+					        lockFile.getAbsolutePath())).append(" ");
 					if (lockFile.exists()) {
 						fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.FILE_EXISTS)).append("\n");
 					}
