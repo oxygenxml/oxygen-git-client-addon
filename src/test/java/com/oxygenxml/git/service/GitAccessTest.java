@@ -3,7 +3,9 @@ package com.oxygenxml.git.service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
@@ -150,9 +152,8 @@ public class GitAccessTest extends TestCase {
       Future<?> pullResp = gitCtrl.pull();
       pullResp.get();
       
-      Thread.sleep(300);
-      
-      assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
+      Awaitility.await().atMost(500, TimeUnit.MILLISECONDS)
+        .until(() -> "Pull_when_repo_in_conflict".equals(errMsg[0]));
     } finally {
       GitAccess.getInstance().setGit(null);
     }

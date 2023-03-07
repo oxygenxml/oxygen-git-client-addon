@@ -225,9 +225,9 @@ public class RepoGenerationScript {
   private static void mergeBranch(String mergeBranchShortName, String commitMessage) throws GitAPIException {
     if (mergeBranchShortName != null) {
       try {
+        // Not sure why we need this. Without it the order of changes is messed up.
         Thread.sleep(1000);
       } catch (InterruptedException e1) {
-        // Not sure why we need this. Without it the order of changes is messed up.
         LOGGER.error(e1.getMessage(), e1);
       }
 

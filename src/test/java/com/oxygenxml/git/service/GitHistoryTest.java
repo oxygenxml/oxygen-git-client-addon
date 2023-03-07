@@ -322,7 +322,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       // Make the remote evolve.
       // Not sure why we need this sleep. Commit order is messed up with out it.
-      Thread.sleep(1000);
+      Thread.sleep(1000); // NOSONAR
       GitAccess.getInstance().setRepositorySynchronously(remoteRepository.getWorkTree().getAbsolutePath());
       FileUtils.writeStringToFile(new File(remoteRepository.getWorkTree(), "root.txt"), "changed on the remote" , "UTF-8");
       GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "root.txt"));
