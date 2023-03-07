@@ -168,8 +168,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
               : defaultBorderSelectionColor);
       setBackgroundSelectionColor(defaultSelectionColor);
     } else if (!isContextMenuShowing.getAsBoolean()) {
-      setBorderSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
-      setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
+      setBorderSelectionColor(RendererUtil.getInactiveSelectionColor(defaultSelectionColor));
+      setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(defaultSelectionColor));
     }
   }
   

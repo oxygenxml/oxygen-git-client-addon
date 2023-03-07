@@ -113,7 +113,7 @@ public class StagingResourcesTableCellRenderer extends DefaultTableCellRenderer 
         tableCellRendererComponent.setBackground(table.getSelectionBackground());
       } else if (!contextMenuShowing.getAsBoolean()) {
         Color defaultColor = table.getSelectionBackground();
-        tableCellRendererComponent.setBackground(RendererUtil.getInactiveSelectionColor(table, defaultColor));
+        tableCellRendererComponent.setBackground(RendererUtil.getInactiveSelectionColor(defaultColor));
       }
     } else {
       tableCellRendererComponent.setBackground(table.getBackground());
