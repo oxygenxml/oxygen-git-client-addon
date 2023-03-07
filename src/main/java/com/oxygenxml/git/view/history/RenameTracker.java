@@ -32,9 +32,9 @@ public class RenameTracker {
 		@Override
 		public boolean include(final RevWalk walker, final RevCommit commit)
 				throws IOException {
-			if (currentPath != null)
+			if (currentPath != null) {
 				filePathOnCommitMap.put(commit, currentPath);
-			else if (currentDiff != null) {
+			} else if (currentDiff != null) {
 				filePathOnCommitMap.put(commit, currentDiff.getNewPath());
 				currentPath = currentDiff.getOldPath();
 				currentDiff = null;

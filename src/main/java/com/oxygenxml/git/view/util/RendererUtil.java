@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.util;
 
 import java.awt.Color;
 
-import javax.swing.JComponent;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +19,7 @@ public class RendererUtil {
   /**
    * Logger for logging.
    */
+  @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(RendererUtil.class);
   /**
    * Private constructor.
@@ -73,7 +72,7 @@ public class RendererUtil {
    * 
    * @return the color.
    */
-  public static Color getInactiveSelectionColor(JComponent comp, Color defaultColor) {
+  public static Color getInactiveSelectionColor(Color defaultColor) {
     int[] rgb = new SAThemeColorProvider().getInactiveSelectionBgColor();
     return new Color(rgb[0], rgb[1], rgb[2]);
   }
