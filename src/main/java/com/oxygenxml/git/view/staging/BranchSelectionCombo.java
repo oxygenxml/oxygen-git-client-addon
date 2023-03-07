@@ -296,7 +296,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
    */
   private void addBranchesToCombo(final List<String> branches) {
     inhibitBranchSelectionListener = true;
-    branches.forEach(branch -> this.addItem(branch));
+    branches.forEach(this::addItem);
     inhibitBranchSelectionListener = false;
 
     if (detachedHeadId != null) {

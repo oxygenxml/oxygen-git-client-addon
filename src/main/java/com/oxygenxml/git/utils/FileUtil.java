@@ -247,7 +247,7 @@ public class FileUtil {
     String fileInWorkPath = FileUtil.rewriteSeparator(file.getAbsolutePath());
     if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Notify " + fileInWorkPath);
+        LOGGER.debug("Notify {}", fileInWorkPath);
       }
 
       return fileInWorkPath.substring(selectedRepositoryPath.length () + 1);
