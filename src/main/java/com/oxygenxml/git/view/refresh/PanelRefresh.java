@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.ProjectHelper;
+import com.oxygenxml.git.auth.login.ILoginStatusInfo;
+import com.oxygenxml.git.auth.login.LoginMediator;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -34,7 +36,6 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.view.actions.UpdateActionsStatesListener;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchesUtil;
-import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.staging.BranchSelectionCombo;
@@ -241,10 +242,9 @@ public class PanelRefresh implements GitRefreshSupport {
 		} catch (PrivateRepositoryException e) {
 			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
 
-			LoginDialog loginDlg = new LoginDialog(
-					GitAccess.getInstance().getHostName(), 
-					TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
-			if (loginDlg.getCredentials() != null) {
+			 Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(GitAccess.getInstance().getHostName(),
+			     TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
+			if (loginInfoOpt.isPresent() && loginInfoOpt.get().getCredentials() != null) {
 				return fetch();
 			}
 		} catch (Exception e) {

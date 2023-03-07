@@ -1,5 +1,7 @@
 package com.oxygenxml.git.auth;
 
+import java.util.Optional;
+
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
 import org.eclipse.jgit.annotations.Nullable;
@@ -10,6 +12,8 @@ import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxygenxml.git.auth.login.ILoginStatusInfo;
+import com.oxygenxml.git.auth.login.LoginMediator;
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
@@ -18,7 +22,6 @@ import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
-import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -217,8 +220,8 @@ public class AuthUtil {
     boolean tryAgainOutside = false;
     if (retryLoginHere) {
       // Request new credentials.
-      LoginDialog loginDlg = new LoginDialog(hostName, loginMessage);
-      tryAgainOutside = loginDlg.getCredentials() != null;
+      final Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(hostName, loginMessage);
+      tryAgainOutside = loginInfoOpt.isPresent() && loginInfoOpt.get().getCredentials() != null;
     } else {
       tryAgainOutside = true;
     }

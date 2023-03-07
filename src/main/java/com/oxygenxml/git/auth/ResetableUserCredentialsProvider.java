@@ -1,5 +1,7 @@
 package com.oxygenxml.git.auth;
 
+import java.util.Optional;
+
 import org.eclipse.jgit.errors.UnsupportedCredentialItem;
 import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
@@ -7,6 +9,8 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxygenxml.git.auth.login.ILoginStatusInfo;
+import com.oxygenxml.git.auth.login.LoginMediator;
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
@@ -14,9 +18,6 @@ import com.oxygenxml.git.options.PersonalAccessTokenInfo;
 import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.LoginDialog;
-
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * A {@link UsernamePasswordCredentialsProvider} that has an implementation for the "reset()" method.
@@ -95,9 +96,9 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
       LOGGER.debug("Reset credentials provider for: " + uri.toString());
     }
     if (isCredentialsPreviouslyRequested && !isUserCancelledLogin) {
-      LoginDialog loginDialog = new LoginDialog(host, getLoginFailureMessage());
-      if (loginDialog.getResult() == OKCancelDialog.RESULT_OK) {
-        updateUsernameAndPassword(loginDialog.getCredentials());
+      final Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(host, getLoginFailureMessage());
+      if (loginInfoOpt.isPresent() && !loginInfoOpt.get().isCanceled()) {
+        updateUsernameAndPassword(loginInfoOpt.get().getCredentials());
       } else {
         isUserCancelledLogin = true;
       }

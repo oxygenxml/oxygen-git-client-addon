@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableSet;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
+import com.oxygenxml.git.auth.login.LoginController;
 import com.oxygenxml.git.auth.sshagent.GitClientSshdSessionFactory;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.editorvars.GitEditorVariablesResolver;
@@ -332,7 +333,12 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		  
 		  @Override
       public void operationAboutToStart(GitEventInfo info) {
-		    // not needed
+		    if(info.getGitOperation() == GitOperation.PUSH 
+		        || info.getGitOperation() == GitOperation.PULL
+		        || info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+		      LoginController.getInstance().reset();
+		    }
+		  
       }
 		  
 			@Override
