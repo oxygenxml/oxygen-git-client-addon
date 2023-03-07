@@ -491,20 +491,21 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
   public static String computeSquashMessage(final ObjectId srcCommitId, final Repository repo) 
       throws IOException {
     
-    String squashMessage;
+    String squashMessage = null;
     
     try (RevWalk revWalk = new RevWalk(repo)) {
       final Ref head = repo.exactRef(Constants.HEAD);
       
-      // we know for now there is only one commit
-      final RevCommit srcCommit = revWalk.lookupCommit(srcCommitId);
-      final ObjectId headId = head.getObjectId();
-      final RevCommit headCommit = revWalk.lookupCommit(headId);      
-      final List<RevCommit> squashedCommits = RevWalkUtils.find(
-          revWalk, srcCommit, headCommit);
-      
-      squashMessage = new SquashMessageFormatter().format(
-          squashedCommits, head);
+      if (head != null) {
+        // we know for now there is only one commit
+        final RevCommit srcCommit = revWalk.lookupCommit(srcCommitId);
+        final ObjectId headId = head.getObjectId();
+        final RevCommit headCommit = revWalk.lookupCommit(headId);      
+        final List<RevCommit> squashedCommits = RevWalkUtils.find(
+            revWalk, srcCommit, headCommit);
+
+        squashMessage = new SquashMessageFormatter().format(squashedCommits, head);
+      }
     }
   
     return squashMessage;
