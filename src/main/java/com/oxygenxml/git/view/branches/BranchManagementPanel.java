@@ -105,7 +105,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * A cache with informations about branches.
    */
-  private final BranchesCache cache = new BranchesCache();
+  private final BranchesTooltipsCache cache = new BranchesTooltipsCache();
   
   /**
    * <code>true</code> if component should refresh after is showing.

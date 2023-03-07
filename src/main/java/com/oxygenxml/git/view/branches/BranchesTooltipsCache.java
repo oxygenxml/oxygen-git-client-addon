@@ -19,14 +19,11 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 
 /**
- * 
- * TODO Asta nu e cumva un Branch Tooltip Cacher?
- * 
- * A cache for branches details.
+ * A cache for branches tool tips.
  * 
  * @author alex_smarandache
  */
-public class BranchesCache {
+public class BranchesTooltipsCache {
 
 	/**
 	 * The translator.
@@ -36,7 +33,7 @@ public class BranchesCache {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(BranchesCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BranchesTooltipsCache.class);
 
 	/**
 	 * A map where: <code>key</code>: the node value, <code>value</code>: the tool tip for node. 

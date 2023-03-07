@@ -57,7 +57,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Cache with information about nodes.  
    */
-  private final transient BranchesCache cache;
+  private final transient BranchesTooltipsCache cache;
 
   /**
    * The branch name.
@@ -82,7 +82,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * @param currentBranchNameSupplier Gives us the current branch name.
    */
   public BranchesTreeCellRenderer(
-	  BranchesCache cache,
+	  BranchesTooltipsCache cache,
       BooleanSupplier isContextMenuShowing,
       Supplier<String> currentBranchNameSupplier) {
 	this.cache = cache;
