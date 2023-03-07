@@ -151,7 +151,7 @@ public class FileStatusUtil {
       try {
         filesToReturn.addAll(getChanges(repository, commit, oldCommit));
       } catch (IOException | GitAPIException e) {
-
+        LOGGER.error(e.getMessage(), e);
       }
     }    
 
