@@ -16,7 +16,8 @@ import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
 /**
  * Custom implementation for SshSessionFactory, used to manage the SSH Agent support.
- * A SshSessionFactory that uses Apache MINA sshd. Classes from ApacheMINA sshd are kept private to avoid API evolution problems when Apache MINAsshd interfaces change.
+ * A SshSessionFactory that uses Apache MINA sshd. Classes from ApacheMINA sshd are kept private 
+ * to avoid API evolution problems when Apache MINAsshd interfaces change.
  * 
  * @author alex_smarandache
  *
