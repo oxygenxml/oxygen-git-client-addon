@@ -83,9 +83,13 @@ public class FileStatusUtil {
    */
   public static List<FileStatus> compute(final Repository repository,
       final TreeWalk walk, final RevCommit commit, @Nullable final RevCommit oldCommit,
-      final TreeFilter... markTreeFilters) throws MissingObjectException,
-  IncorrectObjectTypeException, CorruptObjectException, IOException, CanceledException {
-    return compute(repository, walk, commit, oldCommit, commit.getParents(),
+      final TreeFilter... markTreeFilters) throws IOException, CanceledException {
+    return compute(
+        repository,
+        walk,
+        commit,
+        oldCommit,
+        commit.getParents(),
         markTreeFilters);
   }
 
@@ -111,8 +115,7 @@ public class FileStatusUtil {
   public static List<FileStatus> compute(final Repository repository,
       final TreeWalk walk, final RevCommit commit, final RevCommit oldCommit,
       final RevCommit[] parents,
-      final TreeFilter... markTreeFilters) throws MissingObjectException,
-  IncorrectObjectTypeException, CorruptObjectException, IOException, CanceledException {
+      final TreeFilter... markTreeFilters) throws IOException, CanceledException {
 
     final List<FileStatus> filesToReturn = new ArrayList<>();
 

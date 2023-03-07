@@ -199,28 +199,6 @@ public class RevCommitUtil {
    * @throws IOException
    * @throws GitAPIException
    */
-  private static List<FileStatus> getChanges(Repository repository, RevCommit newCommit, RevCommit oldCommit) throws IOException, GitAPIException {
-    List<DiffEntry> diffs = diff(repository, newCommit, oldCommit);
-
-    return diffs
-        .stream()
-        .map(t -> new FileStatusOverDiffEntry(t, newCommit.getId().name(), oldCommit.getId().name()))
-        .collect(Collectors.toList());
-  }
-
-
-  
-  /**
-   * Gets all the files changed between two revisions.
-   * 
-   * @param repository Repository.
-   * @param newCommit The new commit.
-   * @param oldCommit The previous commit.
-   * 
-   * @return A list with changed files. Never <code>null</code>.
-   * @throws IOException
-   * @throws GitAPIException
-   */
   private static List<DiffEntry> diff(
       Repository repository, 
       RevCommit newCommit, 
@@ -695,7 +673,7 @@ public class RevCommitUtil {
             if (lastRevFiles.contains(path)) {
               // The current discovered path is the same as in the target revision.
               if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Same path as in target. Stop. " + revCommit.getFullMessage());
+                LOGGER.debug("Same path as in target. Stop. {}", revCommit.getFullMessage());
               }
               break;
             }
@@ -709,7 +687,7 @@ public class RevCommitUtil {
             if (!same) {
               // Do a diff with rename detection.
               if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Search for a rename at revision " + revCommit.getFullMessage());
+                LOGGER.debug("Search for a rename at revision: {}", revCommit.getFullMessage());
               }
 
               List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
@@ -936,7 +914,7 @@ public class RevCommitUtil {
         toReturn = entries.get(0).getOldId().toObjectId();
       } else { 
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("No BASE commit for: '" + filePath + "'");
+          LOGGER.debug("No BASE commit for: '{}'", filePath);
         }
         toReturn = getLastLocalCommitForPath(git, filePath);
       }
@@ -968,8 +946,9 @@ public class RevCommitUtil {
         toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
       } else {
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("No THEIRS commit available for: '" + filePath + "'. "
-              + "Falling back to the last commit for this path.");
+          LOGGER.debug("No THEIRS commit available for: '{}'."
+              + " Falling back to the last commit for this path.",
+              filePath);
         }
         toReturn = getLastLocalCommitForPath(git, filePath);
       }
@@ -1001,8 +980,9 @@ public class RevCommitUtil {
         toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
       } else {
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("No MINE commit available for: '" + path + "'."
-              + " Falling back to the last commit for this path.");
+          LOGGER.debug("No MINE commit available for: '{}'. "
+              + "Falling back to the last commit for this path.",
+            path);
         }
         toReturn = getLastLocalCommitForPath(git, path);
       }
