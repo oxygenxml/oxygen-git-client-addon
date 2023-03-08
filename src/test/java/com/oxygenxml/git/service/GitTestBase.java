@@ -278,12 +278,15 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * Creates a Git reposiotry at the given location.
    * 
    * @param repositoryPath Location where to create the repository.
+   * 
    * @return
+   * 
    * @throws NoRepositorySelected
    * @throws GitAPIException 
    * @throws IllegalStateException 
+   * @throws IOException 
    */
-  protected Repository createRepository(String repositoryPath) throws NoRepositorySelected, IllegalStateException, GitAPIException {
+  protected Repository createRepository(String repositoryPath) throws NoRepositorySelected, IllegalStateException, GitAPIException, IOException {
     File dirToDelete = new File(repositoryPath, ".git");
     FileUtil.deleteRecursivelly(dirToDelete);
     

@@ -77,7 +77,7 @@ public class GitAccessRestoreLastCommitTest extends TestCase {
 	}
 	
 	@Override
-	protected void tearDown() {
+	protected void tearDown() throws Exception {
 	  gitAccess.cleanUp();
 	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 	  FileUtil.deleteRecursivelly(dirToDelete);

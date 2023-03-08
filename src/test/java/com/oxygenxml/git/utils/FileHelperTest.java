@@ -41,7 +41,8 @@ public class FileHelperTest extends TestCase {
 	 *
 	 * @throws IOException
 	 */
-	protected void setUp() throws Exception {
+	@Override
+  protected void setUp() throws Exception {
 	  StandalonePluginWorkspace pluginWorkspace = Mockito.mock(StandalonePluginWorkspace.class);
 		UtilAccess utilAccess = Mockito.mock(UtilAccess.class);
 		Mockito.when(pluginWorkspace.getUtilAccess()).thenReturn(utilAccess);
@@ -53,7 +54,8 @@ public class FileHelperTest extends TestCase {
 		PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
 	}
 	
-	protected void tearDown() {
+	@Override
+  protected void tearDown() throws Exception {
 	  File dir = new File(LOCAL_TEST_REPOSITPRY);
     FileUtil.deleteRecursivelly(dir);
 	}

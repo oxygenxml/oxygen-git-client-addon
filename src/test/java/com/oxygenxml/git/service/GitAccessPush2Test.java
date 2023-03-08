@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.jgit.lib.Repository;
 
@@ -90,8 +91,10 @@ public class GitAccessPush2Test extends GitTestBase {
 
   /**
    * Delete test resources.
+   * 
+   * @throws Exception 
    */
-  private void deleteTestResources() {
+  private void deleteTestResources() throws Exception {
     File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
     FileUtil.deleteRecursivelly(dirToDelete);
     dirToDelete = new File(REMOTE_TEST_REPOSITPRY);

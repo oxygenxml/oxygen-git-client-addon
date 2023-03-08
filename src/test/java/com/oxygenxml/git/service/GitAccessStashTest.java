@@ -78,6 +78,7 @@ public class GitAccessStashTest extends TestCase {
    
     MessagePresenterProvider.setBuilder(new MessageDialogBuilder(
         "test_stash", DialogType.WARNING) {
+      @Override
       public MessageDialog buildAndShow() {
         return Mockito.mock(MessageDialog.class);
       }
@@ -89,9 +90,10 @@ public class GitAccessStashTest extends TestCase {
   
   /**
    * Used to free up test resources.
+   * @throws Exception 
    */
   @Override
-  protected void tearDown() {
+  protected void tearDown() throws Exception {
     gitAccess.closeRepo();
     File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
     FileUtil.deleteRecursivelly(dirToDelete);

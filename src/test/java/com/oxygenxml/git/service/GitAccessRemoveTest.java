@@ -21,7 +21,8 @@ public class GitAccessRemoveTest extends TestCase {
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessRemoveTest";
 	private GitAccess gitAccess;
 
-	protected void setUp() throws IllegalStateException, GitAPIException {
+	@Override
+  protected void setUp() throws IllegalStateException, GitAPIException {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
@@ -34,7 +35,8 @@ public class GitAccessRemoveTest extends TestCase {
 		gitAccess.commit("file test added");
 	}
 	
-	protected void tearDown() {
+	@Override
+  protected void tearDown() throws Exception {
 	  gitAccess.closeRepo();
 	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 	  FileUtil.deleteRecursivelly(dirToDelete);

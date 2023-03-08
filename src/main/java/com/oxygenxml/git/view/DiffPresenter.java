@@ -383,9 +383,9 @@ public class DiffPresenter {
 	 */
 	private static Optional<JFrame> showDiffFrame(URL localURL, URL remoteUL, URL baseURL, String filePath) {
 	  if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug("Local  " + localURL);
-	    LOGGER.debug("Remote " + remoteUL);
-	    LOGGER.debug("Base   " + baseURL);
+	    LOGGER.debug("Local:  {}", localURL);
+	    LOGGER.debug("Remote: {}", remoteUL);
+	    LOGGER.debug("Base:   {}", baseURL);
 	  }
 	  
 	  boolean threeWays = baseURL != null;

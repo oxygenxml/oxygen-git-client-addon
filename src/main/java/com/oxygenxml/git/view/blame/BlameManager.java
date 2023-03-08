@@ -135,7 +135,7 @@ public class BlameManager {
           activeBlames.put(key, blamePerformer);
         } else {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to open editor: " + url);
-          LOGGER.error("Editor not found: " + url);
+          LOGGER.error("Editor not found: {}", url);
         }
       }
     } catch (NoRepositorySelected e) {

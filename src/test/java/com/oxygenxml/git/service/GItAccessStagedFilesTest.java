@@ -21,7 +21,8 @@ public class GItAccessStagedFilesTest extends TestCase {
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GItAccessStagedFilesTest";
 	private GitAccess gitAccess = GitAccess.getInstance();
 
-	protected void setUp() throws Exception {
+	@Override
+  protected void setUp() throws Exception {
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		try {
@@ -33,7 +34,8 @@ public class GItAccessStagedFilesTest extends TestCase {
 		gitAccess.commit("file test added");
 	}
 	
-	protected void tearDown() {
+	@Override
+  protected void tearDown() throws Exception {
 	  gitAccess.cleanUp();
 	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 	  FileUtil.deleteRecursivelly(dirToDelete);

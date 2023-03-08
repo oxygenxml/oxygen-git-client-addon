@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.eclipse.jgit.api.Status;
@@ -96,6 +95,7 @@ public class GitAccessConflictTest extends TestCase {
         updateSubmodules);
   }
   
+  @Override
   public void setUp() throws Exception {
 
     gitAccess = GitAccess.getInstance();
@@ -208,7 +208,8 @@ public class GitAccessConflictTest extends TestCase {
     errMsg[0] = "";
   }
   
-  protected void tearDown() {
+  @Override
+  protected void tearDown() throws Exception {
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
     System.gc();

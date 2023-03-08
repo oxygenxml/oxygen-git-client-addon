@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -661,9 +662,11 @@ public class FileUtil {
   /**
    *  Deletes recursively the specified directory.
    * 
-   *@param  file   The file or directory to be deleted.
+   *  @param  file   The file or directory to be deleted.
+   *  
+   *  @throws IOException When cannot delete a resource.
    */
-  public static void deleteRecursivelly(File file) {
+  public static void deleteRecursivelly(File file) throws IOException {
     if (!file.exists()) {
       // Nothing to do.
       return;
@@ -675,9 +678,9 @@ public class FileUtil {
           deleteRecursivelly(files[i]);
         }
       }
-      file.delete();
+      Files.delete(file.toPath());
     } else {
-      file.delete();
+      Files.delete(file.toPath());
     }
   }
   

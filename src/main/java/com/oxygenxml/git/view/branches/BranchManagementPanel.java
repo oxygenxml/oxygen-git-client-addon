@@ -206,10 +206,10 @@ public class BranchManagementPanel extends JPanel {
    * Adds the tree listeners.
    */
   private void addTreeListeners() {
-    // Expand several levels at once when only one child on each level
     branchesTree.addTreeExpansionListener(new TreeExpansionListener() {
       @Override
       public void treeExpanded(TreeExpansionEvent event) {
+        // Expand several levels at once when only one child on each level
         TreeUtil.expandSingleChildPath(branchesTree, event);
       }
       @Override
@@ -218,11 +218,11 @@ public class BranchManagementPanel extends JPanel {
       }
     });
     
-    // Show context menu when pressing the Meny key
     branchesTree.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+          // Show context menu when pressing the Meny key
           TreePath selectionPath = branchesTree.getSelectionPath();
           if (selectionPath != null) {
             Rectangle pathBounds = branchesTree.getPathBounds(selectionPath);
@@ -235,7 +235,16 @@ public class BranchManagementPanel extends JPanel {
       }
     });
     
-    branchesTree.addMouseListener(new MouseAdapter() {
+    branchesTree.addMouseListener(createBranchTreeMouseListener());
+  }
+
+  /**
+   * Create branches tree mouse listener.
+   * 
+   * @return the listener.
+   */
+  private MouseAdapter createBranchTreeMouseListener() {
+    return new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
         // Show context menu
@@ -268,7 +277,7 @@ public class BranchManagementPanel extends JPanel {
           }
         }
       }
-    });
+    };
   }    
   
   /**
