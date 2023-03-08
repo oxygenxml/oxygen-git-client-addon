@@ -341,7 +341,6 @@
                 href="https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2">
                 https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2 </a> for a full list of
               benefits. </li>
-            <!-- <li>The add-on now allows comparing images.</li> -->
             <li>The tooltips of the push/pull buttons and the branch label now also present the
               remote repository. </li>
             <li>Bug fixes</li>

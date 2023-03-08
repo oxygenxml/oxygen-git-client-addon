@@ -92,7 +92,7 @@ public class GitStatusCommand {
     if (git != null) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("PUBLIC - GET UNSTAGED FILES");
-        LOGGER.debug("Prepare fot JGit status, in paths " + paths);
+        LOGGER.debug("Prepare fot JGit status, in paths: {}", paths);
       }
       
       StatusCommand statusCmd = git.get().status();
@@ -101,7 +101,7 @@ public class GitStatusCommand {
       }
       try {
         Status status = statusCmd.call();
-        LOGGER.debug("JGit Status computed: " + status);
+        LOGGER.debug("JGit Status computed: {}", status);
         return getUnstagedFiles(status);
       } catch (GitAPIException e) {
         LOGGER.error(e.getMessage(), e);
@@ -120,7 +120,7 @@ public class GitStatusCommand {
    * @return The unstaged files and their states.
    */
   private List<FileStatus> getUnstagedFiles(Status status) {
-    LOGGER.debug("PRIVATE - GET UNSTAGE FOR GIVEN STATUS " + status);
+    LOGGER.debug("PRIVATE - GET UNSTAGE FOR GIVEN STATUS: {}", status);
     List<FileStatus> unstagedFiles = new ArrayList<>();
     if (git != null) {
       try {
@@ -145,7 +145,7 @@ public class GitStatusCommand {
    */
   private void addConflictingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addConflictingFilesToUnstaged: " + status.getConflicting());
+      LOGGER.debug("addConflictingFilesToUnstaged: {}", status.getConflicting());
     }
     for (String fileName : status.getConflicting()) {
       unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
@@ -162,7 +162,7 @@ public class GitStatusCommand {
    */
   private void addMissingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addMissingFilesToUnstaged: " + status.getMissing());
+      LOGGER.debug("addMissingFilesToUnstaged: {}", status.getMissing());
     }
     for (String string : status.getMissing()) {
       if (!submodules.contains(string)) {
@@ -181,7 +181,7 @@ public class GitStatusCommand {
    */
   private void addModifiedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addModifiedFilesToUnstaged " + status.getModified());
+      LOGGER.debug("addModifiedFilesToUnstaged: {}", status.getModified());
     }
     for (String string : status.getModified()) {
       // A file that was modified compared to the one from INDEX.
@@ -201,7 +201,7 @@ public class GitStatusCommand {
    */
   private void addUntrackedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addUntrackedFilesToUnstaged " + status.getUntracked());
+      LOGGER.debug("addUntrackedFilesToUnstaged: {}", status.getUntracked());
     }
     for (String string : status.getUntracked()) {
       if (!submodules.contains(string)) {
@@ -221,7 +221,7 @@ public class GitStatusCommand {
    */
   private void addSubmodulesToUnstaged(List<FileStatus> unstagedFiles, Set<String> submodules) throws GitAPIException {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("addSubmodulesToUnstaged " + submodules);
+      LOGGER.debug("addSubmodulesToUnstaged: {}", submodules);
     }
     for (String submodulePath : submodules) {
       SubmoduleStatus submoduleStatus = git.get().submoduleStatus().call().get(submodulePath);

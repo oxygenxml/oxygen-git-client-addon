@@ -82,17 +82,9 @@ public class GitClientSshdSessionFactory extends SshdSessionFactory {
       }
 
       String agentConnection = identityAgent;
-      if (identityAgent == null || identityAgent.isEmpty()) {
-        SSHAgent sshAgent = SSHAgent.getByName(OptionsManager.getInstance().getDefaultSshAgent());
+      if (agentConnection == null || agentConnection.isEmpty()) {
         if(PlatformDetectionUtil.isWin()) {
-          if(!SSHAgent.isForWin(sshAgent)) {
-            sshAgent = SSHAgent.WIN_WIN32_OPENSSH;
-          }
-   
-          final String identityAgentStr = sshAgent != null ? sshAgent.getIdentityAgent() : null;
-          if (identityAgentStr != null && getSupportedConnectors().stream().anyMatch(d -> identityAgentStr.equals(d.getIdentityAgent()))) {
-            agentConnection = identityAgentStr;
-          }
+          agentConnection = getAgentConnectionForWindows();
         } else {
           final Collection<ConnectorDescriptor> connectors = getSupportedConnectors();
           if(!connectors.isEmpty()) {
@@ -102,6 +94,28 @@ public class GitClientSshdSessionFactory extends SshdSessionFactory {
       }
 
       return delegate.create(agentConnection, homeDir);
+    }
+
+    /**
+     * Get agent connection for Windows.
+     * 
+     * @return the agent connection or <code>null</code>.
+     */
+    private String getAgentConnectionForWindows() {
+      String agentConnection = null;
+      
+      SSHAgent sshAgent = SSHAgent.getByName(OptionsManager.getInstance().getDefaultSshAgent());
+      if(!SSHAgent.isForWin(sshAgent)) {
+        sshAgent = SSHAgent.WIN_WIN32_OPENSSH;
+      }
+  
+      final String identityAgentStr = sshAgent != null ? sshAgent.getIdentityAgent() : null;
+      if (identityAgentStr != null 
+          && getSupportedConnectors().stream().anyMatch(d -> identityAgentStr.equals(d.getIdentityAgent()))) {
+        agentConnection = identityAgentStr;
+      }
+      
+      return agentConnection;
     }
 
     @Override

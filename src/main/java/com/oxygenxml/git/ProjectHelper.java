@@ -240,10 +240,8 @@ public class ProjectHelper {
    * @param newProjectURL The new URL of the current opened project.
    * 
    * @return <code>true</code> if the repository changed.
-   * 
-   * @throws URISyntaxException When URI problems occurs.
    */
-  private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) throws URISyntaxException {
+  private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) {
     boolean repoChanged = false;
     if(stagingPanel != null) {
       final File projectFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(newProjectURL);
@@ -252,8 +250,7 @@ public class ProjectHelper {
         if (!projectDir.equals(lastOpenedProject)) {
           File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
           repoChanged = detectedRepo == null ? createNewRepoIfUserAgrees(projectDir,  projectFile.getName()) :
-            tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel()
-                .getWorkingCopyCombo());
+            tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
           lastProjectXPRFile = null;
         }
         lastOpenedProject = projectDir;      
@@ -304,15 +301,7 @@ public class ProjectHelper {
    */
   public void installUpdateProjectOnChangeListener(final ProjectController projectCtrl, final Supplier<StagingPanel> stagingPanelSupplier) {
     projectCtrl.addProjectChangeListener(
-        (oldProjectURL, newProjectURL) -> {
-          try {
-            loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL);
-          } catch (URISyntaxException e) {
-            if(LOGGER.isDebugEnabled()) {
-              LOGGER.debug(e.getMessage(), e);
-            }
-          }
-        });
+        (oldProjectURL, newProjectURL) -> loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL));
   }
   
   /**

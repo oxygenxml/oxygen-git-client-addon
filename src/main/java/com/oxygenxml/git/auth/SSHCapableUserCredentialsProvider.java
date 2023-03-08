@@ -47,13 +47,13 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	@Override
 	public boolean get(URIish uri, CredentialItem... items) {
 	  if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug("Credential query, uri " + uri);
+	    LOGGER.debug("Credential query, uri: {}", uri);
 	  }
 	  for (CredentialItem item : items) {
 	    // TODO Should handle item.isValueSecure()
 	    if (LOGGER.isDebugEnabled()) {
-	      LOGGER.debug("Item class :" + item.getClass() + ", is secure value: " + item.isValueSecure());
-	      LOGGER.debug("Message: |" + item.getPromptText() + "|");
+	      LOGGER.debug("Item class: {}, is secure value: {}.", item.getClass(), item.isValueSecure());
+	      LOGGER.debug("Message: |{}|", item.getPromptText());
 	    }
 	    
 	    if ((item instanceof CredentialItem.StringType || item instanceof CredentialItem.Password)
@@ -135,7 +135,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
     Boolean response = optionsManager.getSshPromptAnswer(promptText);
     
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Look in cache for answer to: " + promptText + ", got " + response);
+      LOGGER.debug("Look in cache for answer to: {}, got: {}.", promptText, response);
     }
     
     if (response == null) {
@@ -146,7 +146,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
           .showConfirmDialog("Connection", promptText, options, optonsId);
 
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Asked the user, answer: " + response);
+        LOGGER.debug("Asked the user, answer: {}", response);
       }
 
       if (result == 0) {

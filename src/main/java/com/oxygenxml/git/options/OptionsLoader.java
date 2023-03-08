@@ -122,7 +122,7 @@ public class OptionsLoader {
         if (optionsFileForTests.exists()) {
           options = (JaxbOptions) jaxbUnmarshaller.unmarshal(optionsFileForTests);
         } else {
-          LOGGER.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
+          LOGGER.warn("Options file doesn't exist: {}", optionsFileForTests.getAbsolutePath());
         }
       } else {
         // Running in Oxygen's context. Save inside Oxygen's options. 

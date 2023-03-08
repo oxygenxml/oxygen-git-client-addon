@@ -50,6 +50,7 @@ public class ReadAheadInputStream extends BufferedInputStream {
     }
   }
   
+  @Override
   public int read() throws IOException {
     int ret = super.read();
     readAhead();

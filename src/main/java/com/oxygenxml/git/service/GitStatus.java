@@ -61,8 +61,8 @@ public class GitStatus {
     this.hasUncommittedChanges = hasUncommittedChanges;
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Create GitStatus...");
-      LOGGER.debug("GitStatus unstaged files: " + unstagedFiles);
-      LOGGER.debug("GitStatus staged files: " + stagedFiles);
+      LOGGER.debug("GitStatus unstaged files: {}", unstagedFiles);
+      LOGGER.debug("GitStatus staged files: {}", stagedFiles);
     }
   }
   

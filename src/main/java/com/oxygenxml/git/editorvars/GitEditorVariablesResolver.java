@@ -131,7 +131,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * 
    * @return the updated content.
    * 
-   * @throws NoRepositorySelected 
+   * @throws NoRepositorySelected when no repo is selected.
    */
   @SuppressWarnings("java:S3824") // Supress this because we don't want to compute the WC unnecessarily
   private String resolveWorkingCopyEditorVariables(String contentWithEditorVariables) throws NoRepositorySelected {

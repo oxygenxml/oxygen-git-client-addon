@@ -52,7 +52,7 @@ public class GitListeners {
    */
   public void fireOperationAboutToStart(GitEventInfo info) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Fire operation about to start: " + info);
+      LOGGER.debug("Fire operation about to start: {}", info);
     }
     
     for (GitEventListener gitEventListener : gitEventPriorityListeners) {
@@ -71,7 +71,7 @@ public class GitListeners {
    */
   public void fireOperationSuccessfullyEnded(GitEventInfo info) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Fire operation successfully ended: " + info);
+      LOGGER.debug("Fire operation successfully ended: {}", info);
     }
     
     for (GitEventListener gitEventListener : gitEventPriorityListeners) {
@@ -91,7 +91,7 @@ public class GitListeners {
    */
   public void fireOperationFailed(GitEventInfo info, Throwable t) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
+      LOGGER.debug("Fire operation failed: {}. Reason: {}.", info, t.getMessage());
     }
     
     for (GitEventListener gitEventListener : gitEventPriorityListeners) {
@@ -108,7 +108,6 @@ public class GitListeners {
    * 
    * @param listener The listener to add.
    */
-  @SuppressWarnings("unchecked")
   void addGitPriorityListener(GitEventListener listener) {
     HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventPriorityListeners.clone();
     clone.add(listener);
@@ -121,7 +120,6 @@ public class GitListeners {
    * 
    * @param listener The listener to add.
    */
-  @SuppressWarnings("unchecked")
   public void addGitListener(GitEventListener listener) {
     HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventListeners.clone();
     clone.add(listener);
@@ -134,7 +132,6 @@ public class GitListeners {
    * 
    * @param listener The listener to remove.
    */
-  @SuppressWarnings("unchecked")
   public void removeGitListener(GitEventListener listener) {
     HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventListeners.clone();
     clone.remove(listener);
