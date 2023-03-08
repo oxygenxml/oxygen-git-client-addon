@@ -66,13 +66,10 @@ public class RendererUtil {
   
   /**
    * Get inactive selection color.
-   * 
-   * @param comp The component.
-   * @param defaultColor The default color.
-   * 
+   *  
    * @return the color.
    */
-  public static Color getInactiveSelectionColor(Color defaultColor) {
+  public static Color getInactiveSelectionColor() {
     int[] rgb = new SAThemeColorProvider().getInactiveSelectionBgColor();
     return new Color(rgb[0], rgb[1], rgb[2]);
   }

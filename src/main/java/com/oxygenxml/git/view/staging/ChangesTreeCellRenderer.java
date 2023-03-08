@@ -118,7 +118,7 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
         setBackgroundSelectionColor(defaultSelectionColor);
       } else if (!contextMenuShowing.getAsBoolean()) {
         // Do nor render the tree as inactive if we have a contextual menu over it.
-        setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(defaultSelectionColor));
+        setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor());
       }
   }
   

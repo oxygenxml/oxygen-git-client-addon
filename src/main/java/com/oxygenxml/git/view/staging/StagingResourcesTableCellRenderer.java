@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.util.function.BooleanSupplier;
@@ -112,8 +111,7 @@ public class StagingResourcesTableCellRenderer extends DefaultTableCellRenderer 
       if (table.hasFocus()) {
         tableCellRendererComponent.setBackground(table.getSelectionBackground());
       } else if (!contextMenuShowing.getAsBoolean()) {
-        Color defaultColor = table.getSelectionBackground();
-        tableCellRendererComponent.setBackground(RendererUtil.getInactiveSelectionColor(defaultColor));
+        tableCellRendererComponent.setBackground(RendererUtil.getInactiveSelectionColor());
       }
     } else {
       tableCellRendererComponent.setBackground(table.getBackground());
