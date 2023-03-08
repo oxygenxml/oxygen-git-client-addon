@@ -396,73 +396,93 @@ public class FileUtil {
   }
   
   /**
-   * Method used to truncate the given text according with the given width
+   * Method used to truncate the given file location according with the given width
    * and considering the font metrics.
    * 
-   * @param text The original text that needs to be truncated.
-   * @param fontMetrics The font metrics used to compute the string widths.
-   * @param width The maximum allowed width, in pixels.
+   * @param fileLocation The original file location that needs to be truncated.
+   * @param fontMetrics  The font metrics used to compute the string widths.
+   * @param maxWidth     The maximum allowed width, in pixels.
+   * 
    * @return The truncated text.
    */
-  public static String truncateText(String text, java.awt.FontMetrics fontMetrics, int width) {
-    if (text == null || width <= 0) {
+  public static String truncateFileLocation(String fileLocation, java.awt.FontMetrics fontMetrics, int maxWidth) {
+    if (fileLocation == null || maxWidth <= 0) {
       // Avoid NPEs.
-      return text;
+      return fileLocation;
     }
-    StringBuilder buf = new StringBuilder();
-    if (fontMetrics.stringWidth(text) <= width) {
-      buf.append(text);
+    
+    StringBuilder stringBuilder = new StringBuilder();
+    if (fontMetrics.stringWidth(fileLocation) <= maxWidth) {
+      stringBuilder.append(fileLocation);
     } else {
       String separator = "/";
-      if (text.indexOf('\\') != -1) {
+      if (fileLocation.indexOf('\\') != -1) {
         // There is a Windows like path.
         separator = "\\";
       }
       
-      boolean startsWithSeparator = text.indexOf(separator) == 0;
-      
-      StringTokenizer stk = new StringTokenizer(text, separator, false);
+      StringTokenizer stk = new StringTokenizer(fileLocation, separator, false);
       List<String> tokens = new ArrayList<>();
       while (stk.hasMoreTokens()) {
         tokens.add(stk.nextToken());
       }
-      int maxTokens = tokens.size();
       
-      if (maxTokens <= 2) {
-        buf.append(text);
+      if (tokens.size() <= 2) {
+        stringBuilder.append(fileLocation);
       } else {
-        if (startsWithSeparator) {
-          buf.append(separator);
-        }
-        buf.append(tokens.get(0));
-        buf.append(separator);
-        buf.append("...");
-        
-        StringBuilder secondBuf = new StringBuilder();
-        
-        for (int i = maxTokens - 1; i >= 2; i--) {
-          String token = tokens.get(i);
-          if (fontMetrics.stringWidth(buf.toString() + secondBuf.toString() + token) < width) {
-            secondBuf.insert(0, token);
-            secondBuf.insert(0, separator);
-          } else {
-            break;
-          }
-        }
-        
-        if (secondBuf.length() == 0) {
-          buf.append(separator);
-          int aproxNumberOfCharsInWidth = width / fontMetrics.charWidth('w');
-          buf.append(getSomeTextAtEnd(
-              tokens.get(maxTokens - 1), 
-              Math.max(aproxNumberOfCharsInWidth - buf.length(), 0)));
-        } else {
-          buf.append(secondBuf);
-        }
+        boolean startsWithSeparator = fileLocation.indexOf(separator) == 0;
+        truncateFileLocation(fontMetrics, maxWidth, stringBuilder, separator, startsWithSeparator, tokens);
       }
     }
     
-    return buf.toString();
+    return stringBuilder.toString();
+  }
+
+  /**
+   * Truncate file location.
+   * 
+   * @param fontMetrics         The font metrics used to compute the string widths.
+   * @param maxWidth            maximum allowed width. 
+   * @param stringBuilder       string builder used to build the truncated location.
+   * @param separator           the separator.
+   * @param startsWithSeparator <code>true</code> if the location starts with a separator.
+   * @param tokens              tokens originally separated by the given separator.
+   */
+  private static void truncateFileLocation(
+      java.awt.FontMetrics fontMetrics,
+      int maxWidth,
+      StringBuilder stringBuilder,
+      String separator,
+      boolean startsWithSeparator,
+      List<String> tokens) {
+    if (startsWithSeparator) {
+      stringBuilder.append(separator);
+    }
+    stringBuilder.append(tokens.get(0));
+    stringBuilder.append(separator);
+    stringBuilder.append("...");
+    
+    StringBuilder auxStringBuilder = new StringBuilder();
+    int noOfTokens = tokens.size();
+    for (int i = noOfTokens  - 1; i >= 2; i--) {
+      String token = tokens.get(i);
+      if (fontMetrics.stringWidth(stringBuilder.toString() + auxStringBuilder.toString() + token) < maxWidth) {
+        auxStringBuilder.insert(0, token);
+        auxStringBuilder.insert(0, separator);
+      } else {
+        break;
+      }
+    }
+    
+    if (auxStringBuilder.length() == 0) {
+      stringBuilder.append(separator);
+      int aproxNumberOfCharsInWidth = maxWidth / fontMetrics.charWidth('w');
+      stringBuilder.append(getSomeTextAtEnd(
+          tokens.get(noOfTokens - 1), 
+          Math.max(aproxNumberOfCharsInWidth - stringBuilder.length(), 0)));
+    } else {
+      stringBuilder.append(auxStringBuilder);
+    }
   }
   
   /**

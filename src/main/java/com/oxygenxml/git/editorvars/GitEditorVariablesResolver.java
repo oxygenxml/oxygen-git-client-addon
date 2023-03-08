@@ -98,12 +98,13 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * Used to set initial values for cache if the repository is not initialized.
    */
+  @SuppressWarnings("findsecbugs:PATH_TRAVERSAL_IN")
   private void initCacheIfNeeded() {
     if(editorVarsCache.isEmpty() && !GitAccess.getInstance().isRepoInitialized()) {
       final String selectedRepo = OptionsManager.getInstance().getSelectedRepository();
       if(selectedRepo != null && !selectedRepo.isEmpty()) {  
         try {
-          final File gitDir = new File(selectedRepo);
+          final File gitDir = new File(selectedRepo); // NOSONAR
           final URL gitProjectURL = gitDir.toURI().toURL();
           editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR, 
               gitProjectURL.toExternalForm());

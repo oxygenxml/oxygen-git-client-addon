@@ -79,7 +79,10 @@ public class StagingResourcesTableCellRenderer extends DefaultTableCellRenderer 
       setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       
       FontMetrics metrics = getFontMetrics(getFont());
-      labelText = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
+      labelText = FileUtil.truncateFileLocation(
+          location,
+          metrics,
+          table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
       
       String description = ((FileStatus) value).getDescription();
       if (description != null) {
