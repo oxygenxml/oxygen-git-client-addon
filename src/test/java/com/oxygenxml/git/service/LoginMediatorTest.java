@@ -29,6 +29,7 @@ public class LoginMediatorTest extends GitTestBase {
    */ 
   @Test
   public void testTheLoginDialogApparences() {
+    LoginMediator.getInstance().reset();
     final ILoginStatusInfo[] loginInfo = new ILoginStatusInfo[1];
     SwingUtilities.invokeLater(() -> loginInfo[0] = 
         LoginMediator.getInstance().requestLogin("host", "loginMessage").orElse(null));
@@ -43,6 +44,7 @@ public class LoginMediatorTest extends GitTestBase {
         LoginMediator.getInstance().requestLogin("host", "loginMessage").orElse(null));
    assertNull(findDialog(Tags.LOGIN_DIALOG_TITLE));
    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> loginInfo[0] == null);
+   LoginMediator.getInstance().reset();
   }
   
 }
