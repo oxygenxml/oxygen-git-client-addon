@@ -286,8 +286,7 @@ public class PrePushValidation implements IPreOperationValidation {
    * @param stash The created stash or empty @Optional if no stash were created.
    */
   private void removeStashIfNeeded(final Optional<RevCommit> stash) {
-    stash.ifPresent(st -> 
-    {
+    stash.ifPresent(st -> {
       try {
         GitAccess.getInstance().popStash(st.toObjectId().getName());
       } catch (GitAPIException e) {
