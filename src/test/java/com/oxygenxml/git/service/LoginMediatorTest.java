@@ -30,10 +30,15 @@ public class LoginMediatorTest extends GitTestBase {
   @Test
   public void testTheLoginDialogApparences() {
     LoginMediator.getInstance().reset();
+    final boolean[] requesWasSend = { false };
     final ILoginStatusInfo[] loginInfo = new ILoginStatusInfo[1];
-    SwingUtilities.invokeLater(() -> loginInfo[0] = 
-        LoginMediator.getInstance().requestLogin("host", "loginMessage").orElse(null));
+    SwingUtilities.invokeLater(() -> {
+      loginInfo[0] = LoginMediator.getInstance().requestLogin("host", "loginMessage").orElse(null);
+      requesWasSend[0] = true;
+    });
+
     final OKCancelDialog loginDialog = (OKCancelDialog) findDialog(Tags.LOGIN_DIALOG_TITLE);
+    assertTrue( requesWasSend[0]);
     assertNotNull(loginDialog);
     final JButton cancelButton = findFirstButton(loginDialog, Tags.CANCEL);
     assertNotNull(cancelButton);
@@ -42,9 +47,9 @@ public class LoginMediatorTest extends GitTestBase {
         && loginInfo[0].isCanceled() && loginInfo[0].getCredentials() == null);
     SwingUtilities.invokeLater(() -> loginInfo[0] = 
         LoginMediator.getInstance().requestLogin("host", "loginMessage").orElse(null));
-   assertNull(findDialog(Tags.LOGIN_DIALOG_TITLE));
-   Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> loginInfo[0] == null);
-   LoginMediator.getInstance().reset();
+    assertNull(findDialog(Tags.LOGIN_DIALOG_TITLE));
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> loginInfo[0] == null);
+    LoginMediator.getInstance().reset();
   }
-  
+
 }
