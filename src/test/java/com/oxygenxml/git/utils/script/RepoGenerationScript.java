@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -18,6 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.awaitility.Awaitility;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
@@ -196,14 +198,11 @@ public class RepoGenerationScript {
         LOGGER.debug("Branch detected " + anyMatch);
       }
       if (!anyMatch) {
-        try {
+        Awaitility.await().atMost(1000, TimeUnit.MILLISECONDS).untilAsserted(() -> {
           // Not sure why we need this. Without it, the order of changes is messed up. 
-          Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-          LOGGER.error(e1.getMessage(), e1);
-        }
-        GitAccess.getInstance().createBranch(localBranchShortName);
-        GitAccess.getInstance().setBranch(localBranchShortName);
+          GitAccess.getInstance().createBranch(localBranchShortName);
+          GitAccess.getInstance().setBranch(localBranchShortName);
+        });
       } else {
         GitAccess.getInstance().setBranch(localBranchShortName);
       }
@@ -224,19 +223,15 @@ public class RepoGenerationScript {
    */
   private static void mergeBranch(String mergeBranchShortName, String commitMessage) throws GitAPIException {
     if (mergeBranchShortName != null) {
-      try {
-        // Not sure why we need this. Without it the order of changes is messed up.
-        Thread.sleep(1000);
-      } catch (InterruptedException e1) {
-        LOGGER.error(e1.getMessage(), e1);
-      }
+      Awaitility.await().atMost(1000, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        // Not sure why we need this. Without it, the order of changes is messed up. 
+        List<Ref> collect = GitAccess.getInstance().getLocalBranchList().stream().filter(r -> mergeBranchShortName.equals(Repository.shortenRefName(r.getName()))).collect(Collectors.toList());
+        MergeResult call = GitAccess.getInstance().getGit().merge().setMessage(commitMessage).include(collect.get(0)).call();
 
-      List<Ref> collect = GitAccess.getInstance().getLocalBranchList().stream().filter(r -> mergeBranchShortName.equals(Repository.shortenRefName(r.getName()))).collect(Collectors.toList());
-      MergeResult call = GitAccess.getInstance().getGit().merge().setMessage(commitMessage).include(collect.get(0)).call();
-
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Merge result: " + call);
-      }
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Merge result: " + call);
+        }
+      });
     }
   }
 
