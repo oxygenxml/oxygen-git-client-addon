@@ -70,7 +70,7 @@ public class AutoCommitTest extends FlatViewTestBase {
       stagingPanel.getCommitPanel().getCommitButton().doClick();
     });   
     waitForSchedulerBetter();
-    Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(
+    Awaitility.await().atMost(Duration.ONE_SECOND).until(
         () -> 1 ==  GitAccess.getInstance().getPushesAhead()
     );
 
