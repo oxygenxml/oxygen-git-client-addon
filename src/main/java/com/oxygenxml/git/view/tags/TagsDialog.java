@@ -178,7 +178,7 @@ public class TagsDialog extends OKCancelDialog {
     	 int selectedRow = (tagsTable.getSelectedRow());
 		  if(selectedRow >= 0) {
 			  GitTag tag = ((TagsTableModel)tagsTable.getModel()).getItemAt(selectedRow);
-			  String tagID = tag.getTagID();
+			  String tagID = tag.getCommitID();
 			  Action action = new CheckoutCommitAction(tagID);
 			  action.actionPerformed(e);
 		  }

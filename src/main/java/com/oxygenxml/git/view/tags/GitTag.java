@@ -44,12 +44,6 @@ public class GitTag {
    * The id of the commit this tag was made for
    */
   private final String commitID;
-  
-  /**
-   * The tag id.
-   */
-  private final String tagID;
-
 
   /**
    * Constructor.
@@ -64,7 +58,7 @@ public class GitTag {
    * @param tagID          ID for tag.
    */
   public GitTag(String tagName, String tagMessage, boolean isTagPushed, String taggerName, 
-		  String taggerEmail, Date taggingDate, String commitID, String tagID) {
+		  String taggerEmail, Date taggingDate, String commitID) {
     this.name = tagName;
     this.message = tagMessage;
     this.isPushed = isTagPushed;
@@ -72,7 +66,6 @@ public class GitTag {
     this.taggerEmail = taggerEmail;
     this.taggingDate = taggingDate;
     this.commitID = commitID;
-    this.tagID = tagID;
   }
 
   /**
@@ -144,15 +137,6 @@ public class GitTag {
    * @return String form of the SHA-1, in lower case hexadecimal
    */
   public String getCommitID() {
-    return commitID;
-  }
-  
-  /**
-   * Get the tag id.    
-   *  
-   * @return String form of the SHA-1, in lower case hexadecimal
-   */
-  public String getTagID() {
     return commitID;
   }
 
