@@ -560,6 +560,7 @@ public class GitAccess {
 	 *         as their states.
    */
   public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
+    List<FileStatus> unstagedFiles =  Collections.emptyList();
     if (git != null) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("PUBLIC - GET UNSTAGED FILES");
@@ -568,14 +569,14 @@ public class GitAccess {
       
       if (paths != null && !paths.isEmpty()) {
         // We have paths. Build a fresh copy.
-        return new GitStatusCommand(() -> git).getUnstagedFiles(paths);
+        unstagedFiles = new GitStatusCommand(() -> git).getUnstagedFiles(paths);
       } else {
-        return statusCache.getStatus().getUnstagedFiles();
+        unstagedFiles = statusCache.getStatus().getUnstagedFiles();
       }
       
     }
     
-    return Collections.emptyList();
+    return unstagedFiles;
   }
 
   /**
@@ -1360,15 +1361,16 @@ public class GitAccess {
    * @return - a set containing the subset of files present in the INDEX.
    */
   public List<FileStatus> getStagedFile(Collection<String> paths) {
+    List<FileStatus> stagedFiles = Collections.emptyList();
     if (git != null) {
       if (paths != null && !paths.isEmpty()) {
-        return new GitStatusCommand(() -> git).getStagedFile(paths);
+        stagedFiles = new GitStatusCommand(() -> git).getStagedFile(paths);
       } else {
-        return statusCache.getStatus().getStagedFiles();
+        stagedFiles = statusCache.getStatus().getStagedFiles();
       }
     }
     
-    return Collections.emptyList();
+    return stagedFiles;
   }
 	/**
 	 * Gets the conflicting file from the git status
