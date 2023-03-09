@@ -36,12 +36,13 @@ public class Equaler {
    */
   @SuppressWarnings("java:S3776")
   public static boolean verifyListEquals(Collection<?> o1, Collection<?> o2) {
+    boolean equals = true;
     if (o1 == o2) {
-      return true;
+      // stays true
     } else if (o1 == null || o2 == null) {
-      return false;
+      equals = false;
     } else if (o1.size() != o2.size()) {
-      return false;
+      equals = false;
     } else {
       Iterator<?> itero1 = o1.iterator();
       Iterator<?> itero2 = o2.iterator();
@@ -50,16 +51,19 @@ public class Equaler {
         Object o2Obj = itero2.next();
         if (o1Obj instanceof Collection && o2Obj instanceof Collection) {
           if (!verifyListEquals((Collection<?>) o1Obj, (Collection<?>) o2Obj)) {
-            return false;
+            equals = false;
           }
         } else {
           if (!verifyEquals(o1Obj, o2Obj)) {
-            return false;
+            equals = false;
           }
+        }
+        if (!equals) {
+          break;
         }
       }
     }
-    return true;
+    return equals;
   }
 
   /**

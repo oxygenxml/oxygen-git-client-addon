@@ -620,20 +620,22 @@ public class FileUtil {
    * @return The first file found with the given extension.
    */
   @Nullable public static File searchFileByExtension(final File file, final String extension) {
+    File fileToReturn = null;
     if (file.isDirectory()) {
       File[] arr = file.listFiles();
       for (File f : arr) {
         File found = searchFileByExtension(f, extension);
         if (found != null) {
-          return found;
+          fileToReturn = found;
+          break;
         }
       }
     } else {
       if (file.getName().endsWith(extension)) {
-        return file;
+        fileToReturn = file;
       }
     }
-    return null;
+    return fileToReturn;
   }
   
   /**
