@@ -32,9 +32,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.html.HTMLEditorKit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
 import ro.sync.ui.hidpi.RetinaDetector;
@@ -45,12 +42,6 @@ import ro.sync.ui.hidpi.RetinaDetector;
  * @author alina_iordache
  */
 public class HiDPIUtil {
-  
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = LoggerFactory.getLogger(HiDPIUtil.class.getName());
   
   /**
    * Constructor.
