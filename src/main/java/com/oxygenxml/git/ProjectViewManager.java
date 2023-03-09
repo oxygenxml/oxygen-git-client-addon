@@ -66,7 +66,7 @@ public class ProjectViewManager {
     StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     File[] selectedFiles = pluginWS.getProjectManager().getSelectedFiles();
     for (int i = 0; i < selectedFiles.length; i++) {
-      isGit = FileUtil.isFromGitRepo(new File(selectedFiles[i].getAbsolutePath()));
+      isGit = FileUtil.isFromGitRepo(new File(selectedFiles[i].getAbsolutePath())); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
       if (!isGit) {
         // If one of the selected project files does not pertain to a Git repository,
         // it means that the project is not a Git one
