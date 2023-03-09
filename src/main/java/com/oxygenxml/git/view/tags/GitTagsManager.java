@@ -100,7 +100,6 @@ public class GitTagsManager {
                   lightTag.getAuthorIdent().getName(),
                   lightTag.getAuthorIdent().getEmailAddress(),
                   lightTag.getAuthorIdent().getWhen(),
-                  lightTag.getName(),
                   lightTag.getName()));
         } 
       }
@@ -152,7 +151,6 @@ public class GitTagsManager {
                   lightTag.getAuthorIdent().getName(),
                   lightTag.getAuthorIdent().getEmailAddress(),
                   lightTag.getAuthorIdent().getWhen(),
-                  lightTag.getName(),
                   lightTag.getName()));
         } 
       }
