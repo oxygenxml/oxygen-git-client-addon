@@ -64,8 +64,11 @@ public class LoginMediator {
   public synchronized Optional<ILoginStatusInfo> requestLogin(
       @NonNull final String host, @NonNull final String loginMessage) {
     Optional<ILoginStatusInfo> toReturn = Optional.empty();
+    System.out.println("Intra in request");
     if(!lastDialogWasCanceled) {
+      System.out.println("Inainte de afisare dialog");
       final LoginDialog loginDialog = new LoginDialog(host, loginMessage);
+      System.out.println(loginDialog);
       lastDialogWasCanceled = loginDialog.getResult() == OKCancelDialog.RESULT_CANCEL;
       toReturn = Optional.of(new LoginStatusInfo(loginDialog.getCredentials(), lastDialogWasCanceled));
     }
