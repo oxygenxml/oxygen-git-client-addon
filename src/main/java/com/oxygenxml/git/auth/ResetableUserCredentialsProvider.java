@@ -93,7 +93,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   public void reset(URIish uri) {
     wasReset = true;
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Reset credentials provider for: " + uri.toString());
+      LOGGER.debug("Reset credentials provider for: {}", uri);
     }
     if (isCredentialsPreviouslyRequested && !isUserCancelledLogin) {
       final Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(host, getLoginFailureMessage());
@@ -146,7 +146,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   public boolean get(URIish uri, CredentialItem... items) {
     wasReset = false;
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Get credential items for: " + uri.toString());
+      LOGGER.debug("Get credential items for: {}", uri);
     } 
     if (!isUserCancelledLogin) {
       for (CredentialItem credentialItem : items) { // NOSONAR

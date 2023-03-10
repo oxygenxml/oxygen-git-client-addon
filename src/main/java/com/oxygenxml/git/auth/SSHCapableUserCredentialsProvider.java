@@ -46,6 +46,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	 */
 	@Override
 	public boolean get(URIish uri, CredentialItem... items) {
+	  Boolean isRequestSuccessful = null;
 	  if (LOGGER.isDebugEnabled()) {
 	    LOGGER.debug("Credential query, uri: {}", uri);
 	  }
@@ -58,7 +59,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	    
 	    if ((item instanceof CredentialItem.StringType || item instanceof CredentialItem.Password)
 	        && item.getPromptText().startsWith("Passphrase")) {
-	      return treatPassphrase(item);
+	      isRequestSuccessful = treatPassphrase(item);
 	    }
 
 	    if (item instanceof CredentialItem.YesNoType) {
@@ -72,11 +73,15 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 
 	      // true tells the engine that we supplied the value.
 	      // The engine will look inside the given item for the response.
-	      return true;
+	      isRequestSuccessful = true;
+	    }
+	    
+	    if (isRequestSuccessful != null) {
+	      break;
 	    }
 	  }
 		
-		return super.get(uri, items);
+		return isRequestSuccessful == null ? super.get(uri, items) : isRequestSuccessful;
 	}
 
 	/**

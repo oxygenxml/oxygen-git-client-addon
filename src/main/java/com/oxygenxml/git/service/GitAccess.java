@@ -2177,6 +2177,8 @@ public class GitAccess {
 			case CURRENT_LOCAL_BRANCH:
 				RevCommitUtil.collectCurrentLocalBranchRevisions(filePath, revisions, repository, renameTracker);
 				break;
+			default:
+			  break;
 			}
 			
 		} catch (NoWorkTreeException | NoRepositorySelected | IOException e) {
