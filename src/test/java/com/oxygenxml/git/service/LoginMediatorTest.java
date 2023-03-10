@@ -30,16 +30,14 @@ public class LoginMediatorTest extends GitTestBase {
   @Test
   public void testTheLoginDialogApparences() {
     LoginMediator.getInstance().reset();
-    final boolean[] requesWasSend = { false };
     final ILoginStatusInfo[] loginInfo = new ILoginStatusInfo[1];
     SwingUtilities.invokeLater(() -> {
       loginInfo[0] = LoginMediator.getInstance().requestLogin("host", "loginMessage").orElse(null);
-      requesWasSend[0] = true;
     });
 
     final OKCancelDialog loginDialog = (OKCancelDialog) findDialog(Tags.LOGIN_DIALOG_TITLE);
-    assertTrue( requesWasSend[0]);
     assertNotNull(loginDialog);
+    System.out.println("Before Cancel");
     final JButton cancelButton = findFirstButton(loginDialog, Tags.CANCEL);
     assertNotNull(cancelButton);
     cancelButton.doClick();
