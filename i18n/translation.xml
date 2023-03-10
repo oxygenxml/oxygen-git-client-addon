@@ -34,7 +34,7 @@
 		<val lang="fr_FR">Détecter et ouvrir des projets Oxygen (.xpr) à partir de dépôts ouverts</val>
 		<val lang="ja_JP">Detect and open Oxygen projects (.xpr) from opened repositoriesく</val>
 		<val lang="nl_NL">Oxygen-projecten (.xpr) vanuit geopende opslagplaatsen detecteren en openen</val>
-		<val lang="zh_CN">Detect and open Oxygen projects (.xpr) from opened repositories</val>
+		<val lang="zh_CN">检测并打开已打开的资源库中的Oxygen项目（.xpr）</val>
 	</key>
 	<key value="Ask_Load_Repository">
 		<comment>This tag is used to ask for repository loading.</comment>
@@ -43,7 +43,7 @@
 		<val lang="fr_FR">Voulez-vous charger "{0}" comme dépôt actuel dans le client Git?</val>
 		<val lang="ja_JP">"{0}" を現在のリポジトリとして Git クライアントにロードしますか?</val>
 		<val lang="nl_NL">Wilt u "{0}" als de huidige opslagplaats in de Git Client laden?</val>
-		<val lang="zh_CN">Do you want to load "{0}" as the current repository in the Git Client?</val>
+		<val lang="zh_CN">你想将"{0}"作为当前仓库加载到Git客户端中吗？</val>
 	</key>
 	<key value="Detected_Local_Git_Repo">
 		<comment>The title of the load repository dialog when change projects.</comment>
@@ -52,7 +52,7 @@
 		<val lang="fr_FR">Dépôt Git local détecté</val>
 		<val lang="ja_JP">ローカル Git リポジトリが検出されました</val>
 		<val lang="nl_NL">Lokale Git-opslagplaats gedetecteerd</val>
-		<val lang="zh_CN">Local Git repository detected</val>
+		<val lang="zh_CN">检测到本地Git仓库</val>
 	</key>
 	<key value="Do_Not_Load">
 		<comment>English:Don't load.</comment>
@@ -61,7 +61,7 @@
 		<val lang="fr_FR">Ne pas charger</val>
 		<val lang="ja_JP">ロードしないでください</val>
 		<val lang="nl_NL">Niet laden</val>
-		<val lang="zh_CN">Don't load</val>
+		<val lang="zh_CN">不要加载</val>
 	</key>
 	<key value="Change_to_project_repo_confirm_message">
 		<comment>Confirmation message for changing the current working copy to
@@ -84,7 +84,7 @@
 		<val lang="fr_FR">Demande à l'utilisateur de décider s'il veut créer un dépôt Git dans le projet actuel.</val>
 		<val lang="ja_JP">ユーザーに、現在のプロジェクトで Git リポジトリを作成するかどうかを決定するように求めます。</val>
 		<val lang="nl_NL">Vraagt de gebruiker om te bepalen of hij een Git-opslagplaats in het huidige project wil aanmaken.</val>
-		<val lang="zh_CN">Prompts the user to decide if they want to create a Git repository in the current project.</val>
+		<val lang="zh_CN">提示用户决定是否要在当前项目中创建一个 Git 仓库</val>
 	</key>
 	<key value="Ask_User_To_Create_New_Repository">
 		<comment>English: Ask user to create a new repository</comment>
@@ -93,7 +93,7 @@
 		<val lang="fr_FR">Demander à l'utilisateur de créer un nouveau dépôt</val>
 		<val lang="ja_JP">ユーザーに新しいリポジトリを作成するように依頼する</val>
 		<val lang="nl_NL">De gebruiker vragen om een nieuwe opslagplaats aan te maken</val>
-		<val lang="zh_CN">Ask user to create a new repository</val>
+		<val lang="zh_CN">要求用户创建一个新的仓库</val>
 	</key>
 	<key value="SSH_Connections">
 		<comment>English: SSH Connections.</comment>
