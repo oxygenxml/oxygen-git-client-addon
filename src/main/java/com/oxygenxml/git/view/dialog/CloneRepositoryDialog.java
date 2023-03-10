@@ -735,7 +735,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     if (sourceURL != null) {
       final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
       if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
-        final File destFile = validateAndGetDestinationPath(
+        final File destFile = validateAndGetDestinationPath( // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
             new File(selectedDestPath), // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
             sourceURL.toString());
         if (destFile != null) {
