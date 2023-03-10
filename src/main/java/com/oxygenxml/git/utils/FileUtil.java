@@ -215,7 +215,7 @@ public class FileUtil {
 	public static URL getFileURL(String path) throws NoRepositorySelected {
 	  URL url = null;
 		String selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-		File file = new File(selectedRepository, path);
+		File file = new File(selectedRepository, path); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 		try {
 			url = file.toURI().toURL();
 		} catch (MalformedURLException e) {
@@ -261,7 +261,7 @@ public class FileUtil {
 	 * @return <code>true</code> if the path corresponds to a Git repository.
 	 */
 	public static boolean isGitRepository(String path) {
-		return isGitRepository(new File(path));
+		return isGitRepository(new File(path)); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 	}
 
 	 /**
@@ -309,7 +309,7 @@ public class FileUtil {
 	 * @return <code>true</code> if the path represents a submodule.
 	 */
 	public static boolean isGitSubmodule(String path) {
-		File rootFolder = new File(path);
+		File rootFolder = new File(path); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 		File[] listOfFiles = rootFolder.listFiles();
 
 		boolean isSubmodule = false;

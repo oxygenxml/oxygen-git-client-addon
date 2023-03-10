@@ -575,7 +575,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
       final String initialDestinationPath = destinationPaths.get(0);
       destinationPathCombo.setSelectedItem(initialDestinationPath);
       if(!startingDir.isPresent()) {
-        startingDir = Optional.of(new File(initialDestinationPath));
+        startingDir = Optional.of(new File(initialDestinationPath)); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
       }
     }
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -735,7 +735,9 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     if (sourceURL != null) {
       final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
       if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
-        final File destFile = validateAndGetDestinationPath(new File(selectedDestPath), sourceURL.toString());
+        final File destFile = validateAndGetDestinationPath(
+            new File(selectedDestPath), // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+            sourceURL.toString());
         if (destFile != null) {
           if(!destFile.exists()) {
             destFile.mkdir();
@@ -845,8 +847,9 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
         destination = destination.substring(0, destination.length() - previousRepositoryName.length());
       }
       previousRepositoryName = RepoUtil.extractRepositoryName(repositoryURL);
-      return previousRepositoryName != null && !previousRepositoryName.isEmpty() ?
-          new File(destination, previousRepositoryName).getPath() : destination;
+      boolean hasPrevRepoName = previousRepositoryName != null && !previousRepositoryName.isEmpty();
+      return hasPrevRepoName ? new File(destination, previousRepositoryName).getPath() // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+          : destination;
     }
     
   }

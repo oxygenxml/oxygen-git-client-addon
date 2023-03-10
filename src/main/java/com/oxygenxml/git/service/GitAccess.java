@@ -384,7 +384,7 @@ public class GitAccess {
    * @throws IOException
    */
   private void openRepository(String path) throws IOException {
-    final File repo = new File(path + "/.git");
+    final File repo = new File(path + "/.git"); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     if (!isCurrentRepo(repo) ) {
       File workingCopy = repo.getParentFile();
       fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy));
