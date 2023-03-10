@@ -25,7 +25,6 @@ import ro.sync.exml.workspace.api.standalone.ViewInfo;
  * @author sorin_carbunaru
  */
 public class EditorPageMenuGitActionsProvider {
-  // TODO: aaa
   
   /**
    * Translator.
