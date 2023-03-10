@@ -157,12 +157,15 @@ public class PrePushValidationTest extends GitTestBase {
     firstLocalRepo.close();
     remoteRepo.close();
     secondLocalRepo.close();
-    File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
-    FileUtil.deleteRecursivelly(dirToDelete);
-    dirToDelete = new File(REMOTE_TEST_REPOSITORY);
-    FileUtil.deleteRecursivelly(dirToDelete);
-    dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
-    FileUtil.deleteRecursivelly(dirToDelete);
+    
+    sleep(2000);
+    
+      File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITORY);
+      FileUtil.deleteRecursivelly(dirToDelete);
+      dirToDelete = new File(REMOTE_TEST_REPOSITORY);
+      FileUtil.deleteRecursivelly(dirToDelete);
+      dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
+      FileUtil.deleteRecursivelly(dirToDelete);
 
     super.tearDown();
   }

@@ -203,6 +203,7 @@ public class RevCommitUtil {
    * @param oldCommit The previous commit.
    * 
    * @return A list with changed files. Never <code>null</code>.
+   * 
    * @throws IOException
    * @throws GitAPIException
    */
@@ -668,52 +669,95 @@ public class RevCommitUtil {
       }
 
       if (!revisions.isEmpty()) {
-        RevCommit lastRev = revisions.get(revisions.size() - 1);
-        List<FileStatus> targetRevFiles = getFiles(git.getRepository(), lastRev);
-        Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
-
-        RevCommit previous = null;
-        for (RevCommit revCommit : revisions) {
-          if (previous != null) {
-
-            // Fast stop.
-            if (lastRevFiles.contains(path)) {
-              // The current discovered path is the same as in the target revision.
-              if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Same path as in target. Stop. {}", revCommit.getFullMessage());
-              }
-              break;
-            }
-
-            // Check if the current discovered path is also present in the new revision to consume.
-            // TThis way we will avoid a time consuming diff with rename detection.
-            List<FileStatus> currentRevisionFiles = getFiles(git.getRepository(), revCommit);
-            final String fpath = path;
-            boolean same = currentRevisionFiles.stream().anyMatch(t -> fpath.equals(t.getFileLocation()));
-
-            if (!same) {
-              // Do a diff with rename detection.
-              if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Search for a rename at revision: {}", revCommit.getFullMessage());
-              }
-
-              List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
-              for (DiffEntry diffEntry : diff) {
-                if (FileStatusUtil.isRename(diffEntry.getChangeType()) 
-                    && path.equals(diffEntry.getOldPath())) {
-                  // Match.
-                  path = diffEntry.getNewPath();
-                  break;
-                }
-              }
-            }
-          }
-
-          previous = revCommit;
-        }
+        path = findPath(git.getRepository(), revisions, path);
       }
     }
     
+    return path;
+  }
+
+  /**
+   * Finds the new location of a resource that might have been moved / renamed across revisions.
+   * 
+   * @param repository The current repo.
+   * @param revisions  The list of revisions across which to follow the resource renames.
+   * @param path       The known path .
+   *  
+   * @return The path of the resource as present in the last revision from the list.
+   * 
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  private static String findPath(
+      Repository repository,
+      List<RevCommit> revisions,
+      String path) throws IOException, GitAPIException {
+    RevCommit lastRev = revisions.get(revisions.size() - 1);
+    List<FileStatus> targetRevFiles = getFiles(repository, lastRev);
+    Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
+
+    RevCommit previous = null;
+    for (RevCommit revCommit : revisions) {
+      if (previous != null) {
+
+        // Fast stop.
+        if (lastRevFiles.contains(path)) {
+          // The current discovered path is the same as in the target revision.
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Same path as in target. Stop. {}", revCommit.getFullMessage());
+          }
+          break;
+        }
+
+        // Check if the current discovered path is also present in the new revision to consume.
+        // This way we will avoid a time consuming diff with rename detection.
+        List<FileStatus> currentRevisionFiles = getFiles(repository, revCommit);
+        final String fpath = path;
+        boolean same = currentRevisionFiles.stream().anyMatch(t -> fpath.equals(t.getFileLocation()));
+
+        if (!same) {
+          path = doDiffWithRenameDetection(repository, path, previous, revCommit);
+        }
+      }
+
+      previous = revCommit;
+    }
+    return path;
+  }
+
+
+  /**
+   * Do Diff with rename detection.
+   * 
+   * @param repository      The repo.
+   * @param path            The file path.
+   * @param previousCommit  Previous commit.
+   * @param revCommit       A commit.
+   * 
+   * @return
+   * 
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  private static String doDiffWithRenameDetection(
+      Repository repository,
+      String path,
+      RevCommit previousCommit,
+      RevCommit revCommit)
+      throws IOException, GitAPIException {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Search for a rename at revision: {}", revCommit.getFullMessage());
+    }
+
+    List<DiffEntry> diff = diff(repository, revCommit, previousCommit);
+    for (DiffEntry diffEntry : diff) {
+      if (FileStatusUtil.isRename(diffEntry.getChangeType()) 
+          && path.equals(diffEntry.getOldPath())) {
+        // Match.
+        path = diffEntry.getNewPath();
+        break;
+      }
+    }
     return path;
   }
 
@@ -769,7 +813,7 @@ public class RevCommitUtil {
     if(git != null) {
       Repository repository = git.getRepository();
 
-      File targetFile = new File(repository.getWorkTree(), originalPath);
+      File targetFile = new File(repository.getWorkTree(), originalPath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
       if (!targetFile.exists()) {
         // The file is not present in the working copy. Perhaps it was renamed.
         RevCommit older = repository.parseCommit(repository.resolve(commitId));
@@ -782,14 +826,14 @@ public class RevCommitUtil {
             filePath);
 
 
-        targetFile = new File(repository.getWorkTree(), originalPath);
+        targetFile = new File(repository.getWorkTree(), originalPath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
         if (!targetFile.exists()) {
           // Still not present inside the WC. Probably a rename that wasn't committed yet.
           // One more try.
           originalPath = findWCRename(git, newer, originalPath);
 
           // One last try to see if we identified the new location.
-          targetFile = new File(repository.getWorkTree(), originalPath);
+          targetFile = new File(repository.getWorkTree(), originalPath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
           if (!targetFile.exists()) {
             throw new FileNotFoundException("File \"" + originalPath + "\" was probably removed from the working copy.");
           }

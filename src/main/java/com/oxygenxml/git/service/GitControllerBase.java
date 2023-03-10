@@ -323,7 +323,7 @@ public abstract class GitControllerBase {
     filesStatuses.stream() // needed to be removed because they don't disappear
       .filter(fileStatus -> fileStatus.getChangeType() == GitChangeType.UNTRACKED || fileStatus.getChangeType() == GitChangeType.ADD)
       .forEach(fileStatus -> {
-        final File fileToDiscard = new File(selectedRepository, fileStatus.getFileLocation());    
+        final File fileToDiscard = new File(selectedRepository, fileStatus.getFileLocation()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
         try {
           FileUtils.forceDelete(fileToDiscard);
         } catch (IOException e) {

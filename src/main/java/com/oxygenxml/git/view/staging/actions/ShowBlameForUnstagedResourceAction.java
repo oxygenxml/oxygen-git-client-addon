@@ -64,7 +64,7 @@ public class ShowBlameForUnstagedResourceAction extends AbstractAction {
     if (!allSelectedResources.isEmpty()) {
       try {
         String filePath = allSelectedResources.get(0).getFileLocation();
-        File file = new File(GitAccess.getInstance().getWorkingCopy(), filePath);
+        File file = new File(GitAccess.getInstance().getWorkingCopy(), filePath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN  
         URL fileURL = file.toURI().toURL();
         WSEditor editor = pluginWS.getEditorAccess(fileURL, PluginWorkspace.MAIN_EDITING_AREA);
         if (editor == null || !editor.isModified()) {

@@ -215,7 +215,7 @@ public class DiffPresenter {
 		}
 
 		// time stamp used for detecting if the file was changed in the diff view
-		final long diffStartedTimeStamp = new File(fileURL.toURI()).lastModified();
+		final long diffStartedTimeStamp = new File(fileURL.toURI()).lastModified(); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 
 		final Optional<JFrame> frame = showDiffFrame(fileURL, lastCommitedFileURL, lastCommitedFileURL, path);
 		refreshIfFileWasModified(refreshSupport, diffStartedTimeStamp, frame, fileURL);
@@ -237,7 +237,7 @@ public class DiffPresenter {
 		  public void componentHidden(ComponentEvent e) {
 		    long diffClosedTimeStamp = 0;
 		    try {
-		      diffClosedTimeStamp = new File(fileURL.toURI()).lastModified();
+		      diffClosedTimeStamp = new File(fileURL.toURI()).lastModified(); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 		      if(diffStartedTimeStamp < diffClosedTimeStamp && refreshSupport != null) {
 		        refreshSupport.call();
 		      }
@@ -305,7 +305,7 @@ public class DiffPresenter {
       }
 
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
-			final File localCopy = new File(selectedRepository, file.getFileLocation());
+			final File localCopy = new File(selectedRepository, file.getFileLocation()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 
 			// time stamp used for detecting if the file was changed in the diff view
 			final long diffStartedTimeStamp = localCopy.lastModified();

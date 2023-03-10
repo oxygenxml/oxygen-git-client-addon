@@ -206,8 +206,8 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
    * @return the relative path. Never <code>null</code>.
    */
   public static String getFilePathRelativeToRepo(File selFile, String repository) {
-    Path repo = Paths.get(repository);
-    Path file = Paths.get(selFile.getAbsolutePath());
+    Path repo = Paths.get(repository); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+    Path file = Paths.get(selFile.getAbsolutePath()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     return repo.relativize(file).toString();
   }
   
@@ -297,7 +297,7 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
         } else  if (".".equals(path)) {
           file = projectDir;
         } else {
-          file = new File(projectDir, path);
+          file = new File(projectDir, path); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
         }
 
         repoDir = detectRepositoryDownwards(file);

@@ -199,7 +199,7 @@ public class ProjectHelper {
             final Optional<ProjectController> projectManager = Optional.ofNullable(pluginWS.getProjectManager());
             projectManager.ifPresent(pm -> {
               try {
-                optionsManager.saveDestinationPath(new File(pm.getCurrentProjectURL().toURI()).getParent());
+                optionsManager.saveDestinationPath(new File(pm.getCurrentProjectURL().toURI()).getParent()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
               } catch (URISyntaxException e) {
                 LOGGER.error(e.getMessage(), e);
               }
@@ -354,7 +354,7 @@ public class ProjectHelper {
     URL xprUrl = null;
     URI currentXprURI = getCurrentXprURI();
     try {
-      if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) {
+      if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
         if (xprFiles.size() == 1) {
           xprUrl = xprFiles.get(0).toURI().toURL();
         } else {

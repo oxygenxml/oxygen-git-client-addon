@@ -108,7 +108,7 @@ public class BlameManager {
       HistoryController historyController) throws IOException, GitAPIException {
     
     try {
-      File file = new File(GitAccess.getInstance().getWorkingCopy(), filePath);
+      File file = new File(GitAccess.getInstance().getWorkingCopy(), filePath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
       URL url = file.toURI().toURL();
       // Check if another blame is already active and dispose it.
       dispose(url);

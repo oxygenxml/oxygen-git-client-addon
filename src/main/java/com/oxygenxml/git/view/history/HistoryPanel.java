@@ -773,7 +773,7 @@ public class HistoryPanel extends JPanel {
         historyLabelMessage = TRANSLATOR.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
             + TRANSLATOR.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
         if (filePath != null) {
-          directory = new File(directory, filePath);
+          directory = new File(directory, filePath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
           historyLabelMessage += " " + TRANSLATOR.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
        

@@ -519,7 +519,7 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void createNewRepository(String path) throws GitAPIException {
-	  File wc = new File(path);
+	  File wc = new File(path); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 	  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     closeRepo();
     try {

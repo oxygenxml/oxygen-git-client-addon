@@ -101,14 +101,14 @@ public class DiscardAction extends AbstractAction {
     for (FileStatus file : allSelectedResources) {
       if (file.getChangeType() == GitChangeType.ADD
           || file.getChangeType() == GitChangeType.UNTRACKED) {
-          File fileToDiscard = new File(selectedRepository, file.getFileLocation());       
+          File fileToDiscard = new File(selectedRepository, file.getFileLocation()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN      
           // Collect the parent folders. We'll later have to find the common ancestor and refresh it.
           deletedFilesParentDirs.add(fileToDiscard.getParentFile());
       } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
         discardSubmodule(file, foldersToRefresh, selectedRepository);
       } else if (file.getChangeType() == GitChangeType.REMOVED
           || file.getChangeType() == GitChangeType.MISSING) {
-        deletedFilesParentDirs.add(new File(selectedRepository, file.getFileLocation()).getParentFile());
+        deletedFilesParentDirs.add(new File(selectedRepository, file.getFileLocation()).getParentFile()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN  
       }
     }
     
@@ -143,7 +143,7 @@ public class DiscardAction extends AbstractAction {
       String selectedRepository) {
     try {
       GitAccess.getInstance().getSubmoduleAccess().discardSubmodule();
-      foldersToRefresh.add(new File(selectedRepository, submoduleDir.getFileLocation()));
+      foldersToRefresh.add(new File(selectedRepository, submoduleDir.getFileLocation())); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN  
     } catch (GitAPIException e1) {
       LOGGER.error(e1.getMessage(), e1);
     }

@@ -77,8 +77,6 @@ public class FileUtil {
    *            <code>null</code> or empty.
    */
 	public static File getCommonDir(Set<File> dirs) {
-	  File commonAncestor = null;
-
 	  // Quick check
 	  if (dirs == null || dirs.isEmpty()) {
 	    return null;
@@ -112,9 +110,7 @@ public class FileUtil {
 	    }
 	  }
 
-	  commonAncestor = new File(commonPathBuilder.toString());
-
-	  return commonAncestor;
+	  return new File(commonPathBuilder.toString()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 	}
 	
 	/**
@@ -189,7 +185,7 @@ public class FileUtil {
 	 * @return list of paths relative to the given path
 	 */
 	public static List<String> getAllFilesFromPath(String path) {
-		File rootFolder = new File(path);
+		File rootFolder = new File(path);  // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 		List<String> fileNames = new ArrayList<>();
 		if (rootFolder.isFile()) {
 			fileNames.add(rewriteSeparator(rootFolder.getAbsolutePath()));
@@ -338,7 +334,7 @@ public class FileUtil {
 	 * @return the file path to the project file, or <code>null</code>.s
 	 */
 	public static String findXPR(String projectViewPath) {
-		File rootFolder = new File(projectViewPath);
+		File rootFolder = new File(projectViewPath);  // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 		File[] listOfFiles = rootFolder.listFiles();
 
 		String xprPath = null;
@@ -389,9 +385,9 @@ public class FileUtil {
     Repository repository = GitAccess.getInstance().getRepository();
     String repoPath = repository.getDirectory().getParent();
     if (repoPath.startsWith(projectDirPath)) {
-      projectManager.refreshFolders(new File[] { new File(repoPath) });
+      projectManager.refreshFolders(new File[] { new File(repoPath) });  // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     } else if (projectDirPath.startsWith(repoPath)) {
-      projectManager.refreshFolders(new File[] { new File(projectDirPath) });
+      projectManager.refreshFolders(new File[] { new File(projectDirPath) });  // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     }
   }
   
