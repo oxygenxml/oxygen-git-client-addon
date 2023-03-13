@@ -971,7 +971,7 @@ public class ChangesPanel extends JPanel {
 	 */
 	void setResourcesViewMode(ResourcesViewMode viewMode) {
 	  if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug("Switch to " + viewMode);
+	    LOGGER.debug("Switch to {}", viewMode);
 	  }
 	  
 	  this.currentViewMode = viewMode;
@@ -981,7 +981,7 @@ public class ChangesPanel extends JPanel {
 	    List<FileStatus> filesStatuses = modelTable.getFilesStatuses();
 	    
 	    if (LOGGER.isDebugEnabled()) {
-	      LOGGER.debug("Table model " + filesStatuses);
+	      LOGGER.debug("Table model {}", filesStatuses);
 	    }
 	    
 	     // Create the tree with the new model
@@ -1005,7 +1005,7 @@ public class ChangesPanel extends JPanel {
 	    List<FileStatus> filesStatuses = treeModel.getFilesStatuses();
 	    
 	    if (LOGGER.isDebugEnabled()) {
-	      LOGGER.debug("Tree model " + filesStatuses);
+	      LOGGER.debug("Tree model {}", filesStatuses);
 	    }
 	    
 	    StagingResourcesTableModel tableModel = (StagingResourcesTableModel) filesTable.getModel();

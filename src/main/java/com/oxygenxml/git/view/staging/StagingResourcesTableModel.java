@@ -197,7 +197,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 */
 	void stateChanged(GitEventInfo changeEvent) {
 	  if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug("Change event in the " + (inIndex ? "'unstaged'" : "'staged'") + " area: " + changeEvent);
+	    LOGGER.debug("Change event in the {} area: {}", inIndex ? "'unstaged'" : "'staged'", changeEvent);
 	    
 	  }
 

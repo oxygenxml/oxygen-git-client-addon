@@ -174,7 +174,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	      // repository will be selected
 	      String selectedEntry = (String) workingCopyCombo.getSelectedItem();
 	      if (LOGGER.isDebugEnabled()) {
-	        LOGGER.debug("Selected working copy: " + selectedEntry);
+	        LOGGER.debug("Selected working copy: {}", selectedEntry);
 	      }
 	      if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
 

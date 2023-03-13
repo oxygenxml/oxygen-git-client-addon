@@ -277,7 +277,7 @@ public class HistoryViewContextualMenuPresenter {
           filePath);
       
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("new " + filePath + " old " + oldFilePath);
+        LOGGER.debug("new {}, old {}", filePath, oldFilePath);
       }
       
       fileStatusOptional = changes.stream().filter(f -> oldFilePath.equals(f.getFileLocation())).findFirst();

@@ -144,7 +144,7 @@ public class GitController extends GitControllerBase {
    */
   protected void showPullFailedBecauseOfCertainChanges(List<String> filesWithChanges, String message) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
+      LOGGER.debug("Pull failed with the following message: {}. Resources: {}", message, filesWithChanges);
     }
     MessagePresenterProvider.getBuilder(
         translator.getTranslation(Tags.PULL_STATUS), DialogType.WARNING)
@@ -457,8 +457,8 @@ public class GitController extends GitControllerBase {
       RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
 
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Do pull. Pull type: " + pullType);
-        LOGGER.debug("Repo state: " + repositoryState);
+        LOGGER.debug("Do pull. Pull type: {}", pullType);
+        LOGGER.debug("Repo state: {}", repositoryState);
       }
 
       if(repositoryState != null) {

@@ -68,7 +68,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 */
 	public void fileStatesChanged(GitEventInfo eventInfo) {
 	  if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug("Tree model for index: " + inIndex + " event " + eventInfo);
+	    LOGGER.debug("Tree model for index: {} event {}", inIndex, eventInfo);
 	  }
 
 	  GitAccess gitAccess = GitAccess.getInstance();
