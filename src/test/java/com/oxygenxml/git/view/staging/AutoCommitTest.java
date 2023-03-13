@@ -40,7 +40,6 @@ public class AutoCommitTest extends FlatViewTestBase {
    * @throws Exception
    */
   public void testAutoPushWhenCommit() throws Exception { 
-
     String localTestRepository = "target/test-resources/testAutoPushWhenCommit_local";
     String remoteTestRepository = "target/test-resources/testAutoPushWhenCommit_remote";
 
@@ -65,13 +64,18 @@ public class AutoCommitTest extends FlatViewTestBase {
     assertFalse(autoPushBtn.isSelected());
 
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
+    
+    CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
     SwingUtilities.invokeLater(() -> {
-      stagingPanel.getCommitPanel().getCommitMessageArea().setText("Commit message");
-      stagingPanel.getCommitPanel().getCommitButton().doClick();
+      commitPanel.getCommitMessageArea().setText("Commit message");
+      commitPanel.getCommitButton().doClick();
     });   
     waitForSchedulerBetter();
-    Awaitility.await().atMost(Duration.ONE_SECOND).until(
-        () -> 1 ==  GitAccess.getInstance().getPushesAhead()
+    refreshSupport.call();
+    flushAWT();
+    
+    Awaitility.await().atMost(Duration.ONE_SECOND).untilAsserted(
+        () -> assertEquals(1,  GitAccess.getInstance().getPushesAhead())
     );
 
     // Change the file again.
