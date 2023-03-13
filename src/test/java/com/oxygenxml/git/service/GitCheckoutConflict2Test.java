@@ -552,9 +552,10 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         SwingUtilities.invokeLater(() -> abstractAction.actionPerformed(null));
       
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+        assertNotNull(createBranchDialog);
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
-        checkoutBranchCheckBox.setSelected(true);
+        SwingUtilities.invokeLater(() -> checkoutBranchCheckBox.setSelected(true));
         flushAWT();
 
         JTextField branchNameTextField = findComponentNearJLabel(
