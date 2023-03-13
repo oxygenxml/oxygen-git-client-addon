@@ -374,7 +374,7 @@ public class RemoteVisualTest extends GitTestBase {
       SwingUtilities.invokeLater(() -> s.release());
       s.acquire();
       
-      model.fireTableDataChanged();
+      SwingUtilities.invokeAndWait(() -> model.fireTableDataChanged());
       flushAWT();
       assertEquals(1, model.getRowCount());
       assertEquals(firstRemoteName, (String)model.getValueAt(0, 0));
