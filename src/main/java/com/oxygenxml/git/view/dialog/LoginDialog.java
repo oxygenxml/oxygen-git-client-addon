@@ -114,8 +114,6 @@ public class LoginDialog extends OKCancelDialog {
 		this.setResizable(false);
 		this.pack();
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-		this.setVisible(true);
 	}
 
 	/**
