@@ -554,6 +554,7 @@ public class PrePushValidationTest extends GitTestBase {
     new Thread(() -> {
       wasValidationPassed[0] = ValidationManager.getInstance().checkPushValid();    
     }).start();
+    waitForScheduler();
     final OKCancelDialog dialogFound = (OKCancelDialog)findDialog(Tags.DETECT_AND_OPEN_XPR_FILES_DIALOG_TITLE);
     assertNotNull(dialogFound);
     final JButton openButton = findFirstButton(dialogFound, Tags.OPEN);
