@@ -67,10 +67,14 @@ public class LoginMediator {
     System.out.println("Intra in request");
     if(!lastDialogWasCanceled) {
       System.out.println("Inainte de afisare dialog");
-      final LoginDialog loginDialog = new LoginDialog(host, loginMessage);
-      System.out.println(loginDialog);
-      lastDialogWasCanceled = loginDialog.getResult() == OKCancelDialog.RESULT_CANCEL;
-      toReturn = Optional.of(new LoginStatusInfo(loginDialog.getCredentials(), lastDialogWasCanceled));
+      try {
+        final LoginDialog loginDialog = new LoginDialog(host, loginMessage);
+        System.out.println(loginDialog);
+        lastDialogWasCanceled = loginDialog.getResult() == OKCancelDialog.RESULT_CANCEL;
+        toReturn = Optional.of(new LoginStatusInfo(loginDialog.getCredentials(), lastDialogWasCanceled));
+      } catch (Throwable t) {
+        t.printStackTrace();
+      }
     }
     
     return toReturn;
