@@ -408,25 +408,32 @@ public class BranchActionsTest extends GitTestBase {
     assertEquals(REMOTE_BRANCH_NAME2, branchPath[branchPath.length - 1]);
     
     AbstractAction checkoutAction = branchTreeMenuActionsProvider.getCheckoutAction(lastLeaf);
-    if(checkoutAction != null) {
-      SwingUtilities.invokeLater(() -> {
-        checkoutAction.actionPerformed(null);
-      });
-      JDialog checkoutBranchDialog = findDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH));
-      if (checkoutBranchDialog != null) {
-        JTextField branchNameTextField = findComponentNearJLabel(checkoutBranchDialog,
-            translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
-        branchNameTextField.setText(REMOTE_BRANCH_NAME2_COPY);
-        JButton firstButtonFound = findFirstButton(checkoutBranchDialog, "Checkout");
-        if (firstButtonFound != null) {
-          firstButtonFound.setEnabled(true);
-          firstButtonFound.doClick();
-        }
-      }
-    }
+    assertNotNull(checkoutAction);
+    SwingUtilities.invokeLater(() -> checkoutAction.actionPerformed(null));
+    JDialog checkoutBranchDialog = findDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH));
+    assertNotNull(checkoutBranchDialog);
+
+    final JTextField branchNameTextField = findComponentNearJLabel(
+        checkoutBranchDialog,
+        translator.getTranslation(Tags.BRANCH_NAME) + ": ",
+        JTextField.class);
+    assertNotNull(branchNameTextField);
+    SwingUtilities.invokeLater(() -> branchNameTextField.setText(REMOTE_BRANCH_NAME2_COPY));
+    flushAWT();
+
+    final JButton checkoutBtn = findFirstButton(checkoutBranchDialog, Tags.CHECKOUT);
+    assertNotNull(checkoutBtn);
+    SwingUtilities.invokeLater(() -> {
+      checkoutBtn.setEnabled(true);
+      checkoutBtn.doClick();
+    });
+    flushAWT();
     sleep(200);
+    
     branchManagementPanel.refreshBranches();
     flushAWT();
+    sleep(400);
+    
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);
@@ -453,26 +460,32 @@ public class BranchActionsTest extends GitTestBase {
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(previousLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
       if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT) + "...")) {
-        SwingUtilities.invokeLater(() -> {
-          abstractAction.actionPerformed(null);
-        });
+        SwingUtilities.invokeLater(() -> abstractAction.actionPerformed(null));
         JDialog checkoutDialog = findDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH));
-        if (checkoutDialog != null) {
-          JTextField branchNameTextField = findComponentNearJLabel(checkoutDialog,
-              translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
-          branchNameTextField.setText(REMOTE_BRANCH_NAME1_COPY);
-          JButton firstButtonFound = findFirstButton(checkoutDialog, "Checkout");
-          if (firstButtonFound != null) {
-            firstButtonFound.setEnabled(true);
-            firstButtonFound.doClick();
-          }
-        }
+        assertNotNull(checkoutDialog);
+        JTextField branchNameTextField2 = findComponentNearJLabel(
+            checkoutDialog,
+            translator.getTranslation(Tags.BRANCH_NAME) + ": ",
+            JTextField.class);
+        assertNotNull(branchNameTextField2);
+        SwingUtilities.invokeLater(() -> branchNameTextField2.setText(REMOTE_BRANCH_NAME1_COPY));
+        flushAWT();
+        JButton checkoutBtn2 = findFirstButton(checkoutDialog, Tags.CHECKOUT);
+        assertNotNull(checkoutBtn2);
+        SwingUtilities.invokeLater(() -> {
+          checkoutBtn2.setEnabled(true);
+          checkoutBtn2.doClick();
+        });
         break;
       }
     }
+    flushAWT();
     sleep(200);
+    
     branchManagementPanel.refreshBranches();
     flushAWT();
+    sleep(200);
+    
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     BranchManagementTest.serializeTree(actualTree, root);
