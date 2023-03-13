@@ -120,6 +120,7 @@ public class BranchSelectionComboTest extends GitTestBase {
       // Try to switch to another branch
       BranchSelectionCombo branchesCombo = stagingPanel.getBranchesCombo();
       branchesCombo.refresh();
+      flushAWT();
       String currentBranch = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranch);
 
@@ -209,6 +210,7 @@ public class BranchSelectionComboTest extends GitTestBase {
       // Try to switch to another branch
       final BranchSelectionCombo branchesCombo = stagingPanel.getBranchesCombo();
       branchesCombo.refresh();
+      flushAWT();
       String currentBranch = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranch);
 
@@ -248,6 +250,7 @@ public class BranchSelectionComboTest extends GitTestBase {
     final String LOCAL_BRANCH = "LocalBranch";
 
     final PanelRefresh refreshManager = new PanelRefresh(null) {
+      @Override
       protected int getScheduleDelay() { 
         return 1; 
        }
@@ -286,6 +289,7 @@ public class BranchSelectionComboTest extends GitTestBase {
       final OxygenGitPluginExtension pluginExtension = new OxygenGitPluginExtension();
       final GitController gitCtrl = new GitController();
       final GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshManager) {
+        @Override
         public void refreshActionsStates() {
           // nothing
         }
@@ -325,6 +329,7 @@ public class BranchSelectionComboTest extends GitTestBase {
       // Try to switch to another branch
       final BranchSelectionCombo branchesCombo = localStagingPanel.getBranchesCombo();
       branchesCombo.refresh();
+      flushAWT();
       final String currentBranch = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranch);
 

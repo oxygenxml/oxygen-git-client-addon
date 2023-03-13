@@ -331,6 +331,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     
     BranchSelectionCombo branchesCombo = new BranchSelectionCombo(gitController);
     branchesCombo.refresh();
+    flushAWT();
     SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
     flushAWT();
     
@@ -390,6 +391,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     GitController gitController = new GitController(gitAccess);
     BranchSelectionCombo branchesCombo = new BranchSelectionCombo(gitController);
     branchesCombo.refresh();
+    flushAWT();
     SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
     flushAWT();
     
@@ -501,6 +503,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
    
     BranchSelectionCombo branchesCombo = new BranchSelectionCombo((GitController) gitCtrl);
     branchesCombo.refresh();
+    flushAWT();
     SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(1));
     flushAWT();
     
