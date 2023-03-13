@@ -116,9 +116,9 @@ public class FlatView7Test extends FlatViewTestBase {
 		GitAccess.getInstance().fetch();
 		branchesCombo.refresh();
 		refreshSupport.call();
-		
-		
 		flushAWT();
+		sleep(1000);
+		
 		// Tooltip texts changed again
 		String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (2 files)"
 				+ "<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
@@ -126,27 +126,18 @@ public class FlatView7Test extends FlatViewTestBase {
 		String regexHour = "(\\d\\d:\\d\\d)";
 		String actual = toolbarPanel.getPullMenuButton().getToolTipText();
 		actual = actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour");
-		assertEquals(
-				expected,
-				actual
-				); 
+		assertEquals(expected, actual); 
 
 		expected = "<html>Push_to.<br>One_commit_ahead<br><br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
 		actual = toolbarPanel.getPushButton().getToolTipText();
-
 		actual = actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour");
-		assertEquals(
-				expected,
-				actual
-				);  
+		assertEquals(expected, actual);  
 
 		actual = branchesCombo.getToolTipText();
-
-		assertEquals(
-				"<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
-						+ "One_commit_behind<br>One_commit_ahead</html>",
-						branchesCombo.getToolTipText());
+		expected = "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
+    		+ "One_commit_behind<br>One_commit_ahead</html>";
+    assertEquals(expected, actual);
 
 		// Commit a new change locally
 		commitOneFile(localTestRepository, "anotherFile.txt", "changed");
