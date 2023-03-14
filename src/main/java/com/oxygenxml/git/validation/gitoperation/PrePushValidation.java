@@ -1,6 +1,7 @@
 package com.oxygenxml.git.validation.gitoperation;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -260,8 +261,7 @@ public class PrePushValidation implements IPreOperationValidation {
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
     if(performPush) {
       try {
-        final LoadProjectOperationStatus projectLoadResult = ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(
-            GitAccess.getInstance().getRepository().getDirectory().getParentFile());
+        final LoadProjectOperationStatus projectLoadResult = tryToLoadProject();
         if(projectLoadResult == LoadProjectOperationStatus.PROJECT_NOT_FOUND) {
           MessagePresenterProvider 
           .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
@@ -279,6 +279,24 @@ public class PrePushValidation implements IPreOperationValidation {
     }
     
     return performPush;
+  }
+
+  /**
+   * Try to load an Oxygen project from the current repository.
+   * 
+   * @return The result of this load operation.
+   * 
+   * @throws NoRepositorySelected When no repository is selected.
+   */
+  private LoadProjectOperationStatus tryToLoadProject()  throws NoRepositorySelected {
+  LoadProjectOperationStatus projectLoadResult = LoadProjectOperationStatus.PROJECT_NOT_FOUND;
+    try {
+      projectLoadResult = ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(
+          GitAccess.getInstance().getRepository().getDirectory().getParentFile());
+    } catch(MalformedURLException e) {
+      LOGGER.error(e.getMessage(), e);
+    }
+    return projectLoadResult;
   }
 
   /**

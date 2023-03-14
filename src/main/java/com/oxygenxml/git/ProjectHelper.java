@@ -343,8 +343,10 @@ public class ProjectHelper {
    * @param repositoryDir The current repository main directory.
    * 
    * @return The status of loading project operation.
+   * 
+   * @throws MalformedURLException When the URL of the chosen project file is not valid.
    */
-  public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) {
+  public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) throws MalformedURLException {
     LoadProjectOperationStatus toReturn = LoadProjectOperationStatus.CANCELED_BY_USER;
     List<File> xprFiles = FileUtil.findAllFilesByExtension(repositoryDir, ".xpr");
     if(xprFiles.isEmpty()) {
@@ -366,30 +368,27 @@ public class ProjectHelper {
    *  
    * @param xprFiles The project files 
    * 
-   * @return A URL for the project or <code>null</code> if the URL is malformed or xprFiles is empty
-   */
-  private URL chooseOxygenProject(final List<File> xprFiles) {
+   * @return A URL for the project or <code>null</code> xprFiles is empty or no project is selected.
+   * 
+   * @throws MalformedURLException  When the URL of the chosen project file is not valid.
+   */ 
+  private URL chooseOxygenProject(final List<File> xprFiles) throws MalformedURLException {
     URL xprUrl = null;
     URI currentXprURI = getCurrentXprURI();
-    try {
-      if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
-        if (xprFiles.size() == 1) {
-          xprUrl = xprFiles.get(0).toURI().toURL();
-        } else {
-          OpenProjectDialog dialog= new OpenProjectDialog(
-              (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-              xprFiles);
-          dialog.setVisible(true);
-          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            xprUrl = dialog.getSelectedFile().toURI().toURL();
-          } 
-        }
-      }
-    } catch (MalformedURLException e) {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e.getMessage(), e);
+    if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+      if (xprFiles.size() == 1) {
+        xprUrl = xprFiles.get(0).toURI().toURL();
+      } else {
+        OpenProjectDialog dialog= new OpenProjectDialog(
+            (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+            xprFiles);
+        dialog.setVisible(true);
+        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+          xprUrl = dialog.getSelectedFile().toURI().toURL();
+        } 
       }
     }
+    
     return xprUrl;
   }
   

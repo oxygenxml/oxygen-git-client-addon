@@ -11,6 +11,7 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -456,7 +457,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 		      updateComboboxModelAfterRepositoryChanged();
 		      if (OptionsManager.getInstance().isDetectAndOpenXprFiles() && info instanceof WorkingCopyGitEventInfo) {
 		        File wcDirectory = ((WorkingCopyGitEventInfo) info).getWorkingCopy();
-		        ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(wcDirectory);
+		        try {
+              ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(wcDirectory);
+            } catch (MalformedURLException e) {
+              LOGGER.error(e.getMessage(), e);
+            }
 		      }
 		    };
 		    if (!SwingUtilities.isEventDispatchThread()) {
