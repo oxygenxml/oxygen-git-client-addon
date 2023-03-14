@@ -480,7 +480,8 @@ public class PrePushValidationTest extends GitTestBase {
   }
   
   /**
-   * <p><b>Description:</b> Check that when the project loaded in the Project view is not from the current loaded repository and this repository contains multiple projects, 
+   * <p><b>Description:</b> Check that when the project loaded in the Project view
+   * is not from the current loaded repository and this repository contains multiple projects, 
    * Oxygen will offer the possibility to choose which project to load in the Project view.</p>
    * 
    * <p><b>Bug ID:</b> EXM-51988</p>
