@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledFuture;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -122,7 +123,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
               sb.toString());
       
       // Select the bad WC.
-      workingCopyCombo.setSelectedItem(badWcTree.getAbsolutePath());
+      SwingUtilities.invokeLater(() -> workingCopyCombo.setSelectedItem(badWcTree.getAbsolutePath()));
       
       // Wait for the selection task to be completed by posting another task and waiting for its end.
       ScheduledFuture<?> schedule = GitOperationScheduler.getInstance().schedule(() -> {});
@@ -135,9 +136,8 @@ public class WorkingCopySelector2Test extends JFCTestCase {
       }
       
       assertEquals(
-          wcTree.getAbsolutePath() + "\n" + 
-              "",
-              sb.toString());
+          wcTree.getAbsolutePath() + "\n",
+          sb.toString());
       
       assertEquals(null, workingCopyCombo.getSelectedItem());
 
