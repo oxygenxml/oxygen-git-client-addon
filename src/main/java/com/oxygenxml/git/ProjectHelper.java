@@ -345,8 +345,9 @@ public class ProjectHelper {
    * @return The status of loading project operation.
    * 
    * @throws MalformedURLException When the URL of the chosen project file is not valid.
+   * @throws URISyntaxException    When the URI syntax is not valid.
    */
-  public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) throws MalformedURLException {
+  public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) throws MalformedURLException, URISyntaxException {
     LoadProjectOperationStatus toReturn = LoadProjectOperationStatus.CANCELED_BY_USER;
     List<File> xprFiles = FileUtil.findAllFilesByExtension(repositoryDir, ".xpr");
     if(xprFiles.isEmpty()) {
@@ -371,8 +372,9 @@ public class ProjectHelper {
    * @return A URL for the project or <code>null</code> xprFiles is empty or no project is selected.
    * 
    * @throws MalformedURLException  When the URL of the chosen project file is not valid.
+   * @throws URISyntaxException When the URI syntax is not valid.
    */ 
-  private URL chooseOxygenProject(final List<File> xprFiles) throws MalformedURLException {
+  private URL chooseOxygenProject(final List<File> xprFiles) throws MalformedURLException, URISyntaxException {
     URL xprUrl = null;
     URI currentXprURI = getCurrentXprURI();
     if(!xprFiles.isEmpty() && (currentXprURI == null || !xprFiles.contains(new File(currentXprURI)))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
@@ -394,18 +396,13 @@ public class ProjectHelper {
   
   /**
    * @return The uri of the current project(xpr) or <code>null</code>
+   * 
+   * @throws URISyntaxException When the URI syntax is not valid.
    */
-  private URI getCurrentXprURI(){
-    URI currentXPRuri = null;
-    StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    try {
-      Optional<URL> projectURLOpt = Optional.ofNullable(spw.getProjectManager().getCurrentProjectURL());
-      currentXPRuri = projectURLOpt.isPresent() && FileUtil.isURLForLocalFile(projectURLOpt.get()) ? projectURLOpt.get().toURI() : null;
-    } catch (URISyntaxException e) {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e.getMessage(),e);
-      }
-    }
-    return currentXPRuri;
+  private URI getCurrentXprURI() throws URISyntaxException {
+    final StandalonePluginWorkspace spw = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    final Optional<URL> projectURLOpt = Optional.ofNullable(spw.getProjectManager().getCurrentProjectURL());
+    return projectURLOpt.isPresent() && FileUtil.isURLForLocalFile(projectURLOpt.get()) 
+        ? projectURLOpt.get().toURI() : null;
   }
 }

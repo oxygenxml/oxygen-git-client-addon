@@ -2,6 +2,7 @@ package com.oxygenxml.git.validation.gitoperation;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -293,7 +294,7 @@ public class PrePushValidation implements IPreOperationValidation {
     try {
       projectLoadResult = ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(
           GitAccess.getInstance().getRepository().getDirectory().getParentFile());
-    } catch(MalformedURLException e) {
+    } catch(MalformedURLException | URISyntaxException e) {
       LOGGER.error(e.getMessage(), e);
     }
     return projectLoadResult;
