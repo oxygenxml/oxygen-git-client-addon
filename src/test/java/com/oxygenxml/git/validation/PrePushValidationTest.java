@@ -480,9 +480,7 @@ public class PrePushValidationTest extends GitTestBase {
   }
   
   /**
-   * <p><b>Description:</b> This test cover pre-push validation behavior for case when this option
-   * is enabled and the push should not be rejected on validation problem and the not same project is loaded 
-   * in "Project" View and Git Staging and are found multiple projects that can be loaded.</p>
+   * <p><b>Description:</b> This test checks the behavior when are not the same project in "Git Staging" and "Project View" and multiple Oxygen projects are detected in the git repository.</p>
    * 
    * <p><b>Bug ID:</b> EXM-51988</p>
    *
