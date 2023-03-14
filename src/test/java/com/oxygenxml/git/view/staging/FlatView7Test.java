@@ -246,6 +246,7 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     refreshSupport.call();
     flushAWT();
+    sleep(1000);
 
 		expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFile45w.txt<br>&#x25AA; Date, Hour "
