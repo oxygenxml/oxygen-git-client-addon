@@ -350,7 +350,7 @@ public class ProjectHelper {
     if(xprFiles.isEmpty()) {
       toReturn = LoadProjectOperationStatus.PROJECT_NOT_FOUND;
     } else {
-      URL xprUrl = getXprURLfromXprFiles(xprFiles);
+      URL xprUrl = chooseOxygenProject(xprFiles);
       if (xprUrl != null) {
         final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
         pluginWS.getProjectManager().loadProject(pluginWS.getUtilAccess().locateFile(xprUrl));
@@ -361,14 +361,14 @@ public class ProjectHelper {
   }
  
   /**
-   * Get the project file URL from a list of project files.
+   * If one project is found, this project will be automatically chosen.
    * A dialog will be displayed for choosing one project if there are multiple files
    *  
    * @param xprFiles The project files 
    * 
    * @return A URL for the project or <code>null</code> if the URL is malformed or xprFiles is empty
    */
-  private URL getXprURLfromXprFiles(final List<File> xprFiles) {
+  private URL chooseOxygenProject(final List<File> xprFiles) {
     URL xprUrl = null;
     URI currentXprURI = getCurrentXprURI();
     try {
