@@ -12,7 +12,6 @@ import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -460,7 +459,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		        File wcDirectory = ((WorkingCopyGitEventInfo) info).getWorkingCopy();
 		        try {
               ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(wcDirectory);
-            } catch (MalformedURLException | URISyntaxException e) {
+            } catch (MalformedURLException e) {
               LOGGER.error(e.getMessage(), e);
             }
 		      }

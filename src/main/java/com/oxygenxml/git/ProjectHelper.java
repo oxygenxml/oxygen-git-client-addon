@@ -347,9 +347,8 @@ public class ProjectHelper {
    * @return The status of loading project operation.
    * 
    * @throws MalformedURLException When the URL of the chosen project file is not valid.
-   * @throws URISyntaxException    When the URI syntax is not valid.
    */
-  public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) throws MalformedURLException, URISyntaxException {
+  public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) throws MalformedURLException {
     LoadProjectOperationStatus toReturn = LoadProjectOperationStatus.CANCELED_BY_USER;
     List<File> xprFiles = FileUtil.findAllFilesByExtension(repositoryDir, ".xpr");
     if(xprFiles.isEmpty()) {
