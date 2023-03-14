@@ -70,6 +70,12 @@ public class SwitchRepositoryTest extends GitTestBase {
     GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
     stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
   }
+  
+  @Override
+  public void tearDown() throws Exception {
+    ProjectHelper.getInstance().reset();
+    super.tearDown();
+  }
 
   /**
    * <p><b>Description:</b> Tests if the user is asked to create a new repository if there is no Git project and option is checked.</p>
@@ -128,7 +134,6 @@ public class SwitchRepositoryTest extends GitTestBase {
       Awaitility.await().atLeast(Duration.ONE_HUNDRED_MILLISECONDS).atMost(Duration.ONE_SECOND).until(() -> !dialogWasFound[0]);
       
     } finally {
-      ProjectHelper.getInstance().reset();
       projectFile.getParentFile().delete();
     }
   }
@@ -154,14 +159,14 @@ public class SwitchRepositoryTest extends GitTestBase {
     try {
       gitAccess.setRepositorySynchronously(LOCAL_REPO);
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project1File.getParentFile().getAbsolutePath()));
+      
       final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
-      final ProjectChangeListener projectListener[] = new ProjectChangeListener[1];
-
       final UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
       Mockito.when(utilAccessMock.locateFile(Mockito.any(URL.class))).then(args -> new File(((URL)args.getArgument(0)).toURI()));
       Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
       OptionsManager.getInstance().setWhenRepoDetectedInProject(WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC);
 
+      final ProjectChangeListener projectListener[] = new ProjectChangeListener[1];
       final ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);  
       Mockito.doAnswer(new Answer<Void>() {
         @Override
@@ -179,7 +184,6 @@ public class SwitchRepositoryTest extends GitTestBase {
       projectListener[0].projectChanged(project1URL, project2URL);
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project2File.getParentFile().getAbsolutePath()));
     } finally {
-      ProjectHelper.getInstance().reset();
       project1File.getParentFile().delete();
       project2File.getParentFile().delete();
     }
@@ -231,14 +235,16 @@ public class SwitchRepositoryTest extends GitTestBase {
       ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(project1URL, project2URL);
-      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project2File.getParentFile().getAbsolutePath()));
+      Awaitility.await().atMost(Duration.ONE_SECOND).untilAsserted(
+          () -> assertEquals(
+              gitAccess.getWorkingCopy().getAbsolutePath(),
+              project2File.getParentFile().getAbsolutePath()));
       
       Mockito.when(pluginWSMock.showConfirmDialog( Mockito.anyString(), 
           Mockito.anyString(), Mockito.any(String[].class),  Mockito.any(int[].class))).thenReturn(1); // answer to doesn't update the repository
       projectListener[0].projectChanged(project2URL, project1URL);
       assertEquals(project2File.getParentFile().getAbsolutePath(), gitAccess.getWorkingCopy().getAbsolutePath());
     } finally {
-      ProjectHelper.getInstance().reset();
       project1File.getParentFile().delete();
       project2File.getParentFile().delete();
     }
@@ -296,7 +302,6 @@ public class SwitchRepositoryTest extends GitTestBase {
       projectListener[0].projectChanged(project2URL, project1URL);
       assertEquals(project1File.getParentFile().getAbsolutePath(), gitAccess.getWorkingCopy().getAbsolutePath());
     } finally {
-      ProjectHelper.getInstance().reset();
       project1File.getParentFile().delete();
       project2File.getParentFile().delete();
     }

@@ -31,6 +31,7 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.staging.OpenProjectDialog;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
@@ -54,17 +55,6 @@ public class ProjectHelper {
    * Logger for logging.
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectHelper.class);
-  
-  /**
-   * Plugin workspace API.
-   */
-  private static final StandalonePluginWorkspace PLUGIN_WS = 
-      (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-
-  /**
-   * Util access API.
-   */
-  private static final UtilAccess UTIL_ACCESS = PLUGIN_WS.getUtilAccess();
   
   /**
    * The last opened project in the Project side-view.
@@ -179,7 +169,8 @@ public class ProjectHelper {
    */
   private boolean switchToProjectRepoIfUserAgrees(File repositoryDir) {
     boolean repoChanged = false;
-    int response = PLUGIN_WS.showConfirmDialog(
+    PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+    int response = pluginWS.showConfirmDialog(
         TRANSLATOR.getTranslation(Tags.DETECTED_LOCAL_GIT_REPO),
         new StringBuilder(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE), repositoryDir.getAbsolutePath()))
           .append("\n\n").append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.ASK_LOAD_REPOSITORY), repositoryDir.getName())).toString(),
@@ -210,7 +201,8 @@ public class ProjectHelper {
     // Fast check to see if this is actually not a Git repository.
     final OptionsManager optionsManager = OptionsManager.getInstance();
     if (optionsManager.getAskUserToCreateNewRepoIfNotExist() && !optionsManager.getProjectsTestedForGit().contains(projectDir)) {
-      int response = PLUGIN_WS.showConfirmDialog(
+      StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      int response = pluginWS.showConfirmDialog(
           TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
           MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
           new String[] {
@@ -224,7 +216,7 @@ public class ProjectHelper {
           
           // save destination path in options if no one were saved.
           if(!optionsManager.getDestinationPaths().isEmpty()) {
-            final Optional<ProjectController> projectManager = Optional.ofNullable(PLUGIN_WS.getProjectManager());
+            final Optional<ProjectController> projectManager = Optional.ofNullable(pluginWS.getProjectManager());
             projectManager.ifPresent(pm -> {
               try {
                 optionsManager.saveDestinationPath(new File(pm.getCurrentProjectURL().toURI()).getParent()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
@@ -237,7 +229,7 @@ public class ProjectHelper {
           repoChanged = true;
         } catch (IllegalStateException | GitAPIException e) {
           LOGGER.debug(e.getMessage(),  e);
-          PLUGIN_WS.showErrorMessage("Failed to create a new repository.", e);
+          pluginWS.showErrorMessage("Failed to create a new repository.", e);
         }
       }
 
@@ -272,7 +264,8 @@ public class ProjectHelper {
   private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) {
     boolean repoChanged = false;
     if(stagingPanel != null) {
-      final File projectFile = UTIL_ACCESS.locateFile(newProjectURL);
+      UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+      final File projectFile = utilAccess.locateFile(newProjectURL);
       if(projectFile != null) {
         String projectDir = projectFile.getParent();
         if (!projectDir.equals(lastOpenedProject)) {
@@ -362,8 +355,10 @@ public class ProjectHelper {
     } else {
       Optional<URI> projectToLoad = getProjectToLoad(xprFiles);
       if (projectToLoad.isPresent()) {
-        File projectFileToLoad = UTIL_ACCESS.locateFile(projectToLoad.get().toURL());
-        PLUGIN_WS.getProjectManager().loadProject(projectFileToLoad);
+        StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+        UtilAccess utilAccess = pluginWS.getUtilAccess();
+        File projectFileToLoad = utilAccess.locateFile(projectToLoad.get().toURL());
+        pluginWS.getProjectManager().loadProject(projectFileToLoad);
         toReturn = LoadProjectOperationStatus.SUCCESS;
       }
     }
@@ -381,12 +376,14 @@ public class ProjectHelper {
   private Optional<URI> getProjectToLoad(final List<File> xprFiles) {
     Optional<URI> xprUri = Optional.empty();
     
-    Optional<URL> projectURLOpt = Optional.ofNullable(PLUGIN_WS.getProjectManager().getCurrentProjectURL());
+    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    UtilAccess utilAccess = pluginWS.getUtilAccess();
+    Optional<URL> projectURLOpt = Optional.ofNullable(pluginWS.getProjectManager().getCurrentProjectURL());
     URL currentXprURL = projectURLOpt.isPresent() && FileUtil.isURLForLocalFile(projectURLOpt.get()) 
         ? projectURLOpt.get() : null;
     if(!xprFiles.isEmpty() 
         && (currentXprURL == null
-            || !xprFiles.contains(UTIL_ACCESS.locateFile(currentXprURL)))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+            || !xprFiles.contains(utilAccess.locateFile(currentXprURL)))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
       if (xprFiles.size() == 1) {
         xprUri = Optional.of(xprFiles.get(0).toURI());
       } else {
