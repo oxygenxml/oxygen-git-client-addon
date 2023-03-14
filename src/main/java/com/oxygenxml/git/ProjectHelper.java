@@ -35,6 +35,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Contains methods for projects processing.
@@ -59,6 +60,11 @@ public class ProjectHelper {
    */
   private static final StandalonePluginWorkspace PLUGIN_WS = 
       (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+
+  /**
+   * Util access API.
+   */
+  private static final UtilAccess UTIL_ACCESS = PLUGIN_WS.getUtilAccess();
   
   /**
    * The last opened project in the Project side-view.
@@ -266,7 +272,7 @@ public class ProjectHelper {
   private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) {
     boolean repoChanged = false;
     if(stagingPanel != null) {
-      final File projectFile = PLUGIN_WS.getUtilAccess().locateFile(newProjectURL);
+      final File projectFile = UTIL_ACCESS.locateFile(newProjectURL);
       if(projectFile != null) {
         String projectDir = projectFile.getParent();
         if (!projectDir.equals(lastOpenedProject)) {
@@ -356,7 +362,7 @@ public class ProjectHelper {
     } else {
       Optional<URI> projectToLoad = getProjectToLoad(xprFiles);
       if (projectToLoad.isPresent()) {
-        File projectFileToLoad = PLUGIN_WS.getUtilAccess().locateFile(projectToLoad.get().toURL());
+        File projectFileToLoad = UTIL_ACCESS.locateFile(projectToLoad.get().toURL());
         PLUGIN_WS.getProjectManager().loadProject(projectFileToLoad);
         toReturn = LoadProjectOperationStatus.SUCCESS;
       }
@@ -380,7 +386,7 @@ public class ProjectHelper {
         ? projectURLOpt.get() : null;
     if(!xprFiles.isEmpty() 
         && (currentXprURL == null
-            || !xprFiles.contains(new File(currentXprURL.toExternalForm())))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+            || !xprFiles.contains(UTIL_ACCESS.locateFile(currentXprURL)))) { // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
       if (xprFiles.size() == 1) {
         xprUri = Optional.of(xprFiles.get(0).toURI());
       } else {
