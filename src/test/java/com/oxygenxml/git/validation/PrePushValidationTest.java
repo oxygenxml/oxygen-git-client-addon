@@ -480,7 +480,8 @@ public class PrePushValidationTest extends GitTestBase {
   }
   
   /**
-   * <p><b>Description:</b> This test checks the behavior when are not the same project in "Git Staging" and "Project View" and multiple Oxygen projects are detected in the git repository.</p>
+   * <p><b>Description:</b> Check that when the project loaded in the Project view is not from the current loaded repository and this repository contains multiple projects, 
+   * Oxygen will offer the possibility to choose which project to load in the Project view.</p>
    * 
    * <p><b>Bug ID:</b> EXM-51988</p>
    *
@@ -867,7 +868,7 @@ public class PrePushValidationTest extends GitTestBase {
   public void testPrePushValidationWhenNoMainFilesSupport() throws Exception {
     OptionsManager.getInstance().setValidateMainFilesBeforePush(true);
     OptionsManager.getInstance().setRejectPushOnValidationProblems(false);
-    // Disable main files support
+    
     commitOneFile(FIRST_LOCAL_TEST_REPOSITORY, "ttt.txt", "");
 
     // Configure the custom project controller.
