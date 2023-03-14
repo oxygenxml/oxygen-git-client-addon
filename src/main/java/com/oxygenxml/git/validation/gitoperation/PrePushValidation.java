@@ -141,38 +141,38 @@ public class PrePushValidation implements IPreOperationValidation {
    */
   private boolean validateProject(final StandalonePluginWorkspace standalonePluginWorkspace) {
     final URL currentProjectURL = standalonePluginWorkspace.getProjectManager().getCurrentProjectURL(); 
-    boolean performPush = true; 
+    boolean canPerformPush = true; 
   
     Optional<RevCommit> stash = Optional.empty();
     final File currentProjectFile = currentProjectURL != null ? 
         PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(currentProjectURL) : null;
     try {
       if(currentProjectFile == null || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
-        performPush = treatNotSameProjectCase();
+        canPerformPush = treatNotSameProjectCase();
       } 
       List<URL> mainFiles = new ArrayList<>(); 
       
-      if(performPush) {
+      if(canPerformPush) {
         mainFiles = computeMainFiles(); 
-        performPush = !mainFiles.isEmpty();
+        canPerformPush = !mainFiles.isEmpty();
       }
 
       // treat case with validation could not be performed because there are uncommited changes.
-      if(performPush && GitValidationUtil.hasUncommitedChanges(true)) { 
-        performPush = MessagePresenterProvider
+      if(canPerformPush && GitValidationUtil.hasUncommitedChanges(true)) { 
+        canPerformPush = MessagePresenterProvider
             .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
             .setQuestionMessage(TRANSLATOR.getTranslation(Tags.PUSH_VALIDATION_UNCOMMITED_CHANGES))
             .setOkButtonName(TRANSLATOR.getTranslation(Tags.STASH_AND_CONTINUE))
             .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
-        if(performPush) {
+        if(canPerformPush) {
           stash = Optional.ofNullable(GitAccess.getInstance().createStash(true, 
               TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION) + ": " + new Date()));
         }
       }
 
-      if(performPush) {
+      if(canPerformPush) {
         if(!validateMainFilesBeforePush(mainFiles)) {
-          performPush = showPushFilesProblems(MessageFormat.format(TRANSLATOR.getTranslation(
+          canPerformPush = showPushFilesProblems(MessageFormat.format(TRANSLATOR.getTranslation(
               stash.isPresent()? Tags.PUSH_VALIDATION_FAILED_WITH_STASH : Tags.PUSH_VALIDATION_FAILED), 
               TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION)));
 
@@ -189,7 +189,7 @@ public class PrePushValidation implements IPreOperationValidation {
       removeStashIfNeeded(stash);
     }
 
-    return performPush;
+    return canPerformPush;
   }
 
   /**
@@ -255,12 +255,12 @@ public class PrePushValidation implements IPreOperationValidation {
    * @return <code>true</code> if the push can be performed.
    */
   private boolean treatNotSameProjectCase() {
-    boolean performPush = MessagePresenterProvider 
+    boolean canPerformPush = MessagePresenterProvider 
         .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.WARNING)
         .setQuestionMessage(TRANSLATOR.getTranslation(Tags.NOT_SAME_PROJECT_MESSAGE))
         .setOkButtonName(TRANSLATOR.getTranslation(Tags.LOAD))
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
-    if(performPush) {
+    if(canPerformPush) {
       try {
         final LoadProjectOperationStatus projectLoadResult = tryToLoadProject();
         if(projectLoadResult == LoadProjectOperationStatus.PROJECT_NOT_FOUND) {
@@ -270,16 +270,16 @@ public class PrePushValidation implements IPreOperationValidation {
           .setOkButtonVisible(false)
           .setCancelButtonName(Tags.CLOSE)
           .buildAndShow();
-          performPush = false;
+          canPerformPush = false;
         } else if(projectLoadResult == LoadProjectOperationStatus.CANCELED_BY_USER) {
-          performPush = false;
+          canPerformPush = false;
         }
       } catch (NoRepositorySelected e) {
         LOGGER.error(e.getMessage(), e); // should not happen
       }
     }
     
-    return performPush;
+    return canPerformPush;
   }
 
   /**
