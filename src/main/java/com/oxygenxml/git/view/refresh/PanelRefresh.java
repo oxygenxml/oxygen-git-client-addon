@@ -238,7 +238,8 @@ public class PanelRefresh implements GitRefreshSupport {
 		} catch (PrivateRepositoryException e) {
 			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
 
-			 Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(GitAccess.getInstance().getHostName(),
+			 Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(
+			     GitAccess.getInstance().getHostName(),
 			     TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
 			if (loginInfoOpt.isPresent() && loginInfoOpt.get().getCredentials() != null) {
 				return fetch();
