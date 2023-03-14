@@ -77,6 +77,26 @@ public class ProjectHelper {
   private AtomicBoolean wasRepoJustChanged = new AtomicBoolean(false);
 
   /**
+   * The status of loading project operation.
+   * 
+   * @author alex_smarandache
+   */
+  public enum LoadProjectOperationStatus {
+    /**
+     * The project was loaded with success.
+     */
+    SUCCESS,
+    /**
+     * The project loading was stopped by the user.
+     */
+    CANCELED_BY_USER,
+    /**
+     * The project was not found so it doesn't be loaded.
+     */
+    PROJECT_NOT_FOUND
+  }
+  
+  /**
    * Hidden constructor.
    */
   private ProjectHelper() {
@@ -322,21 +342,19 @@ public class ProjectHelper {
    *  
    * @param repositoryDir The current repository main directory.
    * 
-   * @return <code>1</code> if the repository was loaded, 
-   * <code>0</code> if the user refuse the project loading, 
-   * <code>-1</code> if there was no project file to be loaded found.
+   * @return The status of loading project operation.
    */
-  public int openOxygenProjectFromLoadedRepository(final File repositoryDir) {
-    int toReturn = 0;
+  public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) {
+    LoadProjectOperationStatus toReturn = LoadProjectOperationStatus.CANCELED_BY_USER;
     List<File> xprFiles = FileUtil.findAllFilesByExtension(repositoryDir, ".xpr");
     if(xprFiles.isEmpty()) {
-      toReturn = -1;
+      toReturn = LoadProjectOperationStatus.PROJECT_NOT_FOUND;
     } else {
       URL xprUrl = getXprURLfromXprFiles(xprFiles);
       if (xprUrl != null) {
         final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
         pluginWS.getProjectManager().loadProject(pluginWS.getUtilAccess().locateFile(xprUrl));
-        toReturn = 1;
+        toReturn = LoadProjectOperationStatus.SUCCESS;
       }
     }
     return toReturn;

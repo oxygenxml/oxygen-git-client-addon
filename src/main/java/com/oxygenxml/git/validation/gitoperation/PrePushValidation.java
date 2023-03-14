@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.oxygenxml.git.ProjectHelper;
+import com.oxygenxml.git.ProjectHelper.LoadProjectOperationStatus;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
@@ -259,9 +260,9 @@ public class PrePushValidation implements IPreOperationValidation {
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
     if(performPush) {
       try {
-        final int projectLoadResult = ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(
+        final LoadProjectOperationStatus projectLoadResult = ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(
             GitAccess.getInstance().getRepository().getDirectory().getParentFile());
-        if(projectLoadResult == -1) {
+        if(projectLoadResult == LoadProjectOperationStatus.PROJECT_NOT_FOUND) {
           MessagePresenterProvider 
           .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
           .setMessage(TRANSLATOR.getTranslation(Tags.NO_XPR_FILE_FOUND_MESSAGE))
@@ -269,7 +270,7 @@ public class PrePushValidation implements IPreOperationValidation {
           .setCancelButtonName(Tags.CLOSE)
           .buildAndShow();
           performPush = false;
-        } else if(projectLoadResult == 0) {
+        } else if(projectLoadResult == LoadProjectOperationStatus.CANCELED_BY_USER) {
           performPush = false;
         }
       } catch (NoRepositorySelected e) {
