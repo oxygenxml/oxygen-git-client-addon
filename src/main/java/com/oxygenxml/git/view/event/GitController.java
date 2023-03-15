@@ -147,7 +147,7 @@ public class GitController extends GitControllerBase {
       LOGGER.debug("Pull failed with the following message: {}. Resources: {}", message, filesWithChanges);
     }
     MessagePresenterProvider.getBuilder(
-        translator.getTranslation(Tags.PULL_STATUS), DialogType.WARNING)
+        translator.getTranslation(Tags.PULL_STATUS), DialogType.ERROR)
         .setTargetFiles(filesWithChanges)
         .setMessage(message)
         .setCancelButtonVisible(false)
@@ -245,7 +245,7 @@ public class GitController extends GitControllerBase {
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
                 MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                        translator.getTranslation(Tags.MERGE))
+                        translator.getTranslation(Tags.MERGE).toLowerCase())
         );
       } catch (TransportException e) {
         String exMsg = e.getMessage();
