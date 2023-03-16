@@ -13,19 +13,19 @@
 			files that are
 			modified might become in conflict
 		</comment>
-		<val lang="en_US">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes.\n\n
+		<val lang="en_US">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.
 		</val>
-		<val lang="de_DE">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes.\n\n
+		<val lang="de_DE">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.</val>
-		<val lang="fr_FR">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes.\n\n
+		<val lang="fr_FR">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.
 		</val>
-		<val lang="ja_JP">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes.\n\n
+		<val lang="ja_JP">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.</val>
-		<val lang="nl_NL">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes.\n\n
+		<val lang="nl_NL">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.</val>
-		<val lang="zh_CN">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes.\n\n
+		<val lang="zh_CN">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.</val>
 	</key>
 	<key value="Pre_Push_Main_Files_Not_Found_Message">
