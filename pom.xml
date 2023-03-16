@@ -2,16 +2,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>com.oxygenxml</groupId>
 		<artifactId>oxygen-addons-superpom</artifactId>
 		<version>25.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>oxygen-git-client-addon</artifactId>
 	<version>5.2.0-SNAPSHOT</version>
-    
+
 	<developers>
 		<developer>
 			<name>Alex Jitianu</name>
@@ -66,6 +66,7 @@
 			<version>2.0.9</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
@@ -97,10 +98,10 @@
 			<version>6.3.0.202209071007-r</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-		    <groupId>org.eclipse.jgit</groupId>
-		    <artifactId>org.eclipse.jgit.ssh.apache.agent</artifactId>
-		    <version>6.3.0.202209071007-r</version>
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit.ssh.apache.agent</artifactId>
+			<version>6.3.0.202209071007-r</version>
 		</dependency>
 
 		<!-- JAXB -->
@@ -110,7 +111,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-        <!-- Awaitility -->
+		<!-- Awaitility -->
 		<dependency>
 			<groupId>org.awaitility</groupId>
 			<artifactId>awaitility</artifactId>
@@ -183,12 +184,13 @@
 
 	<build>
 		<plugins>
-		<!-- Override the one from oxygen-superpom which enforces compilatino to java 8. -->
-		      <plugin>
-        		<groupId>org.apache.maven.plugins</groupId>
-        		<artifactId>maven-compiler-plugin</artifactId>
-      		  </plugin>
-		    <plugin>
+			<!-- Override the one from oxygen-superpom which enforces compilatino 
+				to java 8. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<executions>
@@ -197,6 +199,11 @@
 						<phase>none</phase>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.8</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -314,6 +321,38 @@
 						</excludes>
 					</configuration>
 				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M5</version> <!-- or latest version -->
+					<configuration>
+						<argLine>${argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
+							--add-opens=java.base/java.net=ALL-UNNAMED
+							--add-opens=java.base/java.util=ALL-UNNAMED
+							--add-opens=java.base/java.util.regex=ALL-UNNAMED
+							--add-opens=java.base/sun.net.util=ALL-UNNAMED
+							--add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED
+							--add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED
+							--add-opens=java.desktop/java.awt=ALL-UNNAMED
+							--add-opens=java.desktop/java.awt.dnd=ALL-UNNAMED
+							--add-opens=java.desktop/javax.swing=ALL-UNNAMED
+							--add-opens=java.desktop/javax.swing.text=ALL-UNNAMED
+							--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED
+							--add-opens=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED
+							--add-opens=java.xml/com.sun.org.apache.xerces.internal.xni=ALL-UNNAMED
+							--add-opens=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
+							--add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED
+							--add-opens=javafx.web/com.sun.javafx.webkit=ALL-UNNAMED
+							--add-opens=java.base/java.io=ALL-UNNAMED
+							--add-opens=java.desktop/sun.awt=ALL-UNNAMED
+							--add-opens=java.desktop/sun.awt.util=ALL-UNNAMED
+							--add-opens=java.desktop/sun.java2d=ALL-UNNAMED
+							--add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+							--add-opens=java.xml/jdk.xml.internal=ALL-UNNAMED</argLine>
+					</configuration>
+				</plugin>
+
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
