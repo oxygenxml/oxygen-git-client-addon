@@ -9,8 +9,8 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxygenxml.git.auth.login.ILoginStatusInfo;
 import com.oxygenxml.git.auth.login.LoginMediator;
+import com.oxygenxml.git.auth.login.LoginStatusInfo;
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
@@ -96,7 +96,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
       LOGGER.debug("Reset credentials provider for: {}", uri);
     }
     if (isCredentialsPreviouslyRequested && !isUserCancelledLogin) {
-      final Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(host, getLoginFailureMessage());
+      final Optional<LoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(host, getLoginFailureMessage());
       if (loginInfoOpt.isPresent() && !loginInfoOpt.get().isCanceled()) {
         updateUsernameAndPassword(loginInfoOpt.get().getCredentials());
       } else {

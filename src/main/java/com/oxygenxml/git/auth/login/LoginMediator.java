@@ -59,24 +59,16 @@ public class LoginMediator {
    * @param host         The host for which to provide the credentials.
    * @param loginMessage The login message.
    * 
-   * @return An optional containing a @ILoginStatusInfo if login dialog was shown, or an empty optional otherwise.
+   * @return An optional containing a @LoginStatusInfo if login dialog was shown, or an empty optional otherwise.
    */
-  public synchronized Optional<ILoginStatusInfo> requestLogin(
+  public synchronized Optional<LoginStatusInfo> requestLogin(
       @NonNull final String host, @NonNull final String loginMessage) {
-    Optional<ILoginStatusInfo> toReturn = Optional.empty();
-    System.out.println("Intra in request");
+    Optional<LoginStatusInfo> toReturn = Optional.empty();
     if(!lastDialogWasCanceled) {
-      System.out.println("Inainte de afisare dialog");
-      try {
-        final LoginDialog loginDialog = new LoginDialog(host, loginMessage);
-        System.out.println(loginDialog);
-        loginDialog.setVisible(true);
-        System.out.println(loginDialog);
-        lastDialogWasCanceled = loginDialog.getResult() == OKCancelDialog.RESULT_CANCEL;
-        toReturn = Optional.of(new LoginStatusInfo(loginDialog.getCredentials(), lastDialogWasCanceled));
-      } catch (Throwable t) {
-        t.printStackTrace();
-      }
+      final LoginDialog loginDialog = new LoginDialog(host, loginMessage);
+      loginDialog.setVisible(true);
+      lastDialogWasCanceled = loginDialog.getResult() == OKCancelDialog.RESULT_CANCEL;
+      toReturn = Optional.of(new LoginStatusInfo(loginDialog.getCredentials(), lastDialogWasCanceled));
     }
     
     return toReturn;

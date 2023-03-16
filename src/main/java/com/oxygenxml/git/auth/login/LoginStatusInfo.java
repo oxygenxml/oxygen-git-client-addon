@@ -5,11 +5,11 @@ import org.eclipse.jgit.annotations.Nullable;
 import com.oxygenxml.git.options.CredentialsBase;
 
 /**
- * Concrete implementation for a @ILoginStatusInfo.
+ * Contains informations about login status.
  *
  * @author alex_smarandache
  */
-public class LoginStatusInfo implements ILoginStatusInfo {
+public class LoginStatusInfo {
   
   /**
    * The credentials obtained after login process.
@@ -33,13 +33,17 @@ public class LoginStatusInfo implements ILoginStatusInfo {
     this.isCanceled = isCanceled;
   }
 
-  @Override
+  /**
+   * @return The credentials obtained after login process.
+   */
   @Nullable
   public CredentialsBase getCredentials() {
     return credentials;
   }
 
-  @Override
+  /**
+   * @return <code>true</code> if the login was canceled.
+   */
   public boolean isCanceled() {
     return isCanceled;
   }

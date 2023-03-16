@@ -7,8 +7,8 @@ import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.junit.Test;
 
-import com.oxygenxml.git.auth.login.ILoginStatusInfo;
 import com.oxygenxml.git.auth.login.LoginMediator;
+import com.oxygenxml.git.auth.login.LoginStatusInfo;
 import com.oxygenxml.git.translator.Tags;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -30,14 +30,13 @@ public class LoginMediatorTest extends GitTestBase {
   @Test
   public void testTheLoginDialogApparences() {
     LoginMediator.getInstance().reset();
-    final ILoginStatusInfo[] loginInfo = new ILoginStatusInfo[1];
+    final LoginStatusInfo[] loginInfo = new LoginStatusInfo[1];
     SwingUtilities.invokeLater(() -> {
       loginInfo[0] = LoginMediator.getInstance().requestLogin("host", "loginMessage").orElse(null);
     });
 
     final OKCancelDialog loginDialog = (OKCancelDialog) findDialog(Tags.LOGIN_DIALOG_TITLE);
     assertNotNull(loginDialog);
-    System.out.println("Before Cancel");
     final JButton cancelButton = findFirstButton(loginDialog, Tags.CANCEL);
     assertNotNull(cancelButton);
     cancelButton.doClick();

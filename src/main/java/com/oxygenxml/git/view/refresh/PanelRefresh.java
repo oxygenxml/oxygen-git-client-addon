@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.ProjectHelper;
-import com.oxygenxml.git.auth.login.ILoginStatusInfo;
 import com.oxygenxml.git.auth.login.LoginMediator;
+import com.oxygenxml.git.auth.login.LoginStatusInfo;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -238,7 +238,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		} catch (PrivateRepositoryException e) {
 			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
 
-			 Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(
+			 Optional<LoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(
 			     GitAccess.getInstance().getHostName(),
 			     TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
 			if (loginInfoOpt.isPresent() && loginInfoOpt.get().getCredentials() != null) {

@@ -12,8 +12,8 @@ import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxygenxml.git.auth.login.ILoginStatusInfo;
 import com.oxygenxml.git.auth.login.LoginMediator;
+import com.oxygenxml.git.auth.login.LoginStatusInfo;
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
@@ -220,7 +220,7 @@ public class AuthUtil {
     boolean tryAgainOutside = false;
     if (retryLoginHere) {
       // Request new credentials.
-      final Optional<ILoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(hostName, loginMessage);
+      final Optional<LoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(hostName, loginMessage);
       tryAgainOutside = loginInfoOpt.isPresent() && loginInfoOpt.get().getCredentials() != null;
     } else {
       tryAgainOutside = true;
