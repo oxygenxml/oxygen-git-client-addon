@@ -90,7 +90,7 @@ public class PrePushValidation implements IPreOperationValidation {
   /**
    * The util access class.
    */
-  private static final UtilAccess UTIL_ACCESS = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+  private final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
   
 
   /**
@@ -151,7 +151,7 @@ public class PrePushValidation implements IPreOperationValidation {
   
     Optional<RevCommit> stash = Optional.empty();
     final File currentProjectFile = currentProjectURL != null ? 
-        UTIL_ACCESS.locateFile(currentProjectURL) : null;
+        utilAccess.locateFile(currentProjectURL) : null;
     try {
       if(currentProjectFile == null || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
         canPerformPush = treatNotSameProjectCase();
@@ -209,7 +209,7 @@ public class PrePushValidation implements IPreOperationValidation {
     try {
       mainFiles = getMainFiles();
       final List<File> notFoundMainFiles = mainFiles.stream().map(fileURL -> 
-      UTIL_ACCESS.locateFile(fileURL))
+      utilAccess.locateFile(fileURL))
           .filter(file -> !file.exists()).collect(Collectors.toList());
       if(!notFoundMainFiles.isEmpty()) {
         final Map<String, String> notFoundFilesWithTooltips = new HashMap<>();
