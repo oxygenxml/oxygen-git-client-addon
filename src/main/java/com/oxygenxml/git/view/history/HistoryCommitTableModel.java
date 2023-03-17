@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.eclipse.jgit.revplot.PlotCommit;
@@ -217,8 +218,14 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	    } else {
 	      allCommitsCharacteristicsFiltered = new ArrayList<>(allCommitsCharacteristics);
 	    }
+	    
 	    //update model
-	    fireTableDataChanged();
+	    if (SwingUtilities.isEventDispatchThread()) {
+	      fireTableDataChanged();
+	    } else {
+	      // Usually in automated tests
+	      SwingUtilities.invokeLater(this::fireTableDataChanged);
+	    }
 	  }
 	}
 	
