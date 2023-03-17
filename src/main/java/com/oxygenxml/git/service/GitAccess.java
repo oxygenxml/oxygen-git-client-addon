@@ -334,6 +334,11 @@ public class GitAccess {
 				this.taskTitle = title;
 				this.totalWork = totalWork;
 			}
+
+      @Override
+      public void showDuration(boolean enabled) {
+        // TODO Sorin Carbunaru. Do we need this?
+      }
 		};
   }
 	
