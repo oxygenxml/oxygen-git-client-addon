@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.util;
 
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 
+import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.exceptions.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -39,7 +40,7 @@ public class ExceptionHandlerUtil {
     if(e instanceof CheckoutConflictException) {
       MessagePresenterProvider.getBuilder(
           TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.WARNING)
-          .setTargetFiles(((CheckoutConflictException)e).getConflictingPaths())
+          .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips((((CheckoutConflictException)e).getConflictingPaths())))
           .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
           .setCancelButtonVisible(false)
           .buildAndShow(); 

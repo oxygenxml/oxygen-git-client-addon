@@ -1,9 +1,12 @@
 package com.oxygenxml.git.service.entities;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jgit.annotations.NonNull;
@@ -164,6 +167,27 @@ public class FileStatusUtil {
       LOGGER.error(e.getMessage(), e);
       return false;
     }
-
+  }
+  
+  /**
+   * This method is used to compute file tooltip for the file status paths.
+   * <br><br>
+   * You must assume that a repository is loaded in the internal git and the files are from this repository when you call this method.
+   * 
+   * @param files A collection with the relative location of the files.
+   *  
+   * @return A map where the <code>key</code> is the file path and the <code>value</code> is the tooltip.
+   */
+  public static Map<String, String> comuteFilesTooltips(@NonNull List<String> files) {
+    final Map<String, String> toReturn = new HashMap<>();
+    File repositoryDir;
+    try {
+      repositoryDir = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
+      files.forEach(filePath -> toReturn.put(filePath, new File(repositoryDir, filePath).getAbsolutePath()));
+    } catch (NoRepositorySelected e) {
+     LOGGER.error(e.getMessage(), e);
+    }
+    
+    return toReturn;
   }
 }

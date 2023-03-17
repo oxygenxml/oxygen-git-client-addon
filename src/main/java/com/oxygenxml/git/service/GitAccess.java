@@ -110,6 +110,7 @@ import com.oxygenxml.git.connection.ConnectionUtil;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.service.exceptions.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
@@ -1588,7 +1589,7 @@ public class GitAccess {
     } else if (gitStatus.hasUncommittedChanges()) {
       MessagePresenterProvider.getBuilder(
           TRANSLATOR.getTranslation(Tags.REVERT_COMMIT), DialogType.ERROR)
-          .setTargetFiles(new ArrayList<>(gitStatus.getUncommittedChanges()))
+          .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(gitStatus.getUncommittedChanges())))
           .setMessage(TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
           .setCancelButtonVisible(false)
           .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
@@ -2372,7 +2373,7 @@ public class GitAccess {
         final List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
         MessagePresenterProvider.getBuilder(
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE), DialogType.WARNING)
-            .setTargetFiles(new ArrayList<>(conflictingFiles))
+            .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
             .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE))
             .setCancelButtonVisible(false)
             .buildAndShow(); 
@@ -2523,7 +2524,7 @@ public class GitAccess {
         if(isPop) {
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
-              .setTargetFiles(conflictingList)
+              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingList))
               .setMessage(TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS))
               .setCancelButtonVisible(false)
               .buildAndShow();
