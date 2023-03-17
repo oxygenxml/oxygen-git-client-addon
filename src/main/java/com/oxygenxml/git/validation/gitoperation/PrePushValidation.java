@@ -47,6 +47,7 @@ import ro.sync.exml.workspace.api.results.ResultsManager;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Implements a pre-push validation.
@@ -85,6 +86,12 @@ public class PrePushValidation implements IPreOperationValidation {
    * The result manager.
    */
   private static final ResultsManager RESULT_MANAGER = PluginWorkspaceProvider.getPluginWorkspace().getResultsManager();
+  
+  /**
+   * The util access class.
+   */
+  private static final UtilAccess UTIL_ACCESS = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+  
 
   /**
    * Constructor.
@@ -144,7 +151,7 @@ public class PrePushValidation implements IPreOperationValidation {
   
     Optional<RevCommit> stash = Optional.empty();
     final File currentProjectFile = currentProjectURL != null ? 
-        PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(currentProjectURL) : null;
+        UTIL_ACCESS.locateFile(currentProjectURL) : null;
     try {
       if(currentProjectFile == null || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
         canPerformPush = treatNotSameProjectCase();
@@ -202,7 +209,7 @@ public class PrePushValidation implements IPreOperationValidation {
     try {
       mainFiles = getMainFiles();
       final List<File> notFoundMainFiles = mainFiles.stream().map(fileURL -> 
-      PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(fileURL))
+      UTIL_ACCESS.locateFile(fileURL))
           .filter(file -> !file.exists()).collect(Collectors.toList());
       if(!notFoundMainFiles.isEmpty()) {
         final Map<String, String> notFoundFilesWithTooltips = new HashMap<>();
