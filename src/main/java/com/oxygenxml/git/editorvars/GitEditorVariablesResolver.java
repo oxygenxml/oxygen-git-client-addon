@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jgit.annotations.NonNull;
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
@@ -166,7 +168,20 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
           wcPath);
     }
 
-    // Working copy URL
+    contentWithEditorVariables = resolveWcURL(contentWithEditorVariables, workingCopy); 
+    return contentWithEditorVariables;
+  }
+
+  /**
+   * 
+   * @param contentWithEditorVariables   A string of the content using editor variables.
+   * @param workingCopy The WC file.     If <code>null</code> this file will be computed.
+   * 
+   * @return The updated content with the editor variable resolved.
+   * 
+   * @throws NoRepositorySelected When no repository is selected
+   */
+  private String resolveWcURL(@NonNull String contentWithEditorVariables, @Nullable File workingCopy) throws NoRepositorySelected {
     if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR)) {
       String wcURL = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR);
       if (wcURL == null) {
@@ -180,12 +195,14 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
           LOGGER.error(e.getMessage(), e);
         }
       }
-      if  (wcURL != null) {
+      
+      if(wcURL != null) {
         contentWithEditorVariables = contentWithEditorVariables.replace(
             GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
             wcURL);
       }
-    } 
+    }
+    
     return contentWithEditorVariables;
   }
 
