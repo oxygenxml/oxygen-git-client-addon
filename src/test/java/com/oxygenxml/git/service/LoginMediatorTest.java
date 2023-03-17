@@ -1,9 +1,9 @@
 package com.oxygenxml.git.service;
 
-import javax.swing.SwingUtilities;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -44,24 +44,17 @@ public class LoginMediatorTest {
       Mockito.when(mockLoginDialog.getResult()).thenReturn(OKCancelDialog.RESULT_CANCEL);
       PowerMockito.whenNew(LoginDialog.class).withArguments(host, loginMessage).thenReturn(mockLoginDialog);
       LoginMediator.getInstance().reset();
-      
-      final LoginStatusInfo[] loginInfo = new LoginStatusInfo[1];
-      SwingUtilities.invokeLater(() -> {
-        loginInfo[0] = LoginMediator.getInstance().requestLogin(host, loginMessage).orElse(null);
-      });
 
-      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> loginInfo[0] != null
-          && loginInfo[0].isCanceled() && loginInfo[0].getCredentials() == null);
-      
-      SwingUtilities.invokeLater(() -> {
-        loginInfo[0] = LoginMediator.getInstance().requestLogin(host, loginMessage).orElse(null);
-      });
-     
-      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> loginInfo[0] == null);
+      LoginStatusInfo loginInfo = LoginMediator.getInstance().requestLogin(host, loginMessage).orElse(null);
+      assertNotNull(loginInfo);
+      assertTrue(loginInfo.isCanceled());
+      assertNull(loginInfo.getCredentials());
+
+      loginInfo = LoginMediator.getInstance().requestLogin(host, loginMessage).orElse(null);
+      assertNull(loginInfo);
     } finally {
       LoginMediator.getInstance().reset();
     } 
-    
   }
   
 }
