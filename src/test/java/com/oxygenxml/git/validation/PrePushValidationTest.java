@@ -1010,7 +1010,7 @@ public class PrePushValidationTest extends GitTestBase {
     assertFalse(ValidationManager.getInstance().checkPushValid());
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Error32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = [blabla]\n" + 
         "message = Pre_Push_Main_Files_Not_Found_Message\n" + 
         "questionMessage = null\n" + 
         "okButtonName = null\n" + 

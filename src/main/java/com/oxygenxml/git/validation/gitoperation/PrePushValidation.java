@@ -208,8 +208,7 @@ public class PrePushValidation implements IPreOperationValidation {
     List<URL> mainFiles = Collections.emptyList();
     try {
       mainFiles = getMainFiles();
-      final List<File> notFoundMainFiles = mainFiles.stream().map(fileURL -> 
-      utilAccess.locateFile(fileURL))
+      final List<File> notFoundMainFiles = mainFiles.stream().map(utilAccess::locateFile)
           .filter(file -> !file.exists()).collect(Collectors.toList());
       if(!notFoundMainFiles.isEmpty()) {
         final Map<String, String> notFoundFilesWithTooltips = new HashMap<>();
