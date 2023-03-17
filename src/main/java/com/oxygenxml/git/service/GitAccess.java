@@ -338,7 +338,7 @@ public class GitAccess {
 
       @Override
       public void showDuration(boolean enabled) {
-        // TODO Sorin Carbunaru. Do we need this?
+        // Not of interest
       }
 		};
   }
