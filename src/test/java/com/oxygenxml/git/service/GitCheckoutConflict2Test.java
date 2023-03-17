@@ -547,32 +547,37 @@ public class GitCheckoutConflict2Test extends GitTestBase {
             new String[] {"refs", "heads", "new_branch"}));
     node.setUserObject("refs/heads/new_branch");
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(node);
+    AbstractAction createBranchAction[] = new AbstractAction[1];
     for (AbstractAction abstractAction : actionsForNode) {
       if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
-        SwingUtilities.invokeLater(() -> abstractAction.actionPerformed(null));
-      
-        JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
-        assertNotNull(createBranchDialog);
-        JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
-        assertNotNull(checkoutBranchCheckBox);
-        SwingUtilities.invokeLater(() -> checkoutBranchCheckBox.setSelected(true));
-        flushAWT();
-
-        JTextField branchNameTextField = findComponentNearJLabel(
-            createBranchDialog,
-            translator.getTranslation(Tags.BRANCH_NAME) + ": ",
-            JTextField.class);
-        branchNameTextField.setText("a_new_day");
-
-        JButton okButton = findFirstButton(createBranchDialog, "Create");
-        if (okButton != null) {
-          okButton.setEnabled(true);
-          SwingUtilities.invokeLater(() -> okButton.doClick());
-          flushAWT();
-        }
+        createBranchAction[0] = abstractAction;
         break;
       }
     }
+    assertNotNull(createBranchAction[0]);
+
+    SwingUtilities.invokeLater(() -> createBranchAction[0].actionPerformed(null));
+    waitForScheduler();
+  
+    JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+    assertNotNull(createBranchDialog);
+    JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
+    assertNotNull(checkoutBranchCheckBox);
+    SwingUtilities.invokeLater(() -> checkoutBranchCheckBox.setSelected(true));
+    flushAWT();
+
+    JTextField branchNameTextField = findComponentNearJLabel(
+        createBranchDialog,
+        translator.getTranslation(Tags.BRANCH_NAME) + ": ",
+        JTextField.class);
+    assertNotNull(branchNameTextField);
+    branchNameTextField.setText("a_new_day");
+
+    JButton okButton = findFirstButton(createBranchDialog, "Create");
+    assertNotNull(okButton);
+    okButton.setEnabled(true);
+    SwingUtilities.invokeLater(() -> okButton.doClick());
+    flushAWT();
 
     Awaitility.waitAtMost(1000, TimeUnit.MILLISECONDS).until(() -> {
       final Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager()
@@ -599,8 +604,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
       }
     };
 
-    Awaitility.waitAtMost(1000, TimeUnit.MILLISECONDS).until(() -> 
-    GitAccess.DEFAULT_BRANCH_NAME.equals(branchName.get()));
+    Awaitility.waitAtMost(1000, TimeUnit.MILLISECONDS).untilAsserted(
+        () -> assertEquals(GitAccess.DEFAULT_BRANCH_NAME, branchName.get()));
 
     assertEquals("Cannot_checkout_new_branch_because_uncommitted_changes", errMsg[0]);
   }
