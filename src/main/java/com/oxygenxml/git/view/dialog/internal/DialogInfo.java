@@ -63,7 +63,7 @@ import java.util.Map;
     final StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("title = ").append(title).append('\n')
     .append("iconPath = ").append(iconPath).append('\n')
-    .append("targetFiles = ").append(targetFilesWithTooltips.keySet()).append('\n')
+    .append("targetFiles = ").append(targetFilesWithTooltips != null ? targetFilesWithTooltips.keySet() : null).append('\n')
     .append("message = ").append(message).append('\n')
     .append("questionMessage = ").append(questionMessage).append('\n')
     .append("okButtonName = ").append(okButtonName).append('\n')
