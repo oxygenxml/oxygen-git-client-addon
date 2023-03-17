@@ -180,12 +180,11 @@ public class FileStatusUtil {
    */
   public static Map<String, String> comuteFilesTooltips(@NonNull List<String> files) {
     final Map<String, String> toReturn = new HashMap<>();
-    File repositoryDir;
     try {
-      repositoryDir = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
-      files.forEach(filePath -> toReturn.put(filePath, new File(repositoryDir, filePath).getAbsolutePath()));
+      File repositoryDir = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
+      files.forEach(filePath -> toReturn.put(filePath, new File(repositoryDir, filePath).getAbsolutePath())); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     } catch (NoRepositorySelected e) {
-     LOGGER.error(e.getMessage(), e);
+      LOGGER.error(e.getMessage(), e);
     }
     
     return toReturn;
