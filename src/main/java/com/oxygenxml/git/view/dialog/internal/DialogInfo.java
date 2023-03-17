@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.dialog.internal;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,11 +27,6 @@ import java.util.Map;
    * <code>Value:</code> The tooltip for the file.
    */
   Map<String, String> targetFilesWithTooltips;
-  
-  /**
-   * Files that relate to the message.
-   */
-  List<String> targetFiles;
   
   /**
    * The dialog message.
@@ -69,7 +63,7 @@ import java.util.Map;
     final StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("title = ").append(title).append('\n')
     .append("iconPath = ").append(iconPath).append('\n')
-    .append("targetFiles = ").append(targetFiles).append('\n')
+    .append("targetFiles = ").append(targetFilesWithTooltips.keySet()).append('\n')
     .append("message = ").append(message).append('\n')
     .append("questionMessage = ").append(questionMessage).append('\n')
     .append("okButtonName = ").append(okButtonName).append('\n')

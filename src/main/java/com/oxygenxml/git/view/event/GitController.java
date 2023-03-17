@@ -27,6 +27,7 @@ import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
+import com.oxygenxml.git.service.entities.FileStatusUtil;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.RebaseConflictsException;
 import com.oxygenxml.git.service.exceptions.RebaseUncommittedChangesException;
@@ -129,7 +130,7 @@ public class GitController extends GitControllerBase {
     conflictingFilesList.addAll(response.getConflictingFiles());
     MessagePresenterProvider.getBuilder(
         translator.getTranslation(Tags.PULL_STATUS), DialogType.WARNING)
-        .setTargetFiles(conflictingFilesList)
+        .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingFilesList))
         .setMessage(translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS))
         .setCancelButtonVisible(false)
         .buildAndShow();       
@@ -148,7 +149,7 @@ public class GitController extends GitControllerBase {
     }
     MessagePresenterProvider.getBuilder(
         translator.getTranslation(Tags.PULL_STATUS), DialogType.ERROR)
-        .setTargetFiles(filesWithChanges)
+        .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(filesWithChanges))
         .setMessage(message)
         .setCancelButtonVisible(false)
         .buildAndShow();      
