@@ -1604,7 +1604,7 @@ public class GitAccess {
         if (!conflictingFiles.isEmpty()) {
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.REVERT_COMMIT), DialogType.WARNING)
-              .setTargetFiles(new ArrayList<>(conflictingFiles))
+              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
               .setMessage(TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS))
               .setCancelButtonVisible(false)
               .buildAndShow();         
@@ -2385,7 +2385,7 @@ public class GitAccess {
         final List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
         MessagePresenterProvider.getBuilder(
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.ERROR)
-            .setTargetFiles(new ArrayList<>(failingFiles))
+            .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(failingFiles)))
             .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
             .setCancelButtonVisible(false)
             .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
@@ -2532,7 +2532,7 @@ public class GitAccess {
         } else {
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
-              .setTargetFiles(conflictingList)
+              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingList))
               .setMessage(TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
                   + " "
                   + TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT))
@@ -2544,7 +2544,7 @@ public class GitAccess {
       case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
         MessagePresenterProvider.getBuilder(
             TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.ERROR)
-            .setTargetFiles(new ArrayList<>(getConflictingFiles()))
+            .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(getConflictingFiles())))
             .setMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                 + ". "
                 + TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST))
