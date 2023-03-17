@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.dialog.internal;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Contains necessary information for a @MessageDialog construction.
@@ -63,7 +64,8 @@ import java.util.Map;
     final StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("title = ").append(title).append('\n')
     .append("iconPath = ").append(iconPath).append('\n')
-    .append("targetFiles = ").append(targetFilesWithTooltips != null ? targetFilesWithTooltips.keySet() : null).append('\n')
+    .append("targetFiles = ").append(targetFilesWithTooltips != null ?
+        targetFilesWithTooltips.keySet().stream().sorted().collect(Collectors.toList()) : null).append('\n')
     .append("message = ").append(message).append('\n')
     .append("questionMessage = ").append(questionMessage).append('\n')
     .append("okButtonName = ").append(okButtonName).append('\n')
