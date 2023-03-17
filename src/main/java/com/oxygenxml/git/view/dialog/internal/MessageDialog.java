@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -171,43 +168,23 @@ public class MessageDialog extends OKCancelDialog {
     }
     
     // Files
-    if (info.targetFiles != null || info.targetFilesWithTooltips != null) {
+    if (info.targetFilesWithTooltips != null) {
       DefaultListModel<String> model = new DefaultListModel<>();
       JList<String> filesList = null;
-      if(info.targetFiles != null) {
-        Collections.sort(info.targetFiles, String.CASE_INSENSITIVE_ORDER);
-        for (String listElement : info.targetFiles) {
-          model.addElement(listElement);
-        }
-        filesList = new JList<>(model);
-        filesList.setCellRenderer(new DefaultListCellRenderer() {
-          @Override
-          public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            try {
-              File workingCopyAbsolute = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
-              File absoluteFile = new File(workingCopyAbsolute, (String) value); // NOSONAR: no vulnerability here
-              setToolTipText(absoluteFile.toString());
-            } catch (NoRepositorySelected e) {
-              LOGGER.error(e.getMessage(), e);
-            }
-            return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-          }
-        });
-      } else {
-        final List<String> filesRelativePath = new ArrayList<>(info.targetFilesWithTooltips.keySet());
-        Collections.sort(filesRelativePath, String.CASE_INSENSITIVE_ORDER);
-        for (String listElement : filesRelativePath) {
-          model.addElement(listElement);
-        }
-        filesList = new JList<>(model);
-        filesList.setCellRenderer(new DefaultListCellRenderer() {
-          @Override
-          public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            setToolTipText(info.targetFilesWithTooltips.get((String)value));
-            return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-          }
-        });
+      final List<String> filesRelativePath = new ArrayList<>(info.targetFilesWithTooltips.keySet());
+      Collections.sort(filesRelativePath, String.CASE_INSENSITIVE_ORDER);
+      for (String listElement : filesRelativePath) {
+        model.addElement(listElement);
       }
+      filesList = new JList<>(model);
+      filesList.setCellRenderer(new DefaultListCellRenderer() {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+          setToolTipText(info.targetFilesWithTooltips.get(value));
+          return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        }
+      });
+    
       
       JScrollPane scollPane = new JScrollPane(filesList);
       scollPane.setPreferredSize(new Dimension(FILES_SCROLLPANE_PREFERRED_WIDTH, FILES_SCROLLPANE_PREFERRED_HEIGHT));
@@ -247,7 +224,7 @@ public class MessageDialog extends OKCancelDialog {
     }      
     
     getContentPane().add(panel);
-    setResizable(info.targetFiles != null && info.targetFiles.isEmpty());
+    setResizable(info.targetFilesWithTooltips != null && info.targetFilesWithTooltips.isEmpty());
     setMinimumSize(new Dimension(MessageDialog.WARN_MESSAGE_DLG_MINIMUM_WIDTH, MessageDialog.WARN_MESSAGE_DLG_MINIMUM_HEIGHT));
     pack();
     
