@@ -239,7 +239,7 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(ValidationManager.getInstance().checkPushValid());
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Warning32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = Failed_Push_Validation_Message\n" + 
         "questionMessage = null\n" + 
         "okButtonName = Push_Anyway\n" + 
@@ -386,7 +386,7 @@ public class PrePushValidationTest extends GitTestBase {
     assertFalse(ValidationManager.getInstance().checkPushValid());
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Error32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = Failed_Push_Validation_Message\n" + 
         "questionMessage = null\n" + 
         "okButtonName = null\n" + 
@@ -469,7 +469,7 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(ValidationManager.getInstance().checkPushValid());
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Warning32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = null\n" + 
         "questionMessage = Not_Same_Project_Message\n" + 
         "okButtonName = Load\n" + 
@@ -564,7 +564,7 @@ public class PrePushValidationTest extends GitTestBase {
     Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> wasValidationPassed[0]);
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Warning32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = null\n" + 
         "questionMessage = Not_Same_Project_Message\n" + 
         "okButtonName = Load\n" + 
@@ -643,7 +643,7 @@ public class PrePushValidationTest extends GitTestBase {
     assertTrue(ValidationManager.getInstance().checkPushValid());
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Warning32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = null\n" + 
         "questionMessage = Push_Validation_Uncommited_Changes\n" + 
         "okButtonName = Stash_And_Continue\n" + 
@@ -927,7 +927,7 @@ public class PrePushValidationTest extends GitTestBase {
     assertFalse(ValidationManager.getInstance().checkPushValid());
     final String expectedDialog = "title = Pre_Push_Validation\n" + 
         "iconPath = /images/Error32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = Main_Files_Support_Not_Enabled\n" + 
         "questionMessage = null\n" + 
         "okButtonName = null\n" + 
