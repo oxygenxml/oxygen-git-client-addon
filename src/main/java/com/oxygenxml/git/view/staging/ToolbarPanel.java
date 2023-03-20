@@ -266,7 +266,7 @@ public class ToolbarPanel extends JPanel {
     BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
     if (branchInfo.isDetached()) {
-      updateTooltipsForDetachedHead(repo, currentBranchName);
+      updateTooltipsForDetachedHead();
     } else {
       updateTooltipsForCurrentBranch(repo, currentBranchName);
     }
@@ -375,11 +375,8 @@ public class ToolbarPanel extends JPanel {
 
   /**
    * This method is used to update tooltips for detached head case.
-   * 
-   * @param repo                The current repository.
-   * @param currentBranchName   The current branch name.
    */
-  private void updateTooltipsForDetachedHead(Repository repo, String currentBranchName) {
+  private void updateTooltipsForDetachedHead() {
     SwingUtilities.invokeLater(() -> {
       pushButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
       pullMenuButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
