@@ -309,55 +309,51 @@ public class HiDPIUtil {
    * @param child                  The component to compute preferred size.
    * @param preferredSize          The initial preferredSize.
    */
-  private static void computePreferredSize(boolean updatePreferredWidth,
-      boolean updatePreferredHeight, float scalingFactor, Component child, Dimension preferredSize) {
-    if (child instanceof JComboBox || child instanceof JTextField 
-        || child instanceof JTextArea || child instanceof JSpinner) {
+  private static void computePreferredSize(
+      boolean updatePreferredWidth,
+      boolean updatePreferredHeight,
+      float scalingFactor,
+      Component child,
+      Dimension preferredSize) {
+    if (shouldComputePrefferedSizeForComponent(child)) {
       if (updatePreferredWidth) {
         // For text fields and combo boxes, only the width should be updated
         child.setPreferredSize(new Dimension(
             (int) (preferredSize.width * scalingFactor),
             preferredSize.height));
       }
-    } else {
-      if (updatePreferredWidth) {
-        boolean update = true;
-        if (child instanceof JPanel) {
-          LayoutManager layout = ((JPanel) child).getLayout();
-          update = !(layout instanceof CardLayout);
-        }
-        if (update) {
-          if (updatePreferredHeight) {
-            // Update preferred width & height
-            child.setPreferredSize(getHiDPIDimension(preferredSize, scalingFactor));
-          } else {
-            // Update only width
-            child.setPreferredSize(new Dimension((int) (preferredSize.width * scalingFactor), preferredSize.height));
-          }
-        }
-      } else {
-        forcePreferredHeightUpdate(updatePreferredHeight, scalingFactor, child, preferredSize);
+    } else if (updatePreferredWidth) {
+      boolean update = true;
+      if (child instanceof JPanel) {
+        LayoutManager layout = ((JPanel) child).getLayout();
+        update = !(layout instanceof CardLayout);
       }
-    }
-  }
-
-  /**
-   * Update only the preferred height.
-   * 
-   * @param updatePreferredHeight <code>true<code> to update preferred height.
-   * @param scalingFactor         The scaling factor.
-   * @param child                 The child of the main component.
-   * @param preferredSize         The preferred size of the main component. 
-   */
-  private static void forcePreferredHeightUpdate(boolean updatePreferredHeight, float scalingFactor, Component child,
-      Dimension preferredSize) {
-    if (updatePreferredHeight) {
+      if (update) {
+        if (updatePreferredHeight) {
+          // Update preferred width & height
+          child.setPreferredSize(getHiDPIDimension(preferredSize, scalingFactor));
+        } else {
+          // Update only width
+          child.setPreferredSize(new Dimension((int) (preferredSize.width * scalingFactor), preferredSize.height));
+        }
+      }
+    } else if (updatePreferredHeight) {
       child.setPreferredSize(new Dimension(
           preferredSize.width,
           (int) (preferredSize.height * scalingFactor)));
     }
   }
-  
+
+  /**
+   * @param comp The component.
+   * 
+   * @return <code>true</code> if we should compute the preferred size for the given component.
+   */
+  private static boolean shouldComputePrefferedSizeForComponent(Component comp) {
+    return comp instanceof JComboBox || comp instanceof JTextField 
+        || comp instanceof JTextArea || comp instanceof JSpinner;
+  }
+
   /**
    * Update gaps between components.
    * 

@@ -432,7 +432,7 @@ public class BranchMergingTest extends GitTestBase {
     
     assertEquals("title = Squash_Merge\n" + 
         "iconPath = /images/Info32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = Squash_No_Commits_Message\n" + 
         "questionMessage = null\n" + 
         "okButtonName = null\n" + 
@@ -539,7 +539,7 @@ public class BranchMergingTest extends GitTestBase {
     final String mergeBranchesDialogExpected = 
         "title = Merge_Branches\n" + 
         "iconPath = /images/Help32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = null\n" + 
         "questionMessage = Merge_Info\n" + 
         "\n" + 
@@ -553,7 +553,7 @@ public class BranchMergingTest extends GitTestBase {
     final String mergeConflictDialogExpected = 
         "title = Merge_Conflicts_Title\n" + 
         "iconPath = /images/Warning32.png\n" + 
-        "targetFiles = [local2.txt, local1.txt]\n" + 
+        "targetFiles = [local1.txt, local2.txt]\n" + 
         "message = Merge_Conflicts_Message\n" + 
         "questionMessage = null\n" + 
         "okButtonName = null\n" + 
@@ -656,7 +656,7 @@ public class BranchMergingTest extends GitTestBase {
     final String mergeBranchesDialogExpected = 
         "title = Merge_Branches\n" + 
         "iconPath = /images/Help32.png\n" + 
-        "targetFiles = null\n" + 
+        "targetFiles = []\n" + 
         "message = null\n" + 
         "questionMessage = Merge_Info\n" + 
         "\n" + 

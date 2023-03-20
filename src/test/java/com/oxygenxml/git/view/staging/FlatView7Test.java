@@ -66,7 +66,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		branchesCombo.refresh();
     flushAWT();
     refreshSupport.call();
-    flushAWT();
+    waitForSchedulerBetter();
 
 		assertEquals(
 				"<html>Cannot_pull<br>No_remote_branch.</html>",
@@ -86,7 +86,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		branchesCombo.refresh();
 		flushAWT();
 		refreshSupport.call();
-		flushAWT();
+		waitForSchedulerBetter();
 
 		// Tooltip texts changed
 		assertEquals(
@@ -116,8 +116,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		GitAccess.getInstance().fetch();
 		branchesCombo.refresh();
 		refreshSupport.call();
-		flushAWT();
-		sleep(1000);
+		waitForSchedulerBetter();
 		
 		// Tooltip texts changed again
 		String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (2 files)"
@@ -152,7 +151,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		branchesCombo.refresh();
 		flushAWT();
     refreshSupport.call();
-    flushAWT();
+    waitForSchedulerBetter();
 
 		expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
@@ -195,7 +194,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		branchesCombo.refresh();
 		flushAWT();
     refreshSupport.call();
-		flushAWT();
+    waitForSchedulerBetter();
 
 		expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000...<br>&#x25AA; Date, Hour "
@@ -245,8 +244,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		branchesCombo.refresh();
     flushAWT();
     refreshSupport.call();
-    flushAWT();
-    sleep(1000);
+    waitForSchedulerBetter();
 
 		expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
 				+ "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFile45w.txt<br>&#x25AA; Date, Hour "

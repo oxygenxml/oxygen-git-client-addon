@@ -44,6 +44,7 @@ public class MessageDialog extends OKCancelDialog {
   /**
    * Logger for logging.
    */
+  @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(MessageDialog.class.getName());
   
   /**

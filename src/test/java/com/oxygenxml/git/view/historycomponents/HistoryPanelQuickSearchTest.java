@@ -10,6 +10,7 @@ package com.oxygenxml.git.view.historycomponents;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTable;
 
@@ -49,6 +50,7 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("nimic");
+      flushAWT();
       
       String dump = dumpHistory(model.getAllCommits(), true);
       assertEquals("", dump);
@@ -72,9 +74,10 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
+      flushAWT();
       final String expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n";
-      Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
-        expected.equals(dumpHistory(model.getAllCommits(), true))
+      Awaitility.await().atMost(Duration.ONE_SECOND).until(
+          () -> expected.equals(dumpHistory(model.getAllCommits(), true))
       ); 
   }
   
@@ -97,14 +100,18 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       //we search the message, but the message is not with uppercase
       model.filterChanged("FIRST COMMIT");
+      flushAWT();
       
-      String dump = dumpHistory(model.getAllCommits(), true);
-      String expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n";
-      assertEquals(expected, dump);
+      Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+          String dump = dumpHistory(model.getAllCommits(), true);
+          String expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n";
+          assertEquals(expected, dump);
+      });
+      
       
       //we go back to the original list
       model.filterChanged("");
-      
+      flushAWT();
       final String expectedAll = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [1] ]\n" + 
           "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n" + 
           "";
@@ -114,6 +121,8 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       
       //we search for message but not in the right order 
       model.filterChanged("commit First");
+      flushAWT();
+      String expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n";
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
         expected.equals(dumpHistory(model.getAllCommits(), true))
       );
@@ -143,9 +152,14 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
-      JTable affectedFiles = historyPanel.getAffectedFilesTable();
+      flushAWT();
       
-      selectAndAssertRevision(historyTable, affectedFiles, 0, "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]");
+      JTable affectedFiles = historyPanel.getAffectedFilesTable();
+      selectAndAssertRevision(
+          historyTable,
+          affectedFiles,
+          0,
+          "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]");
       
       CommitCharacteristics commitDetails = ((HistoryCommitTableModel)historyTable.getModel()).getAllCommits().get(0);
       List<FileStatus> changes = null;
@@ -159,6 +173,7 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
         changes = GitAccess.getInstance().getUnstagedFiles();
       }
       assertEquals(changes.size(), affectedFiles.getRowCount());
+      
       for(int i = 0; i < changes.size(); i++) {
         assertEquals(changes.get(i), affectedFiles.getValueAt(i, 1));
       }

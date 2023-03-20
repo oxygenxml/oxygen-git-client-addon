@@ -222,7 +222,7 @@ public class BranchSelectionCombo extends JComboBox<String> {
         branchTooltip = getBranchTooltip(pullsBehind, pushesAhead, currentBranchName);
       }
       String branchTooltipFinal = branchTooltip;
-      this.setToolTipText(branchTooltipFinal);
+      SwingUtilities.invokeLater(() ->this.setToolTipText(branchTooltipFinal));
     }
   }
 

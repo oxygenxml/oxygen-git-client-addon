@@ -13,6 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.MenuElement;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -87,7 +88,8 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
    */
   protected void selectAndAssertRevision(JTable historyTable, JTable affectedTable, int row, String expected) {
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-    historyTable.getSelectionModel().clearSelection();
+    SwingUtilities.invokeLater(() -> historyTable.getSelectionModel().clearSelection());
+    
     Semaphore s = new Semaphore(0);
     TableModelListener l = new TableModelListener() {
       @Override
@@ -99,7 +101,8 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
     };
     affectedTable.getModel().addTableModelListener(l);
     
-    historyTable.getSelectionModel().setSelectionInterval(row, row);
+    SwingUtilities.invokeLater(() -> historyTable.getSelectionModel().setSelectionInterval(row, row));
+    
     // There is a timer involved.
     try {
       s.tryAcquire(3, TimeUnit.SECONDS);
