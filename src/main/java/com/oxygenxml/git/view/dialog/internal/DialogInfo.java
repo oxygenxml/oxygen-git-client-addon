@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.dialog.internal;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -64,8 +66,7 @@ import java.util.stream.Collectors;
     final StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("title = ").append(title).append('\n')
     .append("iconPath = ").append(iconPath).append('\n')
-    .append("targetFiles = ").append(targetFilesWithTooltips != null ?
-        targetFilesWithTooltips.keySet().stream().sorted().collect(Collectors.toList()) : null).append('\n')
+    .append("targetFiles = ").append(getSortedTargetFilesString()).append('\n')
     .append("message = ").append(message).append('\n')
     .append("questionMessage = ").append(questionMessage).append('\n')
     .append("okButtonName = ").append(okButtonName).append('\n')
@@ -74,6 +75,18 @@ import java.util.stream.Collectors;
     .append("showCancelButton = ").append(showCancelButton);
     
     return strBuilder.toString();
+  }
+
+  /**
+   * @return the list of target files as sorted strings.
+   */
+  private List<String> getSortedTargetFilesString() {
+    return targetFilesWithTooltips != null ?
+        targetFilesWithTooltips.keySet()
+            .stream()
+            .sorted((s1, s2) -> s1.compareTo(s2))
+            .collect(Collectors.toList()) 
+                : Collections.emptyList();
   }
    
 }
