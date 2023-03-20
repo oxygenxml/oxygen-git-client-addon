@@ -90,8 +90,8 @@ public class OperationUtil {
    * @author alex_smarandache
    *
    */
-  private static class OperationTimer extends Timer 
-  {
+  private static class OperationTimer extends Timer {
+    
     /**
      * <code>true</code> if the operation is still in progress.
      */
