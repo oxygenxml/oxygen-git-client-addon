@@ -864,5 +864,19 @@ public class OptionsManager {
     newUserCredentialsList.setCredentials(credentials);
     getOptions().setUserCredentialsList(newUserCredentialsList);
   }
+  
+  /**
+   * @return The current branch name.
+   */
+  public String getCurrentBranch() {
+    return getOptions().getCurrentBranch();
+  }
+
+  /**
+   * @param currentBranch The new current branch to be set.
+   */
+  public void setCurrentBranch(final String currentBranch) {
+    getOptions().setCurrentBranch(currentBranch);
+  }
 
 }

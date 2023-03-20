@@ -76,7 +76,53 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  */
 public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension, HistoryController, BranchManagementViewPresenter {
 
-	/**
+  /**
+   * Treats different events provided by Git operations.
+   * 
+   * @author alex_smarandache
+   */
+	private final class GitOperationEventListener extends GitEventAdapter {
+    @Override
+    public void operationAboutToStart(GitEventInfo info) {
+      if(info.getGitOperation() == GitOperation.PUSH 
+          || info.getGitOperation() == GitOperation.PULL
+          || info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+        LoginMediator.getInstance().reset();
+      }
+    
+    }
+
+    @Override
+    public void operationSuccessfullyEnded(GitEventInfo info) {
+    	final GitOperation operation = info.getGitOperation();
+    	if (GIT_OPERATIONS_WITH_REQUIRED_REFRESH.contains(operation)) {
+    		gitRefreshSupport.call();
+    		if (operation == GitOperation.CHECKOUT || operation == GitOperation.MERGE) { // this operation need a super-refresh
+    			try {
+    				FileUtil.refreshProjectView();
+    			} catch (NoRepositorySelected e) {
+    				LOGGER.debug(e.getMessage(), e);
+    			}
+    		} else if (operation == GitOperation.OPEN_WORKING_COPY) {
+    		  OptionsManager.getInstance().setCurrentBranch(""); // reset branch
+    		  if(GitAccess.getInstance().getBranchInfo().isDetached()) {
+            treatDetachedHead((WorkingCopyGitEventInfo) info);
+          }
+    		}
+    				
+    	}
+    }
+
+    @Override
+    public void operationFailed(GitEventInfo info, Throwable t) {
+    	final GitOperation operation = info.getGitOperation();
+    	if (operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.RESET_TO_COMMIT) {
+    		gitRefreshSupport.call();
+    	}
+    }
+  }
+
+  /**
 	 * i18n
 	 */
 	private static Translator translator = Translator.getInstance();
@@ -218,6 +264,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  this.pluginWorkspaceAccess = pluginWS;
 	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
+		OptionsManager.getInstance().setCurrentBranch("");
 		ProjectHelper.getInstance().installUpdateProjectOnChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
 		
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
@@ -329,44 +376,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * Install a listener for git operations.
 	 */
   private void installGitOperationsListener() {
-    gitController.addGitListener(new GitEventAdapter() {
-		  
-		  @Override
-      public void operationAboutToStart(GitEventInfo info) {
-		    if(info.getGitOperation() == GitOperation.PUSH 
-		        || info.getGitOperation() == GitOperation.PULL
-		        || info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-		      LoginMediator.getInstance().reset();
-		    }
-		  
-      }
-		  
-			@Override
-			public void operationSuccessfullyEnded(GitEventInfo info) {
-				final GitOperation operation = info.getGitOperation();
-				if (GIT_OPERATIONS_WITH_REQUIRED_REFRESH.contains(operation)) {
-					gitRefreshSupport.call();
-					if (operation == GitOperation.CHECKOUT || operation == GitOperation.MERGE) { // this operation need a super-refresh
-						try {
-							FileUtil.refreshProjectView();
-						} catch (NoRepositorySelected e) {
-							LOGGER.debug(e.getMessage(), e);
-						}
-					} else if (operation == GitOperation.OPEN_WORKING_COPY
-							&& GitAccess.getInstance().getBranchInfo().isDetached()) {
-						treatDetachedHead((WorkingCopyGitEventInfo) info);
-					}
-				}
-			}
-
-			@Override
-			public void operationFailed(GitEventInfo info, Throwable t) {
-				final GitOperation operation = info.getGitOperation();
-				if (operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.RESET_TO_COMMIT) {
-					gitRefreshSupport.call();
-				}
-			}
-		});
+    gitController.addGitListener(new GitOperationEventListener());
   }
   
 	/**

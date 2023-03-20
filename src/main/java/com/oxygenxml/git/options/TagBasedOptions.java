@@ -594,5 +594,15 @@ public class TagBasedOptions implements Options {
   public boolean getAskUserToCreateNewRepoIfNotExist() {
     return Boolean.parseBoolean(wsOptionsStorage.getOption(OptionTags.ASK_USER_TO_CREATE_REPO, FALSE));
   }
+
+  @Override
+  public String getCurrentBranch() {
+    return wsOptionsStorage.getOption(OptionTags.CURRENT_BRANCH, "");
+  }
+
+  @Override
+  public void setCurrentBranch(final String currentBranch) {
+    wsOptionsStorage.setOption(OptionTags.CURRENT_BRANCH, currentBranch);
+  }
   
 }

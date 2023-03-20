@@ -127,6 +127,12 @@ public class JaxbOptions implements Options {
 	private String passphrase = "";
 	
 	/**
+   * The current branch.
+   */
+  @XmlElement(name = "currentBranch")
+  private String currentBranch = "";
+	
+	/**
 	 * The view mode for the staged resources: tree or table.
 	 */
 	@XmlElement(name = "stagedResViewMode")
@@ -629,6 +635,16 @@ public class JaxbOptions implements Options {
   @Override
   public boolean getAskUserToCreateNewRepoIfNotExist() {
     return askUserToCreateNewRepoIfNotExist;
+  }
+
+  @Override
+  public String getCurrentBranch() {
+    return currentBranch;
+  }
+
+  @Override
+  public void setCurrentBranch(final String currentBranch) {
+    this.currentBranch = currentBranch;
   }
 
 }

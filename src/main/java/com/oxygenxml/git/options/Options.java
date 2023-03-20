@@ -352,4 +352,14 @@ public interface Options {
    * @return <code>true</code> to ask the user to create a new repository if it not exists.
    */
   public boolean getAskUserToCreateNewRepoIfNotExist();
+  
+  /**
+   * @return The current branch name.
+   */
+  public String getCurrentBranch();
+  
+  /**
+   * @param currentBranch The new current branch to be set.
+   */
+  public void setCurrentBranch(final String currentBranch);
 }

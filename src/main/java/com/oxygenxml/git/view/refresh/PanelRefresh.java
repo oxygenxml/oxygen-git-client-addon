@@ -107,6 +107,12 @@ public class PanelRefresh implements GitRefreshSupport {
 			try {
 				Repository repository = gitAccess.getRepository();
 				if (repository != null) {
+				  
+				  final String currentBranch = repository.getBranch();
+				  if(!Objects.equals(currentBranch, OptionsManager.getInstance().getCurrentBranch())) {
+				    OptionsManager.getInstance().setCurrentBranch(currentBranch);
+				  }
+				  
 					if (stagingPanel != null) {
 					  // refresh the states of the actions
 					  stagingPanel.getGitActionsManager().refreshActionsStates();

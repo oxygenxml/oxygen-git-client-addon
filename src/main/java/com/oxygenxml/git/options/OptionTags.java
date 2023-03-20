@@ -165,5 +165,10 @@ public class OptionTags {
    * The tag option to ask user to create a new repository if ti was not created before.
    */
   public static final String ASK_USER_TO_CREATE_REPO = "com.oxygenxml.git.ask.user.to.create.repo";
+  
+  /**
+   * The tag option for current branch.
+   */
+  public static final String CURRENT_BRANCH = "com.oxygenxml.git.current.branch";
 
 }
