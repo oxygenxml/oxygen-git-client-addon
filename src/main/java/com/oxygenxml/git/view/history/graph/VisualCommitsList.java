@@ -6,7 +6,7 @@ import org.eclipse.jgit.revplot.PlotCommitList;
 import org.eclipse.jgit.revplot.PlotLane;
 
 /**
- * A list of commits that is being rendered visualy using different colors for each commit lane.
+ * A list of commits that is being rendered visually using different colors for each commit lane.
  * 
  * @author alex_smarandache
  *
@@ -51,7 +51,6 @@ public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLa
 	 * @author alex_smarandache
 	 *
 	 */
-	@SuppressWarnings("serial")
 	public static class VisualLane extends PlotLane { 
 		transient Color color;
 
