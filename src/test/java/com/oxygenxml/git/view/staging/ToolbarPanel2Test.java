@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view;
+package com.oxygenxml.git.view.staging;
 
 import java.io.File;
 
@@ -8,26 +8,21 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.staging.StagingPanel;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
 
 import ro.sync.basic.io.FileSystemUtil;
 
 /**
  * Toolbar panel tests.
  */
-public class ToolbarPanelTest extends GitTestBase {
+public class ToolbarPanel2Test extends GitTestBase {
   
   private GitAccess gitAccess = GitAccess.getInstance();
   private StagingPanel stagingPanel;
-  
-  
   
   private void createRepo(String remote, String local) throws Exception {
     createRepository(remote);
     Repository remoteRepository = gitAccess.getRepository();
 
-    //Creates the local repository.
     createRepository(local);
     Repository localRepository = gitAccess.getRepository();
 
