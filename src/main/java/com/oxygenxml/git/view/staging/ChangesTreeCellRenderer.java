@@ -18,13 +18,11 @@ import com.oxygenxml.git.view.util.RenderingInfo;
 import com.oxygenxml.git.view.util.TreeUtil;
 
 /**
- * Renderer for the leafs icon in the tree, based on the git change type file
- * status.
+ * Renderer for the leafs icon in the tree, based on the git change type file status.
  * 
  * @author Beniamin Savu
  *
  */
-@SuppressWarnings("java:S110")
 public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Default selection color.
@@ -48,15 +46,9 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
    * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
    */
 	@Override
-	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
-			int row, boolean hasFocus) {
-
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-
-		final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-		
-		label = getUpdatedJLabel(tree, sel, row, label, model);
-		
+		label = getUpdatedJLabel(tree, sel, row, label);
     return label;
 	}
 
@@ -67,17 +59,17 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 	 * @param sel    <code>true</code> when selected.
 	 * @param row    The current row.
 	 * @param label  The super label.
-	 * @param model  The current tree model.
 	 * 
 	 * @return The updated label.
 	 */
-  private JLabel getUpdatedJLabel(JTree tree, boolean sel, int row, JLabel label, StagingResourcesTreeModel model) {
+  private JLabel getUpdatedJLabel(JTree tree, boolean sel, int row, JLabel label) {
     Icon icon = Icons.getIcon(Icons.FOLDER_TREE_ICON);
 		String toolTip = null;
 
 		TreePath treePath = tree.getPathForRow(row);
 		if (treePath != null) {
 			String path = TreeUtil.getStringPath(treePath);
+			final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 			if (!"".equals(path) && model.isLeaf(TreeUtil.getTreeNodeFromString(model, path))) {
 				FileStatus file = model.getFileByPath(path);
 				if (file != null) {
@@ -98,28 +90,32 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 		}
 		
 		if (label != null) {
-		  label.setIcon(icon);
-		  label.setToolTipText(toolTip);
-
-		  if (sel) {
-		    setBackgroundSelectionColor(tree);
-		  }
+		  updateLabel(label, icon, toolTip, sel, tree.hasFocus());
 		}
     return label;
   }
 
-	/**
-	 * Set background selection color.
-	 * 
-	 * @param tree The tree.
-	 */
-  private void setBackgroundSelectionColor(JTree tree) {
-      if (tree.hasFocus()) {
+  /**
+   * Update label.
+   * 
+   * @param label          The label to update.
+   * @param icon           The icon to set to the label.
+   * @param toolTip        The tooltip text to set to the label.
+   * @param isSelected     <code>true</code> if the label is selected.
+   * @param isTreeFocused  <code>true</code> if the tree is focused.
+   */
+  private void updateLabel(JLabel label, Icon icon, String toolTip, boolean isSelected, boolean isTreeFocused) {
+    label.setIcon(icon);
+    label.setToolTipText(toolTip);
+
+    if (isSelected) {
+      if (isTreeFocused) {
         setBackgroundSelectionColor(defaultSelectionColor);
       } else if (!contextMenuShowing.getAsBoolean()) {
         // Do nor render the tree as inactive if we have a contextual menu over it.
         setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor());
       }
+    }
   }
   
 }
