@@ -2,8 +2,10 @@ package com.oxygenxml.git.view.blame;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -12,6 +14,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.LayeredHighlighter;
 import javax.swing.text.Position;
+import javax.swing.text.Position.Bias;
 import javax.swing.text.View;
 
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -94,34 +97,50 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
    */
   @Override
   public void paint(Graphics g, int startOffset, int endOffset, Shape bounds, JTextComponent textComp) {
-    Rectangle alloc = bounds.getBounds();
     try {
+      Graphics2D g2 = (Graphics2D) g;
+      
+      Rectangle alloc = bounds.getBounds();
+      
       // --- determine locations ---
       TextUI mapper = textComp.getUI();
-      Rectangle p0 = mapper.modelToView(textComp, startOffset);
-      Rectangle p1 = mapper.modelToView(textComp, endOffset);
+      Rectangle2D p0 = mapper.modelToView2D(textComp, startOffset, Bias.Forward);
+      Rectangle2D p1 = mapper.modelToView2D(textComp, endOffset, Bias.Forward);
 
       // --- render ---
       Color paintColor = getColor();
       if (paintColor == null) {
-        g.setColor(textComp.getSelectionColor());
+        g2.setColor(textComp.getSelectionColor());
       } else {
-        g.setColor(paintColor);
+        g2.setColor(paintColor);
       }
       
-      if (p0.y == p1.y) {
+      Rectangle2D rectToFill;
+      if (p0.getY() == p1.getY()) {
         // same line, render a rectangle
-        Rectangle r = p0.union(p1);
-        g.fillRect(r.x, r.y + 1, r.width, r.height - 2);
+        Rectangle2D r = new Rectangle2D.Double();
+        Rectangle2D.union(p0, p1, r);
+        rectToFill = new Rectangle2D.Double(r.getX(), r.getY() + 1, r.getWidth(), r.getHeight() - 2);
+        g2.fill(rectToFill);
       } else {
         // different lines
-        int p0ToMarginWidth = alloc.x + alloc.width - p0.x;
-        g.fillRect(p0.x, p0.y + 1, p0ToMarginWidth, p0.height - 2);
-        if ((p0.y + p0.height) != p1.y) {
-          g.fillRect(alloc.x, p0.y + p0.height + 1, alloc.width,
-              p1.y - (p0.y + p0.height) - 2);
+        double p0ToMarginWidth = alloc.x + alloc.width - p0.getX();
+        rectToFill = new Rectangle2D.Double(p0.getX(), p0.getY() + 1, p0ToMarginWidth, p0.getHeight() - 2);
+        g2.fill(rectToFill);
+        if ((p0.getY() + p0.getHeight()) != p1.getY()) {
+          rectToFill = new Rectangle2D.Double(
+              alloc.x,
+              p0.getY() + p0.getHeight() + 1,
+              alloc.width,
+              p1.getY() - (p0.getY() + p0.getHeight()) - 2);
+          g2.fill(rectToFill);
         }
-        g.fillRect(alloc.x, p1.y + 1, (p1.x - alloc.x), p1.height - 2);
+        rectToFill = new Rectangle2D.Double(
+            alloc.x,
+            p1.getY() + 1,
+            (p1.getX() - alloc.x),
+            p1.getHeight() - 2);
+        g2.fill(rectToFill);
       }
     } catch (BadLocationException e) {
       // can't render
