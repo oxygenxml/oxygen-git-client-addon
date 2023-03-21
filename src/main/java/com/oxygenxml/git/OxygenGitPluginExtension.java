@@ -120,6 +120,35 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     		gitRefreshSupport.call();
     	}
     }
+    
+    /**
+     * Treat detached HEAD.
+     * 
+     * @param wcEventInfo event info.
+     */
+    private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
+      if (wcEventInfo.isWorkingCopySubmodule()) {
+        return;
+      }
+
+      Repository repo = null;
+      try {
+        repo = GitAccess.getInstance().getRepository();
+      } catch (NoRepositorySelected e) {
+        LOGGER.error(e.getMessage(), e);
+      }
+
+      if (repo != null && repo.getRepositoryState() != RepositoryState.REBASING_MERGE) {
+        String commitFullID = GitAccess.getInstance().getBranchInfo().getBranchName();
+        try (RevWalk revWalk = new RevWalk(repo)) {
+          RevCommit commit = revWalk.parseCommit(repo.resolve(commitFullID));
+          DetachedHeadDialog dlg = new DetachedHeadDialog(commit);
+          dlg.setVisible(true);
+        } catch (RevisionSyntaxException | IOException e) {
+          LOGGER.debug(e.getMessage(), e);
+        }
+      }
+    }
   }
 
   /**
@@ -379,35 +408,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     gitController.addGitListener(new GitOperationEventListener());
   }
   
-	/**
-	 * Treat detached HEAD.
-	 * 
-	 * @param wcEventInfo event info.
-	 */
-	private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
-		if (wcEventInfo.isWorkingCopySubmodule()) {
-			return;
-		}
-
-		Repository repo = null;
-		try {
-			repo = GitAccess.getInstance().getRepository();
-		} catch (NoRepositorySelected e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-
-		if (repo != null && repo.getRepositoryState() != RepositoryState.REBASING_MERGE) {
-			String commitFullID = GitAccess.getInstance().getBranchInfo().getBranchName();
-			try (RevWalk revWalk = new RevWalk(repo)) {
-				RevCommit commit = revWalk.parseCommit(repo.resolve(commitFullID));
-				DetachedHeadDialog dlg = new DetachedHeadDialog(commit);
-				dlg.setVisible(true);
-			} catch (RevisionSyntaxException | IOException e) {
-				LOGGER.debug(e.getMessage(), e);
-			}
-		}
-	}
-
 	/**
 	 * Customize the history view.
 	 * 
