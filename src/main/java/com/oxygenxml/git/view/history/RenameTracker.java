@@ -43,6 +43,7 @@ public class RenameTracker {
 			return true;
 		}
 
+		@SuppressWarnings("java:S1182")
 		@Override
 		public RevFilter clone() {
 			return this;

@@ -11,6 +11,7 @@ import org.eclipse.jgit.revplot.PlotLane;
  * @author alex_smarandache
  *
  */
+@SuppressWarnings("java:S2160")
 public class VisualCommitsList extends PlotCommitList<VisualCommitsList.VisualLane> {  
 
 	/**
