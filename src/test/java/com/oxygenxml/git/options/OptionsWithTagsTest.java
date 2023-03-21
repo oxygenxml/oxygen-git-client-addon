@@ -264,7 +264,8 @@ public class OptionsWithTagsTest {
         + "VALIDATE_MAIN_FILES_BEFORE_PUSH\n" 
         + "REJECT_PUSH_ON_VALIDATION_PROBLEMS\n"
         + "DETECT_AND_OPEN_XPR_FILES\n"
-        + "ASK_USER_TO_CREATE_REPO", dump);
+        + "ASK_USER_TO_CREATE_REPO\n"
+        + "CURRENT_BRANCH", dump);
   }
 
 }

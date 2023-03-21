@@ -103,6 +103,8 @@ public class DefaultOptionsValuesTest {
     counter++;
     assertFalse(options.getAskUserToCreateNewRepoIfNotExist());
     counter++;
+    assertEquals("", options.getCurrentBranch());
+    counter++;
     assertEquals("Probably a new option has been added, test its default value in this test and increment the counter.",
         OptionTags.class.getFields().length, counter);
   }
