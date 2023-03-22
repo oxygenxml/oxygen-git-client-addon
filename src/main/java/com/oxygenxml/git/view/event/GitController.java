@@ -193,45 +193,7 @@ public class GitController extends GitControllerBase {
         }
         event = doOperation(credentialsProvider);
       } catch (JGitInternalException e) {
-        LOGGER.debug(e.getMessage(), e);
-
-        Throwable cause = e.getCause();
-        if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
-          String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
-          showPullFailedBecauseOfCertainChanges(
-              Arrays.asList(conflictingFile),
-              MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                      translator.getTranslation(Tags.REBASE))
-          );
-        } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
-          // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
-          LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
-          pluginWS.showErrorMessage(lockFailedException.getMessage(), lockFailedException);
-
-          // This message gets presented in a status, at the bottom of the staging view.
-          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(lockFailedException.getMessage()), e));
-        } else if (cause instanceof IOException) {
-          String causeMsg = cause.getMessage();
-          if (getOperation() == GitOperation.PUSH 
-              && causeMsg.contains("Source ref") 
-              && causeMsg.contains("doesn't resolve")) {
-            pluginWS.showErrorMessage(
-                translator.getTranslation(Tags.PUSH_FAILED) + ": " 
-                    + MessageFormat.format(
-                        translator.getTranslation(Tags.UNBORN_BRANCH),
-                        gitAccess.getBranchInfo().getBranchName()) + " "
-                    + translator.getTranslation(Tags.COMMIT_BEFORE_PUSHING),
-                e);
-            event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(cause.getMessage()), e));
-          } else {
-            pluginWS.showErrorMessage(e.getMessage(), e);
-            event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
-          }
-        } else {
-          // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
-          pluginWS.showErrorMessage(e.getMessage(), e);
-          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
-        }
+        event = treatJGitInternalException(e);
       } catch (RebaseUncommittedChangesException e) {
         showPullFailedBecauseOfCertainChanges(
             e.getUncommittedChanges(),
@@ -292,25 +254,74 @@ public class GitController extends GitControllerBase {
         }
       }
     }
-
+    
     /**
      * Notify listeners.
      * 
      * @param event The event that happened.
      */
     private void notifyListeners(Optional<PushPullEvent> event) {
-      PushPullEvent toFire = null;
-      if (event.isPresent()) {
-        toFire = event.get();
-      } else {
-        toFire = new PushPullEvent(getOperation(), "");
-      }
-
+      PushPullEvent toFire = event.isPresent() ? event.get() : new PushPullEvent(getOperation(), "");
       if (toFire.getCause() != null) {
         listeners.fireOperationFailed(toFire, toFire.getCause());
       } else {
         listeners.fireOperationSuccessfullyEnded(toFire);
       }
+    }
+
+    /**
+     * Treat an internal exception thrown by JGit. Look at its cause.
+     * 
+     * @param e The exception to treat.
+     * 
+     * @return an optional event containing details about to what happened to the push/pull operation
+     * after treating the exception.
+     */
+    private Optional<PushPullEvent> treatJGitInternalException(JGitInternalException e) {
+      LOGGER.debug(e.getMessage(), e);
+      
+      Optional<PushPullEvent> event = Optional.empty();
+      
+      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+
+      Throwable cause = e.getCause();
+      if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
+        String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
+        showPullFailedBecauseOfCertainChanges(
+            Arrays.asList(conflictingFile),
+            MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
+                    translator.getTranslation(Tags.REBASE))
+        );
+      } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
+        // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
+        LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
+        pluginWS.showErrorMessage(lockFailedException.getMessage(), lockFailedException);
+
+        // This message gets presented in a status, at the bottom of the staging view.
+        event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(lockFailedException.getMessage()), e));
+      } else if (cause instanceof IOException) {
+        String causeMsg = cause.getMessage();
+        if (getOperation() == GitOperation.PUSH 
+            && causeMsg.contains("Source ref") 
+            && causeMsg.contains("doesn't resolve")) {
+          pluginWS.showErrorMessage(
+              translator.getTranslation(Tags.PUSH_FAILED) + ": " 
+                  + MessageFormat.format(
+                      translator.getTranslation(Tags.UNBORN_BRANCH),
+                      gitAccess.getBranchInfo().getBranchName()) + " "
+                  + translator.getTranslation(Tags.COMMIT_BEFORE_PUSHING),
+              e);
+          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(cause.getMessage()), e));
+        } else {
+          pluginWS.showErrorMessage(e.getMessage(), e);
+          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
+        }
+      } else {
+        // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
+        pluginWS.showErrorMessage(e.getMessage(), e);
+        event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
+      }
+      return event;
     }
 
     /**
