@@ -258,21 +258,20 @@ public class ChangesPanel extends JPanel {
     gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
-        // TODO Disable widgets to avoid unwanted actions if the operation is GitOperation.OPEN_WORKING_COPY.
+        // To do: EXM-52894.
       }
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
         switch (operation) {
           case OPEN_WORKING_COPY:
-            // TODO Enable widgets.
+            // To do: EXM-52894.
 
             // The event might come too early.
             GitAccess gitAccess = GitAccess.getInstance();
             try {
               Repository repository = gitAccess.getRepository();
               if (repository != null) {
-                
                 gitController.asyncTask(
                     () -> forStagedResources ? gitAccess.getStagedFiles() : gitAccess.getUnstagedFiles(), 
                     this::refresh, 
@@ -314,7 +313,7 @@ public class ChangesPanel extends JPanel {
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-          // TODO Enable widgets
+          // To do: EXM-52894
         }
       }
     });
