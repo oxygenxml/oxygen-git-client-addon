@@ -61,7 +61,7 @@ public class PersonalAccessTokenInfo extends CredentialsBase implements External
 
   @Override
   public String toString() {
-    return "PersonalAccessTokenInfo [host=" + host + ", personalAccessToken=" + tokenValue + "]";
+    return "PersonalAccessTokenInfo [host=" + host + ", personalAccessToken=CLASSIFIED]";
   }
 
   @Override

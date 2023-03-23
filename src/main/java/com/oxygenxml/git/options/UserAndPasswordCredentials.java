@@ -79,7 +79,7 @@ public class UserAndPasswordCredentials extends CredentialsBase implements Exter
 
 	@Override
 	public String toString() {
-		return "UserCredentials [host=" + host + ", username=" + username + ", password=" + "CLASSIFIED" + "]";
+		return "UserCredentials [host=" + host + ", username=" + username + ", password=CLASSIFIED]";
 	}
 
 	@Override
