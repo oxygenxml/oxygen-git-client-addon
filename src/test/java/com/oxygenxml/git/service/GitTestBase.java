@@ -517,7 +517,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       }
     });
     Mockito.doReturn(xmlUtilAccess).when(pluginWSMock).getXMLUtilAccess();
-    Mockito.doReturn(Mockito.mock(JFrame.class)).when(pluginWSMock).getParentFrame();
+    Mockito.doReturn(new JFrame()).when(pluginWSMock).getParentFrame();
     
     UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
     Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
