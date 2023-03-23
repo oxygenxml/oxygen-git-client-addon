@@ -51,7 +51,6 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	    LOGGER.debug("Credential query, uri: {}", uri);
 	  }
 	  for (CredentialItem item : items) {
-	    // TODO Should handle item.isValueSecure()
 	    if (LOGGER.isDebugEnabled()) {
 	      LOGGER.debug("Item class: {}, is secure value: {}.", item.getClass(), item.isValueSecure());
 	      LOGGER.debug("Message: |{}|", item.getPromptText());
