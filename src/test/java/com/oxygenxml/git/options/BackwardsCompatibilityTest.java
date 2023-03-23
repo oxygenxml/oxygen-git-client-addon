@@ -134,7 +134,7 @@ public class BackwardsCompatibilityTest extends GitTestBase {
     assertEquals("AUTO_SWITCH_TO_WC", loadOptions.getWhenRepoDetectedInProject().toString());
     
     assertFalse(loadOptions.getUpdateSubmodulesOnPull());
-    assertEquals("[PersonalAccessTokenInfo [host=host, personalAccessToken=token]]", loadOptions.getPersonalAccessTokensList().getPersonalAccessTokens().toString());
+    assertEquals("[PersonalAccessTokenInfo [host=host, personalAccessToken=CLASSIFIED]]", loadOptions.getPersonalAccessTokensList().getPersonalAccessTokens().toString());
     assertEquals("{D:\\Git-workspace\\wc2\\.git=ac5ad236fd7dff448042fff98cc11e351827baf7, D:\\Git-workspace\\wc1\\.git=2232c81e2258dc8a7078bd93117c53c23a4cbce1}", loadOptions.getWarnOnChangeCommitId().toString());
     
   }
