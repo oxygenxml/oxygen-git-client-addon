@@ -124,7 +124,7 @@ public class BackwardsCompatibilityTest extends GitTestBase {
     assertTrue(loadOptions.isCheckoutNewlyCreatedLocalBranch());
 
     assertEquals("D:\\Git-workspace\\selected-repo", loadOptions.getSelectedRepository());
-    assertEquals("[UserCredentials [host=github.com, username=AlexJitianu, password=CLASSIFIED], UserCredentials [host=gitlab.sync.ro, username=alex_jitianu, password=CLASSIFIED]]", loadOptions.getUserCredentialsList().getCredentials().toString());
+    assertEquals("[UserCredentials [host=github.com, username=AlexJitianu, pswrd=CLASSIFIED], UserCredentials [host=gitlab.sync.ro, username=alex_jitianu, pswrd=CLASSIFIED]]", loadOptions.getUserCredentialsList().getCredentials().toString());
     assertEquals("[Solved conflict., I made a change.]", loadOptions.getCommitMessages().getMessages().toString());
     
     assertEquals("pass-phrase", loadOptions.getPassphrase());
