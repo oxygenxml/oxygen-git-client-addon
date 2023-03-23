@@ -153,7 +153,6 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     @Override
     protected void done() {
       try {
-        // TODO Strange...when done is called, the entire processing should be done.
         get();
         OptionsManager.getInstance().saveDestinationPath(destFile.getParent());
       } catch (InterruptedException e) {
@@ -751,7 +750,6 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
               (Ref) branchesComboBox.getSelectedItem());
           cloneWorker.execute();
           // Make sure we present the dialog after this one is closed.
-          // TODO There is a progress dialog support in Java. Maybe is better to use that.
           SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
           areValid = true;
         }
