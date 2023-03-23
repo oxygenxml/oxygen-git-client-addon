@@ -542,9 +542,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 				File wc = GitAccess.getInstance().getWorkingCopy();
 				String absolutePath = wc.getAbsolutePath();
 
-				OptionsManager.getInstance().addRepository(absolutePath);
-				OptionsManager.getInstance().saveSelectedRepository(absolutePath);
-
 				if (!inhibitRepoUpdate) {
 					inhibitRepoUpdate = true;
 					try {

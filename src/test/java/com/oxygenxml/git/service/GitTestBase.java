@@ -36,6 +36,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
@@ -408,6 +409,12 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * Refresh support.
    */
   protected PanelRefresh refreshSupport;
+  
+  /**
+   * Plugin Workspace.
+   */
+  protected StandalonePluginWorkspace pluginWSMock;
+  
   /**
    * Intercepted open URL events called on the API.
    */
@@ -432,7 +439,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     ResultsManager resultManager = Mockito.mock(ResultsManager.class);
     ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
     Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
-    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
     Mockito.when(pluginWSMock.getResultsManager()).thenReturn(resultManager);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
@@ -510,6 +517,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       }
     });
     Mockito.doReturn(xmlUtilAccess).when(pluginWSMock).getXMLUtilAccess();
+    Mockito.doReturn(Mockito.mock(JFrame.class)).when(pluginWSMock).getParentFrame();
     
     UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
     Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);

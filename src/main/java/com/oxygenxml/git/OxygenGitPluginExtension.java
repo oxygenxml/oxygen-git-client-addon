@@ -5,6 +5,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -103,11 +104,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     			} catch (NoRepositorySelected e) {
     				LOGGER.debug(e.getMessage(), e);
     			}
-    		} else if (operation == GitOperation.OPEN_WORKING_COPY) {
-    		  OptionsManager.getInstance().setCurrentBranch(""); // reset branch
-    		  if(GitAccess.getInstance().getBranchInfo().isDetached()) {
-            treatDetachedHead((WorkingCopyGitEventInfo) info);
-          }
+    		} else if (operation == GitOperation.OPEN_WORKING_COPY && GitAccess.getInstance().getBranchInfo().isDetached()) {
+    		  treatDetachedHead((WorkingCopyGitEventInfo) info);
     		}
     				
     	}
@@ -293,9 +291,26 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  this.pluginWorkspaceAccess = pluginWS;
 	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
-		OptionsManager.getInstance().setCurrentBranch("");
 		ProjectHelper.getInstance().installUpdateProjectOnChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
 		
+		gitController.addGitListener(new GitEventAdapter() {
+		  @Override
+		  public void operationSuccessfullyEnded(GitEventInfo info) {
+		   if(info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+        try {
+          final File wc = GitAccess.getInstance().getWorkingCopy();
+          String absolutePath = wc.getAbsolutePath();
+
+          OptionsManager.getInstance().addRepository(absolutePath);
+          OptionsManager.getInstance().saveSelectedRepository(absolutePath);
+        } catch (NoRepositorySelected e) {
+          LOGGER.error(e.getMessage(), e);
+        }
+	       
+		     OptionsManager.getInstance().setCurrentBranch(gitController.getGitAccess().getBranchInfo().getBranchName()); // reset branch
+		   }
+		  }
+		});
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
     
