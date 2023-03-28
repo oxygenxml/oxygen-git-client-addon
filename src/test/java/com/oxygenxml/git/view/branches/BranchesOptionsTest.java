@@ -133,30 +133,30 @@ public class BranchesOptionsTest extends GitTestBase {
       gitAccess.commit("First local commit.");
       gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY2);
       sleep(50);
-      refreshSupport.call();
+      invokeRefresher();
       file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
       file.createNewFile();
       setFileContent(file, "local content");
       gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
       gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
       sleep(50);
-      refreshSupport.call();
+      invokeRefresher();
       gitAccess.createBranch(LOCAL_BRANCH_NAME1);
       gitAccess.setBranch(LOCAL_BRANCH_NAME1);
       sleep(50);
-      refreshSupport.call();
+      invokeRefresher();
       gitAccess.createBranch(LOCAL_BRANCH_NAME2);
       gitAccess.setBranch(LOCAL_BRANCH_NAME2);
       sleep(50);
-      refreshSupport.call();
-      refreshSupport.call();
-      refreshSupport.call();
+      invokeRefresher();
+      invokeRefresher();
+      invokeRefresher(); // Call the refresh support more times with the same repository and branch to make sure that the setOption is not called for this case.
       gitAccess.setBranch(LOCAL_BRANCH_NAME1);
       sleep(50);
-      refreshSupport.call();
+      invokeRefresher();
       gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY2);
       sleep(50);
-      refreshSupport.call();
+      invokeRefresher();
 
       assertEquals(9, optionValues.size());
       assertEquals(new File(LOCAL_TEST_REPOSITORY2).getAbsolutePath(), optionValues.get(0)); // first load of local repo 2
@@ -173,5 +173,12 @@ public class BranchesOptionsTest extends GitTestBase {
     }
   }
   
+  /**
+   * Invoke the refresh supp
+   */
+  private void invokeRefresher() {
+    refreshSupport.call();
+    waitForScheduler();
+  }
   
 }
