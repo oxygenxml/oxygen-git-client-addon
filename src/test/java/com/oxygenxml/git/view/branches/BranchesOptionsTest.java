@@ -174,7 +174,7 @@ public class BranchesOptionsTest extends GitTestBase {
   }
   
   /**
-   * Invoke the refresh supp
+   * Invoke the refresh support and wait until is finish.
    */
   private void invokeRefresher() {
     refreshSupport.call();
