@@ -984,6 +984,7 @@ public class GitAccess {
 						repo.getConfig().save();
 					}
 				} catch (NoRepositorySelected | IOException ex) {
+				  LOGGER.error(ex.getMessage(), ex);
 					PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
 				} 
 

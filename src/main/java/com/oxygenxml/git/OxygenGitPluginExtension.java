@@ -38,6 +38,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.lfs.LFSHelper;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
@@ -217,7 +218,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			super.windowActivated(e);
 			boolean isStagingPanelShowing = stagingPanel != null && stagingPanel.isShowing();
 			if (isStagingPanelShowing && refresh) {
-				gitRefreshSupport.call();
+			  gitRefreshSupport.call();
 			}
 			refresh = false;
 		}
@@ -289,7 +290,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  this.pluginWorkspaceAccess = pluginWS;
-	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 		ProjectHelper.getInstance().installUpdateProjectOnChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
 		
@@ -299,8 +299,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		   if(info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
         try {
           final File wc = GitAccess.getInstance().getWorkingCopy();
-          String absolutePath = wc.getAbsolutePath();
-
+          final String absolutePath = wc.getAbsolutePath();
+          
           OptionsManager.getInstance().addRepository(absolutePath);
           OptionsManager.getInstance().saveSelectedRepository(absolutePath);
         } catch (NoRepositorySelected e) {
@@ -311,6 +311,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		   }
 		  }
 		});
+		
+		LFSHelper.install(gitController);
+		LFSHelper.enableLFS();
+		
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
     
