@@ -26,13 +26,10 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.editor.EditorPageConstants;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
@@ -171,10 +168,7 @@ public class BlamePerformer {
       
       // Present the history for the given resource.
       historyController.showResourceHistory(filePath);
-    } else {
-      PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-          Translator.getInstance().getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES));
-    }
+    } 
   }
 
   /**

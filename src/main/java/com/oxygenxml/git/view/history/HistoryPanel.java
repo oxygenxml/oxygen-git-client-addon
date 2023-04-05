@@ -52,7 +52,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revplot.PlotCommit;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -858,12 +857,7 @@ public class HistoryPanel extends JPanel {
         PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage("Unable to present history because of: " + e.getMessage());
       }
-    } else {
-      if (historyTable.getModel().getRowCount() == 0) {
-        PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(TRANSLATOR.getTranslation(Tags.GIT_HISTORY)
-            + ": " + StringUtils.toLowerCase(TRANSLATOR.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
-      }
-    }
+    } 
   }
   
   /**
@@ -886,10 +880,6 @@ public class HistoryPanel extends JPanel {
 				  graphCellRender.setLastCommitIdForCurrentBranch(objectId.getName());
 			  }
 		  }
-	  } else {
-		  PluginWorkspaceProvider.getPluginWorkspace()
-		  .showInformationMessage(TRANSLATOR.getTranslation(Tags.GIT_HISTORY) + ": "
-				  + StringUtils.toLowerCase(TRANSLATOR.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
 	  }
   }
   
