@@ -125,21 +125,20 @@ public class PanelRefresh implements GitRefreshSupport {
 					  
 					  Optional.ofNullable(stagingPanel.getBranchesCombo()).ifPresent(BranchSelectionCombo::refresh);
 					  
+						final RepositoryStatusInfo repoStatus = fetch();
+						stagingPanel.getCommitPanel().setRepoStatus(repoStatus);  
 					  // refresh the buttons
-					  stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
-					  stagingPanel.updateToolbarsButtonsStates();
+            stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
+            stagingPanel.updateToolbarsButtonsStates();
+            
+            GitStatus status = GitAccess.getInstance().getStatus();
+            updateFiles(
+                stagingPanel.getUnstagedChangesPanel(), 
+                status.getUnstagedFiles());
+            updateFiles(
+                stagingPanel.getStagedChangesPanel(), 
+                status.getStagedFiles());
 						
-						GitStatus status = GitAccess.getInstance().getStatus();
-						updateFiles(
-								stagingPanel.getUnstagedChangesPanel(), 
-								status.getUnstagedFiles());
-						updateFiles(
-								stagingPanel.getStagedChangesPanel(), 
-								status.getStagedFiles());
-
-						RepositoryStatusInfo rstatus = fetch();
-						updateCounters(rstatus);
-
 						if (OptionsManager.getInstance().isNotifyAboutNewRemoteCommits()) {
 							// Make the check more frequently.
 							watcher.checkRemoteRepository(false);
@@ -202,15 +201,6 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	protected int getScheduleDelay() {
 		return EXECUTION_DELAY;
-	}
-
-	/**
-	 * Update the counters presented on the Pull/Push toolbar action.
-	 * 
-	 * @param status The current status.
-	 */
-	private void updateCounters(RepositoryStatusInfo status) {
-		stagingPanel.getCommitPanel().setRepoStatus(status);
 	}
 
 	/**
