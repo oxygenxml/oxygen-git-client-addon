@@ -260,9 +260,6 @@ public class ToolbarPanel extends JPanel {
       noOfStashes = stashes.size();
     }
 
-    final boolean isPullMenuEnabled = isPullButtonEnabled();
-    final boolean isStashButtonEnabled = isStashButtonEnabled();
-
     BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
     if (branchInfo.isDetached()) {
@@ -270,15 +267,15 @@ public class ToolbarPanel extends JPanel {
     } else {
       updateTooltipsForCurrentBranch(repo, currentBranchName);
     }
-
+    
     SwingUtilities.invokeLater(() -> {
       /* for @pushButton, @historyButton, @showBranchesButton ---> 
        * it is necessary to refresh, even if it has a single action, 
        * because there are other code sequences that directly change their state by calling the setEnabled(false) method
        */
       pushButton.setEnabled(gitActionsManager.getPushAction().isEnabled());
-      pullMenuButton.setEnabled(isPullMenuEnabled);
-      stashButton.setEnabled(isStashButtonEnabled);
+      pullMenuButton.setEnabled(isPullButtonEnabled());
+      stashButton.setEnabled(isStashButtonEnabled());
       historyButton.setEnabled(gitActionsManager.getShowHistoryAction().isEnabled());
       showBranchesButton.setEnabled(gitActionsManager.getShowBranchesAction().isEnabled());
 
