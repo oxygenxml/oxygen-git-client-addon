@@ -30,7 +30,7 @@
 	</developers>
 
 	<properties>
-		<oxygen.version>25.0.0.0</oxygen.version>
+		<oxygen.version>25.0-SNAPSHOT</oxygen.version>
 		<maven.compiler.source>15</maven.compiler.source>
 		<maven.compiler.target>15</maven.compiler.target>
 		<!-- We want sonar. -->
