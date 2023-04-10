@@ -21,6 +21,14 @@
             history of the repository resources, and more. The add-on also includes a built-in tool
             for comparing and merging changes. </p>
         </div>
+	<div>
+          <h3>What's new in version 5.2.0</h3>
+          <ol>
+            <li>The integrated JGit library was upgraded to version 6.5.</li>
+            <li>Improved various messages in the user interface.</li>
+            <li>Bug fixes.</li>
+	  </ol>
+	</div>
         <div>
           <h3>What's new in version 5.1.1</h3>
           <ol>

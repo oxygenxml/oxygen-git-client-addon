@@ -215,8 +215,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			// Reset when you leave oxygen. Subsequent calls will recompute it.
 			gitController.getGitAccess().getStatusCache().resetCache();
 			super.windowActivated(e);
-			boolean isStagingPanelShowing = stagingPanel != null && stagingPanel.isShowing();
-			if (isStagingPanelShowing && refresh) {
+			final boolean isStagingPanelShowing = stagingPanel != null && stagingPanel.isShowing();
+			final boolean isHistoryPanelShowing = historyView != null && historyView.isShowing();
+			final boolean isBranchesPanelShowing = branchManagementPanel != null && branchManagementPanel.isShowing();
+			if (refresh && (isStagingPanelShowing || isHistoryPanelShowing || isBranchesPanelShowing)) {
 				gitRefreshSupport.call();
 			}
 			refresh = false;

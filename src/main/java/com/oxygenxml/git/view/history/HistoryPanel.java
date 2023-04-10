@@ -52,7 +52,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revplot.PlotCommit;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +79,6 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
-import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -859,12 +857,7 @@ public class HistoryPanel extends JPanel {
         PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage("Unable to present history because of: " + e.getMessage());
       }
-    } else {
-      if (historyTable.getModel().getRowCount() == 0) {
-        PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(TRANSLATOR.getTranslation(Tags.GIT_HISTORY)
-            + ": " + StringUtils.toLowerCase(TRANSLATOR.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
-      }
-    }
+    } 
   }
   
   /**
@@ -887,10 +880,6 @@ public class HistoryPanel extends JPanel {
 				  graphCellRender.setLastCommitIdForCurrentBranch(objectId.getName());
 			  }
 		  }
-	  } else {
-		  PluginWorkspaceProvider.getPluginWorkspace()
-		  .showInformationMessage(TRANSLATOR.getTranslation(Tags.GIT_HISTORY) + ": "
-				  + StringUtils.toLowerCase(TRANSLATOR.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
 	  }
   }
   
@@ -1028,10 +1017,10 @@ public class HistoryPanel extends JPanel {
    * Distribute widths to the columns according to their content.
    */
   private void updateHistoryTableWidths() {
-	int graphColWidth = HiDPIUtil.scaleWidth(50); // NOSONAR
-    int dateColWidth = HiDPIUtil.scaleWidth(100); // NOSONAR
-    int authorColWidth = HiDPIUtil.scaleWidth(120); // NOSONAR
-    int commitIdColWidth = HiDPIUtil.scaleWidth(80); // NOSONAR
+	int graphColWidth = 50; // NOSONAR
+    int dateColWidth = 100; // NOSONAR
+    int authorColWidth = 120; // NOSONAR
+    int commitIdColWidth = 80; // NOSONAR
 
     TableColumnModel tcm = historyTable.getColumnModel();
     TableColumn column = tcm.getColumn(HistoryCommitTableModel.COMMIT_GRAPH);
