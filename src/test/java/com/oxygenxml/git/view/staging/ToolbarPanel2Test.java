@@ -10,7 +10,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 
 import ro.sync.basic.io.FileSystemUtil;
 
@@ -98,7 +98,7 @@ public class ToolbarPanel2Test extends GitTestBase {
       final GitController gitCtrl = new GitController();
       final long[] fetchTime = new long[1];
       final long[] stagingPanelRefreshTime = new long[1];
-      final PanelRefresh refreshManager = new PanelRefresh(null) {
+      final PanelsRefreshSupport refreshManager = new PanelsRefreshSupport(null) {
     	  @Override
           protected int getScheduleDelay() {
             // Execute refresh events immediately from tests.

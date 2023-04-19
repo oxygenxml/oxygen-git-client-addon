@@ -33,7 +33,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -43,7 +43,7 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 public class GitAccessConflictTest extends TestCase {
-  PanelRefresh refreshSupport = new PanelRefresh(null) {
+  PanelsRefreshSupport refreshSupport = new PanelsRefreshSupport(null) {
     @Override
     protected int getScheduleDelay() {
       // Execute refresh events immediately from tests.

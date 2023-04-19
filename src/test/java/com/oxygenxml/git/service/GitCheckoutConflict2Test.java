@@ -42,7 +42,7 @@ import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
@@ -55,7 +55,7 @@ import ro.sync.exml.workspace.api.util.XMLUtilAccess;
  * Test cases for checkout conflicts. With visual interaction too.
  */
 public class GitCheckoutConflict2Test extends GitTestBase {
-  PanelRefresh refreshSupport = new PanelRefresh(null) {
+  PanelsRefreshSupport refreshSupport = new PanelsRefreshSupport(null) {
     @Override
     protected int getScheduleDelay() {
       // Execute refresh events immediately from tests.

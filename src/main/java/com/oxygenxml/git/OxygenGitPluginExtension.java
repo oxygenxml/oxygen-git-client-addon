@@ -57,7 +57,7 @@ import com.oxygenxml.git.view.event.OperationUtil;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -177,7 +177,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
 	 * Refresh support.
 	 */
-	private PanelRefresh gitRefreshSupport;
+	private PanelsRefreshSupport gitRefreshSupport;
 
 	/**
 	 * Manages Push/Pull actions.
@@ -316,7 +316,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
     
-    gitRefreshSupport = new PanelRefresh(
+    gitRefreshSupport = new PanelsRefreshSupport(
         RemoteRepositoryChangeWatcher.createWatcher(pluginWS, gitController),
         () -> menuBar);
     
@@ -527,7 +527,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
    * @param gitRefreshSupport The new refresh support panel.
    */
 	@TestOnly
-	public void setGitRefreshSupport(final PanelRefresh gitRefreshSupport) {
+	public void setGitRefreshSupport(final PanelsRefreshSupport gitRefreshSupport) {
     this.gitRefreshSupport = gitRefreshSupport;
   }
 

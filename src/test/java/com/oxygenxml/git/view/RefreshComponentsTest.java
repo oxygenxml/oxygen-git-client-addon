@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
@@ -16,7 +15,7 @@ import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
@@ -92,7 +91,7 @@ public class RefreshComponentsTest extends GitTestBase {
       }
     };
 
-    final PanelRefresh refreshManager = new PanelRefresh(null);
+    final PanelsRefreshSupport refreshManager = new PanelsRefreshSupport(null);
     assertNotNull(historyPanel);
     refreshManager.setHistoryPanel(historyPanel);
     refreshManager.call();
@@ -120,7 +119,7 @@ public class RefreshComponentsTest extends GitTestBase {
       }
     };
 
-    final PanelRefresh refreshManager = new PanelRefresh(null);
+    final PanelsRefreshSupport refreshManager = new PanelsRefreshSupport(null);
     assertNotNull(branchManager);
     refreshManager.setBranchPanel(branchManager);
     refreshManager.call();
@@ -136,7 +135,7 @@ public class RefreshComponentsTest extends GitTestBase {
    */ 
   public void testRefreshStaging() {
     final int[] noRefreshes = { 0 };
-    final PanelRefresh refreshManager = new PanelRefresh(null);
+    final PanelsRefreshSupport refreshManager = new PanelsRefreshSupport(null);
     final BranchSelectionCombo comboSel = new BranchSelectionCombo(new GitController()) {
       @Override
       public void refresh() {

@@ -20,7 +20,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.staging.actions.DiscardAction;
 
@@ -38,7 +38,7 @@ public class RefreshProjectTest extends TestCase {
   
   GitAccess oldInstance = GitAccess.getInstance();
   
-  PanelRefresh refreshSupport = new PanelRefresh(null) {
+  PanelsRefreshSupport refreshSupport = new PanelsRefreshSupport(null) {
     @Override
     protected int getScheduleDelay() {
       // Execute refresh events immediately from tests.
