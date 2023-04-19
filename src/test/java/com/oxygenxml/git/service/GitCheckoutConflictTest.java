@@ -36,7 +36,7 @@ import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -57,7 +57,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
    */
   protected static final Translator translator = Translator.getInstance();
   
-  PanelRefresh refreshSupport = new PanelRefresh(null) {
+  PanelsRefreshSupport refreshSupport = new PanelsRefreshSupport(null) {
     @Override
     protected int getScheduleDelay() {
       // Execute refresh events immediately from tests.

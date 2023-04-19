@@ -48,7 +48,7 @@ import com.oxygenxml.git.view.staging.StagingPanel;
  * 
  * @author alex_jitianu
  */
-public class PanelRefresh implements GitRefreshSupport {
+public class PanelsRefreshSupport implements GitRefreshSupport {
 	/**
 	 * Refresh events are executed after this delay. Milliseconds.
 	 */
@@ -56,7 +56,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Logger for logging.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(PanelRefresh.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PanelsRefreshSupport.class);
 
 	/**
 	 * The staging panel.
@@ -158,7 +158,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * 
 	 * @param watcher repository change watcher.
 	 */
-	public PanelRefresh(RemoteRepositoryChangeWatcher watcher) {
+	public PanelsRefreshSupport(RemoteRepositoryChangeWatcher watcher) {
 		this(watcher, null);
 	}
 
@@ -169,7 +169,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @param updateActionsStatesListenerSupplier Supplies a listener that will be used to notify when different 
 	 * actions and buttons states should be updated (enabled or disabled) 
 	 */
-	public PanelRefresh(RemoteRepositoryChangeWatcher watcher, Supplier<UpdateActionsStatesListener> updateActionsStatesListenerSupplier) {
+	public PanelsRefreshSupport(RemoteRepositoryChangeWatcher watcher, Supplier<UpdateActionsStatesListener> updateActionsStatesListenerSupplier) {
 		this.watcher = watcher;
 		this.updateActionsStatesListenerSupplier = updateActionsStatesListenerSupplier;
 	}

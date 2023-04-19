@@ -23,7 +23,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.HistoryController;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
@@ -249,7 +249,7 @@ public class BranchSelectionComboTest extends GitTestBase {
         this.getName());
     final String LOCAL_BRANCH = "LocalBranch";
 
-    final PanelRefresh refreshManager = new PanelRefresh(null) {
+    final PanelsRefreshSupport refreshManager = new PanelsRefreshSupport(null) {
       @Override
       protected int getScheduleDelay() { 
         return 1; 

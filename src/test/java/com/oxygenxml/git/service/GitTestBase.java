@@ -81,7 +81,7 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
-import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.WindowMonitor;
@@ -408,7 +408,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * Refresh support.
    */
-  protected PanelRefresh refreshSupport;
+  protected PanelsRefreshSupport refreshSupport;
   
   /**
    * Plugin Workspace.
@@ -425,7 +425,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     super.setUp();
    
     // Create the unstaged resources panel
-    refreshSupport = new PanelRefresh(null) {
+    refreshSupport = new PanelsRefreshSupport(null) {
       @Override
       protected int getScheduleDelay() {
         // Execute refresh events immediately from tests.
