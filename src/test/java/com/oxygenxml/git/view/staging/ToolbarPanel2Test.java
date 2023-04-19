@@ -1,13 +1,16 @@
 package com.oxygenxml.git.view.staging;
 
 import java.io.File;
+import java.util.Date;
 
 import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.refresh.PanelRefresh;
 
 import ro.sync.basic.io.FileSystemUtil;
 
@@ -74,6 +77,73 @@ public class ToolbarPanel2Test extends GitTestBase {
       assertTrue(toolbar.getPushButton().isEnabled());
 
       assertFalse(toolbar.getStashButton().isEnabled());
+    } finally {
+      FileSystemUtil.deleteRecursivelly(testDir);
+    }
+  }
+  
+  /**
+   * <p><b>Description:</b> The fetch method should be called before refresh the Git Staging</p>
+   * <p><b>Bug ID:</b> EXM-50791</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  public void testRefreshToolbar() throws Exception {
+    
+    File testDir = new File(String.format("target/test-resources/ToolbarPanelTest/%s", this.getName()));
+    
+    try {
+      final GitController gitCtrl = new GitController();
+      final long[] fetchTime = new long[1];
+      final long[] stagingPanelRefreshTime = new long[1];
+      final PanelRefresh refreshManager = new PanelRefresh(null) {
+    	  @Override
+          protected int getScheduleDelay() {
+            // Execute refresh events immediately from tests.
+            return 1;
+          }
+    	  
+    	  @Override
+    	protected RepositoryStatusInfo fetch() {
+    		if(fetchTime[0] == 0) {
+    			fetchTime[0] = new Date().getTime();
+    			sleep(1); // add a small delay for this method
+    		}
+    		return new RepositoryStatusInfo(null);
+    	}
+    	  
+    	@Override
+    	protected void updateStagingPanel(RepositoryStatusInfo repoStatus) {
+    		if(stagingPanelRefreshTime[0] == 0) {
+    			stagingPanelRefreshTime[0] = new Date().getTime();
+    			sleep(1); // add a small delay for this method
+    		}
+    	}  
+      };
+      GitActionsManager gitActionsManager = new GitActionsManager(gitCtrl, null, null, refreshSupport);
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, gitActionsManager);
+      refreshManager.setStagingPanel(stagingPanel);
+      
+      //Creates repos
+      String local = String.format("target/test-resources/ToolbarPanelTest/%s/localRepository", this.getName());
+      String remote = String.format("target/test-resources/ToolbarPanelTest/%s/remoteRepository", this.getName());
+
+      //Creates the remote repository.
+      createRepo(remote, local);
+
+      Repository remoteRepository = createRepository(remote);
+      Repository localRepository = createRepository(local);
+      bindLocalToRemote(localRepository, remoteRepository);
+      flushAWT();
+
+      refreshManager.call();
+      waitForScheduler();
+         
+      assertTrue("The fetch method should be called.", fetchTime[0] > 0);
+      assertTrue("The staging panel should be updated.", stagingPanelRefreshTime[0] > 0);
+      assertTrue("The fetch should be executed before refreshing staging panel.", stagingPanelRefreshTime[0] > fetchTime[0]);
     } finally {
       FileSystemUtil.deleteRecursivelly(testDir);
     }

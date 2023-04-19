@@ -15,6 +15,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.auth.login.LoginMediator;
 import com.oxygenxml.git.auth.login.LoginStatusInfo;
@@ -89,13 +90,13 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * History panel.
 	 */
 	private HistoryPanel historyPanel;
-	
+
 	/**
 	 * Supplies a listener that will be used to notify when different 
 	 * actions and buttons states should be updated (enabled or disabled) 
 	 */
 	private Supplier<UpdateActionsStatesListener> updateActionsStatesListenerSupplier = null;
-	
+
 	/**
 	 * Refresh task.
 	 */
@@ -107,43 +108,32 @@ public class PanelRefresh implements GitRefreshSupport {
 			try {
 				Repository repository = gitAccess.getRepository();
 				if (repository != null) {
-				  
-				  final String currentBranch = repository.getBranch();
-				  if(!Objects.equals(currentBranch, OptionsManager.getInstance().getCurrentBranch())) {
-				    OptionsManager.getInstance().setCurrentBranch(currentBranch);
-				  }
-				  
+
+					final String currentBranch = repository.getBranch();
+					if(!Objects.equals(currentBranch, OptionsManager.getInstance().getCurrentBranch())) {
+						OptionsManager.getInstance().setCurrentBranch(currentBranch);
+					}
+
 					if (stagingPanel != null) {
-					  // refresh the states of the actions
-					  stagingPanel.getGitActionsManager().refreshActionsStates();
-					  
-					  // call the listener; can be null from tests
-					  Optional.ofNullable(updateActionsStatesListenerSupplier)
-  					  .filter(t -> Objects.nonNull(t.get()))
-  					  .map(Supplier<UpdateActionsStatesListener>::get)
-  					  .ifPresent(UpdateActionsStatesListener::updateButtonStates);
-					  
-					  Optional.ofNullable(stagingPanel.getBranchesCombo()).ifPresent(BranchSelectionCombo::refresh);
-					  
+						// refresh the states of the actions
+						stagingPanel.getGitActionsManager().refreshActionsStates();
+
+						// call the listener; can be null from tests
+						Optional.ofNullable(updateActionsStatesListenerSupplier)
+						.filter(t -> Objects.nonNull(t.get()))
+						.map(Supplier<UpdateActionsStatesListener>::get)
+						.ifPresent(UpdateActionsStatesListener::updateButtonStates);
+
+						Optional.ofNullable(stagingPanel.getBranchesCombo()).ifPresent(BranchSelectionCombo::refresh);
+
 						final RepositoryStatusInfo repoStatus = fetch();
-						stagingPanel.getCommitPanel().setRepoStatus(repoStatus);  
-					  // refresh the buttons
-            stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
-            stagingPanel.updateToolbarsButtonsStates();
-            
-            GitStatus status = GitAccess.getInstance().getStatus();
-            updateFiles(
-                stagingPanel.getUnstagedChangesPanel(), 
-                status.getUnstagedFiles());
-            updateFiles(
-                stagingPanel.getStagedChangesPanel(), 
-                status.getStagedFiles());
-						
+						updateStagingPanel(repoStatus);
+
 						if (OptionsManager.getInstance().isNotifyAboutNewRemoteCommits()) {
 							// Make the check more frequently.
 							watcher.checkRemoteRepository(false);
 						}
-						
+
 					}
 					if(branchesPanel != null && branchesPanel.isShowing()) {
 						branchesPanel.refreshBranches();
@@ -169,21 +159,21 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @param watcher repository change watcher.
 	 */
 	public PanelRefresh(RemoteRepositoryChangeWatcher watcher) {
-	  this(watcher, null);
+		this(watcher, null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
 	 * @param watcher repository change watcher.
 	 * @param updateActionsStatesListenerSupplier Supplies a listener that will be used to notify when different 
-   * actions and buttons states should be updated (enabled or disabled) 
+	 * actions and buttons states should be updated (enabled or disabled) 
 	 */
 	public PanelRefresh(RemoteRepositoryChangeWatcher watcher, Supplier<UpdateActionsStatesListener> updateActionsStatesListenerSupplier) {
 		this.watcher = watcher;
 		this.updateActionsStatesListenerSupplier = updateActionsStatesListenerSupplier;
 	}
-	
+
 	/**
 	 * @see com.oxygenxml.git.utils.GitRefreshSupport.call()
 	 */
@@ -208,7 +198,8 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * 
 	 * @return Repository status.
 	 */
-	private RepositoryStatusInfo fetch() {
+	@VisibleForTesting
+	protected RepositoryStatusInfo fetch() {
 		// Connect to the remote.
 		RepositoryStatusInfo statusInfo = new RepositoryStatusInfo(RepositoryStatus.AVAILABLE);
 		try {
@@ -234,9 +225,9 @@ public class PanelRefresh implements GitRefreshSupport {
 		} catch (PrivateRepositoryException e) {
 			statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
 
-			 Optional<LoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(
-			     GitAccess.getInstance().getHostName(),
-			     TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
+			Optional<LoginStatusInfo> loginInfoOpt = LoginMediator.getInstance().requestLogin(
+					GitAccess.getInstance().getHostName(),
+					TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
 			if (loginInfoOpt.isPresent() && loginInfoOpt.get().getCredentials() != null) {
 				return fetch();
 			}
@@ -343,6 +334,27 @@ public class PanelRefresh implements GitRefreshSupport {
 	@TestOnly
 	public ScheduledFuture<?> getScheduledTaskForTests() { // NOSONAR
 		return refreshFuture;
+	}
+
+	/**
+	 * Update the staging panel.
+	 * 
+	 * @param repoStatus The current repository status.
+	 */
+	@VisibleForTesting
+	protected void updateStagingPanel(final RepositoryStatusInfo repoStatus) {
+		stagingPanel.getCommitPanel().setRepoStatus(repoStatus);  
+		// refresh the buttons
+		stagingPanel.updateConflictButtonsPanelBasedOnRepoState();
+		stagingPanel.updateToolbarsButtonsStates();
+
+		GitStatus status = GitAccess.getInstance().getStatus();
+		updateFiles(
+				stagingPanel.getUnstagedChangesPanel(), 
+				status.getUnstagedFiles());
+		updateFiles(
+				stagingPanel.getStagedChangesPanel(), 
+				status.getStagedFiles());
 	}
 
 }
