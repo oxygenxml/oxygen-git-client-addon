@@ -1978,5 +1978,10 @@ public class Tags {
    */
   public static final String ASK_LOAD_REPOSITORY = "Ask_Load_Repository";
   
+  /**
+   * Nothing to show for new files.
+   */
+  public static final String NOTHING_TO_SHOW_FOR_NEW_FILES = "Nothing_to_show_for_new_files";
+  
 }
 

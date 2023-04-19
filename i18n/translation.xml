@@ -4570,4 +4570,14 @@ Commit, stash, or discard the local changes and try again.</val>
 		<val lang="nl_NL">HEAD ontkoppeld</val>
 		<val lang="zh_CN">HEAD端信号丢失</val>
 	</key>
+	<key value="Nothing_to_show_for_new_files">
+		<comment>Message for when no history or blame can be shown (for new
+			files).</comment>
+		<val lang="en_US">Nothing to show for new files.</val>
+		<val lang="de_DE">Hier gibt es nichts anzuzeigen für neue Dateien.</val>
+		<val lang="fr_FR">Rien à afficher pour les nouveaux fichiers.</val>
+		<val lang="ja_JP">新しいファイルには何も表示されません。</val>
+		<val lang="nl_NL">Niets om te tonen voor nieuwe bestanden.</val>
+		<val lang="zh_CN">没有显示新文件.</val>
+	</key>
 </translation>
