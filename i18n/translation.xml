@@ -153,7 +153,7 @@ Commit, stash, or discard the local changes and try again.</val>
 	</key>
 	<key value="Detect_And_Open_Xpr_Files_Dialog_Text">
 		<comment>Detect and open xpr files from opened working copies dialog text.</comment>
-		<val lang="en_US">Current Git project contains multiple Oxygen project files (.xpr).</val>
+		<val lang="en_US">The current Git project contains multiple Oxygen project files (.xpr).</val>
 		<val lang="de_DE">Aktuelles Git-Projekt enthält mehrere Oxygen-Projektdateien (.xpr).</val>
 		<val lang="fr_FR">Le projet Git actuel contient plusieurs fichiers de projet Oxygen (.xpr).</val>
 		<val lang="ja_JP">現在の Git プロジェクトには、複数の Oxygen プロジェクト ファイル (.xpr) が含まれています。</val>
