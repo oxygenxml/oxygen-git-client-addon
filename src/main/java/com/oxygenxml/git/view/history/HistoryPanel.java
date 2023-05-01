@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
@@ -40,6 +41,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -208,6 +211,16 @@ public class HistoryPanel extends JPanel {
    */
   private boolean wasPreviousShowed = false;
   
+  /**
+   * The previous commits cached.
+   */
+  private List<CommitCharacteristics> commitsCache = Collections.emptyList();
+  
+  /**
+   * The last selected commit id.
+   */
+  private ObjectId selectedCommitId = null;
+  
 
   /**
    * Constructor.
@@ -295,12 +308,12 @@ public class HistoryPanel extends JPanel {
           GitOperation operation = info.getGitOperation();
           switch (operation) {
           case OPEN_WORKING_COPY:
+            clearCommitsCache();
+            selectedCommitId = null;
             GitOperationScheduler.getInstance().schedule(HistoryPanel.this::showRepositoryHistory);
             break;
           case PULL:
           case PUSH:
-            scheduleRefreshHistory();
-            break;
           case CREATE_BRANCH:
           case CHECKOUT:
           case DELETE_BRANCH:
@@ -314,10 +327,11 @@ public class HistoryPanel extends JPanel {
           case CREATE_TAG:
           case DELETE_TAG:
           case CHECKOUT_COMMIT:
+        	  clearCommitsCache();
             scheduleRefreshHistory();
             break;
           default:
-            break;
+        	  break;
           }
         }
       }
@@ -692,6 +706,7 @@ public class HistoryPanel extends JPanel {
         if(isShowing()) {
           RepoUtil.initRepoIfNeeded(true);
         }
+        clearCommitsCache();
         scheduleRefreshHistory();
       }
     };
@@ -767,6 +782,25 @@ public class HistoryPanel extends JPanel {
         // upstream branch.
         tryFetch();
 
+        final Repository repo = gitAccess.getRepository();
+        RenameTracker renameTracker = new RenameTracker();
+        final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(
+            currentStrategy, filePath, renameTracker);
+        boolean shouldRefreshHistory = commitCharacteristicsVector.size() != commitsCache.size();
+        if(!shouldRefreshHistory) {
+          final int noOfCommits = commitsCache.size();
+          for(int i = 0; i < noOfCommits; i++) {
+            if(!Objects.equals(commitCharacteristicsVector.get(i).getCommitId(), commitsCache.get(i).getCommitId())) {
+              shouldRefreshHistory = true;
+              break;
+            }
+          }
+        }
+        commitsCache = commitCharacteristicsVector;
+        if(!shouldRefreshHistory) {
+          return;
+        }
+        
         File directory = gitAccess.getWorkingCopy();
         historyLabelMessage = TRANSLATOR.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
             + TRANSLATOR.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
@@ -797,14 +831,8 @@ public class HistoryPanel extends JPanel {
         cellRender.setFilePresenter(fileHistoryPresenter);
         
         commitDescriptionPane.setText("");
-        
-        RenameTracker renameTracker = new RenameTracker();
-        final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(
-        		currentStrategy, filePath, renameTracker);
 
         hasUncommitedChanges = GitAccess.getInstance().getStatusCache().getStatus().hasUncommittedChanges();
-        
-        final Repository repo = gitAccess.getRepository();
        
         final CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
             repo.getFullBranch());
@@ -841,6 +869,15 @@ public class HistoryPanel extends JPanel {
         	affectedFilesTable, renameTracker, fileHistoryPresenter
         );
         historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
+        historyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+          
+          @Override
+          public void valueChanged(ListSelectionEvent e) {
+           final int selectedCommit = historyTable.getSelectedRow();
+           final boolean isValidIndex = selectedCommit >= 0 && commitsCache.size() > selectedCommit;
+           selectedCommitId = isValidIndex ? commitsCache.get(selectedCommit).getPlotCommit().toObjectId() : null;
+          }
+        });
 
         // Install hyperlink listener.
         if (hyperlinkListener != null) {
@@ -849,9 +886,10 @@ public class HistoryPanel extends JPanel {
         hyperlinkListener = new HistoryHyperlinkListener(historyTable, commitCharacteristicsVector);
         commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
 
-        // Select the local branch HEAD.
-        selectLocalBranchHead(commitCharacteristicsVector, repo);
-
+        if(selectedCommitId == null || !selectCommit(selectedCommitId)) {
+          // Select the local branch HEAD.
+          selectLocalBranchHead(commitCharacteristicsVector, repo);
+        }     
       } catch (NoRepositorySelected | IOException e) {
         LOGGER.debug(e.getMessage(), e);
         PluginWorkspaceProvider.getPluginWorkspace()
@@ -1060,20 +1098,26 @@ public class HistoryPanel extends JPanel {
    * 
    * @param id Id of the repository to select.
    */
-  private void selectCommit(ObjectId id) {
-    SwingUtilities.invokeLater(() -> {
-      HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-      List<CommitCharacteristics> commits = model.getAllCommits();
-      for (int i = 0; i < commits.size(); i++) {
-        CommitCharacteristics commitCharacteristics = commits.get(i);
-        if (id.getName().equals(commitCharacteristics.getCommitId())) {
-          final int sel = i;
-          historyTable.scrollRectToVisible(historyTable.getCellRect(sel, 0, true));
-          historyTable.getSelectionModel().setSelectionInterval(sel, sel);
-          break;
-        }
+  private boolean selectCommit(ObjectId id) {
+    boolean toReturn = false;
+    HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+    List<CommitCharacteristics> commits = model.getAllCommits();
+    for (int i = 0; i < commits.size(); i++) {
+      CommitCharacteristics commitCharacteristics = commits.get(i);
+      if (id.getName().equals(commitCharacteristics.getCommitId())) {
+        final int selection = i;
+        SwingUtilities.invokeLater(() -> {
+          historyTable.scrollRectToVisible(historyTable.getCellRect(selection, 0, true));
+          historyTable.getSelectionModel().setSelectionInterval(selection, selection);
+        });
+        toReturn = true;
+        selectedCommitId = id;
+        break;
       }
-    });
+    }
+    
+    return toReturn;
+   
   }
 
  
@@ -1092,6 +1136,13 @@ public class HistoryPanel extends JPanel {
     return historyTable;
   }
 
+  /**
+   * This method clear the previous commits cache.
+   */
+  private void clearCommitsCache() {
+    commitsCache = Collections.emptyList();
+  }
+  
   /**
    * Setter for current strategy to present commits.
    * 
