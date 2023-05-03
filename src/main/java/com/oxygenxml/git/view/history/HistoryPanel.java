@@ -786,17 +786,7 @@ public class HistoryPanel extends JPanel {
         RenameTracker renameTracker = new RenameTracker();
         final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(
             currentStrategy, filePath, renameTracker);
-        boolean shouldRefreshHistory = commitCharacteristicsVector.size() != commitsCache.size();
-        if(!shouldRefreshHistory) {
-          final int noOfCommits = commitsCache.size();
-          for(int i = 0; i < noOfCommits; i++) {
-            if(!Objects.equals(commitCharacteristicsVector.get(i).getCommitId(), commitsCache.get(i).getCommitId())) {
-              shouldRefreshHistory = true;
-              break;
-            }
-          }
-        }
-        commitsCache = commitCharacteristicsVector;
+        boolean shouldRefreshHistory = checkForCommitsUpdate(commitCharacteristicsVector);
         if(!shouldRefreshHistory) {
           return;
         }
@@ -897,7 +887,29 @@ public class HistoryPanel extends JPanel {
       }
     } 
   }
-  
+
+  /**
+   * This method checks for commits update.
+   * 
+   * @param commitCharacteristicsVector The actual commits for the current repository.
+   * 
+   * @return <code>true</code> if the actual commits have changed compared to the cache commits.
+   */
+  private boolean checkForCommitsUpdate(final List<CommitCharacteristics> commitCharacteristicsVector) {
+  	boolean areCommitsChanged = commitCharacteristicsVector.size() != commitsCache.size();
+  	if(!areCommitsChanged) {
+  		final int noOfCommits = commitsCache.size();
+  		for(int i = 0; i < noOfCommits; i++) {
+  			if(!Objects.equals(commitCharacteristicsVector.get(i).getCommitId(), commitsCache.get(i).getCommitId())) {
+  				areCommitsChanged = true;
+  				break;
+  			}
+  		}
+  	}
+  	commitsCache = commitCharacteristicsVector;
+  	return areCommitsChanged;
+  }
+
   /**
    * Select the local branch HEAD.
    * 
