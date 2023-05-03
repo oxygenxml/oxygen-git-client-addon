@@ -1097,9 +1097,11 @@ public class HistoryPanel extends JPanel {
    * Selects the commit with the given ID.
    * 
    * @param id Id of the repository to select.
+   * 
+   * @return <code>true<code> if the commit was selected, <code>false</code> if no commit with the given id was found in the history table.
    */
   private boolean selectCommit(ObjectId id) {
-    boolean toReturn = false;
+    boolean wasCommitSelected = false;
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
     List<CommitCharacteristics> commits = model.getAllCommits();
     for (int i = 0; i < commits.size(); i++) {
@@ -1110,13 +1112,13 @@ public class HistoryPanel extends JPanel {
           historyTable.scrollRectToVisible(historyTable.getCellRect(selection, 0, true));
           historyTable.getSelectionModel().setSelectionInterval(selection, selection);
         });
-        toReturn = true;
+        wasCommitSelected = true;
         selectedCommitId = id;
         break;
       }
     }
     
-    return toReturn;
+    return wasCommitSelected;
    
   }
 
