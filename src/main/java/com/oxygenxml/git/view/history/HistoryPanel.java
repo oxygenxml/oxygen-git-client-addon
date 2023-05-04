@@ -1128,7 +1128,7 @@ public class HistoryPanel extends JPanel {
    * 
    * @param id Id of the repository to select.
    * 
-   * @return <code>true<code> if the commit was selected, <code>false</code> if no commit with the given id was found in the history table.
+   * @return <code>true<code> if the commit was selected, <code>false</code> if the commit with the given id was not found in the history table.
    */
   private boolean selectCommit(ObjectId id) {
     boolean wasCommitSelected = false;
