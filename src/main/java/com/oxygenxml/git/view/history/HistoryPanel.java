@@ -82,6 +82,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.graph.CommitsGraphCellRender;
+import com.oxygenxml.git.view.history.graph.VisualCommitsList.VisualLane;
 import com.oxygenxml.git.view.util.TreeUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -889,7 +890,8 @@ public class HistoryPanel extends JPanel {
 		  public void valueChanged(ListSelectionEvent e) {
 		   final int selectedCommit = historyTable.getSelectedRow();
 		   final boolean isValidIndex = selectedCommit >= 0 && commitsCache.size() > selectedCommit;
-		   selectedCommitId = isValidIndex ? commitsCache.get(selectedCommit).getPlotCommit().toObjectId() : null;
+		   final PlotCommit<VisualLane> commit = commitsCache.get(selectedCommit).getPlotCommit();
+		   selectedCommitId = isValidIndex && commit != null? commit.toObjectId() : null;
 		  }
 		});
 
