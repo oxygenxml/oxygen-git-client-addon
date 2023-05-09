@@ -161,6 +161,11 @@ public class HistoryPanel extends JPanel {
   private JTable affectedFilesTable;
   
   /**
+   * The listener for commit selection.
+   */
+  private ListSelectionListener commitSelectionListener;
+  
+  /**
    * The file path of the resource for which we are currently presenting the
    * history. If <code>null</code>, we present the history for the entire
    * repository.
@@ -833,6 +838,10 @@ public class HistoryPanel extends JPanel {
 		if (revisionDataUpdater != null) {
 		  historyTable.getSelectionModel().removeListSelectionListener(revisionDataUpdater);
 		}
+		
+		if(commitSelectionListener != null) {
+			historyTable.getSelectionModel().removeListSelectionListener(commitSelectionListener);
+		}
 
 		fileHistoryPresenter.setFilePath(filePath);
 		
@@ -870,7 +879,6 @@ public class HistoryPanel extends JPanel {
 		  historyModel.filterChanged(filter.getText());
 		  historyTable.setModel(historyModel);
 		  updateHistoryTableWidths();
-
 		  historyTable.setDefaultRenderer(PlotCommit.class, graphCellRender);
 		  historyTable.setDefaultRenderer(CommitCharacteristics.class, renderer);
 		  historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer(UIUtil.DATE_FORMAT_PATTERN));
@@ -884,16 +892,23 @@ public class HistoryPanel extends JPanel {
 			affectedFilesTable, renameTracker, fileHistoryPresenter
 		);
 		historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
-		historyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		commitSelectionListener = new ListSelectionListener() {
 		  
 		  @Override
 		  public void valueChanged(ListSelectionEvent e) {
-		   final int selectedCommit = historyTable.getSelectedRow();
-		   final boolean isValidIndex = selectedCommit >= 0 && commitsCache.size() > selectedCommit;
-		   final PlotCommit<VisualLane> commit = isValidIndex ? commitsCache.get(selectedCommit).getPlotCommit() : null;
-		   selectedCommitId = commit != null? commit.toObjectId() : null;
+		  	final int selectedCommit = historyTable.getSelectedRow();
+			   if(historyTable.getModel() instanceof HistoryCommitTableModel) {
+			    	HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+			    	final List<CommitCharacteristics> commits = model.getAllCommits();
+			    	final boolean isValidIndex = selectedCommit >= 0 && commits.size() > selectedCommit;
+					  final PlotCommit<VisualLane> commit = isValidIndex ? commits.get(selectedCommit).getPlotCommit() : null;
+					  if(commit != null) {
+					  	selectedCommitId = commit.toObjectId();
+					  }
+			   }		   
 		  }
-		});
+		};
+		historyTable.getSelectionModel().addListSelectionListener(commitSelectionListener);
 
 		// Install hyperlink listener.
 		if (hyperlinkListener != null) {
@@ -901,11 +916,19 @@ public class HistoryPanel extends JPanel {
 		}
 		hyperlinkListener = new HistoryHyperlinkListener(historyTable, actualCommits);
 		commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
+		
+		SwingUtilities.invokeLater(() -> { 
+			if(selectedCommitId == null || !selectCommit(selectedCommitId)) {
+			  // Select the local branch HEAD.
+			  try {
+					selectLocalBranchHead(actualCommits, repository);
+				} catch (IOException ex) {
+					LOGGER.error(ex.getMessage(), ex);
+				}
+			}
+		});
 
-		if(selectedCommitId == null || !selectCommit(selectedCommitId)) {
-		  // Select the local branch HEAD.
-		  selectLocalBranchHead(actualCommits, repository);
-		}
+		
 	}
 
   /**
@@ -1141,12 +1164,12 @@ public class HistoryPanel extends JPanel {
         CommitCharacteristics commitCharacteristics = commits.get(i);
         if (id.getName().equals(commitCharacteristics.getCommitId())) {
           final int selection = i;
-          SwingUtilities.invokeLater(() -> {
-            historyTable.scrollRectToVisible(historyTable.getCellRect(selection, 0, true));
-            historyTable.getSelectionModel().setSelectionInterval(selection, selection);
-          });
           wasCommitSelected = true;
           selectedCommitId = id;
+          SwingUtilities.invokeLater(() -> {
+            historyTable.scrollRectToVisible(historyTable.getCellRect(selection, 0, true));
+            updateTableSelection(historyTable, selection);
+          });
           break;
         }
       }
