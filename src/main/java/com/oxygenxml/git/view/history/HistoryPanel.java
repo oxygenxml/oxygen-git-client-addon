@@ -890,8 +890,8 @@ public class HistoryPanel extends JPanel {
 		  public void valueChanged(ListSelectionEvent e) {
 		   final int selectedCommit = historyTable.getSelectedRow();
 		   final boolean isValidIndex = selectedCommit >= 0 && commitsCache.size() > selectedCommit;
-		   final PlotCommit<VisualLane> commit = commitsCache.get(selectedCommit).getPlotCommit();
-		   selectedCommitId = isValidIndex && commit != null? commit.toObjectId() : null;
+		   final PlotCommit<VisualLane> commit = isValidIndex ? commitsCache.get(selectedCommit).getPlotCommit() : null;
+		   selectedCommitId = commit != null? commit.toObjectId() : null;
 		  }
 		});
 
@@ -1134,25 +1134,26 @@ public class HistoryPanel extends JPanel {
    */
   private boolean selectCommit(ObjectId id) {
     boolean wasCommitSelected = false;
-    HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-    List<CommitCharacteristics> commits = model.getAllCommits();
-    for (int i = 0; i < commits.size(); i++) {
-      CommitCharacteristics commitCharacteristics = commits.get(i);
-      if (id.getName().equals(commitCharacteristics.getCommitId())) {
-        final int selection = i;
-        SwingUtilities.invokeLater(() -> {
-          historyTable.scrollRectToVisible(historyTable.getCellRect(selection, 0, true));
-          historyTable.getSelectionModel().setSelectionInterval(selection, selection);
-        });
-        wasCommitSelected = true;
-        selectedCommitId = id;
-        break;
+    if(historyTable.getModel() instanceof HistoryCommitTableModel) {
+    	HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+      List<CommitCharacteristics> commits = model.getAllCommits();
+      for (int i = 0; i < commits.size(); i++) {
+        CommitCharacteristics commitCharacteristics = commits.get(i);
+        if (id.getName().equals(commitCharacteristics.getCommitId())) {
+          final int selection = i;
+          SwingUtilities.invokeLater(() -> {
+            historyTable.scrollRectToVisible(historyTable.getCellRect(selection, 0, true));
+            historyTable.getSelectionModel().setSelectionInterval(selection, selection);
+          });
+          wasCommitSelected = true;
+          selectedCommitId = id;
+          break;
+        }
       }
     }
-    
+      
     return wasCommitSelected;
-   
-  }
+ }
 
  
   /**
