@@ -822,6 +822,10 @@ public class HistoryPanel extends JPanel {
 			final List<CommitCharacteristics> actualCommits) 
 					throws NoRepositorySelected, IOException {
 		File directory = gitAccess.getWorkingCopy();
+		final ObjectId branchHeadObjectId = getLocalBranchHead(actualCommits, repository);
+		if(branchHeadObjectId != null) {
+			graphCellRender.setLastCommitIdForCurrentBranch(branchHeadObjectId.getName());
+    }
 		historyLabelMessage = TRANSLATOR.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
 		    + TRANSLATOR.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
 		if (filePath != null) {
@@ -963,17 +967,33 @@ public class HistoryPanel extends JPanel {
    */
   private void selectLocalBranchHead(final List<CommitCharacteristics> commitCharacteristics,
 		  final Repository repo) throws IOException {
-	  if (!commitCharacteristics.isEmpty()) {
+  	final ObjectId objectId = getLocalBranchHead(commitCharacteristics, repo);
+  	if (objectId != null) {
+	    selectCommit(objectId);
+		}
+  }
+  
+  /**
+   * Get the local branch HEAD.
+   * 
+   * @param commitCharacteristicsVector List of the commit characteristics.
+   * @param repo                        The current repository.
+   * 
+   * @return The ObjectId for local branch head.
+   * 
+   * @throws IOException 
+   */
+  private ObjectId getLocalBranchHead(final List<CommitCharacteristics> commitCharacteristics,
+		  final Repository repo) throws IOException {
+  	ObjectId toReturn = null;
+	  if(!commitCharacteristics.isEmpty()) {
 		  String fullBranch = repo.getFullBranch();
 		  Ref branchHead = repo.exactRef(fullBranch);
 		  if (branchHead != null) {
-			  ObjectId objectId = branchHead.getObjectId();
-			  if (objectId != null) {
-				  selectCommit(objectId);
-				  graphCellRender.setLastCommitIdForCurrentBranch(objectId.getName());
-			  }
+		  	toReturn = branchHead.getObjectId();
 		  }
 	  }
+	  return toReturn;
   }
   
 
