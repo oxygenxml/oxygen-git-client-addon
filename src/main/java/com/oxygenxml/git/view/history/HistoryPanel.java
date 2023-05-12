@@ -896,22 +896,7 @@ public class HistoryPanel extends JPanel {
 			affectedFilesTable, renameTracker, fileHistoryPresenter
 		);
 		historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
-		commitSelectionListener = new ListSelectionListener() {
-		  
-		  @Override
-		  public void valueChanged(ListSelectionEvent e) {
-		  	final int selectedCommit = historyTable.getSelectedRow();
-			   if(historyTable.getModel() instanceof HistoryCommitTableModel) {
-			    	HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-			    	final List<CommitCharacteristics> commits = model.getAllCommits();
-			    	final boolean isValidIndex = selectedCommit >= 0 && commits.size() > selectedCommit;
-					  final PlotCommit<VisualLane> commit = isValidIndex ? commits.get(selectedCommit).getPlotCommit() : null;
-					  if(commit != null) {
-					  	selectedCommitId = commit.toObjectId();
-					  }
-			   }		   
-		  }
-		};
+		commitSelectionListener = createCommitListenerSelection();
 		historyTable.getSelectionModel().addListSelectionListener(commitSelectionListener);
 
 		// Install hyperlink listener.
@@ -933,6 +918,29 @@ public class HistoryPanel extends JPanel {
 		});
 
 		
+	}
+
+	/**
+	 * Creates a listener for commits selection changes.
+	 * 
+	 * @return The created listener.
+	 */
+	private ListSelectionListener createCommitListenerSelection() {
+		return new ListSelectionListener() {
+		  @Override
+		  public void valueChanged(ListSelectionEvent e) {
+		  	final int selectedCommit = historyTable.getSelectedRow();
+			   if(historyTable.getModel() instanceof HistoryCommitTableModel) {
+			    	HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+			    	final List<CommitCharacteristics> commits = model.getAllCommits();
+			    	final boolean isValidIndex = selectedCommit >= 0 && commits.size() > selectedCommit;
+					  final PlotCommit<VisualLane> commit = isValidIndex ? commits.get(selectedCommit).getPlotCommit() : null;
+					  if(commit != null) {
+					  	selectedCommitId = commit.toObjectId();
+					  }
+			   }		   
+		  }
+		};
 	}
 
   /**
