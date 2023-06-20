@@ -102,8 +102,7 @@ public class SourceFilesIteratorTest extends JFCTestCase {
       String importedClassQName = importedClass.substring(0, importedClass.indexOf(DELIMITER));
       if("ro.sync.exml.workspace.api.results.ResultsManager.ResultType".equals(importedClassQName)
           || "ro.sync.net.protocol.http.HttpExceptionWithDetails".equals(importedClassQName)
-          || !importedClass.contains("ro.sync.ui.theme.SAThemeColorProvider")
-          || !importedClass.contains("ro.sync.ui.hidpi.RetinaDetector")) {
+          || "ro.sync.ui.theme.SAThemeColorProvider".equals(importedClassQName)) {
         continue;
       }
       Class<?> clazz = classLoader.loadClass(importedClassQName);
