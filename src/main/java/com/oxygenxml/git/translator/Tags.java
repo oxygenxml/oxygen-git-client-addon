@@ -1983,5 +1983,10 @@ public class Tags {
    */
   public static final String NOTHING_TO_SHOW_FOR_NEW_FILES = "Nothing_to_show_for_new_files";
   
+  /**
+   * This message appears when the untracked files have names changed to not be overwritten.
+   */
+  public static final String UNTRACKED_FILES_NAME_CHANGED = "Untracked_Files_Name_Changed";
+  
 }
 

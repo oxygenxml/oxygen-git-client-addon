@@ -2650,7 +2650,7 @@ public class GitAccess {
   	if(!conflictingList.isEmpty() && status != StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS) {
   		status = StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS;
   	}
-
+  	
   	if(status == StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS) {
   		try {
   			final List<FileStatus> untrackedFiles = RevCommitUtil
@@ -2665,7 +2665,6 @@ public class GitAccess {
   				return;
   			}
   			final String untrackedFilesCommitId = parents[RevCommitUtil.PARENT_COMMIT_UNTRACKED].getId().getName();
-  			
   			untrackedFiles.forEach(file -> {
   				try {
   					final ObjectId fileObject = RevCommitUtil.getObjectID(getRepository(), untrackedFilesCommitId, file.getFileLocation());
@@ -2701,7 +2700,7 @@ public class GitAccess {
           		.comuteFilesTooltips(overwrittenFiles.stream()
           		.map(FileStatus::getFileLocation)
           		.toList()))
-          .setMessage("The following untracked files have been restored but their names have been changed so as not to overwrite existing files:")
+          .setMessage(Tags.UNTRACKED_FILES_NAME_CHANGED)
           .setCancelButtonVisible(false)
           .buildAndShow();
   	}
