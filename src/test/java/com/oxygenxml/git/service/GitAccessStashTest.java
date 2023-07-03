@@ -12,10 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -40,8 +37,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  * @throws Exception
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*", "javax.script.*",  "javax.xml.*", "org.xml.*"})
 public class GitAccessStashTest extends TestCase {
 
   /**
@@ -152,7 +147,7 @@ public class GitAccessStashTest extends TestCase {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
-
+    
     gitAccess.addAll(gitAccess.getUnstagedFiles());
 
     assertTrue(isStashEmpty());
@@ -178,8 +173,134 @@ public class GitAccessStashTest extends TestCase {
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
     assertEquals("modify", content);
-  }
+  }  
+  
+  /**
+   * <p><b>Description:</b> Tests if the stash restore untracked files on a conflict</p>
+   * <p><b>Bug ID:</b> EXM-52962</p>
+   *
+   * @author alex_smarandache
+   *
+   * @throws Exception
+   */
+  public void testApplyStashInConflictWithUntrackedFiles() throws Exception {
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
+      out.println("modify");
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
 
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    
+    File file = new File(LOCAL_TEST_REPOSITORY + "/test3.txt");
+    try {
+      file.createNewFile();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    gitAccess.add(new FileStatus(GitChangeType.UNTRACKED, file.getName()));
+    assertTrue(file.exists());
+
+    assertTrue(isStashEmpty());
+    RevCommit commitStash = gitAccess.createStash(false, null);
+    assertFalse(isStashEmpty());
+    assertFalse(file.exists());
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
+      out.println("notify");
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    gitAccess.commit("Test");
+    
+    boolean noCommitFound = false;
+    try {
+      gitAccess.applyStash("No exists.");
+    } catch (Throwable e) {
+      noCommitFound = true;
+    }
+    assertTrue(noCommitFound);
+   
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("notify", content);
+
+    gitAccess.applyStash(commitStash.getName());
+    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("<<<<<<< HEAD\r\n"
+    		+ "notify\r\n"
+    		+ "=======\r\n"
+    		+ "modify\r\n"
+    		+ ">>>>>>> stash", content);
+    assertTrue(file.exists());
+  }
+  
+  /**
+   * <p><b>Description:</b> Tests if the stash restore untracked files on a conflict</p>
+   * <p><b>Bug ID:</b> EXM-52962</p>
+   *
+   * @author alex_smarandache
+   *
+   * @throws Exception
+   */
+  public void testPopStashInConflictWithUntrackedFiles() throws Exception {
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
+      out.println("modify");
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    
+    File file = new File(LOCAL_TEST_REPOSITORY + "/test3.txt");
+    try {
+      file.createNewFile();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    gitAccess.add(new FileStatus(GitChangeType.UNTRACKED, file.getName()));
+    assertTrue(file.exists());
+
+    assertTrue(isStashEmpty());
+    RevCommit commitStash = gitAccess.createStash(false, null);
+    assertFalse(isStashEmpty());
+    assertFalse(file.exists());
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
+      out.println("notify");
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    gitAccess.commit("Test");
+    
+    boolean noCommitFound = false;
+    try {
+      gitAccess.applyStash("No exists.");
+    } catch (Throwable e) {
+      noCommitFound = true;
+    }
+    assertTrue(noCommitFound);
+   
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("notify", content);
+
+    gitAccess.popStash(commitStash.getName());
+    assertFalse(isStashEmpty());
+    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("<<<<<<< HEAD\r\n"
+    		+ "notify\r\n"
+    		+ "=======\r\n"
+    		+ "modify\r\n"
+    		+ ">>>>>>> stash", content);
+    assertTrue(file.exists());
+  }
 
   /**
    * <p><b>Description:</b> tests the situation in which we want to apply a stash and we have uncommitted changes that do not cause conflicts.</p>
