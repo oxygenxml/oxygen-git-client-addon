@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -15,10 +16,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
@@ -1482,7 +1485,7 @@ public class GitAccess {
 		walk.close();
 		return baseCommit;
 	}
-
+	
 	/**
 	 * Gets the loader for a file from a specified commit and its path
 	 * 
@@ -2504,6 +2507,12 @@ public class GitAccess {
       status = e.getStatus();
       displayStashApplyFailedCauseMessage(true, status ,e);
     } catch (StashApplyFailureException | IOException e) {   
+    	restoreUntrackedFiles(status, 
+      		listStashes()
+      		  .stream()
+      		  .filter(commit -> Objects.equals(commit.getName(), stashRef))
+      		  .map(RevCommit::getId)
+      		  .findFirst().orElseThrow()); // should not happen
       displayStashApplyFailedCauseMessage(true, status ,e);
     }
 
@@ -2518,7 +2527,9 @@ public class GitAccess {
    * @param status     stash status operation.
    * @param exception  the exception that cause the fail in apply stash.
    */
-  private void displayStashApplyFailedCauseMessage(boolean isPop, StashApplyStatus status, Exception exception) {
+  private void displayStashApplyFailedCauseMessage(boolean isPop, 
+  		StashApplyStatus status, 
+  		Exception exception) {
     List<String> conflictingList = new ArrayList<>(getConflictingFiles());
     if(!conflictingList.isEmpty() && status != StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS) {
       status = StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS;
@@ -2612,9 +2623,14 @@ public class GitAccess {
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 
     } catch (StashApplyFailureWithStatusException e) {
-      status = e.getStatus();
       displayStashApplyFailedCauseMessage(false, status ,e);
     } catch (StashApplyFailureException | IOException e) {
+      restoreUntrackedFiles(status, 
+      		listStashes()
+      		  .stream()
+      		  .filter(commit -> Objects.equals(commit.getName(), stashRef))
+      		  .map(RevCommit::getId)
+      		  .findFirst().orElseThrow()); // should not happen
       displayStashApplyFailedCauseMessage(false, status ,e);
     }
 
@@ -2622,8 +2638,77 @@ public class GitAccess {
   }
 
   
-  
   /**
+   * This method restore the untracked files when the stash fail.
+   * 
+   * @param status    The file status operation.
+   * @param stashRef  The stash to be restored.
+   */ 
+  private void restoreUntrackedFiles(StashApplyStatus status, ObjectId stashRef) {
+  	final List<String> conflictingList = new ArrayList<>(getConflictingFiles());
+  	final List<FileStatus> overwrittenFiles = new ArrayList<>();
+  	if(!conflictingList.isEmpty() && status != StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS) {
+  		status = StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS;
+  	}
+
+  	if(status == StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS) {
+  		try {
+  			final List<FileStatus> untrackedFiles = RevCommitUtil
+  					.getChangedFiles(stashRef.getName())
+  					.stream()
+  					.filter(fileStatus -> GitChangeType.UNTRACKED.equals(fileStatus.getChangeType()))
+  					.collect(Collectors.toList());
+  			final File workingCopy = getWorkingCopy();
+  			final RevCommit[] parents = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(),
+  					stashRef.getName());
+  			if(parents.length < 3) {
+  				return;
+  			}
+  			final String untrackedFilesCommitId = parents[RevCommitUtil.PARENT_COMMIT_UNTRACKED].getId().getName();
+  			
+  			untrackedFiles.forEach(file -> {
+  				try {
+  					final ObjectId fileObject = RevCommitUtil.getObjectID(getRepository(), untrackedFilesCommitId, file.getFileLocation());
+  					final File realFile = new File(workingCopy, file.getFileLocation());
+  					if(realFile.createNewFile()) {
+  						try(FileOutputStream outputStream = new FileOutputStream(realFile)) {
+  							outputStream.write(getInputStream(fileObject).readAllBytes());
+  						}
+  					} else {
+  						final File newFile = new File(realFile.getParentFile(), stashRef.getName() + "-" + realFile.getName());
+  						if(newFile.createNewFile()) {
+  							overwrittenFiles.add(new FileStatus(file.getChangeType(), 
+  									file.getFileLocation().replaceAll(realFile.getName(), stashRef.getName() + "-" + realFile.getName())));
+    						try(FileOutputStream outputStream = new FileOutputStream(newFile)) {
+    							outputStream.write(getInputStream(fileObject).readAllBytes());
+    						}
+    					}
+  					}
+  				} catch (IOException | NoRepositorySelected e) {
+  					LOGGER.error(e.getMessage(), e);
+  				}
+  			});
+  			
+  		} catch (IOException | GitAPIException | NoRepositorySelected e) {
+  			LOGGER.error(e.getMessage(), e);
+  		}
+  	} 
+  	
+  	if(!overwrittenFiles.isEmpty()) {
+  		MessagePresenterProvider.getBuilder(
+          TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
+          .setTargetFilesWithTooltips(FileStatusUtil
+          		.comuteFilesTooltips(overwrittenFiles.stream()
+          		.map(FileStatus::getFileLocation)
+          		.toList()))
+          .setMessage("The following untracked files have been restored but their names have been changed so as not to overwrite existing files:")
+          .setCancelButtonVisible(false)
+          .buildAndShow();
+  	}
+  
+  }
+
+	/**
    * @param stashRef       The stash reference.
    *
    * @throws IOException

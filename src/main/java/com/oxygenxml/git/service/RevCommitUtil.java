@@ -106,8 +106,7 @@ public class RevCommitUtil {
       Repository repository = GitAccess.getInstance().getRepository();
       if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitID)) {
         ObjectId head = repository.resolve(commitID);
-
-      
+        
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
           RevCommit oldCommit = commit.getParentCount() > 0 ? rw.parseCommit(commit.getParent(0)) : null;
@@ -124,7 +123,7 @@ public class RevCommitUtil {
           changedFiles = computeFileStatuses(repository, treewalk, commit, oldCommit, TreeFilter.ALL);
 
           if(parents.length > 2) {
-            addUntrackedFiles(changedFiles, repository, rw, commit);
+          	changedFiles.addAll(getUntrackedFiles(repository, rw, commit));
           }          
         }
       } else {
@@ -143,15 +142,17 @@ public class RevCommitUtil {
   /**
    * Add the untracked files to files list.
    *
-   * @param changedFiles    The container to add files.
    * @param repository      The Git repository.
    * @param revWalk         The RevWalk.
    * @param commit          The stash commit.
    *
+   * @return The untracked files from the commit.
+   *
    * @throws IOException
    */
-  private static void addUntrackedFiles(List<FileStatus> changedFiles, Repository repository, RevWalk revWalk, RevCommit commit) throws IOException {
+  public static List<FileStatus> getUntrackedFiles(Repository repository, RevWalk revWalk, RevCommit commit) throws IOException {
     RevCommit oldC;
+    List<FileStatus> untrackedFiles = new ArrayList<>();
     oldC = revWalk.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
     try (TreeWalk treeWalk = new TreeWalk(repository)) {
       treeWalk.addTree(commit.getTree());
@@ -165,10 +166,12 @@ public class RevCommitUtil {
           treeWalk.enterSubtree();
         } else {
           String path = treeWalk.getPathString();
-          changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+          untrackedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
         }
       }
     }
+    
+    return untrackedFiles;
   }
 
 
