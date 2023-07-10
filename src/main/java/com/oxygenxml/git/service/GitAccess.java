@@ -2686,7 +2686,7 @@ public class GitAccess {
           .setTargetFilesWithTooltips(FileStatusUtil
           		.comuteFilesTooltips(overwrittenFiles.stream()
           		.map(FileStatus::getFileLocation)
-          		.toList()))
+          		.collect(Collectors.toList())))
           .setMessage(TRANSLATOR.getTranslation(Tags.UNTRACKED_FILES_NAME_CHANGED))
           .setCancelButtonVisible(false)
           .buildAndShow();
