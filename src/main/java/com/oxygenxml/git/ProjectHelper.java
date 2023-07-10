@@ -247,19 +247,6 @@ public class ProjectHelper {
   public boolean wasRepoJustChanged() {
     return wasRepoJustChanged.getAndSet(false);
   }
-  /**
-   * @return <code>true</code> when no repository is opened.
-   */
-  private boolean isRepositoryEmpty() {
-  	boolean toReturn = true;
-  	try {
-  		toReturn = GitAccess.getInstance().getRepository() == null;
-		} catch (NoRepositorySelected e) {
-			// not needed
-		}
-  	
-  	return toReturn;
-  }
   
   /**
    * Checks the current loaded project and:
@@ -279,7 +266,7 @@ public class ProjectHelper {
     if(stagingPanel != null) {
       UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
       final File projectFile = utilAccess.locateFile(newProjectURL);
-      if(projectFile != null && (!isRepositoryEmpty() || wasProjectLoaded())) {
+      if(projectFile != null && wasProjectLoaded()) {
         String projectDir = projectFile.getParent();
         if(!projectDir.equals(lastOpenedProject)) {
           File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
