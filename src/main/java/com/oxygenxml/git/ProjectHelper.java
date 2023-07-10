@@ -268,14 +268,13 @@ public class ProjectHelper {
       final File projectFile = utilAccess.locateFile(newProjectURL);
       if(projectFile != null) {
         String projectDir = projectFile.getParent();
-        if(wasProjectLoaded()) { // EXM-52788: ignore the change when load first project on Oxygen starting.
-        	 if(!projectDir.equals(lastOpenedProject)) {
-             File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
-             repoChanged = detectedRepo == null ? createNewRepoIfUserAgrees(projectDir, projectFile.getName()) :
-               tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
-             lastProjectXPRFile = null;
-           }
-        } 
+        if (wasProjectLoaded() // EXM-52788: ignore the change when load first project on Oxygen starting.
+            && !projectDir.equals(lastOpenedProject)) {
+           File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
+           repoChanged = detectedRepo == null ? createNewRepoIfUserAgrees(projectDir, projectFile.getName()) :
+             tryToSwitchToRepo(detectedRepo, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
+           lastProjectXPRFile = null;
+         } 
         lastOpenedProject = projectDir;      
       } 
     }
