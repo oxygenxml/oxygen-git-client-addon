@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -2507,12 +2508,7 @@ public class GitAccess {
       status = e.getStatus();
       displayStashApplyFailedCauseMessage(true, status ,e);
     } catch (StashApplyFailureException | IOException e) {   
-    	restoreUntrackedFiles(status, 
-      		listStashes()
-      		  .stream()
-      		  .filter(commit -> Objects.equals(commit.getName(), stashRef))
-      		  .map(RevCommit::getId)
-      		  .findFirst().orElseThrow()); // should not happen
+    	restoreUntrackedFiles(status, searchStashByID(stashRef).orElseThrow()); // should not happen
       displayStashApplyFailedCauseMessage(true, status ,e);
     }
 
@@ -2625,17 +2621,27 @@ public class GitAccess {
     } catch (StashApplyFailureWithStatusException e) {
       displayStashApplyFailedCauseMessage(false, status ,e);
     } catch (StashApplyFailureException | IOException e) {
-      restoreUntrackedFiles(status, 
-      		listStashes()
-      		  .stream()
-      		  .filter(commit -> Objects.equals(commit.getName(), stashRef))
-      		  .map(RevCommit::getId)
-      		  .findFirst().orElseThrow()); // should not happen
+      restoreUntrackedFiles(status, searchStashByID(stashRef).orElseThrow()); // should not happen
       displayStashApplyFailedCauseMessage(false, status ,e);
     }
 
     return status;
   }
+
+  /**
+   * Search a stash by its identifier.
+   * 
+   * @param stashRef The stash identifier.
+   * 
+   * @return An optional that contains the ObjectId of the founded stash,
+   */
+	private Optional<ObjectId> searchStashByID(final String stashRef) {
+		return listStashes()
+		  .stream()
+		  .filter(commit -> Objects.equals(commit.getName(), stashRef))
+		  .map(RevCommit::getId)
+		  .findFirst();
+	}
 
   
   /**
@@ -2665,29 +2671,10 @@ public class GitAccess {
   				return;
   			}
   			final String untrackedFilesCommitId = parents[RevCommitUtil.PARENT_COMMIT_UNTRACKED].getId().getName();
-  			untrackedFiles.forEach(file -> {
-  				try {
-  					final ObjectId fileObject = RevCommitUtil.getObjectID(getRepository(), untrackedFilesCommitId, file.getFileLocation());
-  					final File realFile = new File(workingCopy, file.getFileLocation());
-  					if(realFile.createNewFile()) {
-  						try(FileOutputStream outputStream = new FileOutputStream(realFile)) {
-  							outputStream.write(getInputStream(fileObject).readAllBytes());
-  						}
-  					} else {
-  						final File newFile = new File(realFile.getParentFile(), stashRef.getName() + "-" + realFile.getName());
-  						if(newFile.createNewFile()) {
-  							overwrittenFiles.add(new FileStatus(file.getChangeType(), 
-  									file.getFileLocation().replaceAll(realFile.getName(), stashRef.getName() + "-" + realFile.getName())));
-    						try(FileOutputStream outputStream = new FileOutputStream(newFile)) {
-    							outputStream.write(getInputStream(fileObject).readAllBytes());
-    						}
-    					}
-  					}
-  				} catch (IOException | NoRepositorySelected e) {
-  					LOGGER.error(e.getMessage(), e);
-  				}
-  			});
-  			
+  			untrackedFiles.forEach(
+  					file -> restoreUntrackedFile(stashRef, overwrittenFiles, workingCopy, 
+  							untrackedFilesCommitId, file)
+  		  );
   		} catch (IOException | GitAPIException | NoRepositorySelected e) {
   			LOGGER.error(e.getMessage(), e);
   		}
@@ -2700,12 +2687,52 @@ public class GitAccess {
           		.comuteFilesTooltips(overwrittenFiles.stream()
           		.map(FileStatus::getFileLocation)
           		.toList()))
-          .setMessage(Tags.UNTRACKED_FILES_NAME_CHANGED)
+          .setMessage(TRANSLATOR.getTranslation(Tags.UNTRACKED_FILES_NAME_CHANGED))
           .setCancelButtonVisible(false)
           .buildAndShow();
   	}
   
   }
+
+  /**
+   * This method restore one untracked files from a stash.
+   * 
+   * @param stashRef                    The ID of the stash to restore the untracked file.
+   * @param overwrittenFiles            A list with existing files that are overwritten.
+   * @param workingCopy                 The WC local directory.
+   * @param untrackedFilesCommitId      The untracked files commit ID.
+   * @param file                        The file to be restored. 
+   */
+	private void restoreUntrackedFile(ObjectId stashRef, 
+			final List<FileStatus> overwrittenFiles, 
+			final File workingCopy,
+			final String untrackedFilesCommitId, 
+			final FileStatus file) {
+		File fileToRestore = null;
+		try {
+			final ObjectId fileObject = RevCommitUtil.getObjectID(getRepository(), untrackedFilesCommitId, file.getFileLocation());
+			fileToRestore = new File(workingCopy, file.getFileLocation());
+			if(!fileToRestore.createNewFile()) {
+				final String originalFileName = fileToRestore.getName();
+				fileToRestore = new File(fileToRestore.getParentFile(), 
+						stashRef.getName() + "-" + originalFileName);
+				if(fileToRestore.createNewFile()) {
+					overwrittenFiles.add(new FileStatus(file.getChangeType(), 
+							file.getFileLocation().replaceAll(originalFileName, fileToRestore.getName())));
+				}
+			}
+			
+			if(fileToRestore != null && fileToRestore.exists()) {
+				try(FileOutputStream outputStream = new FileOutputStream(fileToRestore)) {
+					final InputStream fileInputStream = getInputStream(fileObject);
+					outputStream.write(fileInputStream.readAllBytes());
+					fileInputStream.close();
+				}
+			}
+		} catch (IOException | NoRepositorySelected e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 
 	/**
    * @param stashRef       The stash reference.
