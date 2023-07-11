@@ -269,7 +269,6 @@ public class ProjectHelper {
            File repoInProjectDir = RepoUtil.detectRepositoryInProject(projectFile);
            repoChanged = repoInProjectDir == null ? createNewRepoIfUserAgrees(projectDir, projectFile.getName()) :
              tryToSwitchToRepo(repoInProjectDir, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
-           lastProjectXPRFile = null;
          } 
         lastOpenedProject = projectDir;      
       } 
@@ -305,7 +304,6 @@ public class ProjectHelper {
   @TestOnly
   public void reset() {
     lastOpenedProject = null;
-    lastProjectXPRFile = null;
   }
   
   /**
