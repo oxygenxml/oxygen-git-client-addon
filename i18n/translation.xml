@@ -8,6 +8,25 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Pull_rebase_failed_because_uncommitted">
+		<comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
+		<val lang="en_US">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
+			\n\nCommit, stash, or discard the local changes and try again.</val>
+		<val lang="de_DE">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
+			\n\nCommit, stash, or discard the local changes and try again.
+		</val>
+		<val lang="fr_FR">Impossible d'effectuer le pull avec rebase à cause des
+			fichier hors commit
+			suivants:
+		</val>
+		<val lang="ja_JP">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
+			\n\nCommit, stash, or discard the local changes and try again.</val>
+		<val lang="nl_NL">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
+			\n\nCommit, stash, or discard the local changes and try again.
+		</val>
+		<val lang="zh_CN">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
+			\n\nCommit, stash, or discard the local changes and try again.</val>
+	</key>
 	<key value="Missing_Untracked_Files">
 		<comment>This message appears when the untracked files are missing.</comment>
 		<val lang="en_US">The following untracked files could not be restored:</val>
@@ -4093,26 +4112,6 @@ Commit, stash, or discard the local changes and try again.</val>
 		<val lang="ja_JP">親</val>
 		<val lang="nl_NL">Bovenliggende items</val>
 		<val lang="zh_CN">上一级</val>
-	</key>
-	<key value="Pull_rebase_failed_because_uncommitted">
-		<comment>Message shown when pull (rebase) failed because of
-			uncommitted files.</comment>
-		<val lang="en_US">Cannot pull with rebase because of the following
-			uncommitted files:</val>
-		<val lang="de_DE">Pull mit Rebase nicht möglich wegen der folgenden
-			nicht-committeten
-			Dateien:
-		</val>
-		<val lang="fr_FR">Impossible d'effectuer le pull avec rebase à cause des
-			fichier hors commit
-			suivants:
-		</val>
-		<val lang="ja_JP"/>
-		<val lang="nl_NL">Kan geen pull doen met rebase vanwege lokale wijzigingen
-			zonder commit in
-			de volgende bestanden:
-		</val>
-		<val lang="zh_CN">由于以下未提交的文件，无法使用 rebase 拉取:</val>
 	</key>
 	<key value="Continue_rebase">
 		<comment>Continue rebase</comment>
