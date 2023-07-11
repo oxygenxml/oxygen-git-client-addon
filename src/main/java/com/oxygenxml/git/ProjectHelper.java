@@ -269,7 +269,7 @@ public class ProjectHelper {
            File repoInProjectDir = RepoUtil.detectRepositoryInProject(projectFile);
            repoChanged = repoInProjectDir == null ? createNewRepoIfUserAgrees(projectDir, projectFile.getName()) :
              tryToSwitchToRepo(repoInProjectDir, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
-         } 
+        } 
         lastOpenedProject = projectDir;      
       } 
     }

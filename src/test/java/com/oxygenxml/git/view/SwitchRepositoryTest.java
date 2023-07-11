@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Objects;
 
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
@@ -90,6 +91,9 @@ public class SwitchRepositoryTest extends GitTestBase {
     parentFile.mkdirs();
     final File projectFile = new File(parentFile, "local.xpr");
     assertTrue(projectFile.createNewFile());
+    final File project2File = new File(LOCAL_REPO2, "p2");
+    assertTrue(project2File.createNewFile());
+
     final URL projectURL = projectFile.toURI().toURL();
     
     try(final MockedStatic<RepoUtil> repoUtilStaticMock = Mockito.mockStatic(RepoUtil.class)) {
@@ -124,8 +128,9 @@ public class SwitchRepositoryTest extends GitTestBase {
 
       ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
-      projectListener[0].projectChanged(null, projectURL);
-   
+      projectListener[0].projectChanged(null, project2File.toURI().toURL());
+      assertFalse(dialogWasFound[0]);
+      projectListener[0].projectChanged(project2File.toURI().toURL(), projectURL); // try second loading
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> dialogWasFound[0]);
       dialogWasFound[0] = false;
       OptionsManager.getInstance().setAskUserToCreateNewRepoIfNotExist(false);
@@ -134,6 +139,7 @@ public class SwitchRepositoryTest extends GitTestBase {
       Awaitility.await().atLeast(Duration.ONE_HUNDRED_MILLISECONDS).atMost(Duration.ONE_SECOND).until(() -> !dialogWasFound[0]);
       
     } finally {
+    	project2File.getParentFile().delete();
       projectFile.getParentFile().delete();
     }
   }
@@ -181,6 +187,10 @@ public class SwitchRepositoryTest extends GitTestBase {
 
       ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
+      projectListener[0].projectChanged(null, project1URL);
+      Awaitility.await().atMost(Duration.TWO_HUNDRED_MILLISECONDS).untilAsserted(
+      		() -> assertFalse(Objects.equals(gitAccess.getWorkingCopy().getAbsolutePath(),
+      				    project2File.getParentFile().getAbsolutePath())));
       projectListener[0].projectChanged(project1URL, project2URL);
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project2File.getParentFile().getAbsolutePath()));
     } finally {
@@ -234,6 +244,10 @@ public class SwitchRepositoryTest extends GitTestBase {
       
       ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
+      projectListener[0].projectChanged(null, project1URL);
+      Awaitility.await().atMost(Duration.TWO_HUNDRED_MILLISECONDS).untilAsserted(
+      		() -> assertFalse(Objects.equals(gitAccess.getWorkingCopy().getAbsolutePath(),
+      				    project2File.getParentFile().getAbsolutePath())));
       projectListener[0].projectChanged(project1URL, project2URL);
       Awaitility.await().atMost(Duration.ONE_SECOND).untilAsserted(
           () -> assertEquals(
