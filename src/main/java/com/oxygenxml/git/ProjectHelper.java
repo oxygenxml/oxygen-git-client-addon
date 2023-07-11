@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
-import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,11 +59,6 @@ public class ProjectHelper {
    * The last opened project in the Project side-view.
    */
   private String lastOpenedProject;
-  
-  /**
-   * The current project xpr file.
-   */
-  private File lastProjectXPRFile = null;
   
   /**
    * The git access instance.
@@ -290,29 +284,6 @@ public class ProjectHelper {
    */
   public boolean wasProjectLoaded() {
     return lastOpenedProject != null;
-  }
-  
-  /**
-   * @return The first xpr file found in the current project from Git Staging.
-   */
-  @Nullable public File findXPRFromCurrentGitProject() {
-    if(lastProjectXPRFile == null) {
-      try {
-        File currentRepo = null;
-        if (GitAccess.getInstance().isRepoInitialized()) {
-          currentRepo = GitAccess.getInstance().getRepository().getDirectory().getParentFile();
-        }
-        if(currentRepo != null) {
-          lastProjectXPRFile = FileUtil.searchFileByExtension(currentRepo, ".xpr");
-        }
-      } catch(NoRepositorySelected e) {
-        if(LOGGER.isDebugEnabled()) {
-          LOGGER.debug(e.getMessage(), e);
-        }
-      }
-    }
-
-    return lastProjectXPRFile;
   }
   
   /**
