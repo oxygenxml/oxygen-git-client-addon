@@ -268,8 +268,10 @@ public class ProjectHelper {
       final File projectFile = utilAccess.locateFile(newProjectURL);
       if(projectFile != null) {
         String projectDir = projectFile.getParent();
-        if (wasProjectLoaded() // EXM-52788: ignore the change when load first project on Oxygen starting.
-            && !projectDir.equals(lastOpenedProject)) {
+        boolean wasNewProjectLoaded = 
+            wasProjectLoaded() // EXM-52788: ignore first project loading after launching Oxygen.
+                && !projectDir.equals(lastOpenedProject);
+        if (wasNewProjectLoaded) {
            File repoInProjectDir = RepoUtil.detectRepositoryInProject(projectFile);
            repoChanged = repoInProjectDir == null ? createNewRepoIfUserAgrees(projectDir, projectFile.getName()) :
              tryToSwitchToRepo(repoInProjectDir, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
