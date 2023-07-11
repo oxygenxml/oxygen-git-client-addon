@@ -1988,5 +1988,10 @@ public class Tags {
    */
   public static final String UNTRACKED_FILES_NAME_CHANGED = "Untracked_Files_Name_Changed";
   
+  /**
+   * This message appears when the untracked files are missing.
+   */
+  public static final String MISSING_UNTRACKED_FILES = "Missing_Untracked_Files";
+  
 }
 

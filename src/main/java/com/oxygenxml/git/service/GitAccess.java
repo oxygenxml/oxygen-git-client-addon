@@ -2670,11 +2670,29 @@ public class GitAccess {
   			if(parents.length < 3) {
   				return;
   			}
+  			
   			final String untrackedFilesCommitId = parents[RevCommitUtil.PARENT_COMMIT_UNTRACKED].getId().getName();
+  			final List<String> missingFiles = new ArrayList<>();
+  			
   			untrackedFiles.forEach(
-  					file -> restoreUntrackedFile(stashRef, overwrittenFiles, workingCopy, 
-  							untrackedFilesCommitId, file)
+  					file -> {
+							try {
+								restoreUntrackedFile(stashRef, overwrittenFiles, workingCopy, 
+										untrackedFilesCommitId, file);
+							} catch (IOException e) {
+								missingFiles.add(file.getFileLocation());
+							}
+						}
   		  );
+  			
+  			if(!missingFiles.isEmpty()) {
+  				MessagePresenterProvider.getBuilder(
+  	          TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.ERROR)
+  	          .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(missingFiles))
+  	          .setMessage(TRANSLATOR.getTranslation(Tags.MISSING_UNTRACKED_FILES))
+  	          .setCancelButtonVisible(false)
+  	          .buildAndShow();
+  	  	}
   		} catch (IOException | GitAPIException | NoRepositorySelected e) {
   			LOGGER.error(e.getMessage(), e);
   		}
@@ -2702,34 +2720,35 @@ public class GitAccess {
    * @param workingCopy                 The WC local directory.
    * @param untrackedFilesCommitId      The untracked files commit ID.
    * @param file                        The file to be restored. 
+   * 
+   * @throws IOException When IO problems occur.
    */
 	private void restoreUntrackedFile(ObjectId stashRef, 
 			final List<FileStatus> overwrittenFiles, 
 			final File workingCopy,
 			final String untrackedFilesCommitId, 
-			final FileStatus file) {
+			final FileStatus file) throws IOException {
 		File fileToRestore = null;
 		try {
 			final ObjectId fileObject = RevCommitUtil.getObjectID(getRepository(), untrackedFilesCommitId, file.getFileLocation());
-			fileToRestore = new File(workingCopy, file.getFileLocation());
+			fileToRestore = new File(workingCopy, file.getFileLocation()); // NOSONAR
 			if(!fileToRestore.createNewFile()) {
 				final String originalFileName = fileToRestore.getName();
-				fileToRestore = new File(fileToRestore.getParentFile(), 
-						stashRef.getName() + "-" + originalFileName);
+				fileToRestore = new File(fileToRestore.getParentFile(), stashRef.getName() + "-" + originalFileName); // NOSONAR
 				if(fileToRestore.createNewFile()) {
 					overwrittenFiles.add(new FileStatus(file.getChangeType(), 
 							file.getFileLocation().replaceAll(originalFileName, fileToRestore.getName())));
 				}
 			}
 			
-			if(fileToRestore != null && fileToRestore.exists()) {
+			if(fileToRestore.exists()) {
 				try(FileOutputStream outputStream = new FileOutputStream(fileToRestore)) {
 					final InputStream fileInputStream = getInputStream(fileObject);
 					outputStream.write(fileInputStream.readAllBytes());
 					fileInputStream.close();
 				}
 			}
-		} catch (IOException | NoRepositorySelected e) {
+		} catch (NoRepositorySelected e) {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}
