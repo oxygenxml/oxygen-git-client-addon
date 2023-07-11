@@ -120,9 +120,9 @@ public class PanelsRefreshSupport implements GitRefreshSupport {
 
 						// call the listener; can be null from tests
 						Optional.ofNullable(updateActionsStatesListenerSupplier)
-						.filter(t -> Objects.nonNull(t.get()))
-						.map(Supplier<UpdateActionsStatesListener>::get)
-						.ifPresent(UpdateActionsStatesListener::updateButtonStates);
+						    .filter(t -> Objects.nonNull(t.get()))
+						    .map(Supplier<UpdateActionsStatesListener>::get)
+						    .ifPresent(UpdateActionsStatesListener::updateButtonStates);
 
 						Optional.ofNullable(stagingPanel.getBranchesCombo()).ifPresent(BranchSelectionCombo::refresh);
 
