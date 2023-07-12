@@ -2508,7 +2508,7 @@ public class GitAccess {
       status = e.getStatus();
       displayStashApplyFailedCauseMessage(true, status ,e);
     } catch (StashApplyFailureException | IOException e) {   
-    	restoreUntrackedFiles(status, searchStashByID(stashRef).orElseThrow()); // should not happen
+    	tryRestoreUntrackedFiles(status, searchStashByID(stashRef).orElseThrow()); // should not happen
       displayStashApplyFailedCauseMessage(true, status ,e);
     }
 
@@ -2621,7 +2621,7 @@ public class GitAccess {
     } catch (StashApplyFailureWithStatusException e) {
       displayStashApplyFailedCauseMessage(false, status ,e);
     } catch (StashApplyFailureException | IOException e) {
-      restoreUntrackedFiles(status, searchStashByID(stashRef).orElseThrow()); // should not happen
+      tryRestoreUntrackedFiles(status, searchStashByID(stashRef).orElseThrow()); // should not happen
       displayStashApplyFailedCauseMessage(false, status ,e);
     }
 
@@ -2645,12 +2645,14 @@ public class GitAccess {
 
   
   /**
-   * This method restore the untracked files when the stash fail.
+   * This method restore the untracked files when the stash fails because a conflict. 
+   * <br>
+   * If no untracked file is present, this method will do nothing.
    * 
    * @param status    The file status operation.
    * @param stashRef  The stash to be restored.
    */ 
-  private void restoreUntrackedFiles(StashApplyStatus status, ObjectId stashRef) {
+  private void tryRestoreUntrackedFiles(StashApplyStatus status, ObjectId stashRef) {
   	final List<String> conflictingList = new ArrayList<>(getConflictingFiles());
   	final List<FileStatus> overwrittenFiles = new ArrayList<>();
   	if(!conflictingList.isEmpty() && status != StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS) {
@@ -2667,7 +2669,7 @@ public class GitAccess {
   			final File workingCopy = getWorkingCopy();
   			final RevCommit[] parents = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(),
   					stashRef.getName());
-  			if(parents.length < 3) {
+  			if(parents.length < (RevCommitUtil.PARENT_COMMIT_UNTRACKED + 1)) {
   				return;
   			}
   			
@@ -2713,7 +2715,7 @@ public class GitAccess {
   }
 
   /**
-   * This method restore one untracked files from a stash.
+   * This method restore one untracked file from a stash.
    * 
    * @param stashRef                    The ID of the stash to restore the untracked file.
    * @param overwrittenFiles            A list with existing files that are overwritten.
