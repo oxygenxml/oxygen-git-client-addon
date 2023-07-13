@@ -315,7 +315,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		});
 		
 		LFSSupport.install(gitController);
-		LFSSupport.enableLFS();
 		
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
