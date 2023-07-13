@@ -38,12 +38,12 @@
 	</key>
 	<key value="Untracked_Files_Name_Changed">
 		<comment>This message appears when the untracked files have names changed to not be overwritten.</comment>
-		<val lang="en_US">The following untracked files have been restored but their names have been changed so as not to overwrite existing files:</val>
-		<val lang="de_DE">The following untracked files have been restored but their names have been changed so as not to overwrite existing files:</val>
-		<val lang="fr_FR">The following untracked files have been restored but their names have been changed so as not to overwrite existing files:</val>
-		<val lang="ja_JP">The following untracked files have been restored but their names have been changed so as not to overwrite existing files:</val>
-		<val lang="nl_NL">The following untracked files have been restored but their names have been changed so as not to overwrite existing files:</val>
-		<val lang="zh_CN">The following untracked files have been restored but their names have been changed so as not to overwrite existing files:</val>
+		<val lang="en_US">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
+		<val lang="de_DE">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
+		<val lang="fr_FR">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
+		<val lang="ja_JP">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
+		<val lang="nl_NL">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
+		<val lang="zh_CN">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
 	</key>
 	<key value="Pull_failed_because_conflicting_paths">
 		<comment>The text is displayed when you pull but it fails because the
