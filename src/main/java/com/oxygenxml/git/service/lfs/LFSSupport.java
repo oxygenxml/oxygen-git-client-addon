@@ -2,6 +2,7 @@ package com.oxygenxml.git.service.lfs;
 
 import org.eclipse.jgit.lfs.BuiltinLFS;
 import org.eclipse.jgit.util.LfsFactory;
+import org.eclipse.jgit.util.LfsFactory.LfsInstallCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,10 +12,9 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
 /**
- * This class 
+ * Class related to the large-files-system in Git.
  * 
  * @author alex_smarandache
- *
  */
 public class LFSSupport {
   
@@ -37,12 +37,14 @@ public class LFSSupport {
    */
   public static void install(final GitController gitCtrl) {
     gitCtrl.addGitListener(new GitEventAdapter() {
-      
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if(info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
           try {
-            LfsFactory.getInstance().getInstallCommand().setRepository(gitCtrl.getGitAccess().getRepository()).call();
+            LfsInstallCommand installCommand = LfsFactory.getInstance().getInstallCommand();
+            if (installCommand != null) {
+              installCommand.setRepository(gitCtrl.getGitAccess().getRepository()).call();
+            }
           } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
           }
