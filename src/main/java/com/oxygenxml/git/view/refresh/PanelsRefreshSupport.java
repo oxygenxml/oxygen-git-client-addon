@@ -104,7 +104,7 @@ public class PanelsRefreshSupport implements GitRefreshSupport {
 		LOGGER.debug("Start refresh on thread.");
 
 		boolean isAfterRestart = !ProjectHelper.getInstance().wasProjectLoaded();
-		if (!ProjectHelper.getInstance().wasRepoJustChanged() || isAfterRestart) {
+		if (!ProjectHelper.getInstance().wasRepoChangedInLastProjectSwitch() || isAfterRestart) {
 			try {
 				Repository repository = gitAccess.getRepository();
 				if (repository != null) {

@@ -69,7 +69,7 @@ public class ProjectHelper {
    * <code>true</code> only if the repository was changed in the last Oxygen project switching detection and the method 
    * is called for the first time after that.
    */
-  private AtomicBoolean wasRepoJustChanged = new AtomicBoolean(false);
+  private AtomicBoolean wasRepoChangedInLastProjectSwitch = new AtomicBoolean(false);
 
   /**
    * The status of loading project operation.
@@ -124,7 +124,7 @@ public class ProjectHelper {
    * 
    * @return <code>true</code> if repository was changed.
    */
-  public boolean tryToSwitchToRepo(final File repoDir, final JComboBox<String> wcComboBox) {
+  private boolean tryToSwitchToRepo(final File repoDir, final JComboBox<String> wcComboBox) {
     final WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
     boolean repoChanged = false;
     if(whatToDo != WhenRepoDetectedInProject.DO_NOTHING) {
@@ -238,8 +238,8 @@ public class ProjectHelper {
    * @return <code>true</code> only if the repository was changed in the last Oxygen project switching detection and the method 
    * is called for the first time after that.
    */
-  public boolean wasRepoJustChanged() {
-    return wasRepoJustChanged.getAndSet(false);
+  public boolean wasRepoChangedInLastProjectSwitch() {
+    return wasRepoChangedInLastProjectSwitch.getAndSet(false);
   }
   
   /**
@@ -274,7 +274,7 @@ public class ProjectHelper {
       } 
     }
     
-    wasRepoJustChanged.set(repoChanged);
+    wasRepoChangedInLastProjectSwitch .set(repoChanged);
     return repoChanged;
   }
   
