@@ -293,7 +293,7 @@ public class ProjectHelper {
    * @param projectCtrl             The project controller to install the listener.
    * @param stagingPanelSupplier    A supplier for the staging panel to use to switch project.
    */
-  public void installUpdateProjectOnChangeListener(final ProjectController projectCtrl, final Supplier<StagingPanel> stagingPanelSupplier) {
+  public void installProjectChangeListener(final ProjectController projectCtrl, final Supplier<StagingPanel> stagingPanelSupplier) {
     projectCtrl.addProjectChangeListener(
         (oldProjectURL, newProjectURL) -> loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL));
   }

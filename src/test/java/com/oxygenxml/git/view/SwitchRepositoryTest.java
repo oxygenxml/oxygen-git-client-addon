@@ -126,7 +126,7 @@ public class SwitchRepositoryTest extends GitTestBase {
           });
       PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
 
-      ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
+      ProjectHelper.getInstance().installProjectChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(null, project2File.toURI().toURL());
       assertFalse(dialogWasFound[0]);
@@ -185,7 +185,7 @@ public class SwitchRepositoryTest extends GitTestBase {
       Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
       PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
 
-      ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
+      ProjectHelper.getInstance().installProjectChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(null, project1URL);
       Awaitility.await().atMost(Duration.TWO_HUNDRED_MILLISECONDS).untilAsserted(
@@ -242,7 +242,7 @@ public class SwitchRepositoryTest extends GitTestBase {
           Mockito.anyString(), Mockito.any(String[].class),  Mockito.any(int[].class))).thenReturn(0); // answer to update the repository
       PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
       
-      ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
+      ProjectHelper.getInstance().installProjectChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(null, project1URL);
       Awaitility.await().atMost(Duration.TWO_HUNDRED_MILLISECONDS).untilAsserted(
@@ -307,7 +307,7 @@ public class SwitchRepositoryTest extends GitTestBase {
           Mockito.anyString(), Mockito.any(String[].class),  Mockito.any(int[].class))).thenReturn(0); // No dialog should be displayed but check this by return the ok answer
       PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
-      ProjectHelper.getInstance().installUpdateProjectOnChangeListener(projectCtrlMock, () -> stagingPanel);
+      ProjectHelper.getInstance().installProjectChangeListener(projectCtrlMock, () -> stagingPanel);
       assertNotNull(projectListener[0]);
       projectListener[0].projectChanged(project1URL, project2URL);
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> gitAccess.getWorkingCopy().getAbsolutePath().equals(project1File.getParentFile().getAbsolutePath()));

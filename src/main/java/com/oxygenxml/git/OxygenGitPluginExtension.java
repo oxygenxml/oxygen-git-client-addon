@@ -293,7 +293,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  this.pluginWorkspaceAccess = pluginWS;
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
-		ProjectHelper.getInstance().installUpdateProjectOnChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
+		ProjectHelper.getInstance().installProjectChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
 		
 		gitController.addGitListener(new GitEventAdapter() {
 		  @Override
