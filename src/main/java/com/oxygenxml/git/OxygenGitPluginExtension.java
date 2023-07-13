@@ -38,6 +38,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.lfs.LFSSupport;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
@@ -291,7 +292,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  this.pluginWorkspaceAccess = pluginWS;
-	  
 		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 		ProjectHelper.getInstance().installUpdateProjectOnChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
 		
@@ -301,8 +301,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		   if(info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
         try {
           final File wc = GitAccess.getInstance().getWorkingCopy();
-          String absolutePath = wc.getAbsolutePath();
-
+          final String absolutePath = wc.getAbsolutePath();
+          
           OptionsManager.getInstance().addRepository(absolutePath);
           OptionsManager.getInstance().saveSelectedRepository(absolutePath);
         } catch (NoRepositorySelected e) {
@@ -313,6 +313,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		   }
 		  }
 		});
+		
+		LFSSupport.install(gitController);
+		LFSSupport.enableLFS();
+		
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
     

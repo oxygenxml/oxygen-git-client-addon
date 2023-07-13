@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <third-party>
+    <component id="com.google.code.gson:gson:2.10.1" draft="false" product="editor">
+        <name>Gson</name>
+        <version>2.10.1</version>
+        <project-info>
+            <about>Gson JSON library</about>
+            <licensor></licensor>
+            <start-year></start-year>
+            <project-url>https://github.com/google/gson/gson</project-url>
+        </project-info>
+        <license>
+            <type>Apache-2.0</type>
+            <content>https://github.com/google/gson/gson</content>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </component>
     <component id="com.googlecode.javaewah:JavaEWAH:1.1.13" draft="false" product="editor">
         <name>JavaEWAH</name>
         <version>1.1.13</version>
@@ -1560,6 +1575,21 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    limitations under the License.
 </content>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </component>
+    <component id="org.eclipse.jgit:org.eclipse.jgit.lfs:6.5.0.202303070854-r" draft="false" product="editor">
+        <name>JGit - Large File Storage</name>
+        <version>6.5.0.202303070854-r</version>
+        <project-info>
+            <about>JGit Large File Storage (LFS) implementation.</about>
+            <licensor>Eclipse JGit Project</licensor>
+            <start-year></start-year>
+            <project-url>https://www.eclipse.org/jgit//org.eclipse.jgit.lfs</project-url>
+        </project-info>
+        <license>
+            <type>Eclipse Distribution License (New BSD License)</type>
+            <content>https://www.eclipse.org/jgit//org.eclipse.jgit.lfs</content>
+            <url></url>
         </license>
     </component>
     <component id="org.eclipse.jgit:org.eclipse.jgit.ssh.apache.agent:6.5.0.202303070854-r" draft="false" product="editor">
