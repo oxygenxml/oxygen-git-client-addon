@@ -48,17 +48,10 @@ public class LFSSupport {
           } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
           }
-          enableLFS();
+          BuiltinLFS.register();
         }
       }
     });
-  }
-  
-  /**
-   * This method activate the LFS support.
-   */
-  public static void enableLFS() {
-    BuiltinLFS.register();
   }
   
 }
