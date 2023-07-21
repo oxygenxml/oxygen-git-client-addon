@@ -36,6 +36,7 @@ public class LFSSupport {
    * @param gitCtrl The Git controller.
    */
   public static void install(final GitController gitCtrl) {
+  	BuiltinLFS.register();
     gitCtrl.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
@@ -48,7 +49,6 @@ public class LFSSupport {
           } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
           }
-          BuiltinLFS.register();
         }
       }
     });
