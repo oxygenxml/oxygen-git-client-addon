@@ -24,6 +24,7 @@
 	<div>
           <h3>What's new in version 5.2.0</h3>
           <ol>
+            <li>Large File Storage (LFS) is now supported. If you have installed LFS and defined the tracked large files in your repository, they will be automatically detected and handled.</li>
             <li>The integrated JGit library was upgraded to version 6.5.</li>
             <li>Improved various messages in the user interface.</li>
             <li>Bug fixes.</li>
