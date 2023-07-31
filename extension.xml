@@ -25,9 +25,13 @@
           <h3>What's new in version 5.2.0</h3>
           <ol>
             <li>Large File Support (LFS) is now supported. This means that if you have installed LFS and defined the tracked large files in your repository, they will be automatically detected and handled properly.</li>
-            <li>The integrated JGit library was upgraded to version 6.5.</li>
             <li>Improved various messages in the user interface.</li>
-            <li>Bug fixes.</li>
+            <li>Improved repository cloning process to automatically detect and load *.xpr files.</li>
+            <li>The absolute path to the working copy is now displayed in the tooltip of the Git Staging view's working copy combo.</li>
+            <li>Enhanced remote change detection and refresh in History view for improved performance.</li>
+            <li>An issue has been fixed where untracked files were not being restored from a stash.</li>
+            <li>The integrated JGit library was upgraded to version 6.5.</li>
+            <li>Other bug fixes.</li>
 	  </ol>
 	</div>
         <div>
