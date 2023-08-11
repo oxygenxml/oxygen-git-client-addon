@@ -320,13 +320,21 @@ public class ProjectHelper {
    * @throws MalformedURLException When the URL of the chosen project file is not valid.
    */
   public LoadProjectOperationStatus openOxygenProjectFromLoadedRepository(final File repositoryDir) throws MalformedURLException {
+    LOGGER.debug("Open oxygen project from repository: " + repositoryDir.getAbsolutePath());
     LoadProjectOperationStatus toReturn = LoadProjectOperationStatus.CANCELED_BY_USER;
     List<File> xprFiles = FileUtil.findAllFilesByExtension(repositoryDir, ".xpr");
     if(xprFiles.isEmpty()) {
       toReturn = LoadProjectOperationStatus.PROJECT_NOT_FOUND;
     } else {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Detected projects:");
+        for (File file : xprFiles) {
+          LOGGER.debug(file.getAbsolutePath());
+        }
+      }
       Optional<URI> projectToLoad = getProjectToLoad(xprFiles);
       if (projectToLoad.isPresent()) {
+        LOGGER.debug("Chosen by user to load: {}", projectToLoad.get());
         StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
         UtilAccess utilAccess = pluginWS.getUtilAccess();
         File projectFileToLoad = utilAccess.locateFile(projectToLoad.get().toURL());

@@ -152,6 +152,7 @@ public class PrePushValidation implements IPreOperationValidation {
     Optional<RevCommit> stash = Optional.empty();
     final File currentProjectFile = currentProjectURL != null ? 
         utilAccess.locateFile(currentProjectURL) : null;
+    LOGGER.debug("Current project {}", currentProjectFile != null ? currentProjectFile.getAbsolutePath() : null);
     try {
       if(currentProjectFile == null || !RepoUtil.isEqualsWithCurrentRepo(currentProjectFile)) {
         canPerformPush = treatNotSameProjectCase();
@@ -267,6 +268,7 @@ public class PrePushValidation implements IPreOperationValidation {
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
     if(canPerformPush) {
       try {
+        LOGGER.debug("User chose to load project");
         final LoadProjectOperationStatus projectLoadResult = tryToLoadProject();
         if(projectLoadResult == LoadProjectOperationStatus.PROJECT_NOT_FOUND) {
           MessagePresenterProvider 
