@@ -27,6 +27,16 @@
 		<val lang="zh_CN">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
 			\n\nCommit, stash, or discard the local changes and try again.</val>
 	</key>
+	<key value="Could_no_load_repo_corresponding_to_project">
+		<comment>Error message shown when the repo corresponding to the loaded project 
+		could not be loaded.</comment>
+		<val lang="en_US">Could not load repository after switching to the new project.</val>
+		<val lang="de_DE">Could not load repository after switching to the new project.</val>
+		<val lang="fr_FR">Could not load repository after switching to the new project.</val>
+		<val lang="ja_JP">Could not load repository after switching to the new project.</val>
+		<val lang="nl_NL">Could not load repository after switching to the new project.</val>
+		<val lang="zh_CN">Could not load repository after switching to the new project.</val>
+	</key>
 	<key value="Missing_Untracked_Files">
 		<comment>This message appears when the untracked files are missing.</comment>
 		<val lang="en_US">The following untracked files could not be restored:</val>

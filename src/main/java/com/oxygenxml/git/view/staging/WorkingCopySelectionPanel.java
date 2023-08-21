@@ -455,7 +455,9 @@ public class WorkingCopySelectionPanel extends JPanel {
 		    Runnable r = () -> {
 		      setWCSelectorsEnabled(true);
 		      updateComboboxModelAfterRepositoryChanged();
-		      if (OptionsManager.getInstance().isDetectAndOpenXprFiles() && info instanceof WorkingCopyGitEventInfo) {
+		      if (OptionsManager.getInstance().isDetectAndOpenXprFiles() 
+		          && info instanceof WorkingCopyGitEventInfo
+		          && !ProjectHelper.getInstance().isProjectChangeEventBeingTreated()) {
 		        File wcDirectory = ((WorkingCopyGitEventInfo) info).getWorkingCopy();
 		        try {
               ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(wcDirectory);

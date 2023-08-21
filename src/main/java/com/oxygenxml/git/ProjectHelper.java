@@ -1,6 +1,7 @@
 package com.oxygenxml.git;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,7 +71,12 @@ public class ProjectHelper {
    * is called for the first time after that.
    */
   private AtomicBoolean wasRepoChangedInLastProjectSwitch = new AtomicBoolean(false);
-
+  
+  /**
+   * <code>true</code> if we already treat a project change event.
+   */
+  private boolean isProjectChangeEventBeingTreated;
+  
   /**
    * The status of loading project operation.
    * 
@@ -123,31 +129,33 @@ public class ProjectHelper {
    * @param wcComboBox The working copy combo box.
    * 
    * @return <code>true</code> if repository was changed.
+   * 
+   * @throws IOException if the repository to set could not be accessed.
    */
-  private boolean tryToSwitchToRepo(final File repoDir, final JComboBox<String> wcComboBox) {
+  private boolean tryToSwitchToRepo(final File repoDir, final JComboBox<String> wcComboBox) throws IOException {
     final WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
     boolean repoChanged = false;
     if(whatToDo != WhenRepoDetectedInProject.DO_NOTHING) {
-      try {
-        File currentRepo = null;
-        if (gitAccess.isRepoInitialized()) {
+      File currentRepo = null;
+      if (gitAccess.isRepoInitialized()) {
+        try {
           currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
+        } catch (NoRepositorySelected e) {
+          LOGGER.warn("Could not get the current repository.", e);
         }
-        if (currentRepo == null || !FileUtil.same(currentRepo, repoDir)) {
-          if (wcComboBox.isPopupVisible()) {
-            wcComboBox.setPopupVisible(false);
-          }
-          
-          String projectDirPath = FileUtil.getCanonicalPath(repoDir);
-          if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
-            repoChanged = switchToProjectRepoIfUserAgrees(repoDir);
-          } else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
-            GitAccess.getInstance().setRepositoryAsync(projectDirPath);
-            repoChanged = true;
-          }
+      }
+      if (currentRepo == null || !FileUtil.same(currentRepo, repoDir)) {
+        if (wcComboBox.isPopupVisible()) {
+          wcComboBox.setPopupVisible(false);
         }
-      } catch (NoRepositorySelected e) {
-        LOGGER.warn(e.getMessage(), e);
+
+        String projectDirPath = FileUtil.getCanonicalPath(repoDir);
+        if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
+          repoChanged = switchToProjectRepoIfUserAgrees(repoDir);
+        } else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
+          GitAccess.getInstance().setRepositorySynchronously(projectDirPath);
+          repoChanged = true;
+        }
       }
     }
     
@@ -254,8 +262,11 @@ public class ProjectHelper {
    * @param newProjectURL The new URL of the current opened project.
    * 
    * @return <code>true</code> if the repository changed.
+   * 
+   * @throws IOException if the repository to set could not be accessed.
    */
-  private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) {
+  private boolean loadRepositoryFromOxygenProject(final StagingPanel stagingPanel, final URL newProjectURL) 
+      throws IOException {
     boolean repoChanged = false;
     if(stagingPanel != null) {
       UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
@@ -266,9 +277,9 @@ public class ProjectHelper {
             wasProjectLoaded() // EXM-52788: ignore first project loading after launching Oxygen.
                 && !projectDir.equals(lastOpenedProject);
         if (wasNewProjectLoaded) {
-           File repoInProjectDir = RepoUtil.detectRepositoryInProject(projectFile);
-           repoChanged = repoInProjectDir == null ? createNewRepoIfUserAgrees(projectDir, projectFile.getName()) :
-             tryToSwitchToRepo(repoInProjectDir, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
+          File repoInProjectDir = RepoUtil.detectRepositoryInProject(projectFile);
+          repoChanged = repoInProjectDir == null ? createNewRepoIfUserAgrees(projectDir, projectFile.getName())
+            : tryToSwitchToRepo(repoInProjectDir, stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo());
         } 
         lastOpenedProject = projectDir;      
       } 
@@ -293,9 +304,28 @@ public class ProjectHelper {
    * @param projectCtrl             The project controller to install the listener.
    * @param stagingPanelSupplier    A supplier for the staging panel to use to switch project.
    */
-  public void installProjectChangeListener(final ProjectController projectCtrl, final Supplier<StagingPanel> stagingPanelSupplier) {
+  public void installProjectChangeListener(
+      final ProjectController projectCtrl,
+      final Supplier<StagingPanel> stagingPanelSupplier) {
     projectCtrl.addProjectChangeListener(
-        (oldProjectURL, newProjectURL) -> loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL));
+        (oldProjectURL, newProjectURL) -> {
+          isProjectChangeEventBeingTreated = true;
+          try {
+            loadRepositoryFromOxygenProject(stagingPanelSupplier.get(), newProjectURL);
+          } catch (IOException e) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+                TRANSLATOR.getTranslation(Tags.COULD_NO_LOAD_REPO_CORRESPONDING_TO_PROJECT),
+                e);
+          }
+          isProjectChangeEventBeingTreated = false;
+        });
+  }
+  
+  /**
+   * <code>true</code> if a project change event is being treated.
+   */
+  public boolean isProjectChangeEventBeingTreated() {
+    return isProjectChangeEventBeingTreated;
   }
   
   /**

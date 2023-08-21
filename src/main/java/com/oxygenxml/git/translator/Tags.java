@@ -19,6 +19,12 @@ public class Tags {
    * Last commit details.
    */
   public static final String LAST_COMMIT_DETAILS = "Last_Commit_Details";
+  
+  /**
+   * Error message.
+   */
+  public static final String COULD_NO_LOAD_REPO_CORRESPONDING_TO_PROJECT = 
+      "Could_no_load_repo_corresponding_to_project";
   /**
    * Commit before pushing.
    */
