@@ -31,6 +31,7 @@ import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -579,6 +580,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * @return <code>true</code> if another project change event is being processed.
 	 */
+	@VisibleForTesting
 	protected boolean isProjectChangeEventBeingTreated() {
     return ProjectHelper.getInstance().isProjectChangeEventBeingTreated();
   }
@@ -586,6 +588,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * @return <code>true</code>if the "detect projects in repo and open them" option is ON. 
 	 */
+	@VisibleForTesting
 	protected boolean isDetectAndOpenXprFiles() {
     return OptionsManager.getInstance().isDetectAndOpenXprFiles();
   }
@@ -597,6 +600,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * 
 	 * @throws MalformedURLException When the URL of the WC is not valid.
 	 */
+	@VisibleForTesting
 	protected void openOxyProjectFromLoadedRepo(GitEventInfo gitEventInfo) throws MalformedURLException {
 	  File wcDirectory = ((WorkingCopyGitEventInfo) gitEventInfo).getWorkingCopy();
 	  ProjectHelper.getInstance().openOxygenProjectFromLoadedRepository(wcDirectory);
