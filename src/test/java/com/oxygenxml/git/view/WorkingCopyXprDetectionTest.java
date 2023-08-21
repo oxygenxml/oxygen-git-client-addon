@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.staging.OpenProjectDialog;
 import com.oxygenxml.git.view.staging.WorkingCopySelectionPanel;
 
@@ -144,6 +147,95 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
     }
   }
 
+  /**
+   * <p><b>Description:</b> load project on repo change.</p>
+   * <p><b>Bug ID:</b> EXM-53504</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testLoadProjectOnRepoChange() throws Exception {
+    final GitEventInfo[] wcChangeEventInfo = new GitEventInfo[1];
+    
+    GitAccess gitAccess = GitAccess.getInstance();
+    new WorkingCopySelectionPanel(
+        new GitController(gitAccess),
+        false) {
+      @Override
+      protected boolean isProjectChangeEventBeingTreated() {
+        return false; // No other project change event being processed
+      }
+      
+      @Override
+      protected boolean isDetectAndOpenXprFiles() {
+        return true;
+      }
+      
+      @Override
+      protected void openOxyProjectFromLoadedRepo(GitEventInfo info) throws MalformedURLException {
+        wcChangeEventInfo[0] = info;
+      }
+    };
+
+    final String dir = "target/test-resources/WorkingCopyXprDetectionTest-loadProjectFromRepo";
+    File repo = new File(dir, "repo_1");
+    repo.deleteOnExit();
+    gitAccess.createNewRepository(repo.getPath());
+    
+    gitAccess.setRepositorySynchronously(repo.getAbsolutePath());
+    
+    assertNotNull(wcChangeEventInfo[0]);
+    assertTrue(wcChangeEventInfo[0] instanceof WorkingCopyGitEventInfo);
+    
+    WorkingCopyGitEventInfo eventInfo = (WorkingCopyGitEventInfo) wcChangeEventInfo[0];
+    assertEquals(
+        "target\\test-resources\\WorkingCopyXprDetectionTest-loadProjectFromRepo\\repo_1",
+        eventInfo.getWorkingCopy().getPath().replace("/", "\\"));
+  }
+  
+  /**
+   * <p><b>Description:</b> don't load project when repo changed if another
+   * project change event is being processed.</p>
+   * <p><b>Bug ID:</b> EXM-53504</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testDontLoadProjectOnRepoChangeIfAnotherProjectChangeIsBeingProcessed() throws Exception {
+    final GitEventInfo[] wcChangeEventInfo = new GitEventInfo[1];
+    
+    GitAccess gitAccess = GitAccess.getInstance();
+    new WorkingCopySelectionPanel(
+        new GitController(gitAccess),
+        false) {
+      @Override
+      protected boolean isProjectChangeEventBeingTreated() {
+        return true; // another project change event is being processed
+      }
+      
+      @Override
+      protected boolean isDetectAndOpenXprFiles() {
+        return true;
+      }
+      
+      @Override
+      protected void openOxyProjectFromLoadedRepo(GitEventInfo info) throws MalformedURLException {
+        wcChangeEventInfo[0] = info;
+      }
+    };
+
+    final String dir = "target/test-resources/WorkingCopyXprDetectionTest-dontLoadProjectFromRepo";
+    File repo = new File(dir, "repo_1");
+    repo.deleteOnExit();
+    gitAccess.createNewRepository(repo.getPath());
+    
+    gitAccess.setRepositorySynchronously(repo.getAbsolutePath());
+    
+    assertNull(wcChangeEventInfo[0]);
+  }
+  
   /**
    * Creates testing resources.
    *     
