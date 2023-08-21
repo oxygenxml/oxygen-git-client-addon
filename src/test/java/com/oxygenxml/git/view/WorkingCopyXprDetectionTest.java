@@ -190,8 +190,8 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
     
     WorkingCopyGitEventInfo eventInfo = (WorkingCopyGitEventInfo) wcChangeEventInfo[0];
     assertEquals(
-        "target\\test-resources\\WorkingCopyXprDetectionTest-loadProjectFromRepo\\repo_1",
-        eventInfo.getWorkingCopy().getPath().replace("/", "\\"));
+        repo.getAbsolutePath().replace("\\", "/"),
+        eventInfo.getWorkingCopy().getAbsolutePath().replace("\\", "/"));
   }
   
   /**
