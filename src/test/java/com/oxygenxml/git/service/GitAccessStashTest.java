@@ -230,10 +230,11 @@ public class GitAccessStashTest extends TestCase {
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
-    assertEquals("<<<<<<< HEAD\r\n"
-    		+ "notify\r\n"
-    		+ "=======\r\n"
-    		+ "modify\r\n"
+    content = content.replaceAll("\r", "");
+    assertEquals("<<<<<<< HEAD\n"
+    		+ "notify\n"
+    		+ "=======\n"
+    		+ "modify\n"
     		+ ">>>>>>> stash", content);
     assertTrue(file.exists());
   }
@@ -294,10 +295,11 @@ public class GitAccessStashTest extends TestCase {
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
-    assertEquals("<<<<<<< HEAD\r\n"
-    		+ "notify\r\n"
-    		+ "=======\r\n"
-    		+ "modify\r\n"
+    content = content.replaceAll("\r", "");
+    assertEquals("<<<<<<< HEAD\n"
+    		+ "notify\n"
+    		+ "=======\n"
+    		+ "modify\n"
     		+ ">>>>>>> stash", content);
     assertTrue(file.exists());
   }
