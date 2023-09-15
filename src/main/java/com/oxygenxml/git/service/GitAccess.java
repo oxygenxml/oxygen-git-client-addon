@@ -1851,7 +1851,6 @@ public class GitAccess {
 	    LogUtil.logSubmodule();
 	    
 	    RepoUtil.checkoutSubmodules(git, e -> {
-	      e.printStackTrace();
 	      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 	    });
 	    
