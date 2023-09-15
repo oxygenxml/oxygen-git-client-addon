@@ -7,9 +7,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -561,6 +564,62 @@ public static boolean isRepoRebasing(RepositoryState repoState) {
    */
   public static String extractRepositoryURLFromCloneCommand(@NonNull final String cloneCommand) {
     return Iterables.getLast(Splitter.on(" ").splitToList(cloneCommand.trim()));
+  }
+  
+  
+  
+  /**
+   * An equivalent to running:
+   *      
+   *      git submodule update --checkout --recursive
+   * 
+   * -- checkout
+   * 
+   *  the commit recorded in the superproject will be checked out in the submodule on a detached HEAD.
+   *  If --force is specified, the submodule will be checked out (using git checkout --force), even if
+   *   the commit specified in the index of the containing repository already matches the commit checked out in the submodule. 
+   *  
+   * --recursive
+   *  
+   *  This option is only valid for foreach, update, status and sync commands. Traverse submodules recursively. 
+   *  The operation is performed not only in the submodules of the current repo, but also in any nested submodules inside those submodules (and so on).
+   * 
+   * @param git Current git repository.
+   * @param errorHandler 
+   * 
+   * @throws GitAPIException Git command falied.
+   * @throws IOException Problems while iterating the modules.
+   */
+  public static void checkoutSubmodules(Git git, Consumer<Throwable> errorHandler) throws GitAPIException, IOException {
+    // Update current repo.
+    git.submoduleInit().call();
+    git.submoduleUpdate().call();
+    
+    
+    // Go recursively.
+    SubmoduleWalk walk = SubmoduleWalk.forIndex(git.getRepository());
+    while (walk.next()) {
+      try (Repository subRepo = walk.getRepository()) {
+        if (subRepo != null) {
+          Git wrap = Git.wrap(subRepo);
+          git.submoduleStatus().addPath(walk.getPath()).call().forEach(new BiConsumer<String, SubmoduleStatus>() {
+            @Override
+            public void accept(String t, SubmoduleStatus u) {
+              try {
+                wrap.checkout().setName(u.getIndexId().getName()).call();
+              } catch (GitAPIException e) {
+                String errorMessage = MessageFormat.format("Failed to restore submodule \"{0}\" because of:\n\n {1}" , u.getPath(), e.getMessage());
+                errorHandler.accept(new Exception(errorMessage , e));
+                LOGGER.debug(e, e);
+              }
+            }
+          });
+          
+          
+          checkoutSubmodules(wrap, errorHandler);
+        }
+      }
+    }
   }
 
 }

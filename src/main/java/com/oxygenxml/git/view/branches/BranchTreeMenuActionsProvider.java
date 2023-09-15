@@ -251,9 +251,10 @@ public class BranchTreeMenuActionsProvider {
        * 
        * @return <code>null</code>.
        * 
-       * @throws GitAPIException 
+       * @throws GitAPIException Exceptions while creating or checking out the new branch.
+       * @throws IOException Submodules related exceptions while switching.
        */
-      private Object doCreateBranch(String nodePath, String branchName, boolean isCheckoutBranch) throws GitAPIException {
+      private Object doCreateBranch(String nodePath, String branchName, boolean isCheckoutBranch) throws GitAPIException, IOException {
         ctrl.getGitAccess().createBranchFromLocalBranch(branchName, nodePath);
 
         if (!isCheckoutBranch) {

@@ -1842,10 +1842,19 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException
 	 */
-	public void setBranch(String branch) throws GitAPIException {
+	public void setBranch(String branch) throws GitAPIException, IOException {
 	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  try {
+	    
+	    LogUtil.logSubmodule();
 	    git.checkout().setName(branch).call();
+	    LogUtil.logSubmodule();
+	    
+	    RepoUtil.checkoutSubmodules(git, e -> {
+	      e.printStackTrace();
+	      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+	    });
+	    
 	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  } catch (GitAPIException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);

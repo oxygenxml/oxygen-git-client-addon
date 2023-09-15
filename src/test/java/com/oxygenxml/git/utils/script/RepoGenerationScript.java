@@ -190,8 +190,9 @@ public class RepoGenerationScript {
    * @param localBranchShortNameShort name of the local branch.
    * 
    * @throws GitAPIException
+   * @throws IOException 
    */
-  private static void setLocalBranch(String localBranchShortName) throws GitAPIException {
+  private static void setLocalBranch(String localBranchShortName) throws GitAPIException, IOException {
     if (localBranchShortName != null) {
       boolean anyMatch = GitAccess.getInstance().getLocalBranchList().stream().anyMatch(r -> localBranchShortName.equals(Repository.shortenRefName(r.getName())));
       if (LOGGER.isDebugEnabled()) {
