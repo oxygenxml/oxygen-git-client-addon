@@ -32,7 +32,7 @@
 		could not be loaded.</comment>
 		<val lang="en_US">Could not load repository after switching to the new project.</val>
 		<val lang="de_DE">Could not load repository after switching to the new project.</val>
-		<val lang="fr_FR">Could not load repository after switching to the new project.</val>
+		<val lang="fr_FR">Impossible de charger le dépôt après avoir basculé vers le nouveau projet.</val>
 		<val lang="ja_JP">Could not load repository after switching to the new project.</val>
 		<val lang="nl_NL">Could not load repository after switching to the new project.</val>
 		<val lang="zh_CN">Could not load repository after switching to the new project.</val>
@@ -41,7 +41,7 @@
 		<comment>This message appears when the untracked files are missing.</comment>
 		<val lang="en_US">The following untracked files could not be restored:</val>
 		<val lang="de_DE">The following untracked files could not be restored:</val>
-		<val lang="fr_FR">The following untracked files could not be restored:</val>
+		<val lang="fr_FR">Les fichiers non suivis suivants n'ont pas pu être restaurés:</val>
 		<val lang="ja_JP">The following untracked files could not be restored:</val>
 		<val lang="nl_NL">The following untracked files could not be restored:</val>
 		<val lang="zh_CN">The following untracked files could not be restored:</val>
@@ -50,7 +50,7 @@
 		<comment>This message appears when the untracked files have names changed to not be overwritten.</comment>
 		<val lang="en_US">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
 		<val lang="de_DE">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
-		<val lang="fr_FR">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
+		<val lang="fr_FR">Les fichiers non suivis suivants ont été restaurés, mais leurs noms ont été modifiés pour éviter d'écraser des fichiers existants:</val>
 		<val lang="ja_JP">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
 		<val lang="nl_NL">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
 		<val lang="zh_CN">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
@@ -65,8 +65,8 @@ Commit, stash, or discard the local changes and try again.
 		</val>
 		<val lang="de_DE">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.</val>
-		<val lang="fr_FR">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
-Commit, stash, or discard the local changes and try again.
+		<val lang="fr_FR">Impossible d''effectuer le pull des ({0}) modifications parce que vos modifications locales hors commit des fichiers ci-dessous seraient écrasées par les modifications distantes entrantes. Ces modifications peuvent ne pas entrer en conflit, mais les modifications des fichiers hors commit ne peuvent pas être fusionnées.\n\n
+Effectuez un commit, une remise ou abandonnez les modifications locales et réessayez.
 		</val>
 		<val lang="ja_JP">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
 Commit, stash, or discard the local changes and try again.</val>
@@ -79,7 +79,7 @@ Commit, stash, or discard the local changes and try again.</val>
 		<comment>This message occurs when pre push validation failed because there are some main files not found.</comment>
 		<val lang="en_US">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
 		<val lang="de_DE">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
-		<val lang="fr_FR">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
+		<val lang="fr_FR">Impossible de terminer la validation car certains des fichiers principaux n'existent plus. Essayez de corriger la configuration dans le dossier des fichiers principaux de la vue Projet et réessayez.\n\nFichiers principaux introuvables:</val>
 		<val lang="ja_JP">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:く</val>
 		<val lang="nl_NL">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
 		<val lang="zh_CN">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
@@ -88,7 +88,7 @@ Commit, stash, or discard the local changes and try again.</val>
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
 		<val lang="de_DE">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
-		<val lang="fr_FR">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
+		<val lang="fr_FR">Le fichier de projet actuellement chargé dans la vue Projet n'a pas pu être trouvé dans le dépôt local chargé dans le client Git, et ne peut donc pas être validé avant le push.\n\nVoulez-vous charger un projet du dépôt local dans la vue Projet pour que la validation puisse avoir lieu?</val>
 		<val lang="ja_JP">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
 		<val lang="nl_NL">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
 		<val lang="zh_CN">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
