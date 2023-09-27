@@ -9,97 +9,74 @@
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
 	<key value="Pull_rebase_failed_because_uncommitted">
-		<comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
-		<val lang="en_US">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
-			\n\nCommit, stash, or discard the local changes and try again.</val>
-		<val lang="de_DE">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
-			\n\nCommit, stash, or discard the local changes and try again.
-		</val>
-		<val lang="fr_FR">Impossible d'effectuer le pull avec rebase à cause des
-			fichier hors commit
-			suivants:
-		</val>
-		<val lang="ja_JP">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
-			\n\nCommit, stash, or discard the local changes and try again.</val>
-		<val lang="nl_NL">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
-			\n\nCommit, stash, or discard the local changes and try again.
-		</val>
-		<val lang="zh_CN">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.
-			\n\nCommit, stash, or discard the local changes and try again.</val>
-	</key>
-	<key value="Could_no_load_repo_corresponding_to_project">
-		<comment>Error message shown when the repo corresponding to the loaded project 
-		could not be loaded.</comment>
+       		<comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
+        	<val lang="en_US">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.\n\nCommit, stash, or discard the local changes and try again.</val>
+        	<val lang="de_DE">Pull (Rebase) kann nicht durchgeführt werden, da es nicht übermittelte lokale Änderungen an den unten aufgeführten Dateien gibt. Die eingehenden Remote-Änderungen könnten diese Dateien nicht ändern, aber ein Rebase kann nicht durchgeführt werden, wenn nicht übermittelte lokale Änderungen vorhanden sind.\n\nCommit, Stash oder verwerfen Sie die lokalen Änderungen und versuchen Sie es erneut.</val>
+        	<val lang="fr_FR">Impossible d'effectuer le pull avec rebase à cause des fichier hors commit suivants:</val>
+        	<val lang="ja_JP">以下のファイルに未コミットのローカル変更があるため、プル（リベース）を行うことができません。リモートからの変更がこれらのファイルを変更しない可能性がありますが、未コミットのローカル変更が存在する場合、リベースを行うことはできません。\n\nコミット、スタッシュ、またはローカルの変更を破棄して再試行してください。</val>
+        	<val lang="nl_NL">Kan niet pullen (rebasen) omdat er niet-gecommitte lokale wijzigingen zijn in de onderstaande bestanden. De binnenkomende remote wijzigingen zouden deze bestanden niet kunnen wijzigen, maar een rebase kan niet worden uitgevoerd als er niet-gecommitte lokale wijzigingen zijn.\n\nCommit, stash, of verwijder de lokale wijzigingen en probeer het opnieuw.</val>
+        	<val lang="zh_CN">由于以下文件存在未提交的本地更改，无法拉取（变基）。远程的更改可能不会修改这些文件，但是当存在未提交的本地更改时，无法执行变基操作。\n\n提交、存储或丢弃本地更改，然后重试。</val>
+    	</key>
+    	<key value="Could_no_load_repo_corresponding_to_project">
+		<comment>Error message shown when the repo corresponding to the loaded project could not be loaded.</comment>
 		<val lang="en_US">Could not load repository after switching to the new project.</val>
-		<val lang="de_DE">Could not load repository after switching to the new project.</val>
+		<val lang="de_DE">Das Repository konnte nach dem Wechsel zum neuen Projekt nicht geladen werden.</val>
 		<val lang="fr_FR">Impossible de charger le dépôt après avoir basculé vers le nouveau projet.</val>
-		<val lang="ja_JP">Could not load repository after switching to the new project.</val>
-		<val lang="nl_NL">Could not load repository after switching to the new project.</val>
-		<val lang="zh_CN">Could not load repository after switching to the new project.</val>
-	</key>
-	<key value="Missing_Untracked_Files">
+		<val lang="ja_JP">新しいプロジェクトに切り替えた後、リポジトリをロードできませんでした。</val>
+		<val lang="nl_NL">Kon repository niet laden na overschakelen naar het nieuwe project.</val>
+		<val lang="zh_CN">切换到新项目后无法加载仓库。</val>
+    	</key>
+    	<key value="Missing_Untracked_Files">
 		<comment>This message appears when the untracked files are missing.</comment>
 		<val lang="en_US">The following untracked files could not be restored:</val>
-		<val lang="de_DE">The following untracked files could not be restored:</val>
+		<val lang="de_DE">Die folgenden nicht verfolgten Dateien konnten nicht wiederhergestellt werden:</val>
 		<val lang="fr_FR">Les fichiers non suivis suivants n'ont pas pu être restaurés:</val>
-		<val lang="ja_JP">The following untracked files could not be restored:</val>
-		<val lang="nl_NL">The following untracked files could not be restored:</val>
-		<val lang="zh_CN">The following untracked files could not be restored:</val>
-	</key>
-	<key value="Untracked_Files_Name_Changed">
+		<val lang="ja_JP">以下の未追跡ファイルを復元できませんでした:</val>
+		<val lang="nl_NL">De volgende niet-gevolgde bestanden konden niet worden hersteld:</val>
+		<val lang="zh_CN">以下未跟踪的文件无法恢复：</val>
+    	</key>
+    	<key value="Untracked_Files_Name_Changed">
 		<comment>This message appears when the untracked files have names changed to not be overwritten.</comment>
 		<val lang="en_US">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
-		<val lang="de_DE">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
+		<val lang="de_DE">Die folgenden nicht verfolgten Dateien wurden wiederhergestellt, aber ihre Namen wurden geändert, um ein Überschreiben vorhandener Dateien zu vermeiden:</val>
 		<val lang="fr_FR">Les fichiers non suivis suivants ont été restaurés, mais leurs noms ont été modifiés pour éviter d'écraser des fichiers existants:</val>
-		<val lang="ja_JP">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
-		<val lang="nl_NL">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
-		<val lang="zh_CN">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
-	</key>
-	<key value="Pull_failed_because_conflicting_paths">
-		<comment>The text is displayed when you pull but it fails because the
-			files that are
-			modified might become in conflict
-		</comment>
-		<val lang="en_US">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
-Commit, stash, or discard the local changes and try again.
-		</val>
-		<val lang="de_DE">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
-Commit, stash, or discard the local changes and try again.</val>
-		<val lang="fr_FR">Impossible d''effectuer le pull des ({0}) modifications parce que vos modifications locales hors commit des fichiers ci-dessous seraient écrasées par les modifications distantes entrantes. Ces modifications peuvent ne pas entrer en conflit, mais les modifications des fichiers hors commit ne peuvent pas être fusionnées.\n\n
-Effectuez un commit, une remise ou abandonnez les modifications locales et réessayez.
-		</val>
-		<val lang="ja_JP">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
-Commit, stash, or discard the local changes and try again.</val>
-		<val lang="nl_NL">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
-Commit, stash, or discard the local changes and try again.</val>
-		<val lang="zh_CN">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\n
-Commit, stash, or discard the local changes and try again.</val>
-	</key>
-	<key value="Pre_Push_Main_Files_Not_Found_Message">
+		<val lang="ja_JP">以下の未追跡ファイルは復元されましたが、既存のファイルを上書きしないように名前が変更されました:</val>
+		<val lang="nl_NL">De volgende niet-gevolgde bestanden zijn hersteld, maar hun namen zijn gewijzigd om te voorkomen dat bestaande bestanden worden overschreven:</val>
+		<val lang="zh_CN">以下未跟踪的文件已恢复，但其名称已更改以避免覆盖现有文件：</val>
+    	</key>
+    	<key value="Pull_failed_because_conflicting_paths">
+		<comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
+		<val lang="en_US">Cannot pull ({0}) changes because your local uncommitted changes to the files below would be overwritten by the incoming remote changes. These changes might not conflict, but changes in uncommitted files cannot be merged.\n\nCommit, stash, or discard the local changes and try again.</val>
+		<val lang="de_DE">Kann nicht ziehen ({0}) Änderungen, weil Ihre lokalen nicht übermittelten Änderungen an den unten aufgeführten Dateien durch die eingehenden Remote-Änderungen überschrieben würden. Diese Änderungen könnten nicht in Konflikt stehen, aber Änderungen in nicht übermittelten Dateien können nicht zusammengeführt werden.\n\nCommit, Stash oder verwerfen Sie die lokalen Änderungen und versuchen Sie es erneut.</val>
+		<val lang="fr_FR">Impossible d''effectuer le pull des ({0}) modifications parce que vos modifications locales hors commit des fichiers ci-dessous seraient écrasées par les modifications distantes entrantes. Ces modifications peuvent ne pas entrer en conflit, mais les modifications des fichiers hors commit ne peuvent pas être fusionnées.\n\nEffectuez un commit, une remise ou abandonnez les modifications locales et réessayez.</val>
+		<val lang="ja_JP">ローカルの未コミットの変更が下記のファイルに対して行われ、これらがリモートからの変更によって上書きされるため、({0})の変更をプルできません。これらの変更は競合しないかもしれませんが、未コミットのファイルの変更はマージできません。\n\nコミット、スタッシュ、またはローカルの変更を破棄して再試行してください。</val>
+		<val lang="nl_NL">Kan niet pullen ({0}) wijzigingen omdat uw lokale niet-gecommitte wijzigingen aan de onderstaande bestanden zouden worden overschreven door de binnenkomende remote wijzigingen. Deze wijzigingen zouden niet kunnen conflicteren, maar wijzigingen in niet-gecommitte bestanden kunnen niet worden samengevoegd.\n\nCommit, stash, of verwijder de lokale wijzigingen en probeer het opnieuw.</val>
+		<val lang="zh_CN">无法拉取（{0}）更改，因为您对以下文件的本地未提交更改将被远程的更改覆盖。这些更改可能不会冲突，但未提交文件中的更改无法合并。\n\n提交、存储或丢弃本地更改，然后重试。</val>
+    	</key>
+    	<key value="Pre_Push_Main_Files_Not_Found_Message">
 		<comment>This message occurs when pre push validation failed because there are some main files not found.</comment>
 		<val lang="en_US">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
-		<val lang="de_DE">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
+		<val lang="de_DE">Die Validierung kann nicht abgeschlossen werden, da einige der Hauptdateien nicht mehr existieren. Versuchen Sie, die Konfiguration im Ordner Hauptdateien in der Projektansicht zu korrigieren und versuchen Sie es erneut.\n\nHauptdateien, die nicht gefunden werden können:</val>
 		<val lang="fr_FR">Impossible de terminer la validation car certains des fichiers principaux n'existent plus. Essayez de corriger la configuration dans le dossier des fichiers principaux de la vue Projet et réessayez.\n\nFichiers principaux introuvables:</val>
-		<val lang="ja_JP">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:く</val>
-		<val lang="nl_NL">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
-		<val lang="zh_CN">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
-	</key>
-	<key value="Not_Same_Project_Message">
+		<val lang="ja_JP">メインファイルの一部が存在しないため、検証を完了できません。プロジェクトビュー内のメインファイルフォルダの設定を修正して、再試行してください。\n\n見つからないメインファイル:</val>
+		<val lang="nl_NL">Kan validatie niet voltooien omdat sommige van de hoofdbestanden niet meer bestaan. Probeer de configuratie in de map Hoofdbestanden binnen de Projectweergave te herstellen en probeer het opnieuw.\n\nHoofdbestanden die niet kunnen worden gevonden:</val>
+		<val lang="zh_CN">由于某些主文件已不存在，无法完成验证。尝试在项目视图中的主文件文件夹中修复配置，然后再试一次。\n\n找不到的主文件：</val>
+    	</key>
+    	<key value="Not_Same_Project_Message">
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
-		<val lang="de_DE">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
+		<val lang="de_DE">Die aktuell in der Projektansicht geladene Projektdatei konnte nicht im lokalen Repository gefunden werden, das im Git-Client geladen ist, und kann daher vor dem Pushen nicht validiert werden.\n\nMöchten Sie ein Projekt aus dem lokalen Repository in die Projektansicht laden, damit die Validierung fortgesetzt werden kann?</val>
 		<val lang="fr_FR">Le fichier de projet actuellement chargé dans la vue Projet n'a pas pu être trouvé dans le dépôt local chargé dans le client Git, et ne peut donc pas être validé avant le push.\n\nVoulez-vous charger un projet du dépôt local dans la vue Projet pour que la validation puisse avoir lieu?</val>
-		<val lang="ja_JP">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
-		<val lang="nl_NL">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
-		<val lang="zh_CN">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
-	</key>
-	<key value="Detect_And_Open_Xpr_Files">
+		<val lang="ja_JP">現在プロジェクトビューにロードされているプロジェクトファイルは、Gitクライアントにロードされたローカルリポジトリには存在しないため、プッシュする前に検証することはできません。\n\n検証を進めるために、ローカルリポジトリからプロジェクトをプロジェクトビューにロードしますか？</val>
+		<val lang="nl_NL">Het projectbestand dat momenteel is geladen in de Projectweergave kon niet worden gevonden in de lokale repository die is geladen in de Git Client, en kan dus niet worden gevalideerd voor het pushen.\n\nWilt u een project uit de lokale repository laden in de Projectweergave zodat de validatie kan doorgaan?</val>
+		<val lang="zh_CN">当前在项目视图中加载的项目文件在Git客户端中加载的本地仓库中找不到，因此无法在推送前进行验证。\n\n您是否希望从本地仓库加载一个项目到项目视图中，以便可以进行验证？</val>
+    	</key>
+    	<key value="Detect_And_Open_Xpr_Files">
 		<comment>Detect and open xpr files from opened working copies option.</comment>
 		<val lang="en_US">Detect and open Oxygen projects (.xpr) from opened repositories</val>
-		<val lang="de_DE">Erkennen und öffnen Sie Oxygen-Projekte (.xpr) aus geöffneten
-         Repositories</val>
+		<val lang="de_DE">Erkennen und öffnen Sie Oxygen-Projekte (.xpr) aus geöffneten Repositories</val>
 		<val lang="fr_FR">Détecter et ouvrir des projets Oxygen (.xpr) à partir de dépôts ouverts</val>
-		<val lang="ja_JP">Detect and open Oxygen projects (.xpr) from opened repositoriesく</val>
+		<val lang="ja_JP">開かれたリポジトリからOxygenプロジェクト（.xpr）を検出して開く</val>
 		<val lang="nl_NL">Oxygen-projecten (.xpr) vanuit geopende opslagplaatsen detecteren en openen</val>
 		<val lang="zh_CN">检测并打开已打开的资源库中的Oxygen项目（.xpr）</val>
 	</key>
@@ -174,11 +151,11 @@ Commit, stash, or discard the local changes and try again.</val>
 	<key value="Use_SSH_support">
 		<comment>The option to use SSH support.</comment>
 		<val lang="en_US">Use SSH agent</val>
-		<val lang="de_DE">Use SSH agent</val>
+		<val lang="de_DE">SSH-Agent verwenden</val>
 		<val lang="fr_FR">Utiliser l'agent SSH</val>
-		<val lang="ja_JP">Use SSH agent</val>
-		<val lang="nl_NL">Use SSH agent</val>
-		<val lang="zh_CN">Use SSH agent</val>
+		<val lang="ja_JP">SSHエージェントを使用する</val>
+		<val lang="nl_NL">Gebruik SSH-agent</val>
+		<val lang="zh_CN">使用SSH代理</val>
 	</key>
 	<key value="Current">
 		<comment>current</comment>
