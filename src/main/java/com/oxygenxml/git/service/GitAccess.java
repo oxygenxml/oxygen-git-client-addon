@@ -256,7 +256,7 @@ public class GitAccess {
 		ProgressMonitor progressMonitor = createCloneProgressMonitor(progressDialog);
 		if (progressDialog != null) {
 		  progressDialog.setNote("Initializing...");
-		  progressMonitor.beginTask("Initializing", 0);
+		  progressMonitor.beginTask("Initializing ", 0);
 		}
 		
     CloneCommand cloneCommand = 
