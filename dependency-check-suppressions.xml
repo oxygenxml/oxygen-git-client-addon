@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+  <suppress>
+    <notes><![CDATA[
+        CVE URL: https://nvd.nist.gov/vuln/detail/CVE-2023-4759
+        Library: org.eclipse.jgit-6.7.0.202309050840-r.jar
+        Reason:  This is a detection "false-positive". The issue is reported in JGit <= 6.6.0 and we have already increased JGit version to 6.7.0
+      ]]></notes>
+    <filePath regex="true">.*[\\/]?org.eclipse.jgit-6\.7\.0\.*[\\/]?\.jar</filePath>
+    <cve>CVE-2023-3635</cve>
+  </suppress>
+</suppressions> 

@@ -315,6 +315,16 @@
 					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
+			
+	      <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <configuration>
+                    <suppressionFiles>
+                        <suppressionFile>${project.basedir}/dependency-check-suppressions.xml</suppressionFile>
+                    </suppressionFiles>
+                </configuration>
+            </plugin>
 
 		</plugins>
 		<pluginManagement>
