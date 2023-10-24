@@ -6,7 +6,7 @@
         Library: org.eclipse.jgit-6.7.0.202309050840-r.jar
         Reason:  This is a detection "false-positive". The issue is reported in JGit <= 6.6.0 and we have already increased JGit version to 6.7.0
       ]]></notes>
-    <filePath regex="true">.*[\\/]org.eclipse.jgit-(6\.[7-9]|[7-9]\.\d)\.\d\.\d{12}-r\.jar</filePath>
+    <filePath regex="true">.*[\\/]org\.eclipse\.jgit(\.lfs)?-(6\.[7-9]|[7-9]\.\d)\.\d\.\d{12}-r\.jar</filePath>
     <cve>CVE-2023-4759</cve>
   </suppress>
 </suppressions> 
