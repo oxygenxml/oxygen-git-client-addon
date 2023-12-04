@@ -1,5 +1,6 @@
 package com.oxygenxml.git;
 
+import java.util.Collections;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
@@ -11,6 +12,7 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
 import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
+import ro.sync.exml.workspace.api.editor.page.ditamap.WSDITAMapEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -42,36 +44,51 @@ public class EditorContentReloader {
   }
   
   /**
-   * Reload the current editor content.
+   * Reload the current editor content and DMM editor.
    * 
    * @param pluginWS The plugin workspace.
    */
   public static void reloadCurrentEditor(final StandalonePluginWorkspace pluginWS) {
+    reloadEditorContent(pluginWS.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA));
+    reloadEditorContent(pluginWS.getCurrentEditorAccess(PluginWorkspace.DITA_MAPS_EDITING_AREA));
+  }
+
+  /**
+   * Reload the content for the given editor.
+   * 
+   * @param editor The current editor to reload its content.
+   */
+  private static void reloadEditorContent(final WSEditor editor) {
+    if(editor == null) {
+      return;
+    }
+    
     AbstractAction reloadAction = null;
-    final WSEditor editor = pluginWS.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
     final WSEditorPage page = editor.getCurrentPage();
-    if(page instanceof WSAuthorEditorPage) {
-        final WSAuthorEditorPage authorPage = (WSAuthorEditorPage)page;
-        final Map<String, Object> commonActions = authorPage.getActionsProvider().getAuthorCommonActions();
-        final Object actionObj = commonActions.get(RELOAD_ACTION_ID);
-        if(actionObj instanceof AbstractAction) {
-          reloadAction = (AbstractAction) actionObj;
-        }
+    Map<String, Object> actions = Collections.emptyMap();
+    
+    if(page instanceof WSDITAMapEditorPage) {
+      final WSDITAMapEditorPage mapPage = (WSDITAMapEditorPage)page;
+      actions = mapPage.getActionsProvider().getActions();
+    } else if(page instanceof WSAuthorEditorPage) {
+      final WSAuthorEditorPage authorPage = (WSAuthorEditorPage)page;
+      actions = authorPage.getActionsProvider().getAuthorCommonActions();
     } else if(page instanceof WSTextEditorPage) {
-        WSTextEditorPage authorPage = (WSTextEditorPage)page;
-        Map<String, Object> commonActions = authorPage.getActionsProvider().getTextActions();
-        final Object actionObj = commonActions.get(RELOAD_ACTION_ID);
-        if(actionObj instanceof AbstractAction) {
-          reloadAction = (AbstractAction) actionObj;
-        }
+      final WSTextEditorPage authorPage = (WSTextEditorPage)page;
+      actions = authorPage.getActionsProvider().getTextActions();
     } 
     
-    if(reloadAction != null) {
-      reloadAction.actionPerformed(null);
+    final Object actionObj = actions.get(RELOAD_ACTION_ID);
+    if(actionObj instanceof AbstractAction) {
+      reloadAction = (AbstractAction) actionObj;
+      if(reloadAction != null) {
+        reloadAction.actionPerformed(null);
+      } 
     } else {
       final Exception ex = new Exception("The reload action not found.");
       LOGGER.error(ex.getMessage(), ex);
     }
+    
   }
 
 }
