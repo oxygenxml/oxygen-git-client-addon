@@ -870,7 +870,7 @@
 		<val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand
 		</val>
 		<val lang="fr_FR">Pull réussi. Le dépôt est à jour</val>
-		<val lang="ja_JP">プルに成功しましたリポジトリは最新です</val>
+		<val lang="ja_JP">プルに成功しました。リポジトリは最新です</val>
 		<val lang="nl_NL">Pull sucecesvol. Repository is bijgewerkt.</val>
 		<val lang="zh_CN">拉取成功. 存储库是最新的</val>
 	</key>
@@ -1570,7 +1570,7 @@
 		<val lang="en_US">Show branches</val>
 		<val lang="de_DE">Zeige Zweige (branches)</val>
 		<val lang="fr_FR">Afficher les branches</val>
-		<val lang="ja_JP">分岐を表示ｓるう</val>
+		<val lang="ja_JP">分岐を表示する</val>
 		<val lang="nl_NL">Vertakkingen tonen</val>
 		<val lang="zh_CN">显示分支</val>
 	</key>
