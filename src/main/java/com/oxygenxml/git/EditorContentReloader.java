@@ -48,7 +48,7 @@ public class EditorContentReloader {
    * @param editorIdentifier  The identifier of the editor.
    */
   private static void reloadEditor(final StandalonePluginWorkspace pluginWS, final int editorIdentifier) {
-    // TODO update it after the 26.1 Oxygen API will be the minimum version required
+    // Update it after the 26.1 Oxygen API will be the minimum version required
     final WSEditor editor = pluginWS.getCurrentEditorAccess(editorIdentifier);
     if (editor != null) {
       try {
