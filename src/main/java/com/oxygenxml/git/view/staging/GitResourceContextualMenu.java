@@ -297,9 +297,12 @@ public class GitResourceContextualMenu extends JPopupMenu {
                 .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICT))
                 .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
                 .buildAndShow().getResult();								
-						if(answer == OKCancelDialog.RESULT_OK) {
-						  gitCtrl.asyncAddToIndex(allSelectedResources);
-						}
+            if (answer == OKCancelDialog.RESULT_OK) {
+              for (FileStatus fileStatus : selectedLeaves) {
+                DiffPresenter.showDiff(fileStatus, gitCtrl);
+              }
+              gitCtrl.asyncAddToIndex(allSelectedResources);
+            }
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);
           }
