@@ -294,7 +294,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 						final int answer = MessagePresenterProvider.getBuilder(
 						    TRANSLATOR.getTranslation(Tags.MARK_RESOLVED), DialogType.WARNING)
                 .setQuestionMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE))
-                .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY))
+                .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICT))
                 .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
                 .buildAndShow().getResult();								
 						if(answer == OKCancelDialog.RESULT_OK) {
