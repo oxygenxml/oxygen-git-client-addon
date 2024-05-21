@@ -304,7 +304,6 @@ public class GitResourceContextualMenu extends JPopupMenu {
                 for (FileStatus fileStatus : selectedLeaves) {
                   DiffPresenter.showDiff(fileStatus, gitCtrl);
                 }
-                gitCtrl.asyncAddToIndex(allSelectedResources);
               } else {
                 MessagePresenterProvider
                 .getBuilder(TRANSLATOR.getTranslation(Tags.MARK_RESOLVED), DialogType.ERROR)
