@@ -538,19 +538,6 @@ public class FileUtil {
   }
 
   /**
-   * Find the number of files in the given collection that contain conflict markers.
-   *
-   * @param allSelectedResources the files.
-   * @param workingCopy          the working copy.
-   *
-   * @return the number of files that contain at least a conflict marker.
-   */
-  public static long getNoFilesThatContainConflictMarkers(final List<FileStatus> allSelectedResources,
-      final File workingCopy) {
-    return allSelectedResources.stream().parallel().filter(file -> containsConflictMarkers(file, workingCopy)).count();
-  }
-
-  /**
    * Check if a file contains conflict markers.
    *
    * @param fileStatus  the file status.

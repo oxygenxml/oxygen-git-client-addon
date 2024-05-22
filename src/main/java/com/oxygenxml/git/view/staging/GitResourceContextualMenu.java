@@ -298,18 +298,11 @@ public class GitResourceContextualMenu extends JPopupMenu {
                 .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
                 .buildAndShow().getResult();								
             if (answer == OKCancelDialog.RESULT_OK) {
-              long filesThatContainConflictMarkers = FileUtil.getNoFilesThatContainConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy());
-              if (filesThatContainConflictMarkers == 1) {
                 // "Mark resolved" only has problems
                 for (FileStatus fileStatus : selectedLeaves) {
                   DiffPresenter.showDiff(fileStatus, gitCtrl);
                 }
-              } else {
-                MessagePresenterProvider
-                .getBuilder(TRANSLATOR.getTranslation(Tags.MARK_RESOLVED), DialogType.ERROR)
-                .setMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MANY_FILES_MESSAGE))
-                .buildAndShow();
-              }
+ 
             }
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);
