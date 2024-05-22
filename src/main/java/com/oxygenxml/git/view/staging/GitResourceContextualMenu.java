@@ -175,7 +175,10 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		resolveConflict.addSeparator();
 		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(resolveUsingMineAction));
 		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(resolveUsingTheirsAction));
-		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(markResolvedAction));
+    if (1 == selResProvider.getAllSelectedResources().size()) {
+      //only one resource can be marked as resolved EXM-53689
+      resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(markResolvedAction));
+    }
 		resolveConflict.addSeparator();
 		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(restartMergeAction));
 
