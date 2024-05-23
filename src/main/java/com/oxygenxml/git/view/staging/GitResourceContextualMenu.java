@@ -175,10 +175,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		resolveConflict.addSeparator();
 		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(resolveUsingMineAction));
 		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(resolveUsingTheirsAction));
-    if (1 == selResProvider.getAllSelectedResources().size()) {
-      //only one resource can be marked as resolved EXM-53689
-      resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(markResolvedAction));
-    }
+		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(markResolvedAction));
 		resolveConflict.addSeparator();
 		resolveConflict.add(OxygenUIComponentsFactory.createMenuItem(restartMergeAction));
 
@@ -229,7 +226,8 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState) || selectionContainsConflicts);
 		resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
-		markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
+    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType
+        && !allSelectedResources.isEmpty() && selectedLeaves.size() == 1);
 		restartMergeAction.setEnabled(RepoUtil.isRepoMergingOrRebasing(repoState));
 		discardAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	}
@@ -301,11 +299,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
                 .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
                 .buildAndShow().getResult();								
             if (answer == OKCancelDialog.RESULT_OK) {
-                // "Mark resolved" only has problems
-                for (FileStatus fileStatus : selectedLeaves) {
-                  DiffPresenter.showDiff(fileStatus, gitCtrl);
-                }
- 
+              DiffPresenter.showDiff(selectedLeaves.get(0), gitCtrl);
             }
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);
