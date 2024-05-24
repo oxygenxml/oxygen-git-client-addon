@@ -226,8 +226,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState) || selectionContainsConflicts);
 		resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
-    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType
-        && !allSelectedResources.isEmpty() && selectedLeaves.size() == 1);
+    markResolvedAction.setEnabled(selectionContainsConflicts && selectedLeaves.size() == 1);
 		restartMergeAction.setEnabled(RepoUtil.isRepoMergingOrRebasing(repoState));
 		discardAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	}
