@@ -12,7 +12,7 @@
        		<comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
         	<val lang="en_US">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.\n\nCommit, stash, or discard the local changes and try again.</val>
         	<val lang="de_DE">Pull (Rebase) kann nicht durchgeführt werden, da es nicht übermittelte lokale Änderungen an den unten aufgeführten Dateien gibt. Die eingehenden Remote-Änderungen könnten diese Dateien nicht ändern, aber ein Rebase kann nicht durchgeführt werden, wenn nicht übermittelte lokale Änderungen vorhanden sind.\n\nCommit, Stash oder verwerfen Sie die lokalen Änderungen und versuchen Sie es erneut.</val>
-        	<val lang="fr_FR">Impossible d'effectuer le pull avec rebase à cause des fichier hors commit suivants:</val>
+        	<val lang="fr_FR">Impossible d'effectuer le pull avec rebase à cause des fichier hors commit suivants :</val>
         	<val lang="ja_JP">以下のファイルに未コミットのローカル変更があるため、プル（リベース）を行うことができません。リモートからの変更がこれらのファイルを変更しない可能性がありますが、未コミットのローカル変更が存在する場合、リベースを行うことはできません。\n\nコミット、スタッシュ、またはローカルの変更を破棄して再試行してください。</val>
         	<val lang="nl_NL">Kan niet pullen (rebasen) omdat er niet-gecommitte lokale wijzigingen zijn in de onderstaande bestanden. De binnenkomende remote wijzigingen zouden deze bestanden niet kunnen wijzigen, maar een rebase kan niet worden uitgevoerd als er niet-gecommitte lokale wijzigingen zijn.\n\nCommit, stash, of verwijder de lokale wijzigingen en probeer het opnieuw.</val>
         	<val lang="zh_CN">由于以下文件存在未提交的本地更改，无法拉取（变基）。远程的更改可能不会修改这些文件，但是当存在未提交的本地更改时，无法执行变基操作。\n\n提交、存储或丢弃本地更改，然后重试。</val>
@@ -30,7 +30,7 @@
 		<comment>This message appears when the untracked files are missing.</comment>
 		<val lang="en_US">The following untracked files could not be restored:</val>
 		<val lang="de_DE">Die folgenden nicht verfolgten Dateien konnten nicht wiederhergestellt werden:</val>
-		<val lang="fr_FR">Les fichiers non suivis suivants n'ont pas pu être restaurés:</val>
+		<val lang="fr_FR">Les fichiers non suivis suivants n'ont pas pu être restaurés :</val>
 		<val lang="ja_JP">以下の未追跡ファイルを復元できませんでした:</val>
 		<val lang="nl_NL">De volgende niet-gevolgde bestanden konden niet worden hersteld:</val>
 		<val lang="zh_CN">以下未跟踪的文件无法恢复：</val>
@@ -39,7 +39,7 @@
 		<comment>This message appears when the untracked files have names changed to not be overwritten.</comment>
 		<val lang="en_US">The following untracked files have been restored, but their names have been changed to avoid overwriting existing files:</val>
 		<val lang="de_DE">Die folgenden nicht verfolgten Dateien wurden wiederhergestellt, aber ihre Namen wurden geändert, um ein Überschreiben vorhandener Dateien zu vermeiden:</val>
-		<val lang="fr_FR">Les fichiers non suivis suivants ont été restaurés, mais leurs noms ont été modifiés pour éviter d'écraser des fichiers existants:</val>
+		<val lang="fr_FR">Les fichiers non suivis suivants ont été restaurés, mais leurs noms ont été modifiés pour éviter d'écraser des fichiers existants :</val>
 		<val lang="ja_JP">以下の未追跡ファイルは復元されましたが、既存のファイルを上書きしないように名前が変更されました:</val>
 		<val lang="nl_NL">De volgende niet-gevolgde bestanden zijn hersteld, maar hun namen zijn gewijzigd om te voorkomen dat bestaande bestanden worden overschreven:</val>
 		<val lang="zh_CN">以下未跟踪的文件已恢复，但其名称已更改以避免覆盖现有文件：</val>
@@ -57,7 +57,7 @@
 		<comment>This message occurs when pre push validation failed because there are some main files not found.</comment>
 		<val lang="en_US">Cannot complete validation because some of the main files no longer exist. Try to fix the configuration in the Main Files folder within the Project view and try again.\n\nMain files that cannot be found:</val>
 		<val lang="de_DE">Die Validierung kann nicht abgeschlossen werden, da einige der Hauptdateien nicht mehr existieren. Versuchen Sie, die Konfiguration im Ordner Hauptdateien in der Projektansicht zu korrigieren und versuchen Sie es erneut.\n\nHauptdateien, die nicht gefunden werden können:</val>
-		<val lang="fr_FR">Impossible de terminer la validation car certains des fichiers principaux n'existent plus. Essayez de corriger la configuration dans le dossier des fichiers principaux de la vue Projet et réessayez.\n\nFichiers principaux introuvables:</val>
+		<val lang="fr_FR">Impossible de terminer la validation car certains des fichiers principaux n'existent plus. Essayez de corriger la configuration dans le dossier des fichiers principaux de la vue Projet et réessayez.\n\nFichiers principaux introuvables :</val>
 		<val lang="ja_JP">メインファイルの一部が存在しないため、検証を完了できません。プロジェクトビュー内のメインファイルフォルダの設定を修正して、再試行してください。\n\n見つからないメインファイル:</val>
 		<val lang="nl_NL">Kan validatie niet voltooien omdat sommige van de hoofdbestanden niet meer bestaan. Probeer de configuratie in de map Hoofdbestanden binnen de Projectweergave te herstellen en probeer het opnieuw.\n\nHoofdbestanden die niet kunnen worden gevonden:</val>
 		<val lang="zh_CN">由于某些主文件已不存在，无法完成验证。尝试在项目视图中的主文件文件夹中修复配置，然后再试一次。\n\n找不到的主文件：</val>
@@ -66,7 +66,7 @@
 		<comment>This message occurs when not the same project is loaded in "Project" View and Git Staging.</comment>
 		<val lang="en_US">The project file that is currently loaded in the Project view could not be found in the local repository loaded in the Git Client, and thus cannot be validated before pushing.\n\nDo you want to load a project from the local repository into the Project view so that the validation can proceed?</val>
 		<val lang="de_DE">Die aktuell in der Projektansicht geladene Projektdatei konnte nicht im lokalen Repository gefunden werden, das im Git-Client geladen ist, und kann daher vor dem Pushen nicht validiert werden.\n\nMöchten Sie ein Projekt aus dem lokalen Repository in die Projektansicht laden, damit die Validierung fortgesetzt werden kann?</val>
-		<val lang="fr_FR">Le fichier de projet actuellement chargé dans la vue Projet n'a pas pu être trouvé dans le dépôt local chargé dans le client Git, et ne peut donc pas être validé avant le push.\n\nVoulez-vous charger un projet du dépôt local dans la vue Projet pour que la validation puisse avoir lieu?</val>
+		<val lang="fr_FR">Le fichier de projet actuellement chargé dans la vue Projet n'a pas pu être trouvé dans le dépôt local chargé dans le client Git, et ne peut donc pas être validé avant le push.\n\nVoulez-vous charger un projet du dépôt local dans la vue Projet pour que la validation puisse avoir lieu ?</val>
 		<val lang="ja_JP">現在プロジェクトビューにロードされているプロジェクトファイルは、Gitクライアントにロードされたローカルリポジトリには存在しないため、プッシュする前に検証することはできません。\n\n検証を進めるために、ローカルリポジトリからプロジェクトをプロジェクトビューにロードしますか？</val>
 		<val lang="nl_NL">Het projectbestand dat momenteel is geladen in de Projectweergave kon niet worden gevonden in de lokale repository die is geladen in de Git Client, en kan dus niet worden gevalideerd voor het pushen.\n\nWilt u een project uit de lokale repository laden in de Projectweergave zodat de validatie kan doorgaan?</val>
 		<val lang="zh_CN">当前在项目视图中加载的项目文件在Git客户端中加载的本地仓库中找不到，因此无法在推送前进行验证。\n\n您是否希望从本地仓库加载一个项目到项目视图中，以便可以进行验证？</val>
@@ -84,7 +84,7 @@
 		<comment>This tag is used to ask for repository loading.</comment>
 		<val lang="en_US">Do you want to load "{0}" as the current repository in the Git Client?</val>
 		<val lang="de_DE">Möchten Sie "{0}" als aktuelles Repository im Git-Client laden?</val>
-		<val lang="fr_FR">Voulez-vous charger "{0}" comme dépôt actuel dans le client Git?</val>
+		<val lang="fr_FR">Voulez-vous charger "{0}" comme dépôt actuel dans le client Git ?</val>
 		<val lang="ja_JP">"{0}" を現在のリポジトリとして Git クライアントにロードしますか?</val>
 		<val lang="nl_NL">Wilt u "{0}" als de huidige opslagplaats in de Git Client laden?</val>
 		<val lang="zh_CN">你想将"{0}"作为当前仓库加载到Git客户端中吗？</val>
@@ -115,7 +115,7 @@
 		<val lang="en_US">A local Git repository was detected in the following directory:\n"{0}".</val>
 		<val lang="de_DE">Im folgenden Verzeichnis wurde ein lokales Git-Repository
          erkannt:\n"{0}".</val>
-		<val lang="fr_FR">Un dépôt Git local a été détecté dans le répertoire suivant:\n"{0}".</val>
+		<val lang="fr_FR">Un dépôt Git local a été détecté dans le répertoire suivant :\n"{0}".</val>
 		<val lang="ja_JP">次のディレクトリでローカル Git リポジトリが検出されました:\n"{0}"。</val>
 		<val lang="nl_NL">A local Git repository was detected in the following directory:\n"{0}"</val>
 		<val lang="zh_CN">A local Git repository was detected in the following directory:\n"{0}"</val>
@@ -249,7 +249,7 @@
 		<val lang="de_DE">Konnte den Host dieser URL nicht erreichen. Mögliche Ursachen sind: Der
          Domänenname existiert nicht oder ist down. Prüfen Sie, ob die Adresse korrekt ist oder
          versuchen Sie es später noch einmal.</val>
-		<val lang="fr_FR">Impossible de se connecter à l'hôte à partir de l'URL. Les causes possibles sont: le nom de domaine n'existe pas ou est hors service. Vérifiez si l'adresse est correcte ou réessayez plus tard.</val>
+		<val lang="fr_FR">Impossible de se connecter à l'hôte à partir de l'URL. Les causes possibles sont : le nom de domaine n'existe pas ou est hors service. Vérifiez si l'adresse est correcte ou réessayez plus tard.</val>
 		<val lang="ja_JP">URL からホストに接続できませんでした。考えられる原因は、ドメイン名が存在しない、あるいはダウンしているということです。アドレスが正しいかどうかを確認するか、後でもう一度やり直してください。</val>
 		<val lang="nl_NL">Kan vanuit de URL geen verbinding maken met de host. Mogelijke oorzaken zijn: de domeinnaam bestaat niet of deze is niet actief. Controleer of het adres correct is of probeer het later opnieuw.</val>
 		<val lang="zh_CN">无法从URL连接到主机。可能的原因是：域名不存在或已关闭。请检查地址是否正确或稍后重试。</val>
@@ -309,7 +309,7 @@
 		<val lang="de_DE">Das aktuelle Projekt kann nicht validiert werden, weil es nicht gesendete
          (uncommitted) Änderungen gibt.\nMöchten Sie die Änderungen verstecken (stash) und diese
          nach dem Validierungsprozess wiederherstellen?</val>
-		<val lang="fr_FR">Le projet actuel ne peut pas être validé car il y a des changements hors commit.\nVoulez-vous remiser les changements et les restaurer après le processus de validation?</val>
+		<val lang="fr_FR">Le projet actuel ne peut pas être validé car il y a des changements hors commit.\nVoulez-vous remiser les changements et les restaurer après le processus de validation ?</val>
 		<val lang="ja_JP">コミットされていない変更があるため、現在のプロジェクトを検証できません。\n変更を一時退避して、検証プロセス後に復元しますか?</val>
 		<val lang="nl_NL">Het huidige project kan niet worden gevalideerd omdat niet-vastgelegde wijzigingen aanwezig zijn.\nWilt u de wijzigingen opbergen en deze na het validatieproces herstellen?</val>
 		<val lang="zh_CN">无法验证当前项目，存在未提交的更改。\是否要隐藏更改并在验证过程后还原它们？</val>
@@ -638,7 +638,7 @@
 		</comment>
 		<val lang="en_US">Working copy: </val>
 		<val lang="de_DE">Arbeitskopie: </val>
-		<val lang="fr_FR">Copie de travail: </val>
+		<val lang="fr_FR">Copie de travail : </val>
 		<val lang="ja_JP">作業コピー:</val>
 		<val lang="nl_NL">Werkkopie: </val>
 		<val lang="zh_CN">工作副本: </val>
@@ -870,7 +870,7 @@
 		<val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand
 		</val>
 		<val lang="fr_FR">Pull réussi. Le dépôt est à jour</val>
-		<val lang="ja_JP">プルに成功しましたリポジトリは最新です</val>
+		<val lang="ja_JP">プルに成功しました。リポジトリは最新です</val>
 		<val lang="nl_NL">Pull sucecesvol. Repository is bijgewerkt.</val>
 		<val lang="zh_CN">拉取成功. 存储库是最新的</val>
 	</key>
@@ -888,7 +888,7 @@
 			conflicts</comment>
 		<val lang="en_US">Pull successful with conflicts: </val>
 		<val lang="de_DE">Beim Pullen sind Konflikte aufgetreten: </val>
-		<val lang="fr_FR">Pull réussi avec des conflits: </val>
+		<val lang="fr_FR">Pull réussi avec des conflits : </val>
 		<val lang="ja_JP">競合ありでプルが成功しました:</val>
 		<val lang="nl_NL">Pull succesvol met conflicten:</val>
 		<val lang="zh_CN">在冲突中拉取成功: </val>
@@ -958,7 +958,7 @@
 		<val lang="en_US">Are you sure you want to discard your changes?</val>
 		<val lang="de_DE">Sind Sie sicher, dass Sie die Änderungen verwerfen
 			wollen?</val>
-		<val lang="fr_FR">Êtes-vous sûr de vouloir abandonner vos modifications?
+		<val lang="fr_FR">Êtes-vous sûr de vouloir abandonner vos modifications ?
 		</val>
 		<val lang="ja_JP">変更を破棄しますか?</val>
 		<val lang="nl_NL">Weet u zeker dat u uw wijzigingen ongedaan wilt maken?
@@ -1070,7 +1070,7 @@
 		</comment>
 		<val lang="en_US">Remote repository URL: </val>
 		<val lang="de_DE">Remote-URL: </val>
-		<val lang="fr_FR">URL du dépôt remote: </val>
+		<val lang="fr_FR">URL du dépôt remote : </val>
 		<val lang="ja_JP">リモートリポジトリ URL:</val>
 		<val lang="nl_NL">Externe repository url: </val>
 		<val lang="zh_CN">远程存储库 URL: </val>
@@ -1110,7 +1110,7 @@
 			box</comment>
 		<val lang="en_US">Submodule: </val>
 		<val lang="de_DE">Submodul: </val>
-		<val lang="fr_FR">Sous-module: </val>
+		<val lang="fr_FR">Sous-module : </val>
 		<val lang="ja_JP">サブモジュール:</val>
 		<val lang="nl_NL">Submodule:</val>
 		<val lang="zh_CN">子模块: </val>
@@ -1143,7 +1143,7 @@
 		<comment>The text displayed on the label for the username</comment>
 		<val lang="en_US">Username: </val>
 		<val lang="de_DE">Benutzername: </val>
-		<val lang="fr_FR">Nom d'utilisateur: </val>
+		<val lang="fr_FR">Nom d'utilisateur : </val>
 		<val lang="ja_JP">ユーザー名:</val>
 		<val lang="nl_NL">Gebruikersnaam: </val>
 		<val lang="zh_CN">用户名: </val>
@@ -1152,7 +1152,7 @@
 		<comment>The text displayed on the label for the password</comment>
 		<val lang="en_US">Password: </val>
 		<val lang="de_DE">Passwort: </val>
-		<val lang="fr_FR">Mot de passe: </val>
+		<val lang="fr_FR">Mot de passe : </val>
 		<val lang="ja_JP">パスワード:</val>
 		<val lang="nl_NL">Wachtwoord: </val>
 		<val lang="zh_CN">密码: </val>
@@ -1324,7 +1324,7 @@
 		</comment>
 		<val lang="en_US">Destination path:</val>
 		<val lang="de_DE">Zielverzeichnis:</val>
-		<val lang="fr_FR">Chemin de destination:</val>
+		<val lang="fr_FR">Chemin de destination :</val>
 		<val lang="ja_JP">宛先パス:</val>
 		<val lang="nl_NL">Doelpad:</val>
 		<val lang="zh_CN">目标路径:</val>
@@ -1570,7 +1570,7 @@
 		<val lang="en_US">Show branches</val>
 		<val lang="de_DE">Zeige Zweige (branches)</val>
 		<val lang="fr_FR">Afficher les branches</val>
-		<val lang="ja_JP">分岐を表示ｓるう</val>
+		<val lang="ja_JP">分岐を表示する</val>
 		<val lang="nl_NL">Vertakkingen tonen</val>
 		<val lang="zh_CN">显示分支</val>
 	</key>
@@ -1905,7 +1905,7 @@
 			created.</comment>
 		<val lang="en_US">Cannot stash changes. Details: </val>
 		<val lang="de_DE">Kann Änderungen nicht verstecken (stash). Details: </val>
-		<val lang="fr_FR">Impossible de remiser les modifications. Détails: </val>
+		<val lang="fr_FR">Impossible de remiser les modifications. Détails : </val>
 		<val lang="ja_JP">変更を一時退避できません。詳細:</val>
 		<val lang="nl_NL">Kan wijzigingen niet bewaren. Details:</val>
 		<val lang="zh_CN">不能贮藏更改. 详情: </val>
@@ -2445,7 +2445,7 @@
 		<val lang="en_US">Are you sure you want to delete all the stashes?</val>
 		<val lang="de_DE">Sind sie sicher, dass sie alle Verstecke (stashes)
 			löschen möchten?</val>
-		<val lang="fr_FR">Êtes-vous sûr de vouloir supprimer toutes les remises?
+		<val lang="fr_FR">Êtes-vous sûr de vouloir supprimer toutes les remises ?
 		</val>
 		<val lang="ja_JP">すべての一時退避を削除しますか?</val>
 		<val lang="nl_NL">Weet u zeker dat u alle stashes wilt verwijderen?</val>
@@ -2723,7 +2723,7 @@
 		</val>
 		<val lang="de_DE">Lösen Sie die folgenden Konflikte, um das Verschmelzen
 			(merge) abzuschließen:</val>
-		<val lang="fr_FR">Résolvez les conflits suivants pour terminer la fusion:
+		<val lang="fr_FR">Résolvez les conflits suivants pour terminer la fusion :
 		</val>
 		<val lang="ja_JP">次の競合を解決して、マージを完了します</val>
 		<val lang="nl_NL">Verhelp de volgende conflicten om de samenvoeging te
@@ -3666,7 +3666,7 @@
 		<comment>"Upstream branch" label.</comment>
 		<val lang="en_US">Upstream branch:</val>
 		<val lang="de_DE">Upstream Branch:</val>
-		<val lang="fr_FR">Branche upstream:</val>
+		<val lang="fr_FR">Branche upstream :</val>
 		<val lang="ja_JP">アップストリーム分岐:</val>
 		<val lang="nl_NL">Upstream-branch:</val>
 		<val lang="zh_CN">上游分支:</val>
@@ -3874,7 +3874,7 @@
 		<comment>"Local branch" label.</comment>
 		<val lang="en_US">Local branch:</val>
 		<val lang="de_DE">Lokaler Branch:</val>
-		<val lang="fr_FR">Branche locale:</val>
+		<val lang="fr_FR">Branche locale :</val>
 		<val lang="ja_JP">ローカル分岐:</val>
 		<val lang="nl_NL">Lokale branch:</val>
 		<val lang="zh_CN">当地分支:</val>
@@ -3883,7 +3883,7 @@
 		<comment>"Remote branch" label.</comment>
 		<val lang="en_US">Remote branch:</val>
 		<val lang="de_DE">Remote-Branch:</val>
-		<val lang="fr_FR">Branche remote:</val>
+		<val lang="fr_FR">Branche remote :</val>
 		<val lang="ja_JP">リモート分岐:</val>
 		<val lang="nl_NL">Externe branch:</val>
 		<val lang="zh_CN">远程分支:</val>
@@ -3996,7 +3996,7 @@
 		<val lang="en_US">Are you sure you want to clear the history?</val>
 		<val lang="de_DE">Sind Sie sicher, dass die Historie gelöscht werden soll?
 		</val>
-		<val lang="fr_FR">Êtes-vous sûr de vouloir effacer l'historique?</val>
+		<val lang="fr_FR">Êtes-vous sûr de vouloir effacer l'historique ?</val>
 		<val lang="ja_JP">履歴をクリアしますか?</val>
 		<val lang="nl_NL">Weet u zeker dat u de historie wilt wissen?</val>
 		<val lang="zh_CN">您确定要清除历史记录吗?</val>
@@ -4550,7 +4550,7 @@
 		</comment>
 		<val lang="en_US">Submodule could not be loaded because of: {0}.</val>
 		<val lang="de_DE">Submodule konnte nicht geklont werden: {0}.</val>
-		<val lang="fr_FR">Impossible de charger le sous-module à cause de: {0}.
+		<val lang="fr_FR">Impossible de charger le sous-module à cause de : {0}.
 		</val>
 		<val lang="ja_JP">次の理由により、サブモジュールをロードできませんでした: {0}。</val>
 		<val lang="nl_NL">Submodule kon niet worden geladen vanwege: {0}.</val>

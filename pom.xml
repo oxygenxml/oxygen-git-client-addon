@@ -144,6 +144,10 @@
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-1.2-api</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 

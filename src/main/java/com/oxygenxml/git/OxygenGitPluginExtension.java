@@ -292,106 +292,107 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  this.pluginWorkspaceAccess = pluginWS;
-		OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
-		ProjectHelper.getInstance().installProjectChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
-		
-		gitController.addGitListener(new GitEventAdapter() {
-		  @Override
-		  public void operationSuccessfullyEnded(GitEventInfo info) {
-		   if(info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-        try {
-          final File wc = GitAccess.getInstance().getWorkingCopy();
-          final String absolutePath = wc.getAbsolutePath();
-          
-          OptionsManager.getInstance().addRepository(absolutePath);
-          OptionsManager.getInstance().saveSelectedRepository(absolutePath);
-        } catch (NoRepositorySelected e) {
-          LOGGER.error(e.getMessage(), e);
-        }
-	       
-		     OptionsManager.getInstance().setCurrentBranch(gitController.getGitAccess().getBranchInfo().getBranchName()); // reset branch
-		   }
-		  }
-		});
-		
-		LFSSupport.install(gitController);
-		
+	  OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
+	  ProjectHelper.getInstance().installProjectChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
+
+	  gitController.addGitListener(new GitEventAdapter() {
+	    @Override
+	    public void operationSuccessfullyEnded(GitEventInfo info) {
+	      if(info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+	        try {
+	          final File wc = GitAccess.getInstance().getWorkingCopy();
+	          final String absolutePath = wc.getAbsolutePath();
+	          OptionsManager.getInstance().addRepository(absolutePath);
+	          OptionsManager.getInstance().saveSelectedRepository(absolutePath);
+	        } catch (NoRepositorySelected e) {
+	          LOGGER.error(e.getMessage(), e);
+	        }
+
+	        OptionsManager.getInstance().setCurrentBranch(gitController.getGitAccess().getBranchInfo().getBranchName()); // reset branch
+	      } else if(info.getGitOperation() == GitOperation.PULL) {
+	        EditorContentReloader.reloadCurrentEditor(pluginWS);
+	      }
+	    }
+	  });
+
+	  LFSSupport.install(gitController);
+
 	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
-    utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
-    
-    gitRefreshSupport = new PanelsRefreshSupport(
-        RemoteRepositoryChangeWatcher.createWatcher(pluginWS, gitController),
-        () -> menuBar);
-    
-		final GitActionsManager gitActionsManager = new GitActionsManager(gitController, this, this, gitRefreshSupport);
-		menuBar = new GitActionsMenuBar(gitActionsManager);
-    pluginWS.addMenuBarCustomizer(menuBar);
-		
-		try {
-			// Uncomment this to start with fresh options. For testing purposes
-			// PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null); NOSONAR
+	  utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
 
-			if (!"true".equals(System.getProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS))) {
-				org.eclipse.jgit.transport.SshSessionFactory.setInstance(
-				    new GitClientSshdSessionFactory(new ResolvingProxyDataFactory()));
-			} 
+	  gitRefreshSupport = new PanelsRefreshSupport(
+	      RemoteRepositoryChangeWatcher.createWatcher(pluginWS, gitController),
+	      () -> menuBar);
 
-			AuthenticationInterceptor.install();
+	  final GitActionsManager gitActionsManager = new GitActionsManager(gitController, this, this, gitRefreshSupport);
+	  menuBar = new GitActionsMenuBar(gitActionsManager);
+	  pluginWS.addMenuBarCustomizer(menuBar);
 
-			BlameManager.getInstance().install(gitController);
+	  try {
+	    // Uncomment this to start with fresh options. For testing purposes
+	    // PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null); NOSONAR
 
-			// Add Git actions to the contextual menu of the Project view
-			ProjectMenuGitActionsProvider projectMenuGitActionsProvider = new ProjectMenuGitActionsProvider(
-					pluginWorkspaceAccess,
-					gitController,
-					OxygenGitPluginExtension.this);
-			ProjectViewManager.addPopUpMenuCustomizer(projectMenuGitActionsProvider);
+	    if (!"true".equals(System.getProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS))) {
+	      org.eclipse.jgit.transport.SshSessionFactory.setInstance(
+	          new GitClientSshdSessionFactory(new ResolvingProxyDataFactory()));
+	    } 
 
-			// Add Git actions to the contextual menu of the current editor page
-			pluginWorkspaceAccess.addMenusAndToolbarsContributorCustomizer(menusAndToolbarsCustomizer);
+	    AuthenticationInterceptor.install();
 
-			// Customize the contributed side-views
-			pluginWorkspaceAccess.addViewComponentCustomizer(
-					viewInfo -> {
+	    BlameManager.getInstance().install(gitController);
 
-						// The constants' values are defined in plugin.xml
-						if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
-							customizeGitStagingView(viewInfo, gitActionsManager);
-						} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
-							customizeHistoryView(viewInfo);
-						} else if(GIT_BRANCH_VIEW.equals(viewInfo.getViewID())) {
-							customizeBranchView(viewInfo);
-						}
-					});
+	    // Add Git actions to the contextual menu of the Project view
+	    ProjectMenuGitActionsProvider projectMenuGitActionsProvider = new ProjectMenuGitActionsProvider(
+	        pluginWorkspaceAccess,
+	        gitController,
+	        OxygenGitPluginExtension.this);
+	    ProjectViewManager.addPopUpMenuCustomizer(projectMenuGitActionsProvider);
 
-			// Listens on the save event in the Oxygen editor and invalidates the cache.
-			GitAccess.getInstance().getStatusCache().installEditorsHook(pluginWS);
-			
-			// Present the view to the user if it is the first run of the plugin
-			final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
-			parentFrame.addComponentListener(new ComponentAdapter() {
-				@Override
-				public void componentShown(ComponentEvent e) {
-					String key = "view.presented.on.first.run";
-					String firstRun = pluginWorkspaceAccess.getOptionsStorage().getOption(key, null);
-					if (firstRun == null) {
-						// This is the first run of the plugin.
-						pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, false);
-						pluginWorkspaceAccess.getOptionsStorage().setOption(key, "true");
-					}
-				}
-			});
+	    // Add Git actions to the contextual menu of the current editor page
+	    pluginWorkspaceAccess.addMenusAndToolbarsContributorCustomizer(menusAndToolbarsCustomizer);
 
-			// Call the refresh command when the Oxygen window is activated
-			parentFrame.addWindowListener(panelRefreshWindowListener);
+	    // Customize the contributed side-views
+	    pluginWorkspaceAccess.addViewComponentCustomizer(
+	        viewInfo -> {
 
-			LoggingUtil.setupLogger();
+	          // The constants' values are defined in plugin.xml
+	          if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
+	            customizeGitStagingView(viewInfo, gitActionsManager);
+	          } else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
+	            customizeHistoryView(viewInfo);
+	          } else if(GIT_BRANCH_VIEW.equals(viewInfo.getViewID())) {
+	            customizeBranchView(viewInfo);
+	          }
+	        });
 
-		} catch (Throwable t) { // NOSONAR
-			// Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
-			pluginWorkspaceAccess.showErrorMessage(t.getMessage());
-			LOGGER.error(t.getMessage(), t);
-		}
+	    // Listens on the save event in the Oxygen editor and invalidates the cache.
+	    GitAccess.getInstance().getStatusCache().installEditorsHook(pluginWS);
+
+	    // Present the view to the user if it is the first run of the plugin
+	    final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
+	    parentFrame.addComponentListener(new ComponentAdapter() {
+	      @Override
+	      public void componentShown(ComponentEvent e) {
+	        String key = "view.presented.on.first.run";
+	        String firstRun = pluginWorkspaceAccess.getOptionsStorage().getOption(key, null);
+	        if (firstRun == null) {
+	          // This is the first run of the plugin.
+	          pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, false);
+	          pluginWorkspaceAccess.getOptionsStorage().setOption(key, "true");
+	        }
+	      }
+	    });
+
+	    // Call the refresh command when the Oxygen window is activated
+	    parentFrame.addWindowListener(panelRefreshWindowListener);
+
+	    LoggingUtil.setupLogger();
+
+	  } catch (Throwable t) { // NOSONAR
+	    // Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
+	    pluginWorkspaceAccess.showErrorMessage(t.getMessage());
+	    LOGGER.error(t.getMessage(), t);
+	  }
 	}
 
 	/**

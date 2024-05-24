@@ -196,7 +196,8 @@ public class UndoRedoSupportInstaller {
   	});
   
   	// Bind the redo action to ctl-Y
-  	commitMessage.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, modifier), "Redo");
+  	modifier = PlatformDetectionUtil.isMacOS() ? InputEvent.META_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
+  	commitMessage.getInputMap().put(KeyStroke.getKeyStroke(PlatformDetectionUtil.isMacOS() ? KeyEvent.VK_Z : KeyEvent.VK_Y, modifier), "Redo");
   }
 
 }
