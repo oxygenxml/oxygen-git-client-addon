@@ -226,7 +226,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState) || selectionContainsConflicts);
 		resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
-		markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
+    markResolvedAction.setEnabled(selectionContainsConflicts && selectedLeaves.size() == 1);
 		restartMergeAction.setEnabled(RepoUtil.isRepoMergingOrRebasing(repoState));
 		discardAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	}
@@ -294,12 +294,12 @@ public class GitResourceContextualMenu extends JPopupMenu {
 						final int answer = MessagePresenterProvider.getBuilder(
 						    TRANSLATOR.getTranslation(Tags.MARK_RESOLVED), DialogType.WARNING)
                 .setQuestionMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE))
-                .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY))
+                .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICT))
                 .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CANCEL))
                 .buildAndShow().getResult();								
-						if(answer == OKCancelDialog.RESULT_OK) {
-						  gitCtrl.asyncAddToIndex(allSelectedResources);
-						}
+            if (answer == OKCancelDialog.RESULT_OK) {
+              DiffPresenter.showDiff(selectedLeaves.get(0), gitCtrl);
+            }
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);
           }
