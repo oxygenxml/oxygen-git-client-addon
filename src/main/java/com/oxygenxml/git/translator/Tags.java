@@ -183,9 +183,6 @@ public class Tags {
 	 */
 	public static final String CONFLICT_MARKERS_MESSAGE = "Conflict_markers_message";
 	/**
-   * The message displayed to the user when there are more than one files that have conflict markers.
-   */
-  public static final String CONFLICT_MARKERS_MANY_FILES_MESSAGE = "Conflict_markers_many_files_message";
 	/**
    * There is a new commit in the remote repository that has not been pulled.
    */

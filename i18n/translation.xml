@@ -2822,29 +2822,6 @@
 		</val>
 		<val lang="zh_CN">所选文件中有冲突标记. 通常这些标记不会被提交. 确保您已正确解决冲突.</val>
 	</key>
-	<key value="Conflict_markers_many_files_message">
-		<comment> The message displayed to the user when there are more than one files that have conflict markers.</comment>
-		<val lang="en_US">There are more than one file that have conflict markers inside.
-			It is dangerous to mark them all resolved.
-			Please verify each file manually.
-		</val>
-		<val lang="de_DE">There are more than one file that have conflict markers inside.
-			It is dangerous to mark them all resolved.
-			Please verify each file manually.</val>
-		<val lang="fr_FR">There are more than one file that have conflict markers inside.
-			It is dangerous to mark them all resolved.
-			Please verify each file manually..
-		</val>
-		<val lang="ja_JP">There are more than one file that have conflict markers inside.It is dangerous to mark them all resolved.Please verify each file manually.。
-		</val>
-		<val lang="nl_NL">There are more than one file that have conflict markers inside.
-			It is dangerous to mark them all resolved.
-			Please verify each file manually.
-		</val>
-		<val lang="zh_CN">There are more than one file that have conflict markers inside.
-			It is dangerous to mark them all resolved.
-			Please verify each file manually.</val>
-	</key>
 	<key value="Switch_branch">
 		<comment>"Switch branch" label.</comment>
 		<val lang="en_US">Switch branch</val>
