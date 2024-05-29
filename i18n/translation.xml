@@ -2800,24 +2800,23 @@
 	<key value="Conflict_markers_message">
 		<comment> The message displayed to the user when conflict markers are
 			detected.</comment>
-		<val lang="en_US">There are conflict markers inside the selected file(s).
+		<val lang="en_US">There are conflict markers inside the selected file.
 			Usually these
 			markers are not to be committed. Make sure you have properly resolved the
 			conflict(s).
 		</val>
-		<val lang="de_DE">Es gibt Konfliktmarker in den gewählten Dateien.
+		<val lang="de_DE">Es gibt Konfliktmarker in der gewählten Datei.
 			Üblicherweise sollten diese Konfliktmarker nicht committet werden.
 			Prüfen Sie, dass Sie die Konflikte ordnungsgemäß gelöst haben.</val>
-		<val lang="fr_FR">Il y a des marqueurs de conflit dans le(s) fichier(s)
-			sélectionné(s). En
+		<val lang="fr_FR">Il y a des marqueurs de conflit dans le fichier
+			sélectionné. En
 			général, ces marqueurs ne doivent pas être commités. Assurez-vous que vous
 			avez
 			correctement résolu le(s) conflit(s).
 		</val>
 		<val lang="ja_JP">選択したファイル内に競合マーカーがあります。通常、これらのマーカーはコミットされません。競合が適切に解決されていることを確認してください。
 		</val>
-		<val lang="nl_NL">Het/de geselecteerde bestand(en) bevat(ten)
-			conflicterende markeringen. Meestal moeten deze markeringen niet
+		<val lang="nl_NL">Het geselecteerde bestand bevat conflicterende markeringen. Meestal moeten deze markeringen niet
 			worden vastgelegd. Zorg dat u alle conflicten correct hebt verholpen.
 		</val>
 		<val lang="zh_CN">所选文件中有冲突标记. 通常这些标记不会被提交. 确保您已正确解决冲突.</val>
