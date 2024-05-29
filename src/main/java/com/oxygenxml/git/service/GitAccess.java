@@ -691,7 +691,11 @@ public class GitAccess {
 	  Collection<String> filePaths = getFilePaths(files);
 		try {
 		  fireOperationAboutToStart(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
-		  git.commit().setMessage(message).setAmend(isAmendLastCommit).call();
+		  git.commit()
+		      .setMessage(message)
+		      .setAmend(isAmendLastCommit)
+		      .setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()))
+		      .call();
 		  fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
 		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
@@ -2850,6 +2854,7 @@ public class GitAccess {
         .setMessage(message)
         .setObjectId(id)
         .setForceUpdate(true)
+        .setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()))
         .call();
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CREATE_TAG));
     } catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {
