@@ -18,8 +18,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.errors.RevisionSyntaxException;
-import org.eclipse.jgit.gpg.bc.internal.BouncyCastleGpgSigner;
-import org.eclipse.jgit.lib.GpgSigner;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -66,7 +64,6 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -319,7 +316,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 	  LFSSupport.install(gitController);
 
-	  final UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+	  final UtilAccess utilAccess = pluginWS.getUtilAccess();
 	  utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitController));
 
 	  gitRefreshSupport = new PanelsRefreshSupport(
@@ -395,9 +392,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    pluginWorkspaceAccess.showErrorMessage(t.getMessage());
 	    LOGGER.error(t.getMessage(), t);
 	  }
-	  
-	  // EXM-52129: enable GPG commit and tag signing
-	  GpgSigner.setDefault(new BouncyCastleGpgSigner());
 	  
 	}
 
