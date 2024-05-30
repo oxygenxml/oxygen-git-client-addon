@@ -317,7 +317,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  ----\n" + 
         "  Resolve_Using_Mine [ENABLED]\n" + 
         "  Resolve_Using_Theirs [ENABLED]\n" + 
-        "  Mark_Resolved [ENABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [ENABLED]\n" + 
         "Discard [DISABLED]",
