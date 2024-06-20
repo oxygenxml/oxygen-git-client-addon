@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.view.dialog.PassphraseDialog;
+import com.oxygenxml.git.view.dialog.SSHPassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -33,7 +33,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	 * 
 	 * @param username User name.
 	 * @param password Password.
-	 * @param passphrase SSH pass phase.
+	 * @param passphrase SSH passphrase.
 	 * @param host The host name.
 	 */
 	public SSHCapableUserCredentialsProvider(String username, String password, String passphrase, String host) {
@@ -100,7 +100,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
     if (!validPassphrase(passphrase)) {
       // We don't have a phrase from options. Ask the user.
       LOGGER.debug("Ask for new passphrase...");
-      passphrase = new PassphraseDialog(translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE) + ".").getPassphrase();
+      passphrase = new SSHPassphraseDialog(translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE) + ".").getPassphrase();
     }
     
     if (validPassphrase(passphrase)) {

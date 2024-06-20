@@ -537,7 +537,7 @@ public class OptionsManager {
     String encryptPassphrase = passphrase == null ? null
         : PluginWorkspaceProvider.getPluginWorkspace()
               .getUtilAccess().encrypt(passphrase);
-    getOptions().setPassphrase(encryptPassphrase);
+    getOptions().setSSHPassphrase(encryptPassphrase);
   }
 
   /**
@@ -552,7 +552,7 @@ public class OptionsManager {
       if (pluginWorkspace != null) {
         UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
         if (utilAccess != null) {
-          String passphrase = getOptions().getPassphrase();
+          String passphrase = getOptions().getSSHPassphrase();
           if (passphrase != null) {
             decryptPassphrase = utilAccess.decrypt(passphrase);
           }
@@ -564,6 +564,44 @@ public class OptionsManager {
     }
 
     return decryptPassphrase;
+  }
+  
+  /**
+   * Saves and encrypts the GPG passphrase entered by the user
+   * 
+   * @param gpgPassphrase The GPG passphrase
+   */
+  public void saveGPGPassphare(String gpgPassphrase) {
+    String encryptedPassphrase = gpgPassphrase == null ? null
+        : PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().encrypt(gpgPassphrase);
+    getOptions().setGPGPassphrase(encryptedPassphrase);
+  }
+  
+  /**
+   * Loads the GPG passphrase that was entered by the user
+   * 
+   * @return the GPG passphrase
+   */
+  public String getGPGPassphrase() {
+    String decryptedPassphrase = null;
+    if (OxygenGitPlugin.getInstance() != null) {
+      PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+      if (pluginWorkspace != null) {
+        UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
+        if (utilAccess != null) {
+          String passphrase = getOptions().getGPGPassphrase();
+          if (passphrase != null) {
+            decryptedPassphrase = utilAccess.decrypt(passphrase);
+          }
+        }
+      }
+    }
+    
+    if (decryptedPassphrase == null) {
+      decryptedPassphrase = "";
+    }
+
+    return decryptedPassphrase;
   }
   
   public boolean isAutoPushWhenCommitting() {

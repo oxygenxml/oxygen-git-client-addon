@@ -1999,6 +1999,9 @@ public class Tags {
    * This message appears when the untracked files are missing.
    */
   public static final String MISSING_UNTRACKED_FILES = "Missing_Untracked_Files";
+
+  // TODO EXM-52129 add entry in translation.xml
+  public static final String ENTER_GPG_PASSPHRASE = "Enter_gpg_passphrase";
   
 }
 

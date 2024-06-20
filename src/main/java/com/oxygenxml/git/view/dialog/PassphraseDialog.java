@@ -12,7 +12,6 @@ import javax.swing.JPasswordField;
 import javax.swing.WindowConstants;
 
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.options.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -23,7 +22,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author alex_jitianu
  */
 @SuppressWarnings("java:S110")
-public class PassphraseDialog extends OKCancelDialog {
+public abstract class PassphraseDialog extends OKCancelDialog {
   /**
    * Dialog minimum height.
    */
@@ -41,18 +40,21 @@ public class PassphraseDialog extends OKCancelDialog {
    */
 	private String passphrase;
 	/**
-	 * Password field.
+	 * Passphrase field.
 	 */
-	private JPasswordField tfPassphrase;
+	private JPasswordField passphraseField;
 
 	/**
 	 * Constructor.
 	 * 
+	 * @param title   Dialog title.
 	 * @param message Message.
 	 */
-	public PassphraseDialog(String message) {
-		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-				"SSH Passphrase", true);
+	public PassphraseDialog(String title, String message) {
+		super(
+		    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    title,
+		    true);
 		
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -81,8 +83,8 @@ public class PassphraseDialog extends OKCancelDialog {
 		gbc.gridwidth = 1;
 		panel.add(label, gbc);
 
-		tfPassphrase = new JPasswordField();
-		tfPassphrase.setPreferredSize(new Dimension(DLG_PREFERRED_WIDTH, tfPassphrase.getPreferredSize().height));
+		passphraseField = new JPasswordField();
+		passphraseField.setPreferredSize(new Dimension(DLG_PREFERRED_WIDTH, passphraseField.getPreferredSize().height));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -92,7 +94,7 @@ public class PassphraseDialog extends OKCancelDialog {
 		gbc.gridx = 1;
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
-		panel.add(tfPassphrase, gbc);
+		panel.add(passphraseField, gbc);
 
 		this.getContentPane().add(panel);
 		this.setMinimumSize(new Dimension(DLG_MIN_WIDTH, DLG_MIN_HEIGHT));
@@ -104,18 +106,28 @@ public class PassphraseDialog extends OKCancelDialog {
 		this.setVisible(true);
 	}
 
-	@Override
-	protected void doOK() {
-		passphrase = String.valueOf(tfPassphrase.getPassword());
-		OptionsManager.getInstance().saveSshPassphare(passphrase);
-		this.dispose();
-	}
-
 	/**
 	 * @return The pass phrase obtained from the user or <code>null</code> if the user canceled the dialog.
 	 */
 	public String getPassphrase() {
 		return passphrase;
 	}
+	
+	/**
+   * Do OK.
+   */
+  @Override
+  protected void doOK() {
+    passphrase = String.valueOf(passphraseField.getPassword());
+    savePassphrase(passphrase);
+    dispose();
+  }
+  
+  /**
+   * Save the given passphrase in the options storage.
+   * 
+   * @param passphrase the passphrase to be saved.
+   */
+  protected abstract void savePassphrase(String passphrase);
 
 }

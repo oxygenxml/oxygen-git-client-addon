@@ -188,14 +188,26 @@ public interface Options {
   /**
    * @return The last SSH passhrase.
    */
-  public String getPassphrase() ;
+  public String getSSHPassphrase() ;
 
   /**
    * Sets the SSH passphrase.
    * 
-   * @param passphrase The SSH passphrase.
+   * @param sshPassphrase The SSH passphrase.
    */
-  public void setPassphrase(String passphrase) ;
+  public void setSSHPassphrase(String sshPassphrase) ;
+  
+  /**
+   * @return The last GPG passhrase.
+   */
+  public String getGPGPassphrase() ;
+
+  /**
+   * Sets the GPG passphrase.
+   * 
+   * @param sshPassphrase The GPG passphrase.
+   */
+  public void setGPGPassphrase(String gpgPassphrase) ;
 
   /**
    * @param sshPromptAnswers A cache for asking the user for connection message.

@@ -694,7 +694,7 @@ public class GitAccess {
 		  git.commit()
 		      .setMessage(message)
 		      .setAmend(isAmendLastCommit)
-		      .setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()))
+		      .setCredentialsProvider(new GPGCapableCredentialsProvider(OptionsManager.getInstance().getGPGPassphrase()))
 		      .call();
 		  fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
 		} catch (GitAPIException e) {
@@ -1854,9 +1854,7 @@ public class GitAccess {
 	    git.checkout().setName(branch).call();
 	    LogUtil.logSubmodule();
 	    
-	    RepoUtil.checkoutSubmodules(git, e -> {
-	      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
-	    });
+	    RepoUtil.checkoutSubmodules(git, e -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e));
 	    
 	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  } catch (GitAPIException e) {
@@ -2854,7 +2852,7 @@ public class GitAccess {
         .setMessage(message)
         .setObjectId(id)
         .setForceUpdate(true)
-        .setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()))
+        .setCredentialsProvider(new GPGCapableCredentialsProvider(OptionsManager.getInstance().getGPGPassphrase()))
         .call();
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CREATE_TAG));
     } catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {

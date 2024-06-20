@@ -37,7 +37,7 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.view.actions.UpdateActionsStatesListener;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchesUtil;
-import com.oxygenxml.git.view.dialog.PassphraseDialog;
+import com.oxygenxml.git.view.dialog.SSHPassphraseDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 import com.oxygenxml.git.view.staging.ChangesPanel;
@@ -217,7 +217,7 @@ public class PanelsRefreshSupport implements GitRefreshSupport {
 				String message =  TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
 						+ " "
 						+ TRANSLATOR.getTranslation(Tags.PLEASE_TRY_AGAIN);
-				String passphrase = new PassphraseDialog(message).getPassphrase();
+				String passphrase = new SSHPassphraseDialog(message).getPassphrase();
 				if(passphrase != null) {
 					return fetch();
 				}

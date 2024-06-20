@@ -46,7 +46,9 @@ public class DefaultOptionsValuesTest {
     counter++;
     assertTrue(options.getDetectAndOpenXprFiles());
     counter++;
-    assertEquals("", options.getPassphrase());
+    assertEquals("", options.getSSHPassphrase());
+    counter++;
+    assertEquals("", options.getGPGPassphrase());
     counter++;
     assertTrue(options.getPersonalAccessTokensList().getPersonalAccessTokens().isEmpty());
     counter++;

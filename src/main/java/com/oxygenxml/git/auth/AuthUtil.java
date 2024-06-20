@@ -23,7 +23,7 @@ import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
-import com.oxygenxml.git.view.dialog.PassphraseDialog;
+import com.oxygenxml.git.view.dialog.SSHPassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -143,7 +143,7 @@ public class AuthUtil {
             && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
       // This message is thrown for SSH.
       String passPhraseMessage = TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
-      String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
+      String passphrase = new SSHPassphraseDialog(passPhraseMessage).getPassphrase();
       tryAgainOutside = passphrase != null;
     } else if (ex.getCause() instanceof NoRemoteRepositoryException
         || lowercaseMsg.contains("invalid advertisement of")) {

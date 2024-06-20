@@ -84,7 +84,12 @@ public class OptionTags {
   /**
    * The passphrase for the SSH
    */
-  public static final String PASSPHRASE = "com.oxygenxml.git.passphrase";
+  public static final String SSH_PASSPHRASE = "com.oxygenxml.git.passphrase";
+  
+  /**
+   * The passphrase for the GPG keys
+   */
+  public static final String GPG_PASSPHRASE = "com.oxygenxml.git.gpg.passphrase";
   
   /**
    * Option about what to do when opening a prject in Oxygen and detecting a Git repository.

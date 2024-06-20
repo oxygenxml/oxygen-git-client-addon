@@ -254,15 +254,25 @@ public class TagBasedOptions implements Options {
   }
 
   @Override
-  public String getPassphrase() {
-    return wsOptionsStorage.getOption(OptionTags.PASSPHRASE, "");
+  public String getSSHPassphrase() {
+    return wsOptionsStorage.getOption(OptionTags.SSH_PASSPHRASE, "");
     
   }
 
   @Override
-  public void setPassphrase(String passphrase) {
-   wsOptionsStorage.setOption(OptionTags.PASSPHRASE, passphrase);
+  public void setSSHPassphrase(String sshPassphrase) {
+   wsOptionsStorage.setOption(OptionTags.SSH_PASSPHRASE, sshPassphrase);
 
+  }
+  
+  @Override
+  public String getGPGPassphrase() {
+    return wsOptionsStorage.getOption(OptionTags.GPG_PASSPHRASE, "");
+  }
+
+  @Override
+  public void setGPGPassphrase(String gpgPassphrase) {
+    wsOptionsStorage.setOption(OptionTags.GPG_PASSPHRASE, gpgPassphrase);
   }
 
   @Override
@@ -604,5 +614,5 @@ public class TagBasedOptions implements Options {
   public void setCurrentBranch(final String currentBranch) {
     wsOptionsStorage.setOption(OptionTags.CURRENT_BRANCH, currentBranch);
   }
-  
+
 }
