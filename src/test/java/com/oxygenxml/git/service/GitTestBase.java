@@ -761,6 +761,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     
     // wait more
     waitForScheduler();
+    
+    PluginWorkspaceProvider.setPluginWorkspace(null);
   }
 
   /**

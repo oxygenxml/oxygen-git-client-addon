@@ -26,6 +26,7 @@ import com.oxygenxml.git.view.stash.StashApplyStatus;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 
@@ -57,6 +58,12 @@ public class GitAccessStashTest extends TestCase {
    */
   @Override
   protected void setUp() throws IllegalStateException, GitAPIException {
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
+    
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(LOCAL_TEST_REPOSITORY);
     File file = new File(LOCAL_TEST_REPOSITORY + "/test.txt");
@@ -78,9 +85,6 @@ public class GitAccessStashTest extends TestCase {
         return Mockito.mock(MessageDialog.class);
       }
     });
-    
-    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
   }
   
   /**
@@ -92,6 +96,7 @@ public class GitAccessStashTest extends TestCase {
     gitAccess.closeRepo();
     File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
     FileUtil.deleteRecursivelly(dirToDelete);
+    PluginWorkspaceProvider.setPluginWorkspace(null);
   }
 
 

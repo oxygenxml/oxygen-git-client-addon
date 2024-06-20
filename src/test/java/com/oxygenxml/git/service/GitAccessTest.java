@@ -23,6 +23,7 @@ import com.oxygenxml.git.view.event.GitController;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -53,6 +54,10 @@ public class GitAccessTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
+    
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -64,6 +69,13 @@ public class GitAccessTest extends TestCase {
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
 
     errMsg[0] = "";
+  }
+  
+  @Override
+  protected void tearDown() throws Exception {
+    PluginWorkspaceProvider.setPluginWorkspace(null);
+    
+    super.tearDown();
   }
 
   /**

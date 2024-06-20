@@ -27,6 +27,7 @@ import com.oxygenxml.git.view.history.HistoryStrategy;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.ColorTheme;
 
@@ -61,11 +62,17 @@ public class GitAccesTagsTest extends TestCase {
    * 
    * @throws Exception 
    */
+  @Override
   protected void setUp() throws Exception {
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
+    
     ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
     Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
     Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
+    
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
     URL script = getClass().getClassLoader().getResource("scripts/git_tags_script.txt");
@@ -80,6 +87,7 @@ public class GitAccesTagsTest extends TestCase {
     File dirToDelete2 = new File(REPOSITORY_TEST_CLONE);
     FileUtil.deleteRecursivelly(dirToDelete);
     FileUtil.deleteRecursivelly(dirToDelete2);
+    PluginWorkspaceProvider.setPluginWorkspace(null);
   }
   
   /**

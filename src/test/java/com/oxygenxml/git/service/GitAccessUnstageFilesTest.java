@@ -7,11 +7,16 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mockito.Mockito;
+
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 
 import junit.framework.TestCase;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class GitAccessUnstageFilesTest extends TestCase {
 
@@ -19,23 +24,33 @@ public class GitAccessUnstageFilesTest extends TestCase {
 	private static final File testDIr = new File(LOCAL_TEST_REPOSITPRY);
 	private GitAccess gitAccess = GitAccess.getInstance();
 
+	@Override
 	public void setUp() throws Exception {
+	  StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+	  PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+
+	  WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+	  Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
+
 	  testDIr.mkdirs();
-		File file = new File(testDIr, "test.txt");
-		file.createNewFile();
-		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
-		gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
-		gitAccess.commit("file test added");
+	  File file = new File(testDIr, "test.txt");
+	  file.createNewFile();
+	  gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
+	  gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
+	  gitAccess.commit("file test added");
 	}
-	
-	 public void tearDown() throws Exception {
-	    gitAccess.cleanUp();
-	    FileUtil.deleteRecursivelly(testDIr);
-	  }
+
+	@Override
+	public void tearDown() throws Exception {
+	  gitAccess.cleanUp();
+	  FileUtil.deleteRecursivelly(testDIr);
+
+	  PluginWorkspaceProvider.setPluginWorkspace(null);
+	}
 
 	public void testGetUnstagedFilesForModifyFiles() {
-		try {
-			PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
+	  try {
+	    PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
 			out.println("modificare");
 			out.close();
 		} catch (FileNotFoundException e) {

@@ -9,12 +9,16 @@ import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 
 import junit.framework.TestCase;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class GitAccessRemoveTest extends TestCase {
 
@@ -23,6 +27,12 @@ public class GitAccessRemoveTest extends TestCase {
 
 	@Override
   protected void setUp() throws IllegalStateException, GitAPIException {
+	  StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
+    
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
@@ -40,6 +50,7 @@ public class GitAccessRemoveTest extends TestCase {
 	  gitAccess.closeRepo();
 	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 	  FileUtil.deleteRecursivelly(dirToDelete);
+	  PluginWorkspaceProvider.setPluginWorkspace(null);
 	}
 
 	@Test

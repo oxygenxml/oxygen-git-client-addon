@@ -14,11 +14,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.service.WSOptionsStorageTestAdapter;
+
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
@@ -29,6 +33,11 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  *
  */
 public class OptionsWithTagsTest {
+  
+  @After
+  public void teardown() {
+    PluginWorkspaceProvider.setPluginWorkspace(null);
+  }
 
   @Test
   public void testArrayToMapAndViceVersa() {
@@ -115,6 +124,8 @@ public class OptionsWithTagsTest {
     });
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccess);
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
    
     for(int i = 1; i < 6; i++) {
@@ -176,6 +187,8 @@ public class OptionsWithTagsTest {
     });
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccess);
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
    
     for(int i = 1; i < 4; i++) {

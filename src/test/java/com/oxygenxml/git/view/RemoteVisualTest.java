@@ -55,6 +55,7 @@ public class RemoteVisualTest extends GitTestBase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
+    
     //Creates the remote repository.
     createRepository(REMOTE_REPO);
     Repository remoteRepository = gitAccess.getRepository();

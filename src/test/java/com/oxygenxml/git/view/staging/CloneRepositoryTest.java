@@ -12,10 +12,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.service.WSOptionsStorageTestAdapter;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog.DestinationPathUpdater;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -58,39 +60,45 @@ public class CloneRepositoryTest {
    */
   @Test
   public void testInformationLabel() {
-    final StandalonePluginWorkspace pluginWS = Mockito.mock(StandalonePluginWorkspace.class);
-    Mockito.when(pluginWS.getParentFrame()).then((Answer<Object>) 
-        invocation -> {
-          return new JFrame();
-        }); 
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWS);
-    final JLabel errorInfo = new CloneRepositoryDialog().getInformationLabel();
-    String givenText = "12345";
-    String expectedText = givenText;
-    errorInfo.setText(givenText);
-    assertEquals(expectedText, errorInfo.getText());
-    assertEquals(givenText, errorInfo.getToolTipText());
-    final int noOfAppendsForExpectedText = CloneRepositoryDialog.ERROR_MESSAGE_MAX_LENGTH / givenText.length();
-    final StringBuilder strBuilder = new StringBuilder();
-    for(int i = 1; i < 31; i++) {
-      strBuilder.append(givenText);
-      if(i == noOfAppendsForExpectedText) {
-        expectedText = strBuilder.toString() + CloneRepositoryDialog.THREE_DOTS;
+    try {
+      final StandalonePluginWorkspace pluginWS = Mockito.mock(StandalonePluginWorkspace.class);
+      WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+      Mockito.when(pluginWS.getOptionsStorage()).thenReturn(wsOptions);
+      Mockito.when(pluginWS.getParentFrame()).then((Answer<Object>) 
+          invocation -> {
+            return new JFrame();
+          }); 
+      PluginWorkspaceProvider.setPluginWorkspace(pluginWS);
+      final JLabel errorInfo = new CloneRepositoryDialog().getInformationLabel();
+      String givenText = "12345";
+      String expectedText = givenText;
+      errorInfo.setText(givenText);
+      assertEquals(expectedText, errorInfo.getText());
+      assertEquals(givenText, errorInfo.getToolTipText());
+      final int noOfAppendsForExpectedText = CloneRepositoryDialog.ERROR_MESSAGE_MAX_LENGTH / givenText.length();
+      final StringBuilder strBuilder = new StringBuilder();
+      for(int i = 1; i < 31; i++) {
+        strBuilder.append(givenText);
+        if(i == noOfAppendsForExpectedText) {
+          expectedText = strBuilder.toString() + CloneRepositoryDialog.THREE_DOTS;
+        }
       }
-    }
-    givenText = strBuilder.toString();
-    errorInfo.setText(givenText);
-    assertEquals(expectedText, errorInfo.getText());
-    assertEquals(givenText, errorInfo.getToolTipText());
-    givenText = "";
-    errorInfo.setText(givenText);
-    assertEquals("", errorInfo.getText());
-    assertNull(errorInfo.getToolTipText());
+      givenText = strBuilder.toString();
+      errorInfo.setText(givenText);
+      assertEquals(expectedText, errorInfo.getText());
+      assertEquals(givenText, errorInfo.getToolTipText());
+      givenText = "";
+      errorInfo.setText(givenText);
+      assertEquals("", errorInfo.getText());
+      assertNull(errorInfo.getToolTipText());
 
-    givenText = null;
-    errorInfo.setText(givenText);
-    assertNull(errorInfo.getText());
-    assertNull(errorInfo.getToolTipText());
+      givenText = null;
+      errorInfo.setText(givenText);
+      assertNull(errorInfo.getText());
+      assertNull(errorInfo.getToolTipText());
+    } finally {
+      PluginWorkspaceProvider.setPluginWorkspace(null);
+    }
   }
   
 }

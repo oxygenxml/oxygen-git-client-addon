@@ -12,19 +12,30 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 
 import junit.framework.TestCase;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class GitAccessCommitTest extends TestCase {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitTest";
 	private GitAccess gitAccess = GitAccess.getInstance();
 
-	protected void setUp() throws Exception {
+	@Override
+  protected void setUp() throws Exception {
+	  StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
+    
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 	}
 	
@@ -33,6 +44,7 @@ public class GitAccessCommitTest extends TestCase {
 	  gitAccess.cleanUp();
 	  File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
     FileUtil.deleteRecursivelly(dirToDelete);
+    PluginWorkspaceProvider.setPluginWorkspace(null);
 	}
 
 	@Test
