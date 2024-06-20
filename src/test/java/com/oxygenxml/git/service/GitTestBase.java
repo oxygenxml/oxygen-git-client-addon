@@ -11,8 +11,6 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -115,12 +113,12 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    */
   protected static final Translator translator = Translator.getInstance();
   /**
-   * The loaded reposiltories.
+   * The loaded repositories.
    */
   private Set<Repository> loadedRepos = new HashSet<> ();
   
   /**
-   * The loaded reposiltories.
+   * The loaded repositories.
    */
   private Set<Repository> remoteRepos = new HashSet<>();
 
@@ -130,17 +128,10 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   protected void installGitProtocol() {
     // Install protocol.
     try {
-    URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
-      @Override
-      public URLStreamHandler createURLStreamHandler(String protocol) {
-        if (protocol.equals(GitRevisionURLHandler.GIT_PROTOCOL)) {
-          URLStreamHandler handler = new GitRevisionURLHandler();
-          return handler;
-        }
-        
-        return null;
-      }
-    });
+      URL.setURLStreamHandlerFactory(
+          protocol -> {
+            return protocol.equals(GitRevisionURLHandler.GIT_PROTOCOL) ? new GitRevisionURLHandler() : null;
+          });
     } catch (Throwable t) {
       if (!t.getMessage().contains("factory already defined")) {
         LOGGER.info(t.getMessage(), t);
@@ -397,14 +388,19 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * Id generation counter.
    */
-  private int counter = 1;
+  private int revisionIDCounter = 1;
+  /**
+   * Date format.
+   */
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy");
   
   /**
    * Files that were requested for comparison.
    */
   protected final List<URL> urls2compare = new LinkedList<>();
-  private File tmp;
+  
+  private File tempTargetHome;
+  
   /**
    * Refresh support.
    */
@@ -617,7 +613,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * 
    */
   private void gitInit() throws Exception {
-    tmp = new File("target/home");
+    tempTargetHome = new File("target/home");
     
     MockSystemReader mockSystemReader = new MockSystemReader() {
       @Override
@@ -638,11 +634,11 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     // the same one here
 
     FileBasedConfig jgitConfig = new FileBasedConfig(
-        new File(tmp, "jgitconfig"), FS.DETECTED);
+        new File(tempTargetHome, "jgitconfig"), FS.DETECTED);
     FileBasedConfig systemConfig = new FileBasedConfig(jgitConfig,
-        new File(tmp, "systemgitconfig"), FS.DETECTED);
+        new File(tempTargetHome, "systemgitconfig"), FS.DETECTED);
     FileBasedConfig userConfig = new FileBasedConfig(systemConfig,
-        new File(tmp, "usergitconfig"), FS.DETECTED);
+        new File(tempTargetHome, "usergitconfig"), FS.DETECTED);
     
     // We have to set autoDetach to false for tests, because tests expect to be able
     // to clean up by recursively removing the repository, and background GC might be
@@ -667,6 +663,13 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     c.install();
   }
 
+  /**
+   * Mock editor.
+   * 
+   * @param editorLocation editor location.
+   * 
+   * @return editor mock.
+   */
   private WSEditor createWSEditorMock(URL editorLocation) {
     WSEditor wsEditorMock = Mockito.mock(WSEditor.class);
     
@@ -694,6 +697,9 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     return wsEditorMock;
   }
   
+  /**
+   * Tear down.
+   */
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
@@ -743,11 +749,9 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     
     SystemReader.setInstance(null);
     
-    FileSystemUtil.deleteRecursivelly(tmp);
+    FileSystemUtil.deleteRecursivelly(tempTargetHome);
     
     FileSystemUtil.deleteRecursivelly(new File("target/test-resources"));
-    
-    new File("src/test/resources/Options.xml").delete();
     
     // Sometimes a NPE is throw here.
     Optional.ofNullable(GitAccess.getInstance()).ifPresent(gitAcc -> {
@@ -825,7 +829,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * 
    * @return An assertable string representation of the files.
    */
-  protected String dumpFS(List<FileStatus> changes) {
+  protected String dumpFileStatuses(List<FileStatus> changes) {
     StringBuilder b = new StringBuilder();
     changes.stream().forEach(t -> b.append(t.toString()).append("\n"));
     return b.toString();
@@ -853,7 +857,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   protected String dumpHistory(List<CommitCharacteristics> commitsCharacteristics, boolean replaceDateWithMarker) {
     StringBuilder b = new StringBuilder();
   
-    commitsCharacteristics.stream().forEach(t -> b.append(dump(t, replaceDateWithMarker)).append("\n"));
+    commitsCharacteristics.stream().forEach(t -> b.append(serializeCommit(t, replaceDateWithMarker)).append("\n"));
   
     return b.toString();
   }
@@ -917,18 +921,6 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     return dialogToReturn[0];
   }
 
-//  protected void flushAWT() {
-//    // Wait for WindowMonitor to get the correct opened windows
-//    Semaphore s = new Semaphore(0);
-//    SwingUtilities.invokeLater(() -> {s.release();});
-//    try {
-//      s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
-//    } catch (InterruptedException e1) {
-//      LOGGER.error(e1, e1);
-//    }
-//    sleep(400);
-//  }
-  
   /**
    * Maps Git revision IDs into predictable values that can be asserted in a test.
    * 
@@ -940,9 +932,10 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     if (id == null || "*".equals(id)) {
       return id;
     }
-    String putIfAbsent = idMapper.putIfAbsent(id, String.valueOf(counter));
+    
+    String putIfAbsent = idMapper.putIfAbsent(id, String.valueOf(revisionIDCounter));
     if (putIfAbsent == null) {
-      counter ++;
+      revisionIDCounter ++;
     }
     
     return idMapper.get(id);
@@ -955,8 +948,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * 
    * @return A string representation that can be asserted.
    */
-  public String toString(CommitCharacteristics c) {
-    return dump(c, false);
+  public String serializeCommit(CommitCharacteristics c) {
+    return serializeCommit(c, false);
   }
   
   /**
@@ -967,7 +960,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * 
    * @return A string representation that can be asserted.
    */
-  public String dump(CommitCharacteristics c, boolean replaceDateWithMarker) {
+  public String serializeCommit(CommitCharacteristics c, boolean replaceDateWithMarker) {
     String date = replaceDateWithMarker ? "{date}" : dumpDate(c);
     return "[ " + c.getCommitMessage() + " , " + date + " , " + c.getAuthor() + " , " + getAssertableID(c.getCommitAbbreviatedId()) + " , " 
         + c.getCommitter() + " , " + ( c.getParentCommitId() != null ? c.getParentCommitId().stream().map(id -> getAssertableID(id)).collect(Collectors.toList()) : null) + " ]";
@@ -982,12 +975,10 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * @return        The button, or null if there is no button having that text.
    */
   protected JButton findFirstButton(Container parent, String text){
-    
     JButton result = null;
     
     // Gets all the buttons.
     ComponentFinder cf = new ComponentFinder(JButton.class);
-    @SuppressWarnings("unchecked")
     List<Component> allButtons = cf.findAll(parent);
     
     // Selects the one with the given text.
@@ -1016,7 +1007,6 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
 
     // Gets all the buttons.
     ComponentFinder cf = new ComponentFinder(JTextArea.class);
-    @SuppressWarnings("unchecked")
     List<Component> allTextAreas = cf.findAll(parent);
 
     // Selects the one with the given text.
@@ -1093,14 +1083,27 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     }
   }
   
+  /**
+   * Sleep
+   * 
+   * @param time
+   */
   protected void sleep(int time) {
     try {
       Thread.sleep(time); // NOSONAR
     } catch (InterruptedException e) {}
   }
   
+  /**
+   * Get last commit.
+   * 
+   * @return the last commit.
+   * 
+   * @throws Exception
+   */
   protected RevCommit getLastCommit() throws Exception {
     RevCommit youngestCommit = null;
+    
     List<Ref> branches = GitAccess.getInstance().getLocalBranchList();
     RevWalk walk = new RevWalk(GitAccess.getInstance().getRepository());
     for(Ref branch : branches) {
@@ -1110,6 +1113,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
         youngestCommit = commit;
     }
     walk.close();
+    
     return youngestCommit;
   }
 }

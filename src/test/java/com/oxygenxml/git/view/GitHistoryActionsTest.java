@@ -79,7 +79,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       Iterator<CommitCharacteristics> iterator = commitsCharacteristics.iterator();
       CommitCharacteristics commitCharacteristic = iterator.next();
       List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-      String dumpFS = dumpFS(changedFiles);
+      String dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=CHANGED, fileLocation=file1.txt)\n" + 
           "(changeType=REMOVED, fileLocation=file2.txt)\n" + 
@@ -107,7 +107,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
       changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-      dumpFS = dumpFS(changedFiles);
+      dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=ADD, fileLocation=file2.txt)\n" + 
           "", dumpFS);
@@ -121,7 +121,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
       changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-      dumpFS = dumpFS(changedFiles);
+      dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=ADD, fileLocation=file1.txt)\n" + 
           "", dumpFS);
@@ -141,7 +141,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       iterator = commitsCharacteristics.iterator();
       commitCharacteristic = iterator.next();
       changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-      dumpFS = dumpFS(changedFiles);
+      dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=CHANGED, fileLocation=file1.txt)\n" + 
           "(changeType=REMOVED, fileLocation=file2.txt)\n" + 
@@ -166,7 +166,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
       changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-      dumpFS = dumpFS(changedFiles);
+      dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=ADD, fileLocation=file2.txt)\n" + 
           "", dumpFS);
@@ -179,7 +179,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
       changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-      dumpFS = dumpFS(changedFiles);
+      dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=ADD, fileLocation=file1.txt)\n" + 
           "", dumpFS);
@@ -212,7 +212,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       CommitCharacteristics uncommittedChanges = commitsCharacteristics.get(0);
       changedFiles = RevCommitUtil.getChangedFiles(uncommittedChanges.getCommitId());
-      dumpFS = dumpFS(changedFiles);
+      dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=UNTRACKED, fileLocation=newFile.xml)\n" + 
           "(changeType=MODIFIED, fileLocation=file1.txt)\n" + 
@@ -255,7 +255,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       uncommittedChanges = commitsCharacteristics.get(0);
       changedFiles = RevCommitUtil.getChangedFiles(uncommittedChanges.getCommitId());
-      dumpFS = dumpFS(changedFiles);
+      dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=MISSING, fileLocation=file1.txt)\n" + 
           "",
@@ -300,7 +300,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       //////////////////////////
       CommitCharacteristics commitCharacteristic = GitAccess.UNCOMMITED_CHANGES;
       List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-      String dumpFS = dumpFS(changedFiles);
+      String dumpFS = dumpFileStatuses(changedFiles);
       assertEquals(
           "(changeType=UNTRACKED, fileLocation=file.txt)\n" + 
           "", dumpFS);
@@ -365,7 +365,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       Iterator<CommitCharacteristics> iterator = commitsCharacteristics.iterator();
       CommitCharacteristics commitCharacteristics = iterator.next();
       List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-      String dumpFS = dumpFS(changes);
+      String dumpFS = dumpFileStatuses(changes);
       assertEquals(
           "(changeType=REMOVED, fileLocation=file2.txt)\n" + 
           "", dumpFS);

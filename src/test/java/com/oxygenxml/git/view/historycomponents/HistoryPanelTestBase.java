@@ -73,7 +73,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
   protected void assertAffectedFiles(HistoryPanel historyPanel, String expected) {
     JTable affectedFilesTable = historyPanel.getAffectedFilesTable();
     HistoryTableAffectedFilesModel affectedFilesModel = (HistoryTableAffectedFilesModel) affectedFilesTable.getModel();
-    String dumpFS = dumpFS(affectedFilesModel.getFilesStatuses());
+    String dumpFS = dumpFileStatuses(affectedFilesModel.getFilesStatuses());
 
     assertEquals(expected, dumpFS);
   }
@@ -113,7 +113,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
     }
     flushAWT();
     CommitCharacteristics selectedObject = (CommitCharacteristics) model.getValueAt(historyTable.getSelectedRow(), 1);
-    assertEquals(replaceDate(expected), toString(selectedObject));
+    assertEquals(replaceDate(expected), serializeCommit(selectedObject));
   }
 
   protected String replaceDate(String expected) {
