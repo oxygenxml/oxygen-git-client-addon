@@ -419,6 +419,12 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   @Override
   public void setUp() throws Exception {
     super.setUp();
+    
+    pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
+    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
    
     // Create the unstaged resources panel
     refreshSupport = new PanelsRefreshSupport(null) {
@@ -435,10 +441,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     ResultsManager resultManager = Mockito.mock(ResultsManager.class);
     ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
     Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
-    pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
     Mockito.when(pluginWSMock.getResultsManager()).thenReturn(resultManager);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
     Mockito.doAnswer(new Answer<Object>() {
       @Override
@@ -566,9 +570,6 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
         return null;
       }
     }).when(projectCtrlMock).refreshFolders(Mockito.any());
-    
-    WSOptionsStorage wsOptions = new WSOptionsStorageTestAdapter();
-    Mockito.when(pluginWSMock.getOptionsStorage()).thenReturn(wsOptions);
     
     installGitProtocol();
     
