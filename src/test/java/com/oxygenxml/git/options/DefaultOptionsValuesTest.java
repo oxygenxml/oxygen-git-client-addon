@@ -21,15 +21,6 @@ import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 public class DefaultOptionsValuesTest {
   
   /**
-   * Test default values for JAXB Options.
-   */
-  @Test
-  public void testJAXBDefaultOpptions() {
-    final JaxbOptions options = new JaxbOptions();
-    assertAllDefaultOptions(options);
-  }
-  
-  /**
    * Test default values for Tag Based Options.
    */
   @Test

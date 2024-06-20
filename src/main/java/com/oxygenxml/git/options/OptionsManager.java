@@ -109,20 +109,18 @@ public class OptionsManager {
    */
   protected Options getOptions() {
     if (options == null) {
-      String home = System.getProperty("com.oxygenxml.editor.home.url");
-      if (home == null) {
-        // Probably test environment.
-        LOGGER.warn("Options not initialized.");
-        if (PluginWorkspaceProvider.getPluginWorkspace() != null
-            && PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage() != null) {
-          options = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
+      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+      boolean isTestEnvironment = System.getProperty("com.oxygenxml.editor.home.url") == null;
+      if (isTestEnvironment) {
+        LOGGER.warn("Options not initialized. Initialize them now...");
+        if (pluginWS != null && pluginWS.getOptionsStorage() != null) {
+          loadOptions(pluginWS.getOptionsStorage());
         } else {
-          options = new JaxbOptions();
+          LOGGER.warn("Failed to initialize options! No plugin workspace or options storage detected.");
         }
       } else {
-        // Oxygen environment. Should not happen.
         LOGGER.warn("Options not initialized! Custom ro.sync.exml.workspace.api.options.ExternalPersistentObject will not be loaded/saved.");
-        options = OptionsLoader.loadOptions(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage());
+        loadOptions(pluginWS.getOptionsStorage());
       }
     }
 	  return options;
@@ -134,7 +132,7 @@ public class OptionsManager {
    * @param wsOptionsStorage Oxygen options storage API.
    */
   public void loadOptions(WSOptionsStorage wsOptionsStorage) {
-    options = OptionsLoader.loadOptions(wsOptionsStorage);
+    options = new TagBasedOptions(wsOptionsStorage);
   }
   
   /**
