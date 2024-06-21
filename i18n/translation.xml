@@ -8,6 +8,24 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Enter_gpg_passphrase">
+        <comment>Message asking for the GPG keys passphrase.</comment>
+        <val lang="en_US">Enter the passphrase for the GPG keys</val>
+        <val lang="de_DE">Enter the passphrase for the GPG keys</val>
+        <val lang="fr_FR">Enter the passphrase for the GPG keys</val>
+        <val lang="ja_JP">Enter the passphrase for the GPG keys</val>
+        <val lang="nl_NL">Enter the passphrase for the GPG keys</val>
+        <val lang="zh_CN">Enter the passphrase for the GPG keys</val>
+    </key>
+   <key value="Enter_ssh_passphrase">
+        <comment>Message asking for the SSH passphrase.</comment>
+        <val lang="en_US">Enter the passphrase for the SSH keys</val>
+        <val lang="de_DE">Enter the passphrase for the SSH keys</val>
+        <val lang="fr_FR">Enter the passphrase for the SSH keys</val>
+        <val lang="ja_JP">Enter the passphrase for the SSH keys</val>
+        <val lang="nl_NL">Enter the passphrase for the SSH keys</val>
+        <val lang="zh_CN">Enter the passphrase for the SSH keys</val>
+    </key>
 	<key value="Pull_rebase_failed_because_uncommitted">
        		<comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
         	<val lang="en_US">Cannot pull (rebase) because there are uncommitted local changes to the files below. The incoming remote changes might not modify these files, but a rebase cannot be performed when uncommitted local changes exist.\n\nCommit, stash, or discard the local changes and try again.</val>
@@ -623,15 +641,6 @@
 		<val lang="ja_JP">プルステータス</val>
 		<val lang="nl_NL">Status ophalen</val>
 		<val lang="zh_CN">拉取状态</val>
-	</key>
-	<key value="Enter_ssh_passphrase">
-		<comment>Message asking for the SSH passphrase.</comment>
-		<val lang="en_US">Please enter your SSH passphrase</val>
-		<val lang="de_DE">Bitte gib deinen SSH-Passphrase ein</val>
-		<val lang="fr_FR">Veuillez entrer votre passphrase SSH</val>
-		<val lang="ja_JP">SSH パスフレーズを入力してください</val>
-		<val lang="nl_NL">Voer uw SSH wachtwoord in</val>
-		<val lang="zh_CN">请输入您的 SSH 密码</val>
 	</key>
 	<key value="Working_Copy_Label">
 		<comment>Label displayed on the left of the working copy combo box

@@ -248,10 +248,12 @@ public class Tags {
   public static final String PULL_STATUS = "Pull_status";
   /**
    * Message asking for the SSH passphrase.
-   * 
-   * en: Please enter your SSH passphrase.
    */
   public static final String ENTER_SSH_PASS_PHRASE = "Enter_ssh_passphrase";
+  /**
+   * Message asking for the GPG keys passphrase.
+   */
+  public static final String ENTER_GPG_PASSPHRASE = "Enter_gpg_passphrase";
 	/**
 	 * Label displayed on the left of the working copy combo box
 	 */
@@ -2000,8 +2002,7 @@ public class Tags {
    */
   public static final String MISSING_UNTRACKED_FILES = "Missing_Untracked_Files";
 
-  // TODO EXM-52129 add entry in translation.xml
-  public static final String ENTER_GPG_PASSPHRASE = "Enter_gpg_passphrase";
+  
   
 }
 
