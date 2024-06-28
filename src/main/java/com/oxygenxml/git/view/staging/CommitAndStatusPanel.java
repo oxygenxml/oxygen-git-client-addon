@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
+import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -139,7 +140,7 @@ public class CommitAndStatusPanel extends JPanel {
                 .buildAndShow().getResult();
             if (userAnswer == 1) {
               executeCommit();
-            }else {
+            } else {
               commitMessageArea.requestFocus();
             }
           } else {
@@ -169,6 +170,9 @@ public class CommitAndStatusPanel extends JPanel {
           SwingUtilities.invokeLater(() -> commitButton.setEnabled(true));
         }
         
+      } catch (CanceledException e) {
+        LOGGER.debug(e.getMessage(), e);
+        toggleCommitButtonAndUpdateMessageArea(false);
       } catch (GitAPIException e1) {
         LOGGER.debug(e1.getMessage(), e1);
         
@@ -178,12 +182,10 @@ public class CommitAndStatusPanel extends JPanel {
         stopTimer();
         handleCommitEnded(commitSuccessful);
         
-        final boolean isPrePushValidationEnabled = ValidationManager.getInstance()
-            .isPrePushValidationEnabled();
+        ValidationManager validationManager = ValidationManager.getInstance();
         if (commitSuccessful 
-            && autoPushWhenCommittingToggle.isSelected() &&
-            (!isPrePushValidationEnabled || ValidationManager.getInstance().checkPushValid())
-            ) {
+            && autoPushWhenCommittingToggle.isSelected() 
+            && (!validationManager.isPrePushValidationEnabled() || validationManager.checkPushValid())) {
           gitController.push();
         }
       }
