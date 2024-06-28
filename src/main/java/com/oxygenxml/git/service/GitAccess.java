@@ -699,6 +699,7 @@ public class GitAccess {
 		      .call();
 		  fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
 		} catch (CanceledException e) {
+		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.debug(e.getMessage(), e);
 		  throw e;
 		} catch (GitAPIException e) {
