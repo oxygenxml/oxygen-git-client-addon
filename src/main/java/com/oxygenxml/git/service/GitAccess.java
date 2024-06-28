@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
+import org.bouncycastle.openpgp.PGPException;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.AddCommand;
@@ -57,6 +58,7 @@ import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.StashApplyFailureException;
@@ -131,6 +133,7 @@ import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.utils.URIUtil;
+import com.oxygenxml.git.view.dialog.GPGPassphraseDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
@@ -705,8 +708,21 @@ public class GitAccess {
 		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
-		  // Re throw the exception so that the user sees a proper error message, depending on its type.
 		  throw e;
+		} catch (JGitInternalException e) {
+		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
+		  LOGGER.error(e.getMessage(), e);
+		  Throwable cause = e.getCause();
+		  if (cause instanceof PGPException && cause.getMessage().toLowerCase().contains("passphrase")) {
+		    GPGPassphraseDialog dlg = new GPGPassphraseDialog(Translator.getInstance().getTranslation(Tags.ENTER_GPG_PASSPHRASE) + ".");
+		    if (dlg.getPassphrase() != null) {
+		      commit(message, isAmendLastCommit);
+		    } else {
+		      throw new CanceledException("Commit signing was cancelled.");
+		    }
+		  } else {
+		    throw e;
+		  }
 		}
 	}
 

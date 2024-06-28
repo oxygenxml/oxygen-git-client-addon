@@ -36,6 +36,7 @@ import javax.swing.Timer;
 
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -172,11 +173,8 @@ public class CommitAndStatusPanel extends JPanel {
         
       } catch (CanceledException e) {
         toggleCommitButtonAndUpdateMessageArea(false);
-      } catch (GitAPIException e1) {
-        LOGGER.debug(e1.getMessage(), e1);
-        
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-            "Commit failed.  " + e1.getMessage());
+      } catch (GitAPIException | JGitInternalException e) {
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Commit failed. Reason: " + e.getMessage());
       } finally {
         stopTimer();
         handleCommitEnded(commitSuccessful);

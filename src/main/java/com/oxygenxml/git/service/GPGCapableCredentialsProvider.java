@@ -98,13 +98,12 @@ public class GPGCapableCredentialsProvider extends CredentialsProvider {
   private boolean treatPassphrase(CredentialItem item) {
     LOGGER.debug("GPG passphrase required.");
     
-    if (!validPassphrase(passphrase)) {
-      // We don't have a phrase from options. Ask the user.
+    if (passphrase == null || passphrase.isEmpty()) {
       LOGGER.debug("Ask for new GPG passphrase...");
       passphrase = new GPGPassphraseDialog(Translator.getInstance().getTranslation(Tags.ENTER_GPG_PASSPHRASE) + ".").getPassphrase();
     }
     
-    if (validPassphrase(passphrase)) {
+    if (passphrase != null) {
       if (item instanceof CredentialItem.StringType) {
         ((CredentialItem.StringType) item).setValue(passphrase);
       } else if (item instanceof CredentialItem.Password) {
@@ -119,12 +118,4 @@ public class GPGCapableCredentialsProvider extends CredentialsProvider {
     }
   }
 
-  /**
-   * @param passphrase Pass phrase.
-   * 
-   * @return <code>true</code> if the phrase is not null and not empty.
-   */
-  private static final boolean validPassphrase(String passphrase) {
-    return passphrase != null && passphrase.length() > 0;
-  }
 }
