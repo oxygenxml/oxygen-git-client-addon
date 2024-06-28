@@ -171,7 +171,6 @@ public class CommitAndStatusPanel extends JPanel {
         }
         
       } catch (CanceledException e) {
-        LOGGER.debug(e.getMessage(), e);
         toggleCommitButtonAndUpdateMessageArea(false);
       } catch (GitAPIException e1) {
         LOGGER.debug(e1.getMessage(), e1);

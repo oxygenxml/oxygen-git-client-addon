@@ -53,6 +53,7 @@ import org.eclipse.jgit.api.StashCreateCommand;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
+import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -697,6 +698,9 @@ public class GitAccess {
 		      .setCredentialsProvider(new GPGCapableCredentialsProvider(OptionsManager.getInstance().getGPGPassphrase()))
 		      .call();
 		  fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
+		} catch (CanceledException e) {
+		  LOGGER.debug(e.getMessage(), e);
+		  throw e;
 		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
@@ -2843,6 +2847,7 @@ public class GitAccess {
  * @throws IOException
  */
 	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, IOException {
+	  // TODO EXM-52129 when commit() is ready, apply the things you learned here as well
 	  fireOperationAboutToStart(new GitEventInfo(GitOperation.CREATE_TAG));
 	  try {
 	    RevWalk walk = new RevWalk(getRepository());
