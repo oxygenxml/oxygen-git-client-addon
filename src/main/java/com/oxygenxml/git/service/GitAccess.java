@@ -2864,7 +2864,6 @@ public class GitAccess {
  * @throws IOException
  */
 	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, IOException {
-	  // TODO EXM-52129 when commit() is ready, apply the things you learned here as well
 	  fireOperationAboutToStart(new GitEventInfo(GitOperation.CREATE_TAG));
 	  try {
 	    RevWalk walk = new RevWalk(getRepository());
