@@ -194,22 +194,34 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         String branchPath = BranchesUtil.createBranchPath(nodePath,
             BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
-        CreateBranchDialog dialog = new CreateBranchDialog(TRANSLATOR.getTranslation(Tags.CHECKOUT_BRANCH), branchPath,
-            true);
-        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-          ctrl.asyncTask(() -> {
-            ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath, BranchesUtil.getRemoteForBranch(nodePath));
-            BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
+        BranchCheckoutMediator.getInstance().createBranch(
+            TRANSLATOR.getTranslation(Tags.CHECKOUT_BRANCH), 
+            branchPath, 
+            true, 
+            (branchName, shouldCreateBranch) -> createBranchAsync(nodePath, branchPath, branchName)
+        );
+      }
 
-            return null;
-          }, ex -> {
-            if (ex instanceof CheckoutConflictException) {
-              treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-            } else {
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-            }
-          });
-        }
+      /**
+       * Create a new branch asynchronously.
+       * 
+       * @param nodePath     The node path of the remote branch.
+       * @param branchPath   The branch path.
+       * @param branchName   The branch name.
+       */
+      private void createBranchAsync(String nodePath, String branchPath, String branchName) {
+        ctrl.asyncTask(() -> {
+          ctrl.getGitAccess().checkoutRemoteBranchWithNewName(branchName, branchPath, BranchesUtil.getRemoteForBranch(nodePath));
+          BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
+
+          return null;
+        }, ex -> {
+          if (ex instanceof CheckoutConflictException) {
+            treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
+          } else {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+          }
+        });
       }
     };
   }
@@ -226,20 +238,19 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        CreateBranchDialog dialog = new CreateBranchDialog(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), null, false);
-
-        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-          ctrl.asyncTask(
-              () -> doCreateBranch(nodePath, dialog.getBranchName(), dialog.shouldCheckoutNewBranch()),
-              ex -> {
-                if (ex instanceof CheckoutConflictException) {
-                  treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-                } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
-                  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-                }
-              }
-              );
-        }
+        BranchCheckoutMediator.getInstance().createBranch(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), null, false,
+            (branchName, shouldCheckoutNewBranch) -> {
+              ctrl.asyncTask(
+                  () -> doCreateBranch(nodePath, branchName, shouldCheckoutNewBranch),
+                  ex -> {
+                    if (ex instanceof CheckoutConflictException) {
+                      treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
+                    } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
+                      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                    }
+                  }
+                  );
+            });
       }
 
       /**

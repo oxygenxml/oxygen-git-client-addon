@@ -822,6 +822,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
+        null,
         updateSubmodules);
   }
   

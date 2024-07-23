@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
+import org.eclipse.jgit.lib.ProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,19 +39,26 @@ public class PullAction extends BaseGitAbstractAction {
      * The Git Controller.
      */
     private final transient GitController gitController;
+    
+    /**
+     * The progress monitor of the action.
+     */
+    private final ProgressMonitor progressMonitor;
    
     
 	
     /**
      * Constructor.
      * 
-     * @param gitController  Git Controller.
-     * @param name           Action name.
-     * @param pullType       The pull type.
+     * @param gitController   Git Controller.
+     * @param name            Action name.
+     * @param pullType        The pull type.
+     * @param progressMonitor The progress monitor of the action.
      */
-    public PullAction(final GitController gitController, final String name, final PullType pullType) {
+    public PullAction(final GitController gitController, final String name, final PullType pullType, final ProgressMonitor progressMonitor) {
       super(name);
       this.pullType = pullType;
+      this.progressMonitor = progressMonitor;
       putValue(PULL_TYPE_ACTION_PROP, pullType);
       this.gitController = gitController;
     }
@@ -63,7 +71,7 @@ public class PullAction extends BaseGitAbstractAction {
           if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Pull action invoked");
           }
-          gitController.pull(pullType);
+          gitController.pull(pullType, progressMonitor);
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {

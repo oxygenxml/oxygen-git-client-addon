@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 
+import javax.swing.SwingUtilities;
+
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
+import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
@@ -105,19 +108,33 @@ public class GitController extends GitControllerBase {
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull() {
-    return	pull(PullType.MERGE_FF);
+    return	pull(PullType.MERGE_FF, null);
   }
 
   /**
    * Pull and choose the merging strategy.
    * 
-   * @param pullType The pull type / merging strategy.
+   * @param pullType           The pull type / merging strategy.
+   * @param progressMonitor    Receive the progress of the current operation.
    * 
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
-  public Future<?> pull(PullType pullType) {
-    return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType));
+  public Future<?> pull(PullType pullType, ProgressMonitor progressMonitor) {
+    return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType, progressMonitor));
+  }
+  
+  /**
+   * Pull and choose the merging strategy.
+   * 
+   * @param pullType           The pull type / merging strategy.
+   * @param progressMonitor    Receive the progress of the current operation.
+   * 
+   * @return The result of the operation execution.
+   */
+  @SuppressWarnings("java:S1452")
+  public void pullSync(PullType pullType, ProgressMonitor progressMonitor) {
+    new ExecutePullRunnable(pullType, progressMonitor).run();
   }
 
   /**
@@ -147,12 +164,12 @@ public class GitController extends GitControllerBase {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Pull failed with the following message: {}. Resources: {}", message, filesWithChanges);
     }
-    MessagePresenterProvider.getBuilder(
+    SwingUtilities.invokeLater(() -> MessagePresenterProvider.getBuilder(
         translator.getTranslation(Tags.PULL_STATUS), DialogType.ERROR)
         .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(filesWithChanges))
         .setMessage(message)
         .setCancelButtonVisible(false)
-        .buildAndShow();      
+        .buildAndShow());
   }
 
   /**
@@ -195,16 +212,19 @@ public class GitController extends GitControllerBase {
       } catch (JGitInternalException e) {
         event = treatJGitInternalException(e);
       } catch (RebaseUncommittedChangesException e) {
+        event = Optional.of(new PushPullEvent(getOperation(), null, e));
         showPullFailedBecauseOfCertainChanges(
             e.getUncommittedChanges(),
             translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED));
       } catch (RebaseConflictsException e) {
+        event = Optional.of(new PushPullEvent(getOperation(), null, e));
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
                 MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
                         translator.getTranslation(Tags.REBASE))
         );
       } catch (CheckoutConflictException e) {
+        event = Optional.of(new PushPullEvent(getOperation(), null, e));
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
                 MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
@@ -443,10 +463,13 @@ public class GitController extends GitControllerBase {
    */
   private class ExecutePullRunnable extends ExecuteCommandRunnable {
 
-    private PullType pullType;
+    private final PullType pullType;
+    
+    private final ProgressMonitor progressMonitor;
 
-    public ExecutePullRunnable(PullType pullType) {
+    public ExecutePullRunnable(PullType pullType, ProgressMonitor progressMonitor) {
       this.pullType = pullType;
+      this.progressMonitor = progressMonitor;
     }
     @Override
     protected GitOperation getOperation() {
@@ -484,6 +507,7 @@ public class GitController extends GitControllerBase {
           PullResponse response = gitAccess.pull(
               credentialsProvider,
               pullType,
+              progressMonitor,
               OptionsManager.getInstance().getUpdateSubmodulesOnPull());
           event = treatPullResponse(response);
         }

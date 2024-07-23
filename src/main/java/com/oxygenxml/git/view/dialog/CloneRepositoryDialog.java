@@ -742,7 +742,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
             destFile.mkdir();
           }
           JFrame parentFrame = (JFrame) PLUGIN_WORKSPACE.getParentFrame();
-          final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
+          final ProgressDialog progressDialog = new ProgressDialog(parentFrame, TRANSLATOR.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE));
           CloneWorker cloneWorker = new CloneWorker(
               progressDialog,
               sourceURL,

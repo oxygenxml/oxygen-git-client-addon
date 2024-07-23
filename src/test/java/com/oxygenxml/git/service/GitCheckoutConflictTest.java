@@ -107,6 +107,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
+        null,
         updateSubmodules);
   }
 

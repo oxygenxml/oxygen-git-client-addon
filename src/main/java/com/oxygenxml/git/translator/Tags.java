@@ -2001,8 +2001,21 @@ public class Tags {
    * This message appears when the untracked files are missing.
    */
   public static final String MISSING_UNTRACKED_FILES = "Missing_Untracked_Files";
+  
+  /**
+   * English: Create anyway.
+   */
+  public static final String CREATE_ANYWAY = "Create_Anyway";
+  
+  /**
+   * English: Repository Outdated.
+   */
+  public static final String REPOSITORY_OUTDATED = "Repository_Outdated";
+  
+  /**
+   * The explanation of the importance to update repository before to create new branch.
+   */
+  public static final String UPDATE_REPO_BEFORE_CREATE_BRANCH_EXPL = "Update_Repo_Before_Create_Branch_Expl";
 
-  
-  
 }
 

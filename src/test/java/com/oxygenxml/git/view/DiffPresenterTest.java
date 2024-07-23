@@ -412,7 +412,7 @@ public class DiffPresenterTest extends GitTestBase {
     TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
-    pc.pull(PullType.REBASE).get();
+    pc.pull(PullType.REBASE, null).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());

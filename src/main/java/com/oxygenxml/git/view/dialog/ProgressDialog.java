@@ -4,81 +4,156 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Optional;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.IProgressUpdater;
+import com.oxygenxml.git.view.dialog.internal.OnDialogCancel;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
+/**
+ * This class represents a progress dialog.
+ * 
+ * @author alex_smarandache
+ */
 @SuppressWarnings("java:S110")
-public class ProgressDialog extends OKCancelDialog {
+public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
 
-	private JProgressBar progressBar;
-	private JLabel noteLabel;
-	private boolean isCanceled;
-	private Translator translator;
+  /**
+   * The progress bar component.
+   */
+  private JProgressBar progressBar;
+  
+  /**
+   * The component to display the note label.
+   */
+  private JLabel noteLabel;
+  
+  /**
+   * <code>true</code> if the operation is canceled.
+   */
+  private boolean isCanceled;
+  
+  /**
+   * <code>true</code> if the operation is completed.
+   */
+  private boolean isCompleted = false;
+  
+  /**
+   * The listener to be called when operation is canceled.
+   */
+  private OnDialogCancel cancelListener;
 
-	public ProgressDialog(JFrame parentFrame) {
-		super(parentFrame, "", true);
-		translator = Translator.getInstance();
-		setTitle(translator.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE));
-		
-		noteLabel = new JLabel(" ");
+  /**
+   * Constructor.
+   * 
+   * @param parentFrame
+   */
+  public ProgressDialog(JFrame parentFrame, String dialogTitle) {
+    super(parentFrame, "", true);
+    setTitle(dialogTitle);
+    initUI();
+  }
 
-		progressBar = new JProgressBar();
-		progressBar.setStringPainted(false);
-		progressBar.setIndeterminate(true);
-		progressBar.setPreferredSize(new Dimension(250, progressBar.getPreferredSize().height));
+  /**
+   * Initialize the UI components. Remove all the old components is the method is called more times.
+   */
+  public void initUI() {
+    this.getContentPane().removeAll();
+    isCompleted = false;
+    isCanceled = false;
+    cancelListener = null;
+    
+    noteLabel = new JLabel(" ");
 
-		JPanel panel = new JPanel(new GridBagLayout());
+    progressBar = new JProgressBar();
+    progressBar.setStringPainted(false);
+    progressBar.setIndeterminate(true);
+    progressBar.setPreferredSize(new Dimension(250, progressBar.getPreferredSize().height));
 
-		GridBagConstraints gbc = new GridBagConstraints();
+    JPanel panel = new JPanel(new GridBagLayout());
 
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.insets = new Insets(0, 15, 5, 15);
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-		panel.add(new JLabel(), gbc);
+    GridBagConstraints gbc = new GridBagConstraints();
 
-		gbc.gridy++;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		gbc.insets = new Insets(0, 5, 0, 5);
-		panel.add(progressBar, gbc);
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.insets = new Insets(0, 15, 5, 15);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.anchor = GridBagConstraints.NORTHWEST;
+    panel.add(new JLabel(), gbc);
 
-		gbc.gridy++;
-		gbc.weightx = 0;
-		gbc.insets = new Insets(10, 5, 10, 5);
-		panel.add(noteLabel, gbc);
+    gbc.gridy++;
+    gbc.weightx = 1;
+    gbc.weighty = 1;
+    gbc.insets = new Insets(0, 5, 0, 5);
+    panel.add(progressBar, gbc);
 
-		add(panel);
+    gbc.gridy++;
+    gbc.weightx = 0;
+    gbc.insets = new Insets(10, 5, 10, 5);
+    panel.add(noteLabel, gbc);
 
-		getOkButton().setVisible(false);
+    add(panel);
 
-  	setMinimumSize(new Dimension(400, 150));
-		setResizable(false);
-		pack();
-		setLocationRelativeTo(parentFrame);
+    getOkButton().setVisible(false);
 
-	}
+    setMinimumSize(new Dimension(400, 150));
+    setResizable(false);
+    pack();
+  }
 
-	public void setNote(String text) {
-		noteLabel.setText(text);
-	}
+  /**
+   * @param text Set the new note to be displayed.
+   */
+  @Override
+  public void setNote(String text) {
+    noteLabel.setText(text);
+  }
 
-	@Override
-	protected void doCancel() {
-		isCanceled = true;
-	}
+  /**
+   * Cancel the dialog.
+   */
+  @Override
+  protected void doCancel() {
+    isCanceled = true;
+    Optional.ofNullable(cancelListener).ifPresent(OnDialogCancel::doOnCancel);
+  }
 
-	public boolean isCanceled() {
-		return isCanceled;
-	}
+  /**
+   * @return <code>true</code> if the dialog is canceled.
+   */
+  @Override
+  public boolean isCanceled() {
+    return isCanceled;
+  }
+  
+  /**
+   * @param cancelListener The new listener to be called on cancel operation.
+   */
+  public void setCancelListener(OnDialogCancel cancelListener) {
+    this.cancelListener = cancelListener;
+  }
+
+  /**
+   * Mark the operation as completed.
+   */
+  @Override
+  public void markAsCompleted() {
+    this.isCompleted = true;
+    
+  }
+
+  /**
+   *  @return <code>true</code> if the operation is completed.
+   */
+  @Override
+  public boolean isCompleted() {
+    return isCompleted;
+  }
 
 }

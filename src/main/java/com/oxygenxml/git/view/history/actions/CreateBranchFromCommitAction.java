@@ -14,11 +14,10 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.branches.BranchesUtil;
-import com.oxygenxml.git.view.branches.CreateBranchDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Create a new branch starting from a commit in the history table.
@@ -45,27 +44,27 @@ public class CreateBranchFromCommitAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    CreateBranchDialog dialog = new CreateBranchDialog(
+    BranchCheckoutMediator.getInstance().createBranch(
         Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
         null,
-        false);
-    if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-      GitOperationScheduler.getInstance().schedule(() -> {
-        try {
-          if(dialog.shouldCheckoutNewBranch()) {
-            GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
-          } else {
-            GitAccess.getInstance().createBranch(dialog.getBranchName(), commitId);
-          }
-          
-        } catch (CheckoutConflictException ex) {
-          BranchesUtil.showCannotCheckoutNewBranchMessage();
-        } catch (HeadlessException | GitAPIException ex) {
-          LOGGER.debug(ex.getMessage(), ex);
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-        }
-      });
-    }
+        false,
+        (branchName, shouldCheckoutNewBranch) -> {
+          GitOperationScheduler.getInstance().schedule(() -> {
+            try {
+              if(shouldCheckoutNewBranch) {
+                GitAccess.getInstance().checkoutCommitAndCreateBranch(branchName, commitId);
+              } else {
+                GitAccess.getInstance().createBranch(branchName, commitId);
+              }
+              
+            } catch (CheckoutConflictException ex) {
+              BranchesUtil.showCannotCheckoutNewBranchMessage();
+            } catch (HeadlessException | GitAPIException ex) {
+              LOGGER.debug(ex.getMessage(), ex);
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+            }
+          });
+        });
   }
   
 }

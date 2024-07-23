@@ -412,7 +412,7 @@ public class FlatView2Test extends FlatViewTestBase {
         super.showRebaseInProgressDialog();
       }
     };
-    ppc.pull(PullType.REBASE);
+    ppc.pull(PullType.REBASE, null);
     s.acquire();
     flushAWT();
     
@@ -507,7 +507,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertTrue(rebasePanel.isShowing());
     
     GitController ppc = (GitController) stagingPanel.getGitController();
-    ppc.pull(PullType.REBASE);
+    ppc.pull(PullType.REBASE, null);
     flushAWT();
     
     JDialog interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
@@ -601,7 +601,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
       // Pull again. Rebase in progress dialog is shown
       GitController ppc = (GitController) stagingPanel.getGitController();
-      ppc.pull(PullType.REBASE);
+      ppc.pull(PullType.REBASE, null);
       flushAWT();
 
       JDialog rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
@@ -644,7 +644,7 @@ public class FlatView2Test extends FlatViewTestBase {
       flushAWT();
       
       // Pull again.
-      ppc.pull(PullType.REBASE);
+      ppc.pull(PullType.REBASE, null);
       flushAWT();
 
       // Rebase in progress dialog shown

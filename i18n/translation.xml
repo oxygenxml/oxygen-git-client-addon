@@ -8,6 +8,33 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Update_Repo_Before_Create_Branch_Expl">
+		<comment>The explanation of the importance to update repository before to create new branch.</comment>
+		<val lang="en_US">Your local repository is not up to date. It is recommended to pull the latest changes from the remote repository before creating a new branch.</val>
+		<val lang="de_DE">Your local repository is not up to date. It is recommended to pull the latest changes from the remote repository before creating a new branch.</val>
+		<val lang="fr_FR">Your local repository is not up to date. It is recommended to pull the latest changes from the remote repository before creating a new branch.</val>
+		<val lang="ja_JP">Your local repository is not up to date. It is recommended to pull the latest changes from the remote repository before creating a new branch.</val>
+		<val lang="nl_NL">Your local repository is not up to date. It is recommended to pull the latest changes from the remote repository before creating a new branch.</val>
+		<val lang="zh_CN">Your local repository is not up to date. It is recommended to pull the latest changes from the remote repository before creating a new branch.</val>
+	</key>
+	<key value="Repository_Outdated">
+		<comment>English: Repository Outdated.</comment>
+		<val lang="en_US">Repository Outdated</val>
+		<val lang="de_DE">Repository Outdated</val>
+		<val lang="fr_FR">Repository Outdated</val>
+		<val lang="ja_JP">Repository Outdated</val>
+		<val lang="nl_NL">Repository Outdated</val>
+		<val lang="zh_CN">Repository Outdated</val>
+	</key>
+	<key value="Create_Anyway">
+		<comment>English: Create anyway.</comment>
+		<val lang="en_US">Create anyway</val>
+		<val lang="de_DE">Create anyway</val>
+		<val lang="fr_FR">Create anyway</val>
+		<val lang="ja_JP">Create anyway</val>
+		<val lang="nl_NL">Create anyway</val>
+		<val lang="zh_CN">Create anyway</val>
+	</key>
 	<key value="Enter_gpg_passphrase">
         <comment>Message asking for the GPG keys passphrase.</comment>
         <val lang="en_US">Enter the passphrase for the GPG keys</val>

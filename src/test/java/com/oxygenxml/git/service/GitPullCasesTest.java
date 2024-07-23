@@ -189,7 +189,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder b = new StringBuilder();
     TestUtil.collectPushPullEvents(pc, b);
     
-    pc.pull(PullType.REBASE).get();
+    pc.pull(PullType.REBASE, null).get();
     
     assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
@@ -202,7 +202,7 @@ public class GitPullCasesTest extends GitTestBase {
     instance.commit("Another");
     push("", "");
     
-    pc.pull(PullType.REBASE).get();
+    pc.pull(PullType.REBASE, null).get();
     
     assertTrue(filesWithChanges.isEmpty());
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
@@ -513,7 +513,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder b = new StringBuilder();
     TestUtil.collectPushPullEvents(pc, b);
     
-    pc.pull(PullType.REBASE).get();
+    pc.pull(PullType.REBASE, null).get();
 
     assertEquals(
         "[Pull_failed_because_conflicting_paths] FOR [test.txt]",
@@ -667,7 +667,7 @@ public class GitPullCasesTest extends GitTestBase {
     // Another change, uncommitted
     setFileContent(local1_2File, "updated 1 2");
     
-    pc.pull(PullType.REBASE).get();
+    pc.pull(PullType.REBASE, null).get();
     
     assertEquals(
         "[Pull_rebase_failed_because_uncommitted] FOR [test_1_2.txt]",
@@ -722,7 +722,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     //Try to pull
     GitController gitController = new GitController();
-    Future<?> pull = gitController.pull(PullType.MERGE_FF);
+    Future<?> pull = gitController.pull(PullType.MERGE_FF, null);
     pull.get();
     
     //Verify an exception was intercepted

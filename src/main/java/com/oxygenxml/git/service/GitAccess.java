@@ -133,6 +133,7 @@ import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.utils.URIUtil;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.GPGPassphraseDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
@@ -257,7 +258,7 @@ public class GitAccess {
     String host = url.getHost();
     AuthenticationInterceptor.bind(host);
     
-		ProgressMonitor progressMonitor = createCloneProgressMonitor(progressDialog);
+		ProgressMonitor progressMonitor = new GitOperationProgressMonitor(progressDialog);
 		if (progressDialog != null) {
 		  progressDialog.setNote("Initializing...");
 		  progressMonitor.beginTask("Initializing ", 0);
@@ -285,71 +286,6 @@ public class GitAccess {
 		}
 		
 	}
-
-	/**
-	 * Create progress monitor for the clone operation.
-	 * 
-	 * @param progressDialog Progress dialog.
-	 * 
-	 * @return the progress monitor. Never <code>null</code>.
-	 */
-  private ProgressMonitor createCloneProgressMonitor(final ProgressDialog progressDialog) {
-    return new ProgressMonitor() {
-			String taskTitle;
-			float totalWork;
-			float currentWork = 0;
-
-			@Override
-			public void update(int completed) {
-			  currentWork += completed;
-			  if (progressDialog != null) {
-			    String text = "";
-			    if (totalWork != 0) {
-			      float percentFloat = currentWork / totalWork * 100;
-			      int percent = (int) percentFloat;
-			      text = taskTitle + " " + percent + "% completed";
-			    } else {
-			      text = taskTitle + "100% completed";
-			    }
-			    progressDialog.setNote(text);
-			  }
-			}
-
-			@Override
-      public void start(int totalTasks) {
-				currentWork = 0;
-			}
-
-			@Override
-			public boolean isCancelled() {
-			  boolean isCanceled = false;
-			  if (progressDialog != null) {
-			    if (progressDialog.isCanceled()) {
-			      progressDialog.setNote("Canceling...");
-			    }
-			    isCanceled = progressDialog.isCanceled();
-			  }
-			  return isCanceled;
-			}
-
-			@Override
-      public void endTask() {
-				currentWork = 0;
-			}
-
-			@Override
-      public void beginTask(String title, int totalWork) {
-				currentWork = 0;
-				this.taskTitle = title;
-				this.totalWork = totalWork;
-			}
-
-      @Override
-      public void showDuration(boolean enabled) {
-        // Not of interest
-      }
-		};
-  }
 	
 	/**
    * Sets the Git repository asynchronously, on a new thread, and at the end updates the
@@ -1035,6 +971,7 @@ public class GitAccess {
 	 * 
 	 * @param credentialsProvider Credentials provider.
 	 * @param pullType            One of ff, no-ff, ff-only, rebase.
+	 * @param monitor             The monitor progress for the pull operation.
 	 * @param updateSubmodules    <code>true</code> to execute the equivalent of a "git submodule update --recursive"
 	 * 
 	 * @return The result, if successful.
@@ -1045,58 +982,60 @@ public class GitAccess {
 	 *                                   the working copy so operation is aborted.
 	 * @throws GitAPIException other errors.
 	 */
-  public PullResponse pull(
-      CredentialsProvider credentialsProvider,
-      PullType pullType,
-      boolean updateSubmodules) throws GitAPIException {
+	public PullResponse pull(
+	    CredentialsProvider credentialsProvider,
+	    PullType pullType,
+	    ProgressMonitor monitor,
+	    boolean updateSubmodules) throws GitAPIException {
 	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  AuthenticationInterceptor.install();
 
-		if (!getConflictingFiles().isEmpty()) {
-			pullResponseToReturn.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
-		} else {
+	  if (!getConflictingFiles().isEmpty()) {
+	    pullResponseToReturn.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
+	  } else {
 
-		  // Call "Pull"
-		  Repository repository = git.getRepository();
-		  ObjectId oldHead = resolveHead(repository);
-      PullCommand pullCmd = git.pull()
-          .setRebase(PullType.REBASE == pullType)
-          .setCredentialsProvider(credentialsProvider)
-          .setRemote(getRemoteFromCurrentBranch());
-      PullResult pullCommandResult = pullCmd.call();
+	    // Call "Pull"
+	    Repository repository = git.getRepository();
+	    ObjectId oldHead = resolveHead(repository);
+	    PullCommand pullCmd = git.pull()
+	        .setRebase(PullType.REBASE == pullType)
+	        .setCredentialsProvider(credentialsProvider)
+	        .setProgressMonitor(monitor)
+	        .setRemote(getRemoteFromCurrentBranch());
+	    PullResult pullCommandResult = pullCmd.call();
 
-		  // Get fetch result
-		  Collection<TrackingRefUpdate> trackingRefUpdates = pullCommandResult.getFetchResult().getTrackingRefUpdates();
-		  String lockFailureMessage = createLockFailureMessageIfNeeded(trackingRefUpdates);
-		  if (!lockFailureMessage.isEmpty()) {
-		    // Lock failure
-		   PluginWorkspaceProvider.getPluginWorkspace()
-            .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
-		    pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
-		  } else {
-		    ObjectId head = resolveHead(repository);
-		    if (oldHead != null && head != null) {
-		      refreshProject(repository, oldHead, head);
-		    }
+	    // Get fetch result
+	    Collection<TrackingRefUpdate> trackingRefUpdates = pullCommandResult.getFetchResult().getTrackingRefUpdates();
+	    String lockFailureMessage = createLockFailureMessageIfNeeded(trackingRefUpdates);
+	    if (!lockFailureMessage.isEmpty()) {
+	      // Lock failure
+	      PluginWorkspaceProvider.getPluginWorkspace()
+	      .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
+	      pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
+	    } else {
+	      ObjectId head = resolveHead(repository);
+	      if (oldHead != null && head != null) {
+	        refreshProject(repository, oldHead, head);
+	      }
 
-		    RebaseResult rebaseResult = pullCommandResult.getRebaseResult();
-		    if (rebaseResult != null) {
-		      treatRebaseResult(pullResponseToReturn, rebaseResult);
-		    } else { 
-		    treatMergeResult(pullResponseToReturn, pullCommandResult.getMergeResult());
-		  }
-		}
-		}
-		
-		if (updateSubmodules && pullResponseToReturn.getStatus().isSuccessful()) {
-		  try {
-        RepoUtil.updateSubmodules(git);
-      } catch (IOException e) {
-        throw new GitAPIException(e.getMessage(), e) {};
-      }
-		}
-		
-		return pullResponseToReturn;
+	      RebaseResult rebaseResult = pullCommandResult.getRebaseResult();
+	      if (rebaseResult != null) {
+	        treatRebaseResult(pullResponseToReturn, rebaseResult);
+	      } else { 
+	        treatMergeResult(pullResponseToReturn, pullCommandResult.getMergeResult());
+	      }
+	    }
+	  }
+
+	  if (updateSubmodules && pullResponseToReturn.getStatus().isSuccessful()) {
+	    try {
+	      RepoUtil.updateSubmodules(git);
+	    } catch (IOException e) {
+	      throw new GitAPIException(e.getMessage(), e) {};
+	    }
+	  }
+
+	  return pullResponseToReturn;
 
 	}
 
@@ -1807,7 +1746,7 @@ public class GitAccess {
 	        git.rebase().setOperation(Operation.ABORT).call();
 	        // EXM-47461 Should update submodules as well.
 	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
-	        pull(credentialsProvider, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
+	        pull(credentialsProvider, PullType.REBASE, null, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
 	      } else {
 	        AnyObjectId commitToMerge = repo.resolve("MERGE_HEAD");
 	        git.clean().call();

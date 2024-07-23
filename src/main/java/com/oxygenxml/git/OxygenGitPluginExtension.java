@@ -48,6 +48,7 @@ import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.actions.GitActionsMenuBar;
 import com.oxygenxml.git.view.blame.BlameManager;
+import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.dialog.DetachedHeadDialog;
@@ -291,6 +292,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  this.pluginWorkspaceAccess = pluginWS;
+
 	  OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 	  ProjectHelper.getInstance().installProjectChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
 
@@ -314,6 +316,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    }
 	  });
 
+	  BranchCheckoutMediator.getInstance().init(gitController);
 	  LFSSupport.install(gitController);
 
 	  final UtilAccess utilAccess = pluginWS.getUtilAccess();

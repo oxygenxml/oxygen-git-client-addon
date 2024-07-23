@@ -278,7 +278,7 @@ public class GitActionsManager  {
 	public AbstractAction getPullMergeAction() {
 		if(pullMergeAction == null) {
 			pullMergeAction = new PullAction(gitController, 
-					TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF);
+					TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF, null);
 			final boolean hasRepository = hasRepository();
 	    SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(hasRepository));
 		}
@@ -294,7 +294,7 @@ public class GitActionsManager  {
 	public AbstractAction getPullRebaseAction() {
 		if(pullRebaseAction == null) {
 			pullRebaseAction = new PullAction(gitController, 
-					TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE);
+					TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE, null);
 			final boolean hasRepository = hasRepository();
 			SwingUtilities.invokeLater(() -> pullRebaseAction.setEnabled(hasRepository));
 		}

@@ -352,6 +352,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
+        null,
         updateSubmodules);
   }
 }

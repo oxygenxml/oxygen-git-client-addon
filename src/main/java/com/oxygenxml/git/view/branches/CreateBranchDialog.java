@@ -71,7 +71,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
    * @param nameToPropose    The name to propose. Can be <code>null</code>.
    * @param isCheckoutRemote <code>true</code> if we create by checking out a remote branch.
    */
-  public CreateBranchDialog(
+  CreateBranchDialog(
       String title,
       String nameToPropose,
       boolean isCheckoutRemote) {
