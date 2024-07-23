@@ -123,19 +123,6 @@ public class GitController extends GitControllerBase {
   public Future<?> pull(PullType pullType, ProgressMonitor progressMonitor) {
     return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType, progressMonitor));
   }
-  
-  /**
-   * Pull and choose the merging strategy.
-   * 
-   * @param pullType           The pull type / merging strategy.
-   * @param progressMonitor    Receive the progress of the current operation.
-   * 
-   * @return The result of the operation execution.
-   */
-  @SuppressWarnings("java:S1452")
-  public void pullSync(PullType pullType, ProgressMonitor progressMonitor) {
-    new ExecutePullRunnable(pullType, progressMonitor).run();
-  }
 
   /**
    * Informs the user that pull was successful with conflicts.
