@@ -73,6 +73,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
+import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -608,6 +609,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     OptionsManager.getInstance().loadOptions(wsOptions);
     
     gitAccess.getStatusCache().installEditorsHook(pluginWSMock);
+    BranchCheckoutMediator.getInstance().init(ctrl);
+    
   }
   
   /**

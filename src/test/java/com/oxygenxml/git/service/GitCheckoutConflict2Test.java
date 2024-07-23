@@ -40,6 +40,7 @@ import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
+import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
@@ -468,6 +469,11 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);
         });
+      
+        OKOtherAndCancelDialog branchNotUpdatedDialogs = (OKOtherAndCancelDialog) findDialog(translator.getTranslation(Tags.REPOSITORY_OUTDATED));
+        assertNotNull(branchNotUpdatedDialogs);
+        branchNotUpdatedDialogs.getOKButton().doClick();
+        sleep(100);
       
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
