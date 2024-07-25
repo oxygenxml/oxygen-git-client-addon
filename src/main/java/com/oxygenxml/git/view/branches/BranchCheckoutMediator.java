@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.branches;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
@@ -26,7 +25,6 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Mediates the communication about the external environment and the branch dialog creation.
@@ -81,7 +79,6 @@ public class BranchCheckoutMediator {
    * The progress dialog of the pull operation.
    */
   private final ProgressDialog pullOperationProgressDialog = new ProgressDialog(
-      (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
       Translator.getInstance().getTranslation(Tags.PULL));
   
   /**
@@ -216,7 +213,7 @@ public class BranchCheckoutMediator {
     
     SwingUtilities.invokeLater(() -> {
       pullOperationProgressDialog.initUI();
-      pullOperationProgressDialog.setVisible(true);
+      pullOperationProgressDialog.show(0);
     });
     
     if(pullListener == null) {

@@ -5,15 +5,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 
 import com.oxygenxml.git.view.actions.IProgressUpdater;
 import com.oxygenxml.git.view.dialog.internal.OnDialogCancel;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -52,10 +56,10 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   /**
    * Constructor.
    * 
-   * @param parentFrame
+   * @param dialogTitle The title of the dialog.
    */
-  public ProgressDialog(JFrame parentFrame, String dialogTitle) {
-    super(parentFrame, "", true);
+  public ProgressDialog(String dialogTitle) {
+    super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "", true);
     setTitle(dialogTitle);
     initUI();
   }
@@ -145,6 +149,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   @Override
   public void markAsCompleted() {
     this.isCompleted = true;
+    SwingUtilities.invokeLater(() -> setVisible(false));
     
   }
 
@@ -154,6 +159,19 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   @Override
   public boolean isCompleted() {
     return isCompleted;
+  }
+  
+  /**
+   * @param millis These milliseconds are used to not show the progress dialog for quickly operations.
+   */
+  public void show(long millis) {
+    Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+      SwingUtilities.invokeLater(() -> {
+        if(!isCanceled && !isCompleted) {
+          setVisible(true);
+        }
+      });
+    }, millis, TimeUnit.MILLISECONDS);
   }
 
 }

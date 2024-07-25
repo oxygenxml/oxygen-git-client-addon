@@ -78,6 +78,7 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.progress.OperationProgressManager;
 import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -607,6 +608,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     
     gitAccess.getStatusCache().installEditorsHook(pluginWSMock);
     BranchCheckoutMediator.getInstance().init(ctrl);
+    OperationProgressManager.init(ctrl);
   }
   
   /**
