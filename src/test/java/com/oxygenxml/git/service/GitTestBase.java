@@ -2,7 +2,6 @@ package com.oxygenxml.git.service;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Window;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,7 +19,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -38,7 +36,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-import org.awaitility.Awaitility;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.MockSystemReader;
@@ -63,6 +60,7 @@ import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxygenxml.git.TestHelper;
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -83,7 +81,6 @@ import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 
 import junit.extensions.jfcunit.JFCTestCase;
-import junit.extensions.jfcunit.WindowMonitor;
 import junit.extensions.jfcunit.finder.ComponentFinder;
 import ro.sync.basic.io.FileSystemUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -610,7 +607,6 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     
     gitAccess.getStatusCache().installEditorsHook(pluginWSMock);
     BranchCheckoutMediator.getInstance().init(ctrl);
-    
   }
   
   /**
@@ -893,39 +889,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * @return The dialog, or null if there is no dialog having that title.
    */
   protected JDialog findDialog(String title){
-
-    final JDialog dialogToReturn[] = new JDialog[1];
-    try {
-      Awaitility.await().atMost(1250, TimeUnit.MILLISECONDS).until(() -> {
-        // Get the opened windows
-        final Window[] windows = WindowMonitor.getWindows();
-        if (windows != null && windows.length > 0) {
-          for (Window window : windows) { 
-            if (window.isActive() && window instanceof JDialog) {
-              JDialog dialog = (JDialog) window;
-              String dialogTitle = dialog.getTitle();
-              if (dialogTitle != null) {
-                // If the dialog title is the same or starts with the given title
-                // return this dialog
-                if (title.equals(dialogTitle) || dialogTitle.startsWith(title)) {
-                  dialogToReturn[0] = dialog;
-                }
-              }
-            }
-          }
-        }                
-        return Objects.nonNull(dialogToReturn[0]);
-      });
-
-    } catch(Exception e) {
-      e.printStackTrace();
-    }
-
-    if(Objects.isNull(dialogToReturn[0])) {
-      LOGGER.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
-    }
-
-    return dialogToReturn[0];
+    return TestHelper.findDialog(title);
   }
 
   /**
@@ -982,23 +946,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * @return        The button, or null if there is no button having that text.
    */
   protected JButton findFirstButton(Container parent, String text){
-    JButton result = null;
-    
-    // Gets all the buttons.
-    ComponentFinder cf = new ComponentFinder(JButton.class);
-    List<Component> allButtons = cf.findAll(parent);
-    
-    // Selects the one with the given text.
-    for (Iterator<Component> iterator = allButtons.iterator(); iterator.hasNext();) {
-      JButton button = (JButton) iterator.next();
-      boolean equals = button.getText() != null && button.getText().equals(text);
-      if(equals){
-        result = button;
-        break;
-      }
-    }
-    
-    return result;      
+    return TestHelper.findFirstButton(parent, text);
   }
   
   
@@ -1096,9 +1044,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    * @param time
    */
   protected void sleep(int time) {
-    try {
-      Thread.sleep(time); // NOSONAR
-    } catch (InterruptedException e) {}
+    TestHelper.sleep(time);
   }
   
   /**

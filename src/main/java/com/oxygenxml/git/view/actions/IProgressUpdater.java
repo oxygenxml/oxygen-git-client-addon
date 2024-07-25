@@ -1,5 +1,10 @@
 package com.oxygenxml.git.view.actions;
 
+/**
+ * This interface is implemented by the classes that update their info based on a progress.
+ * 
+ * @author alex_smarandache
+ */
 public interface IProgressUpdater {
   
   /**

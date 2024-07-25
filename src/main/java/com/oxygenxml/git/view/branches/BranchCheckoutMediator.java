@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.branches;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFrame;
@@ -13,7 +12,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.RevCommitUtil;
-import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
@@ -37,9 +36,30 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 public class BranchCheckoutMediator {
   
   /**
+   * An inner class with the information about the repository.
+   * 
+   * @author alex_smarandache
+   */
+  public interface IRepositoryInfo {
+    
+    /**
+     * @return <code>true</code> if the repository is up to date.
+     * 
+     * @throws Exception
+     */
+    boolean isRepositoryUpToDate() throws Exception;
+    
+  };
+  
+  /**
    * The Git controller to manage git operations.
    */
   private GitController ctrl;
+  
+  /**
+   * Compute the needed info about the current repository.
+   */
+  private IRepositoryInfo repositoryInfo;
   
   /**
    * The pull operation listener.
@@ -86,6 +106,18 @@ public class BranchCheckoutMediator {
    */
   public void init(GitController ctrl) {
     this.ctrl = ctrl;
+    repositoryInfo = new IRepositoryInfo() {
+      @Override
+      public boolean isRepositoryUpToDate() throws Exception {
+        return RevCommitUtil
+        .getCommitsAheadAndBehind(
+            ctrl.getGitAccess().getRepository(), 
+            ctrl.getGitAccess().getBranchInfo().getBranchName())
+        .getCommitsBehind()
+        .isEmpty();
+      }
+    };
+    pullListener = null;
   }
   
   /**
@@ -119,9 +151,9 @@ public class BranchCheckoutMediator {
     if(ctrl != null) {
       try {
         ctrl.getGitAccess().fetch();
-        boolean areRepositoryNotUpToDate = isLocalRepositoryBehindRemote();
-
-        if(areRepositoryNotUpToDate) {
+        if(repositoryInfo.isRepositoryUpToDate()) {
+          showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
+        } else {
           AskForBranchUpdateDialog askForBranchDialog = new AskForBranchUpdateDialog();
           SwingUtilities.invokeLater(() -> {
             askForBranchDialog.setVisible(true);
@@ -131,9 +163,6 @@ public class BranchCheckoutMediator {
               showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
             } 
           });
-          
-        } else {
-          showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
         }
       } catch(Exception ex) {
         LOGGER.error(ex.getMessage(), ex);
@@ -144,21 +173,7 @@ public class BranchCheckoutMediator {
     }
   }
 
-  /**
-   * 
-   * @return <code>true</code> when there are commits not pulled in the current local repository.
-   * 
-   * @throws IOException
-   * @throws NoRepositorySelected
-   */
-  private boolean isLocalRepositoryBehindRemote() throws IOException, NoRepositorySelected {
-    return !RevCommitUtil
-        .getCommitsAheadAndBehind(
-            ctrl.getGitAccess().getRepository(), 
-            ctrl.getGitAccess().getBranchInfo().getBranchName())
-        .getCommitsBehind()
-        .isEmpty();
-  }
+  
   
   /**
    * Show the create branch dialog.
@@ -244,10 +259,20 @@ public class BranchCheckoutMediator {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.PULL && shouldShowPullDialog.getAndSet(false)) {
-          SwingUtilities.invokeLater(() -> pullOperationProgressDialog.dispose());
-          showCreateBranchDialog(dialogTitle, nameToPropose, isCheckoutRemote, branchCreator);
+          SwingUtilities.invokeLater(() -> {
+            pullOperationProgressDialog.dispose();
+            showCreateBranchDialog(dialogTitle, nameToPropose, isCheckoutRemote, branchCreator);
+          }); 
         }
       }
     };
+  }
+  
+  /**
+   * @param repositoryInfo The new repository info provider.
+   */
+  @TestOnly
+  void setRepositoryInfo(IRepositoryInfo repositoryInfo) {
+    this.repositoryInfo = repositoryInfo;
   }
 }
