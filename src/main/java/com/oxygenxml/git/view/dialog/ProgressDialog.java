@@ -41,7 +41,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   /**
    * <code>true</code> if the operation is canceled.
    */
-  private boolean isCanceled;
+  private boolean isCancelled;
   
   /**
    * <code>true</code> if the operation is completed.
@@ -70,7 +70,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   public void initUI() {
     this.getContentPane().removeAll();
     isCompleted = false;
-    isCanceled = false;
+    isCancelled = false;
     cancelListener = null;
     
     noteLabel = new JLabel(" ");
@@ -124,7 +124,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
    */
   @Override
   protected void doCancel() {
-    isCanceled = true;
+    isCancelled = true;
     Optional.ofNullable(cancelListener).ifPresent(OnDialogCancel::doOnCancel);
   }
 
@@ -132,8 +132,8 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
    * @return <code>true</code> if the dialog is canceled.
    */
   @Override
-  public boolean isCanceled() {
-    return isCanceled;
+  public boolean isCancelled() {
+    return isCancelled;
   }
   
   /**
@@ -153,6 +153,14 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
     
   }
 
+  @Override
+  public void setVisible(boolean visible) {
+    if(!visible && !isCompleted) {
+      isCancelled = true;
+    }
+    
+    super.setVisible(visible);
+  }
   /**
    *  @return <code>true</code> if the operation is completed.
    */
@@ -167,7 +175,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   public void show(long millis) {
     Executors.newSingleThreadScheduledExecutor().schedule(() -> {
       SwingUtilities.invokeLater(() -> {
-        if(!isCanceled && !isCompleted) {
+        if(!isCancelled && !isCompleted) {
           setVisible(true);
         }
       });

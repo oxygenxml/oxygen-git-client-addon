@@ -31,6 +31,15 @@ class SwitchBranchesProgressDialog extends ProgressDialog {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if(info.getGitOperation() == GitOperation.CHECKOUT) {
+          setCancelListener(new OnDialogCancel() {
+            @Override
+            public void doOnCancel() {
+              SwingUtilities.invokeLater(() -> {
+                setVisible(false);
+              });
+            }
+          });
+          
           SwingUtilities.invokeLater(() -> {
             showProgress();
           });
@@ -57,13 +66,6 @@ class SwitchBranchesProgressDialog extends ProgressDialog {
         
       }
     }); 
-    
-    setCancelListener(new OnDialogCancel() {
-      @Override
-      public void doOnCancel() {
-        setVisible(false);
-      }
-    });
   }
   
   /**

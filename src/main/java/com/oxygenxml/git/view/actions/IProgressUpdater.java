@@ -13,9 +13,9 @@ public interface IProgressUpdater {
   void setNote(String note);
   
   /**
-   * @return <code>true</code> if the dialog is canceled.
+   * @return <code>true</code> if the dialog is cancelled.
    */
-  boolean isCanceled();
+  boolean isCancelled();
   
   /**
    * When the progress is finished with success.

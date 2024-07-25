@@ -61,17 +61,15 @@ public class GitOperationProgressMonitor implements ProgressMonitor {
   public void start(int totalTasks) {
     currentWork = 0;
   }
-
+  
   @Override
   public boolean isCancelled() {
-    boolean isCanceled = false;
-    if (progressUpdater != null) {
-      if (progressUpdater.isCanceled()) {
-        progressUpdater.setNote("Canceling...");
-      }
-      isCanceled = progressUpdater.isCanceled();
+    boolean isCancelled = false;
+    if (progressUpdater != null && progressUpdater.isCancelled()) {
+      progressUpdater.setNote("Canceling...");
+      isCancelled = true;
     }
-    return isCanceled;
+    return isCancelled;
   }
 
   @Override

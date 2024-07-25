@@ -1813,7 +1813,6 @@ public class GitAccess {
 	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  try {
 	    LogUtil.logSubmodule();
-     
 	    git.checkout().setProgressMonitor(opProgressMonitor).setName(branch).call();
 	    LogUtil.logSubmodule();
 	    
@@ -1822,8 +1821,14 @@ public class GitAccess {
 	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  } catch (GitAPIException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
-	    throw e;
-	  }
+        throw e;
+      } catch(Exception ex) {
+        fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), ex);
+        if(!ex.getMessage().contains("was canceled")) {
+          throw ex;  
+        }
+        
+      }
 	}
 	
 	/**
