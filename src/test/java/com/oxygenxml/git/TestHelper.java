@@ -90,7 +90,6 @@ public final class TestHelper {
         
         // Get the opened windows
         final Window[] windows = WindowMonitor.getWindows();
-        System.out.println(windows.length);
         if (windows != null && windows.length > 0) {
           for (Window window : windows) { 
             if (window.isActive() && window instanceof JDialog) {
