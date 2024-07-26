@@ -103,7 +103,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
-        "Status: FINISHED, message: \n" + 
+        "Status: FAILED, message: null\n" + 
         "", b.toString());
     
     filesWithChanges.clear();
@@ -193,7 +193,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
-        "Status: FINISHED, message: \n" + 
+        "Status: FAILED, message: null\n" + 
         "", b.toString());
     
     filesWithChanges.clear();
@@ -291,7 +291,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
-        "Status: FINISHED, message: \n" + 
+        "Status: FAILED, message: null\n" + 
         "", b.toString());
     
     filesWithChanges.clear();
