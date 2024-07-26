@@ -22,7 +22,7 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 
-import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Mediates the communication about the external environment and the branch dialog creation.
