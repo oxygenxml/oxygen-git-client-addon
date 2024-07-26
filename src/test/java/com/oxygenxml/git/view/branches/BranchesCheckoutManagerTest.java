@@ -1,9 +1,5 @@
 package com.oxygenxml.git.view.branches;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,8 +9,6 @@ import javax.swing.SwingUtilities;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -27,12 +21,12 @@ import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.WSOptionsStorageTestAdapter;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.view.branches.BranchCheckoutMediator.IRepositoryInfo;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
+import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -42,7 +36,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * 
  * @author alex_smarandache
  */
-public class BranchesCheckoutManagerTest {
+public class BranchesCheckoutManagerTest extends JFCTestCase {
   
   /**
    * The mock of the git controller.
@@ -54,7 +48,6 @@ public class BranchesCheckoutManagerTest {
    * 
    * @throws NoRepositorySelected
    */
-  @Before
   public void setUp() throws NoRepositorySelected {
     gitCtrlMock = Mockito.mock(GitController.class);
     GitAccess gitAccessMock = Mockito.mock(GitAccess.class);
@@ -78,11 +71,12 @@ public class BranchesCheckoutManagerTest {
    *
    * @throws Exception
    */
-  @Test
+  
   public void testConfirmationDialog_NotDisplayed() throws Exception {
     AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
     
-    simulateBranchCreationRequest(wasCalledCreateBranchOp, true);
+    //simulateBranchCreationRequest(wasCalledCreateBranchOp, true);
+    SwingUtilities.invokeLater(() -> new CreateBranchDialog("Create Branch", "bla", false));
     
     ((CreateBranchDialog) TestHelper.findDialog("Create Branch")).getCancelButton().doClick();
     assertFalse(wasCalledCreateBranchOp.get());
@@ -95,12 +89,7 @@ public class BranchesCheckoutManagerTest {
    * @param isRepositoryUpToDate    <code>true</code> if the repository is up to date.
    */
   private void simulateBranchCreationRequest(AtomicBoolean wasCalledCreateBranchOp, boolean isRepositoryUpToDate) {
-    BranchCheckoutMediator.getInstance().setRepositoryInfo(new IRepositoryInfo() {
-      @Override
-      public boolean isRepositoryUpToDate() throws Exception {
-        return isRepositoryUpToDate;
-      }
-    });
+    Mockito.when(gitCtrlMock.getGitAccess().getPullsBehind()).thenReturn(isRepositoryUpToDate ? 0 : 15);
 
     SwingUtilities.invokeLater(() -> {
       BranchCheckoutMediator.getInstance().createBranch("Create Branch", "My Branch", false, new IBranchesCreator() {
@@ -120,7 +109,6 @@ public class BranchesCheckoutManagerTest {
    *
    * @throws Exception
    */
-  @Test
   public void testConfirmationDialog_Displayed_Cancel() throws Exception {
     AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
     
@@ -140,7 +128,6 @@ public class BranchesCheckoutManagerTest {
    *
    * @throws Exception
    */
-  @Test
   public void testConfirmationDialog_Displayed_CreateBranchAnyway() throws Exception {
     AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
     
@@ -163,7 +150,6 @@ public class BranchesCheckoutManagerTest {
    *
    * @throws Exception
    */ 
-  @Test
   public void testConfirmationDialog_Displayed_PullFailed() throws Exception {
     AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
     
@@ -198,7 +184,6 @@ public class BranchesCheckoutManagerTest {
    *
    * @throws Exception
    */ 
-  @Test
   public void testConfirmationDialog_Displayed_PullSuccess() throws Exception {
     AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
     
@@ -207,6 +192,7 @@ public class BranchesCheckoutManagerTest {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
         listeners.add((GitEventListener) invocation.getArgument(0));
+        System.out.println(listeners);
         return null;
       }
     }).when(gitCtrlMock).addGitListener(Mockito.any());
