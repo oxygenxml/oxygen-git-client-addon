@@ -43,6 +43,7 @@ import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.progress.OperationProgressManager;
 import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -184,6 +185,9 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     // Dummy icon
     Mockito.doReturn(null).when(imageUtilities).loadIcon((URL)Mockito.any());
     Mockito.when(pluginWSMock.getImageUtilities()).thenReturn(imageUtilities);
+    
+    OperationProgressManager.init(new GitController(gitAccess));
+    
   }
   
   @Override
@@ -242,7 +246,6 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "altfel");;
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
-    
     // move to main branch
     gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
@@ -268,6 +271,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
           abstractAction.actionPerformed(null);
         });
        
+        ((OKOtherAndCancelDialog) findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
@@ -371,6 +375,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
           abstractAction.actionPerformed(null);
         });
 
+        ((OKOtherAndCancelDialog) findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
@@ -504,7 +509,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
       }
     };
     
-    Awaitility.waitAtMost(500, TimeUnit.MILLISECONDS).until(() -> 
+    Awaitility.waitAtMost(1250, TimeUnit.MILLISECONDS).until(() -> 
     "a_new_day".equals(branchName.get()));
 
     assertEquals("a_new_day", gitAccess.getRepository().getBranch());
