@@ -211,23 +211,23 @@ public class BranchCheckoutMediator {
     
     shouldShowPullDialog.set(true);
     
-    SwingUtilities.invokeLater(() -> {
-      pullOperationProgressDialog.initUI();
-      pullOperationProgressDialog.show(0);
-    });
-    
     if(pullListener == null) {
       pullListener = createGitPullListener(dialogTitle, nameToPropose, isCheckoutRemote, branchCreator);
       ctrl.addGitListener(pullListener);
     }
 
-    pullOperationProgressDialog.setCancelListener(new OnDialogCancel() {
-      @Override
-      public void doOnCancel() {
-        SwingUtilities.invokeLater(() -> pullOperationProgressDialog.setVisible(false));
-      }
-    });
     
+    SwingUtilities.invokeLater(() -> {
+      pullOperationProgressDialog.initUI();
+      pullOperationProgressDialog.setCancelListener(new OnDialogCancel() {
+        @Override
+        public void doOnCancel() {
+          SwingUtilities.invokeLater(() -> pullOperationProgressDialog.setVisible(false));
+        }
+      });
+      pullOperationProgressDialog.show(0);
+    });
+        
     ctrl.pull(
         OptionsManager.getInstance().getDefaultPullType() == PullType.REBASE ? PullType.REBASE : PullType.MERGE_FF, 
         new GitOperationProgressMonitor(pullOperationProgressDialog));
@@ -257,7 +257,7 @@ public class BranchCheckoutMediator {
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.PULL && shouldShowPullDialog.getAndSet(false)) {
           SwingUtilities.invokeLater(() -> {
-            pullOperationProgressDialog.dispose();
+            SwingUtilities.invokeLater(() -> pullOperationProgressDialog.dispose());
             showCreateBranchDialog(dialogTitle, nameToPropose, isCheckoutRemote, branchCreator);
           }); 
         }

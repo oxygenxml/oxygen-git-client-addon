@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 
 import javax.swing.SwingUtilities;
 
+import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -196,6 +197,8 @@ public class GitController extends GitControllerBase {
           LOGGER.debug("Preparing for push/pull command");
         }
         event = doOperation(credentialsProvider);
+      } catch(CanceledException e) {
+        event = Optional.of(new PushPullEvent(getOperation(), null, e));
       } catch (JGitInternalException e) {
         event = treatJGitInternalException(e);
       } catch (RebaseUncommittedChangesException e) {
@@ -292,7 +295,9 @@ public class GitController extends GitControllerBase {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
 
       Throwable cause = e.getCause();
-      if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
+      if(cause.getMessage().contains("was canceled")) {
+        event = Optional.of(new PushPullEvent(getOperation(), cause.getMessage()));
+      } else if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
         String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
         showPullFailedBecauseOfCertainChanges(
             Arrays.asList(conflictingFile),

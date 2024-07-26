@@ -1639,7 +1639,7 @@ public class GitAccess {
 	}
 
 	/**
-	 * Calculates how many commits the remote repository is ahead from the local
+	 * Calculates how many commits the remote repository is behind from the local.
 	 * repository base commit
 	 * 
 	 * @return the number of commits the remote is ahead
