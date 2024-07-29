@@ -42,10 +42,8 @@ public class OperationProgressManager {
    * @return The created progress dialog.
    */
   public static ProgressDialog getProgressDialogByGitOperation(GitOperation operation) {
-    if(!OPERATIONS_PROGRESS_DIALOG_MAP.containsKey(operation)) {
-      if(operation == GitOperation.CHECKOUT) {
-        OPERATIONS_PROGRESS_DIALOG_MAP.put(GitOperation.CHECKOUT, new SwitchBranchesProgressDialog(gitCtrl));
-      }
+    if (operation == GitOperation.CHECKOUT && !OPERATIONS_PROGRESS_DIALOG_MAP.containsKey(operation)) {
+      OPERATIONS_PROGRESS_DIALOG_MAP.put(GitOperation.CHECKOUT, new SwitchBranchesProgressDialog(gitCtrl));
     }
     
     ProgressDialog dialog = OPERATIONS_PROGRESS_DIALOG_MAP.get(operation);

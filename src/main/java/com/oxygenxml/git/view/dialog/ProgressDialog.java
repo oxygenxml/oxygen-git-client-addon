@@ -29,11 +29,6 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
 
   /**
-   * The progress bar component.
-   */
-  private JProgressBar progressBar;
-  
-  /**
    * The component to display the note label.
    */
   private JLabel noteLabel;
@@ -75,7 +70,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
     
     noteLabel = new JLabel(" ");
 
-    progressBar = new JProgressBar();
+    JProgressBar progressBar = new JProgressBar();
     progressBar.setStringPainted(false);
     progressBar.setIndeterminate(true);
     progressBar.setPreferredSize(new Dimension(250, progressBar.getPreferredSize().height));
@@ -173,13 +168,12 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
    * @param millis These milliseconds are used to not show the progress dialog for quickly operations.
    */
   public void show(long millis) {
-    Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-      SwingUtilities.invokeLater(() -> {
-        if(!isCancelled && !isCompleted) {
-          setVisible(true);
-        }
-      });
-    }, millis, TimeUnit.MILLISECONDS);
+    Runnable command = () -> SwingUtilities.invokeLater(() -> {
+      if(!isCancelled && !isCompleted) {
+        setVisible(true);
+      }
+    });
+    Executors.newSingleThreadScheduledExecutor().schedule(command, millis, TimeUnit.MILLISECONDS);
   }
 
 }
