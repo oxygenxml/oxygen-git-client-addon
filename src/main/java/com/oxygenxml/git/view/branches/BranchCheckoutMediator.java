@@ -114,7 +114,8 @@ public class BranchCheckoutMediator {
     if(ctrl != null) {
       try {
         ctrl.getGitAccess().fetch();
-        if(0 == ctrl.getGitAccess().getPullsBehind()) {
+        boolean isRepoUpToDate = 0 == ctrl.getGitAccess().getPullsBehind();
+        if(isRepoUpToDate) {
           showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
         } else {
           AskForBranchUpdateDialog askForBranchDialog = new AskForBranchUpdateDialog();
@@ -155,7 +156,6 @@ public class BranchCheckoutMediator {
     if(branchDialog.getResult() == OKCancelDialog.RESULT_OK) {
       branchCreator.createBranch(branchDialog.getBranchName(), branchDialog.shouldCheckoutNewBranch());
     }
-    
   }
 
   /**
@@ -193,8 +193,9 @@ public class BranchCheckoutMediator {
       pullOperationProgressDialog.show(0);
     });
         
+    PullType pullType = OptionsManager.getInstance().getDefaultPullType();
     ctrl.pull(
-        OptionsManager.getInstance().getDefaultPullType() == PullType.REBASE ? PullType.REBASE : PullType.MERGE_FF, 
+        pullType == PullType.UKNOWN ? PullType.MERGE_FF : pullType, 
         new GitOperationProgressMonitor(pullOperationProgressDialog));
   }
 
@@ -214,7 +215,7 @@ public class BranchCheckoutMediator {
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         if (info.getGitOperation() == GitOperation.PULL && shouldShowPullDialog.getAndSet(false)) {
-          SwingUtilities.invokeLater(() -> pullOperationProgressDialog.dispose());
+          SwingUtilities.invokeLater(pullOperationProgressDialog::dispose);
         }
       }
 
