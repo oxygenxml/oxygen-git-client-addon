@@ -36,7 +36,6 @@ import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.progress.OperationProgressManager;
 import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 import com.oxygenxml.git.view.staging.BranchSelectionCombo;
 
@@ -117,6 +116,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     super.setUp();
 
     gitAccess = GitAccess.getInstance();
+    gitAccess.installOperationProgressSupport(Mockito.mock(OperationProgressFactory.class));
     gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
     localRepo1 = gitAccess.getRepository();
     gitAccess.createNewRepository(SECOND_LOCAL_TEST_REPOSITORY);
@@ -191,7 +191,6 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     Mockito.doReturn(imageUtilities).when(pluginWSMock).getImageUtilities();
     
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
-    OperationProgressManager.init(new GitController(gitAccess));
   }
   
   @Override

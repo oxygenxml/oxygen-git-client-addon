@@ -318,7 +318,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  });
 
 	  gitController.setBranchesCheckoutMediator(new BranchCheckoutMediator(gitController));
-	  OperationProgressManager.init(gitController);
+	  gitController.getGitAccess().installOperationProgressSupport(new OperationProgressManager(gitController));
 	  LFSSupport.install(gitController);
 
 	  final UtilAccess utilAccess = pluginWS.getUtilAccess();

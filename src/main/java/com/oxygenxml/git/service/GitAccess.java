@@ -147,7 +147,6 @@ import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.RenameTracker;
-import com.oxygenxml.git.view.progress.OperationProgressManager;
 import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
 
@@ -214,6 +213,11 @@ public class GitAccess {
 	 * Keeps a cache of the computed status to avoid processing overhead.
 	 */
 	private StatusCache statusCache = null;
+	
+	/**
+	 * The progress manager for operations.
+	 */
+	private OperationProgressFactory progressManager;
 
 	/**
 	 * Singleton instance.
@@ -1808,12 +1812,15 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void setBranch(String branch) throws GitAPIException, IOException {
-	  GitOperationProgressMonitor opProgressMonitor = new GitOperationProgressMonitor(
-	      OperationProgressManager.getProgressDialogByGitOperation(GitOperation.CHECKOUT));
 	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  try {
 	    LogUtil.logSubmodule();
-	    git.checkout().setProgressMonitor(opProgressMonitor).setName(branch).call();
+	    git
+	    .checkout()
+	    .setProgressMonitor(progressManager != null ? progressManager.getProgressMonitorByOperation(GitOperation.CHECKOUT) : null)
+	    .setName(branch)
+	    .call();
+	    
 	    LogUtil.logSubmodule();
 	    
 	    RepoUtil.checkoutSubmodules(git, e -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e));
@@ -3185,5 +3192,13 @@ public class GitAccess {
     return getStatus().repositoryHasConflicts();
   }
   
+  /**
+   * Install the progress factory needed to display operations progress.
+   * 
+   * @param progressManager The new manager that creates operation progress monitors.
+   */
+  public void installOperationProgressSupport(OperationProgressFactory progressManager) {
+    this.progressManager = progressManager;
+  }
 	
 }

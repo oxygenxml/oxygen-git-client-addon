@@ -3,8 +3,6 @@ package com.oxygenxml.git.view.progress;
 import javax.swing.SwingUtilities;
 
 import com.oxygenxml.git.service.GitEventListener;
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.OnDialogCancel;
 import com.oxygenxml.git.view.event.GitController;
@@ -12,25 +10,33 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
 /**
- * The dialog that presents the switch branch operation progress. 
+ * The dialog that presents a git operation progress. 
  * 
  * @author alex_smarandache
+ *
  */
-class SwitchBranchesProgressDialog extends ProgressDialog {
+public class GitOperationProgressDialog extends ProgressDialog {
   
   /**
    * Constructor.
    * 
-   * @param gitController The git controller.
+   * @param gitController          The git controller.
+   * @param dialogTitle            The title of the current dialog.
+   * @param operation              The Git operation of this dialog progress.
+   * @param minOperationDuration   The minimum duration of an operation to show its progress.
    */
-  public SwitchBranchesProgressDialog(GitController gitController) {
-    super(Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH));
+  public GitOperationProgressDialog(
+      GitController gitController, 
+      String dialogTitle, 
+      GitOperation operation,
+      int minOperationDuration) {
+    super(dialogTitle);
     
     gitController.addGitListener(new GitEventListener() {
       
       @Override
       public void operationAboutToStart(GitEventInfo info) {
-        if(info.getGitOperation() == GitOperation.CHECKOUT) {
+        if(info.getGitOperation() == operation) {
           setCancelListener(new OnDialogCancel() {
             @Override
             public void doOnCancel() {
@@ -38,33 +44,26 @@ class SwitchBranchesProgressDialog extends ProgressDialog {
             }
           });
           
-          SwingUtilities.invokeLater(() -> showProgress());
+          SwingUtilities.invokeLater(() -> showWithDelay(minOperationDuration));
         }
         
       }
       
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
-        if(info.getGitOperation() == GitOperation.CHECKOUT) {
+        if(info.getGitOperation() == operation) {
           SwingUtilities.invokeLater(() -> doCancel());
         }
       }
       
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
-        if(info.getGitOperation() == GitOperation.CHECKOUT) {
+        if(info.getGitOperation() == operation) {
           SwingUtilities.invokeLater(() -> markAsCompleted());
         }
-        
       }
     }); 
   }
   
-  /**
-   * This method show the dialog with a small delay.
-   */
-  public void showProgress() {
-    show(2000);
-  }
-  
 }
+

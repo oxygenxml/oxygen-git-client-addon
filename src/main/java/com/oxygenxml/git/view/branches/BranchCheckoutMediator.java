@@ -158,7 +158,7 @@ public class BranchCheckoutMediator {
           SwingUtilities.invokeLater(() -> pullOperationProgressDialog.setVisible(false));
         }
       });
-      pullOperationProgressDialog.show(0);
+      pullOperationProgressDialog.showWithDelay(0);
     });
         
     PullType pullType = OptionsManager.getInstance().getDefaultPullType();

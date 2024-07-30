@@ -3,6 +3,12 @@ package com.oxygenxml.git.view.progress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jgit.lib.ProgressMonitor;
+
+import com.oxygenxml.git.service.OperationProgressFactory;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -12,26 +18,25 @@ import com.oxygenxml.git.view.event.GitOperation;
  * 
  * @author alex_smarandache
  */
-public class OperationProgressManager {
+public class OperationProgressManager implements OperationProgressFactory {
   
   /**
    * The current Git controller.
    */
-  private static GitController gitCtrl;
+  private final GitController gitCtrl;
   
   /**
    * A map with the operations and the progress dialogs.
    */
-  private final static Map<GitOperation, ProgressDialog> OPERATIONS_PROGRESS_DIALOG_MAP;
-  static {
-    OPERATIONS_PROGRESS_DIALOG_MAP = new HashMap<>();
-  }
+  private final Map<GitOperation, ProgressDialog> operationsProgressDialogsCache = new HashMap<>();
   
   /**
-   * Hidden constructor.
+   * Constructor.
+   * 
+   * @param gitCtrl The Git controller.
    */
-  private OperationProgressManager() {
-    // not needed
+  public OperationProgressManager(GitController gitCtrl) {
+    this.gitCtrl = gitCtrl;
   }
   
   /**
@@ -41,12 +46,13 @@ public class OperationProgressManager {
    * 
    * @return The created progress dialog.
    */
-  public static ProgressDialog getProgressDialogByGitOperation(GitOperation operation) {
-    if (operation == GitOperation.CHECKOUT && !OPERATIONS_PROGRESS_DIALOG_MAP.containsKey(operation)) {
-      OPERATIONS_PROGRESS_DIALOG_MAP.put(GitOperation.CHECKOUT, new SwitchBranchesProgressDialog(gitCtrl));
+  private ProgressDialog getProgressDialogByGitOperation(GitOperation operation) {
+    if (operation == GitOperation.CHECKOUT && !operationsProgressDialogsCache.containsKey(operation)) {
+      operationsProgressDialogsCache.put(GitOperation.CHECKOUT, 
+          new GitOperationProgressDialog(gitCtrl, Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), GitOperation.CHECKOUT, 2000));
     }
     
-    ProgressDialog dialog = OPERATIONS_PROGRESS_DIALOG_MAP.get(operation);
+    ProgressDialog dialog = operationsProgressDialogsCache.get(operation);
     
     if(dialog != null) {
       dialog.initUI();
@@ -55,14 +61,18 @@ public class OperationProgressManager {
     return dialog;
     
   }
-  
+
   /**
-   * Initialize the manager.
+   * Create a progress monitor for the given operation.
    * 
-   * @param gitCtrl The git controller.
+   * @param operation The current git operation.
+   * 
+   * @return The created progress monitor.
    */
-  public static void init(GitController gitCtrl) {
-    OperationProgressManager.gitCtrl = gitCtrl;
+  @Override
+  public ProgressMonitor getProgressMonitorByOperation(GitOperation operation) {
+    ProgressDialog progressDialog = getProgressDialogByGitOperation(operation);
+    return progressDialog != null ? new GitOperationProgressMonitor(progressDialog) : null;
   }
 
 }

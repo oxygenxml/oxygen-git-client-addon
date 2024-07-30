@@ -47,6 +47,11 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
    * The listener to be called when operation is canceled.
    */
   private OnDialogCancel cancelListener;
+  
+  /**
+   * The minimum time of an operation duration to display the progress.
+   */
+  public static final int MIN_OPERATION_DURATION_TIME = 2000;
 
   /**
    * Constructor.
@@ -167,7 +172,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   /**
    * @param millis These milliseconds are used to not show the progress dialog for quickly operations.
    */
-  public void show(long millis) {
+  public void showWithDelay(long millis) {
     Runnable command = () -> SwingUtilities.invokeLater(() -> {
       if(!isCancelled && !isCompleted) {
         setVisible(true);
