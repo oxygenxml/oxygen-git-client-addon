@@ -135,7 +135,7 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
     
     OKOtherAndCancelDialog confirmationDialog = (OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED);
 
-    confirmationDialog.getOKButton().doClick();
+    confirmationDialog.getOtherButton().doClick();
     
     CreateBranchDialog createBranchDialog = (CreateBranchDialog) TestHelper.findDialog("Create Branch");
     createBranchDialog.getOkButton().doClick();
@@ -164,7 +164,7 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
     
     simulateBranchCreationRequest(wasCalledCreateBranchOp, false);
 
-    ((OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED)).getOtherButton().doClick();
+    ((OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
     
     Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() -> !listeners.isEmpty());
     
@@ -198,7 +198,7 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
     
     simulateBranchCreationRequest(wasCalledCreateBranchOp, false);
 
-    ((OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED)).getOtherButton().doClick();
+    ((OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
     
     Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() -> !listeners.isEmpty());
     

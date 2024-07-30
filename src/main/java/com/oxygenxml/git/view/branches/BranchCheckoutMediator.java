@@ -92,9 +92,9 @@ public class BranchCheckoutMediator {
           AskForBranchUpdateDialog askForBranchDialog = new AskForBranchUpdateDialog();
           SwingUtilities.invokeLater(() -> {
             askForBranchDialog.setVisible(true);
-            if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OTHER) {
+            if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OK) {
               tryPull(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
-            } else if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OK) {
+            } else if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OTHER) {
               showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
             } 
           });
@@ -102,10 +102,7 @@ public class BranchCheckoutMediator {
       } catch(Exception ex) {
         LOGGER.error(ex.getMessage(), ex);
       }
-    } else {
-      // should not happen
-      throw new RuntimeException("Git support not initialized.");
-    }
+    } 
   }
 
   

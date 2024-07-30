@@ -44,12 +44,12 @@ public class AskForBranchUpdateDialog extends OKOtherAndCancelDialog {
   /**
    * Text to be written on the button in case the answer to the question is OK.
    */
-  private static final String OK_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.CREATE_ANYWAY);
+  private static final String OK_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.PULL_CHANGES);
 
   /**
    * Text to be written on the button in case the answer to the question is "Other"/option 2.
    */
-  private static final String OTHER_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.PULL_CHANGES);
+  private static final String OTHER_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.CREATE_ANYWAY);
 
   /**
    * Text to be written on the button in case the answer to the question is negative.
@@ -71,7 +71,7 @@ public class AskForBranchUpdateDialog extends OKOtherAndCancelDialog {
     GridBagConstraints gbc = new GridBagConstraints();
 
     // Icon
-    String iconPath = Icons.QUESTION_ICON;
+    String iconPath = Icons.WARNING_ICON;
     JLabel iconLabel = new JLabel();
     Icon questionIcon = Icons.getIcon(iconPath);
     if (questionIcon != null) {
