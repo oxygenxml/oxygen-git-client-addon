@@ -35,8 +35,10 @@ import com.oxygenxml.git.editorvars.GitEditorVariablesResolver;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.GitListeners;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.service.annotation.TestOnly;
+import com.oxygenxml.git.service.exceptions.IndexLockExistsException;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.lfs.LFSSupport;
 import com.oxygenxml.git.translator.Tags;
@@ -296,7 +298,31 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 	  OptionsManager.getInstance().loadOptions(pluginWS.getOptionsStorage());
 	  ProjectHelper.getInstance().installProjectChangeListener(pluginWS.getProjectManager(), () -> stagingPanel);
-
+	  
+	  GitListeners.getInstance().addGitPriorityListener(new GitEventAdapter() {
+	    @Override
+      public void operationAboutToStart(GitEventInfo info) throws IndexLockExistsException {
+	      if(info.getGitOperation() != GitOperation.OPEN_WORKING_COPY) {
+	        try {
+	          String repoDir = GitAccess.getInstance().getRepository().getDirectory().getAbsolutePath();
+	          File lockFile = new File(repoDir, "index.lock"); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false positive
+	          if (lockFile.exists()) {
+	            throw new IndexLockExistsException();
+	          }
+	        } catch (NoRepositorySelected e) {
+	          LOGGER.error(e.getMessage(), e);
+	        }
+	      }
+	    }
+	    
+	    @Override
+      public void operationFailed(GitEventInfo gitEvent, Throwable t) {
+	      if (t instanceof IndexLockExistsException) {
+	        pluginWS.showErrorMessage("index.lock prevents operations execution");
+	      }
+	    }
+	  });
+	  
 	  gitController.addGitListener(new GitEventAdapter() {
 	    @Override
 	    public void operationSuccessfullyEnded(GitEventInfo info) {

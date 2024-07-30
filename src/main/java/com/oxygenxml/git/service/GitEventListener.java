@@ -1,5 +1,6 @@
 package com.oxygenxml.git.service;
 
+import com.oxygenxml.git.service.exceptions.IndexLockExistsException;
 import com.oxygenxml.git.view.event.GitEventInfo;
 
 /**
@@ -10,8 +11,10 @@ public interface GitEventListener {
    * Operation about to start.
    * 
    * @param info Extra information about the current event.
+   * 
+   * @throws IndexLockExistsException If index.lock exists and would prevent operations from executing.
    */
-  void operationAboutToStart(GitEventInfo info);
+  void operationAboutToStart(GitEventInfo info) throws IndexLockExistsException;
   /**
    * Operation successfully ended.
    * 

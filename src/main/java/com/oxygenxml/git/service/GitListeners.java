@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxygenxml.git.service.exceptions.IndexLockExistsException;
 import com.oxygenxml.git.view.event.GitEventInfo;
 
 /**
@@ -49,8 +50,10 @@ public class GitListeners {
    * Fire operation about to start.
    * 
    * @param info event info.
+   * 
+   * @throws IndexLockExistsException 
    */
-  public void fireOperationAboutToStart(GitEventInfo info) {
+  public void fireOperationAboutToStart(GitEventInfo info) throws IndexLockExistsException {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Fire operation about to start: {}", info);
     }
@@ -108,7 +111,7 @@ public class GitListeners {
    * 
    * @param listener The listener to add.
    */
-  void addGitPriorityListener(GitEventListener listener) {
+  public void addGitPriorityListener(GitEventListener listener) {
     HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventPriorityListeners.clone();
     clone.add(listener);
     

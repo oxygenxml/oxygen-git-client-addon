@@ -33,6 +33,7 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
+import com.oxygenxml.git.service.exceptions.IndexLockExistsException;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.RebaseConflictsException;
 import com.oxygenxml.git.service.exceptions.RebaseUncommittedChangesException;
@@ -94,7 +95,12 @@ public class GitController extends GitControllerBase {
   private Future<?> execute(String message, ExecuteCommandRunnable command) {
     // Notify push about to start.
     PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), message);
-    listeners.fireOperationAboutToStart(pushPullEvent);
+    try {
+      listeners.fireOperationAboutToStart(pushPullEvent);
+    } catch (IndexLockExistsException e) {
+      // TODO EXM-46411 For push and pull I think we already have a mechanism,
+      // but maybe we want to use the new one
+    }
 
     return GitOperationScheduler.getInstance().schedule(command);
   }

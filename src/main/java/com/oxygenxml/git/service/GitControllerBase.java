@@ -84,7 +84,7 @@ public abstract class GitControllerBase {
       }
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
-        if (!skipEventTracking) {
+        if (!skipEventTracking && !events.isEmpty()) {
           events.pop();
         }
       }
