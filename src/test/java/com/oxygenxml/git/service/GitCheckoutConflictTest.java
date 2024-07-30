@@ -24,6 +24,7 @@ import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.oxygenxml.git.TestHelper;
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -260,7 +261,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     GitController mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(500);
+    TestHelper.sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -276,7 +277,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
       }
     }
     
-    sleep(500);
+    TestHelper.sleep(500);
     
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
@@ -437,7 +438,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     GitController mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(1000);
+    TestHelper.sleep(1000);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -452,13 +453,13 @@ public class GitCheckoutConflictTest extends JFCTestCase {
         break;
       }
     }
-    sleep(1000);
+    TestHelper.sleep(1000);
     
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
     
     JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
     yesButton.doClick();
-    sleep(1000);
+    TestHelper.sleep(1000);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -513,23 +514,10 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     
     JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
     yesButton.doClick();
-    sleep(1000);
+    TestHelper.sleep(1000);
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
-    assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
-    
-  }
-  
-
-	/**
-   * Sleep well!
-   * 
-   * @param delay Delay.
-   * 
-   * @throws InterruptedException
-   */
-  private void sleep(int delay) throws InterruptedException {
-    Thread.sleep(delay); // NOSONAR
+    assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]); 
   }
 
   /**
