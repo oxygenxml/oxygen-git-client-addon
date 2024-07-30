@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.RevCommitUtilBase;
@@ -39,6 +38,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.DiffPresenter;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.actions.CheckoutCommitAction;
 import com.oxygenxml.git.view.history.actions.CreateBranchFromCommitAction;
 import com.oxygenxml.git.view.history.actions.CreateTagAction;
@@ -73,7 +73,7 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Executes GIT commands (stage, unstage, discard, etc).
    */
-  protected GitControllerBase gitCtrl;
+  protected GitController gitCtrl;
   
   /**
    * Contains commits ahead and behind for current repository.
@@ -85,7 +85,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @param gitCtrl Executes GIT commands (stage, unstage, discard, etc).
    */
-  public HistoryViewContextualMenuPresenter(GitControllerBase gitCtrl) {
+  public HistoryViewContextualMenuPresenter(GitController gitCtrl) {
     this.gitCtrl = gitCtrl;
   }
   
@@ -245,7 +245,7 @@ public class HistoryViewContextualMenuPresenter {
     }
     String commitId = commitCharacteristics.getCommitId();
     if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitId)) {
-      jPopupMenu.add(new CreateBranchFromCommitAction(commitId));
+      jPopupMenu.add(new CreateBranchFromCommitAction(gitCtrl, commitId));
       jPopupMenu.add(new CreateTagAction(commitId));
       jPopupMenu.add(new CheckoutCommitAction(commitCharacteristics.getPlotCommit()));
       jPopupMenu.addSeparator();

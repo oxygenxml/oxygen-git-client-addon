@@ -253,7 +253,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitControllerBase mock = new GitController();
+    GitController mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -357,7 +357,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitControllerBase mock = new GitController();
+    GitController mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -457,7 +457,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitControllerBase mock = new GitController();
+    GitController mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -546,7 +546,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 
-    GitControllerBase gitCtrl = new GitController();
+    GitController gitCtrl = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     flushAWT();

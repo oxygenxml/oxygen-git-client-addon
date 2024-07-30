@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.exceptions.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -31,6 +31,7 @@ import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.stash.StashUtil;
 import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
 
@@ -57,7 +58,7 @@ public class BranchTreeMenuActionsProvider {
   /**
    * Git operation controller.
    */
-  private final GitControllerBase ctrl;
+  private final GitController ctrl;
 
 
   /**
@@ -65,7 +66,7 @@ public class BranchTreeMenuActionsProvider {
    * 
    * @param ctrl Git operation controller.
    */
-  public BranchTreeMenuActionsProvider(GitControllerBase ctrl) {
+  public BranchTreeMenuActionsProvider(GitController ctrl) {
     this.ctrl = ctrl;
   }
 
@@ -194,12 +195,13 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         String branchPath = BranchesUtil.createBranchPath(nodePath,
             BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
-        BranchCheckoutMediator.getInstance().createBranch(
-            TRANSLATOR.getTranslation(Tags.CHECKOUT_BRANCH), 
-            branchPath, 
-            true, 
-            (branchName, shouldCreateBranch) -> createBranchAsync(nodePath, branchPath, branchName)
-        );
+        Optional.ofNullable(ctrl.getBranchesCheckoutMediator()).ifPresent((branchesMediator) -> {
+          branchesMediator.createBranch(
+              TRANSLATOR.getTranslation(Tags.CHECKOUT_BRANCH), 
+              branchPath, 
+              true, 
+              (branchName, shouldCreateBranch) -> createBranchAsync(nodePath, branchPath, branchName));
+        });
       }
 
       /**
@@ -238,19 +240,23 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        BranchCheckoutMediator.getInstance().createBranch(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), null, false,
-            (branchName, shouldCheckoutNewBranch) -> {
-              ctrl.asyncTask(
-                  () -> doCreateBranch(nodePath, branchName, shouldCheckoutNewBranch),
-                  ex -> {
-                    if (ex instanceof CheckoutConflictException) {
-                      treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-                    } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
-                      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        Optional
+        .ofNullable(ctrl.getBranchesCheckoutMediator())
+        .ifPresent((branchesMediator) -> {
+          branchesMediator.createBranch(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), null, false,
+              (branchName, shouldCheckoutNewBranch) -> {
+                ctrl.asyncTask(
+                    () -> doCreateBranch(nodePath, branchName, shouldCheckoutNewBranch),
+                    ex -> {
+                      if (ex instanceof CheckoutConflictException) {
+                        treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
+                      } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
+                        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                      }
                     }
-                  }
-                  );
-            });
+                    );
+              });
+        });
       }
 
       /**

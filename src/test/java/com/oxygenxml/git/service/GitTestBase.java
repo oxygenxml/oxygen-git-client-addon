@@ -607,7 +607,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     OptionsManager.getInstance().loadOptions(wsOptions);
     
     gitAccess.getStatusCache().installEditorsHook(pluginWSMock);
-    BranchCheckoutMediator.getInstance().init(ctrl);
+    ctrl.setBranchesCheckoutMediator(new BranchCheckoutMediator(ctrl));
     OperationProgressManager.init(ctrl);
   }
   

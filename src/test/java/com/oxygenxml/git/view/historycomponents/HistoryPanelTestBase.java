@@ -20,7 +20,6 @@ import javax.swing.event.TableModelListener;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.powermock.api.mockito.PowerMockito;
 
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.view.event.GitController;
@@ -136,7 +135,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
       FileStatus fileStatus, 
       CommitCharacteristics cc) throws IOException, GitAPIException {
     HistoryViewContextualMenuPresenter menuPresenter = 
-        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitControllerBase.class));
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
     menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
@@ -168,7 +167,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
       FileStatus fileStatus, 
       CommitCharacteristics... cc) throws IOException, GitAPIException {
     HistoryViewContextualMenuPresenter menuPresenter = 
-        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitControllerBase.class));
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
     menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
@@ -200,7 +199,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
       FileStatus fileStatus, 
       CommitCharacteristics... cc) throws IOException, GitAPIException {
     HistoryViewContextualMenuPresenter menuPresenter = 
-        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitControllerBase.class));
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
     menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
@@ -229,7 +228,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
       FileStatus fileStatus, 
       CommitCharacteristics cc) throws IOException, GitAPIException {
     HistoryViewContextualMenuPresenter menuPresenter = 
-        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitControllerBase.class));
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
     menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
@@ -258,7 +257,7 @@ public abstract class HistoryPanelTestBase extends GitTestBase { // NOSONAR squi
       FileStatus fileStatus, 
       CommitCharacteristics cc) throws IOException, GitAPIException {
     HistoryViewContextualMenuPresenter menuPresenter = 
-        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitControllerBase.class));
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
     menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     

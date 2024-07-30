@@ -44,6 +44,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.util.TreeUtil;
@@ -164,7 +165,7 @@ public class BranchManagementPanel extends JPanel {
     
     addTreeListeners();
     
-    branchesTreeActionProvider = new BranchTreeMenuActionsProvider(ctrl);
+    branchesTreeActionProvider = new BranchTreeMenuActionsProvider((GitController) ctrl);
   }
 
   /**

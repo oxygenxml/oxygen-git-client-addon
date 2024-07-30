@@ -258,7 +258,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitControllerBase mock = new GitController();
+    GitController mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     sleep(500);
@@ -435,7 +435,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
-    GitControllerBase mock = new GitController();
+    GitController mock = new GitController();
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     sleep(1000);

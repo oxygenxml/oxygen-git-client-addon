@@ -58,43 +58,14 @@ public class BranchCheckoutMediator {
   private final ProgressDialog pullOperationProgressDialog = new ProgressDialog(
       Translator.getInstance().getTranslation(Tags.PULL));
   
-  /**
-   * This inner class is used to be sure that a single instance will be created lazy.
-   * 
-   * @author alex_smarandache
-   */
-  private static final class SingletonHelper {
-    /**
-     * The unique instance.
-     */
-    static final BranchCheckoutMediator INSTANCE;
-    static {
-      INSTANCE = new BranchCheckoutMediator();
-    }
-  }
   
   /**
    * Initialize the Git support.
    * 
    * @param ctrl The Git controller to manage git operations.
    */
-  public void init(GitController ctrl) {
+  public BranchCheckoutMediator(GitController ctrl) {
     this.ctrl = ctrl;
-    pullListener = null;
-  }
-  
-  /**
-   * Hidden constructor.
-   */
-  private BranchCheckoutMediator() {
-    // not needed
-  }
-  
-  /**
-   * @return The unique instance.
-   */
-  public static BranchCheckoutMediator getInstance() {
-    return SingletonHelper.INSTANCE;
   }
   
   

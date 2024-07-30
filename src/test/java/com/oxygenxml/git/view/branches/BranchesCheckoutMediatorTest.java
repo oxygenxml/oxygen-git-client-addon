@@ -36,7 +36,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * 
  * @author alex_smarandache
  */
-public class BranchesCheckoutManagerTest extends JFCTestCase {
+public class BranchesCheckoutMediatorTest extends JFCTestCase {
   
   /**
    * The mock of the git controller.
@@ -59,8 +59,8 @@ public class BranchesCheckoutManagerTest extends JFCTestCase {
     OptionsManager.getInstance().loadOptions(wsOptions);
     Mockito.when(gitAccessMock.getBranchInfo()).thenReturn(new BranchInfo("MyBranchRemote", false));
     Mockito.when(gitAccessMock.getRepository()).thenReturn(Mockito.mock(Repository.class));
-    
-    BranchCheckoutMediator.getInstance().init(gitCtrlMock);
+    BranchCheckoutMediator branchesMediator = new BranchCheckoutMediator(gitCtrlMock);
+    Mockito.when(gitCtrlMock.getBranchesCheckoutMediator()).thenReturn(branchesMediator);
   }
   
   /**
@@ -92,7 +92,7 @@ public class BranchesCheckoutManagerTest extends JFCTestCase {
     Mockito.when(gitCtrlMock.getGitAccess().getPullsBehind()).thenReturn(isRepositoryUpToDate ? 0 : 15);
 
     SwingUtilities.invokeLater(() -> {
-      BranchCheckoutMediator.getInstance().createBranch("Create Branch", "My Branch", false, new IBranchesCreator() {
+      gitCtrlMock.getBranchesCheckoutMediator().createBranch("Create Branch", "My Branch", false, new IBranchesCreator() {
         @Override
         public void createBranch(String branchName, boolean shouldCheckoutBranch) {
           wasCalledCreateBranchOp.set(true);
@@ -192,7 +192,6 @@ public class BranchesCheckoutManagerTest extends JFCTestCase {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
         listeners.add((GitEventListener) invocation.getArgument(0));
-        System.out.println(listeners);
         return null;
       }
     }).when(gitCtrlMock).addGitListener(Mockito.any());

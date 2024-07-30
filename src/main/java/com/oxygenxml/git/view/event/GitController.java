@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 
 import javax.swing.SwingUtilities;
 
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -38,6 +39,7 @@ import com.oxygenxml.git.service.exceptions.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
@@ -58,7 +60,12 @@ public class GitController extends GitControllerBase {
   /**
    * Translator for i18n.
    */
-  private Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
+  
+  /**
+   * The mediator for branches checkout.
+   */
+  private BranchCheckoutMediator branchesCheckoutMediator;
   
   /**
    * Creates the GIT controller using the default GitAccess instance
@@ -93,13 +100,28 @@ public class GitController extends GitControllerBase {
   }
 
   /**
+   * @param branchesCheckoutMediator The new branches checkout mediator responsible with branches checkout.
+   */
+  public void setBranchesCheckoutMediator(@Nullable BranchCheckoutMediator branchesCheckoutMediator) {
+    this.branchesCheckoutMediator = branchesCheckoutMediator;
+  }
+  
+  /**
+   * @return The branches checkout mediator responsible with branches checkout.
+   */
+  @Nullable
+  public BranchCheckoutMediator getBranchesCheckoutMediator() {
+    return branchesCheckoutMediator;
+  }
+  
+  /**
    * Push.
    * 
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
   public Future<?> push() {
-    return execute(translator.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable());
+    return execute(TRANSLATOR.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable());
   }
 
   /**
@@ -122,7 +144,7 @@ public class GitController extends GitControllerBase {
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull(PullType pullType, ProgressMonitor progressMonitor) {
-    return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType, progressMonitor));
+    return execute(TRANSLATOR.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType, progressMonitor));
   }
 
   /**
@@ -134,9 +156,9 @@ public class GitController extends GitControllerBase {
     List<String> conflictingFilesList = new ArrayList<>();
     conflictingFilesList.addAll(response.getConflictingFiles());
     MessagePresenterProvider.getBuilder(
-        translator.getTranslation(Tags.PULL_STATUS), DialogType.WARNING)
+        TRANSLATOR.getTranslation(Tags.PULL_STATUS), DialogType.WARNING)
         .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingFilesList))
-        .setMessage(translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS))
+        .setMessage(TRANSLATOR.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS))
         .setCancelButtonVisible(false)
         .buildAndShow();       
   }
@@ -153,7 +175,7 @@ public class GitController extends GitControllerBase {
       LOGGER.debug("Pull failed with the following message: {}. Resources: {}", message, filesWithChanges);
     }
     SwingUtilities.invokeLater(() -> MessagePresenterProvider.getBuilder(
-        translator.getTranslation(Tags.PULL_STATUS), DialogType.ERROR)
+        TRANSLATOR.getTranslation(Tags.PULL_STATUS), DialogType.ERROR)
         .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(filesWithChanges))
         .setMessage(message)
         .setCancelButtonVisible(false)
@@ -205,20 +227,20 @@ public class GitController extends GitControllerBase {
         event = Optional.of(new PushPullEvent(getOperation(), null, e));
         showPullFailedBecauseOfCertainChanges(
             e.getUncommittedChanges(),
-            translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED));
+            TRANSLATOR.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED));
       } catch (RebaseConflictsException e) {
         event = Optional.of(new PushPullEvent(getOperation(), null, e));
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
-                MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                        translator.getTranslation(Tags.REBASE))
+                MessageFormat.format(TRANSLATOR.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
+                        TRANSLATOR.getTranslation(Tags.REBASE))
         );
       } catch (CheckoutConflictException e) {
         event = Optional.of(new PushPullEvent(getOperation(), null, e));
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
-                MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                        translator.getTranslation(Tags.MERGE).toLowerCase())
+                MessageFormat.format(TRANSLATOR.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
+                        TRANSLATOR.getTranslation(Tags.MERGE).toLowerCase())
         );
       } catch (TransportException e) {
         String exMsg = e.getMessage();
@@ -301,8 +323,8 @@ public class GitController extends GitControllerBase {
         String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
         showPullFailedBecauseOfCertainChanges(
             Arrays.asList(conflictingFile),
-            MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                    translator.getTranslation(Tags.REBASE))
+            MessageFormat.format(TRANSLATOR.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
+                    TRANSLATOR.getTranslation(Tags.REBASE))
         );
       } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
         // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
@@ -317,11 +339,11 @@ public class GitController extends GitControllerBase {
             && causeMsg.contains("Source ref") 
             && causeMsg.contains("doesn't resolve")) {
           pluginWS.showErrorMessage(
-              translator.getTranslation(Tags.PUSH_FAILED) + ": " 
+              TRANSLATOR.getTranslation(Tags.PUSH_FAILED) + ": " 
                   + MessageFormat.format(
-                      translator.getTranslation(Tags.UNBORN_BRANCH),
+                      TRANSLATOR.getTranslation(Tags.UNBORN_BRANCH),
                       gitAccess.getBranchInfo().getBranchName()) + " "
-                  + translator.getTranslation(Tags.COMMIT_BEFORE_PUSHING),
+                  + TRANSLATOR.getTranslation(Tags.COMMIT_BEFORE_PUSHING),
               e);
           event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(cause.getMessage()), e));
         } else {
@@ -357,16 +379,16 @@ public class GitController extends GitControllerBase {
         }
 
         PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
-        String unableToAccessRepoMsg = translator.getTranslation(Tags.UNABLE_TO_ACCESS_REPO) + " " + remoteURL;
+        String unableToAccessRepoMsg = TRANSLATOR.getTranslation(Tags.UNABLE_TO_ACCESS_REPO) + " " + remoteURL;
         if (getOperation() == GitOperation.PUSH ) {
           pluginWS.showErrorMessage(
-              translator.getTranslation(Tags.PUSH_FAILED)
+              TRANSLATOR.getTranslation(Tags.PUSH_FAILED)
               + ". "
               + unableToAccessRepoMsg,
               e);
         } else {
           pluginWS.showErrorMessage(
-              translator.getTranslation(Tags.PULL_FAILED)
+              TRANSLATOR.getTranslation(Tags.PULL_FAILED)
               + ". "
               + unableToAccessRepoMsg,
               e);
@@ -421,22 +443,22 @@ public class GitController extends GitControllerBase {
       PushResponse response = gitAccess.push(credentialsProvider);
       PushPullEvent event = null;
       if (Status.OK == response.getStatus()) {
-        event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_SUCCESSFUL));
+        event = new PushPullEvent(GitOperation.PUSH, TRANSLATOR.getTranslation(Tags.PUSH_SUCCESSFUL));
       } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
         PluginWorkspaceProvider.getPluginWorkspace()
-        .showErrorMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+        .showErrorMessage(TRANSLATOR.getTranslation(Tags.BRANCH_BEHIND));
       } else if (Status.UP_TO_DATE == response.getStatus()) {
-        event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_UP_TO_DATE));
+        event = new PushPullEvent(GitOperation.PUSH, TRANSLATOR.getTranslation(Tags.PUSH_UP_TO_DATE));
       } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
-        String errMess = translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN);
+        String errMess = TRANSLATOR.getTranslation(Tags.PUSH_FAILED_UNKNOWN);
         if (response.getMessage() != null) {
           String details = response.getMessage();
           if (details.contains("pre-receive hook declined")) {
-            details = translator.getTranslation(Tags.PRE_RECEIVE_HOOK_DECLINED_CUSTOM_MESSAGE);
+            details = TRANSLATOR.getTranslation(Tags.PRE_RECEIVE_HOOK_DECLINED_CUSTOM_MESSAGE);
           }
           errMess += " " + details;
         } else {
-          errMess += " " + translator.getTranslation(Tags.NO_DETAILS_AVAILABLE);
+          errMess += " " + TRANSLATOR.getTranslation(Tags.NO_DETAILS_AVAILABLE);
         }
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(errMess);
       }
@@ -446,7 +468,7 @@ public class GitController extends GitControllerBase {
 
     @Override
     protected String composeAndReturnFailureMessage(String message) {
-      return translator.getTranslation(Tags.PUSH_FAILED) + ": " + message;
+      return TRANSLATOR.getTranslation(Tags.PUSH_FAILED) + ": " + message;
     }
   }
 
@@ -491,7 +513,7 @@ public class GitController extends GitControllerBase {
       if(repositoryState != null) {
         if (repositoryState == RepositoryState.MERGING_RESOLVED) {
           PluginWorkspaceProvider.getPluginWorkspace()
-              .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+              .showWarningMessage(TRANSLATOR.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
         } else if (repositoryState == RepositoryState.REBASING_MERGE
             || repositoryState == RepositoryState.REBASING_REBASING) {
           showRebaseInProgressDialog();
@@ -518,7 +540,7 @@ public class GitController extends GitControllerBase {
       PushPullEvent event = null;
       switch (response.getStatus()) {
         case OK:
-          event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_SUCCESSFUL));
+          event = new PushPullEvent(GitOperation.PULL, TRANSLATOR.getTranslation(Tags.PULL_SUCCESSFUL));
           break;
         case CONFLICTS:
           showPullSuccessfulWithConflicts(response);
@@ -530,13 +552,13 @@ public class GitController extends GitControllerBase {
           break;
         case REPOSITORY_HAS_CONFLICTS:
           PluginWorkspaceProvider.getPluginWorkspace()
-              .showErrorMessage(translator.getTranslation(Tags.PULL_WHEN_REPO_IN_CONFLICT));
+              .showErrorMessage(TRANSLATOR.getTranslation(Tags.PULL_WHEN_REPO_IN_CONFLICT));
           break;
         case UP_TO_DATE:
-          event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_UP_TO_DATE));
+          event = new PushPullEvent(GitOperation.PULL, TRANSLATOR.getTranslation(Tags.PULL_UP_TO_DATE));
           break;
         case LOCK_FAILED:
-          event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.LOCK_FAILED));
+          event = new PushPullEvent(GitOperation.PULL, TRANSLATOR.getTranslation(Tags.LOCK_FAILED));
           break;
         default:
           // Nothing
@@ -547,7 +569,8 @@ public class GitController extends GitControllerBase {
 
     @Override
     protected String composeAndReturnFailureMessage(String message) {
-      return translator.getTranslation(Tags.PULL_FAILED) + ": " + message;
+      return TRANSLATOR.getTranslation(Tags.PULL_FAILED) + ": " + message;
     }
   }
+ 
 }
