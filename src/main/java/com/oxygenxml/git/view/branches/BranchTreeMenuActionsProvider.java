@@ -200,7 +200,8 @@ public class BranchTreeMenuActionsProvider {
               TRANSLATOR.getTranslation(Tags.CHECKOUT_BRANCH), 
               branchPath, 
               true, 
-              (branchName, shouldCreateBranch) -> createBranchAsync(nodePath, branchPath, branchName));
+              (branchName, shouldCreateBranch) -> createBranchAsync(nodePath, branchPath, branchName),
+              true);
         });
       }
 
@@ -255,7 +256,9 @@ public class BranchTreeMenuActionsProvider {
                       }
                     }
                     );
-              });
+              },
+              true
+              );
         });
       }
 

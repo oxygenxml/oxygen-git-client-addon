@@ -75,7 +75,7 @@ public class CreateBranchFromCommitAction extends AbstractAction {
     
     Optional.ofNullable(gitController.getBranchesCheckoutMediator()).ifPresent(
         (branchesMediator) -> 
-          branchesMediator.createBranch(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), null, false, branchesCreator));
+          branchesMediator.createBranch(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), null, false, branchesCreator, false));
     
   }
   

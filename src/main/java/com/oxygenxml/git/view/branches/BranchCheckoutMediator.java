@@ -74,21 +74,23 @@ public class BranchCheckoutMediator {
   /**
    * Show the create branch dialog.
    * 
-   * @param createBranchDialogTitle  The title of the dialog.
-   * @param branchProposedName       The proposed name of the branch.
-   * @param isCheckoutRemote         <code>true</code> if the checkout branch is a remote branch.
-   * @param branchCreator            The branch creator after the user confirmation.
+   * @param createBranchDialogTitle      The title of the dialog.
+   * @param branchProposedName           The proposed name of the branch.
+   * @param isCheckoutRemote             <code>true</code> if the checkout branch is a remote branch.
+   * @param branchCreator                The branch creator after the user confirmation.
+   * @param warnIfRepositoryIsOutdated   <code>true</code> if the user should be warned if the repository is outdated.
    */
   public void createBranch(
       String createBranchDialogTitle, 
       String branchProposedName, 
       boolean isCheckoutRemote, 
-      IBranchesCreator branchCreator) {
+      IBranchesCreator branchCreator,
+      boolean warnIfRepositoryIsOutdated) {
     if(ctrl != null) {
       try {
         ctrl.getGitAccess().fetch();
         boolean isRepoUpToDate = 0 == ctrl.getGitAccess().getPullsBehind();
-        if(isRepoUpToDate) {
+        if(isRepoUpToDate || !warnIfRepositoryIsOutdated) {
           showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
         } else {
           AskForBranchUpdateDialog askForBranchDialog = new AskForBranchUpdateDialog();
