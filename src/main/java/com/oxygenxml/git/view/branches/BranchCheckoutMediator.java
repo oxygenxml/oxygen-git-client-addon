@@ -17,10 +17,12 @@ import com.oxygenxml.git.view.dialog.AskForBranchUpdateDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.OnDialogCancel;
+import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -189,11 +191,21 @@ public class BranchCheckoutMediator {
 
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
-        if (info.getGitOperation() == GitOperation.PULL && shouldShowPullDialog.getAndSet(false)) {
+        if(info.getGitOperation() == GitOperation.PULL && shouldShowPullDialog.getAndSet(false)) {
+          if(info instanceof PushPullEvent) {
+            PushPullEvent pullInfo = (PushPullEvent) info;
+            boolean isConflictedPull = pullInfo.getActionStatus() == ActionStatus.PULL_REBASE_CONFLICT_GENERATED 
+                || pullInfo.getActionStatus() == ActionStatus.PULL_MERGE_CONFLICT_GENERATED;
+            if(isConflictedPull) {
+              SwingUtilities.invokeLater(pullOperationProgressDialog::dispose);
+              return;
+            } 
+          }
+          
           SwingUtilities.invokeLater(() -> {
             pullOperationProgressDialog.dispose();
             showCreateBranchDialog(dialogTitle, nameToPropose, isCheckoutRemote, branchCreator);
-          }); 
+          });
         }
       }
     };
