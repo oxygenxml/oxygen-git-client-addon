@@ -2,13 +2,8 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.MissingObjectException;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -21,8 +16,6 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
-import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.PullType;
 
@@ -59,8 +52,7 @@ public class GitAccessPushTest extends GitTestBase {
 	}
 
 	@Test
-	public void testRemoteRepositoryHasNoCommitst()
-			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
+	public void testRemoteRepositoryHasNoCommitst() throws Exception {
 		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
@@ -83,8 +75,7 @@ public class GitAccessPushTest extends GitTestBase {
 	}
 
 	@Test
-	public void testPushOK()
-			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
+	public void testPushOK() throws Exception {
 		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
@@ -104,8 +95,7 @@ public class GitAccessPushTest extends GitTestBase {
 	}
 	
 	@Test
-	public void testAPushRejected()
-			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
+	public void testAPushRejected() throws Exception {
 		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
 		StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
@@ -136,7 +126,7 @@ public class GitAccessPushTest extends GitTestBase {
 	}
 	
 	@Test
-	public void testNoPushesAhead() throws RepositoryNotFoundException, IOException, URISyntaxException, NoRepositorySelected, InvalidRemoteException, TransportException, GitAPIException, RepoNotInitializedException{
+	public void testNoPushesAhead() throws Exception {
 		StoredConfig config = firstLocalRepo.getConfig();
     RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
     URIish uri = new URIish(remoteRepo.getDirectory().toURI().toURL());

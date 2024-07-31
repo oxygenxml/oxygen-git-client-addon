@@ -57,7 +57,7 @@ public class GitAccessStashTest extends TestCase {
    * @throws GitAPIException
    */
   @Override
-  protected void setUp() throws IllegalStateException, GitAPIException {
+  protected void setUp() throws Exception {
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     

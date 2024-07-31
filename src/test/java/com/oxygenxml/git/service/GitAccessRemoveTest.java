@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -26,7 +25,7 @@ public class GitAccessRemoveTest extends TestCase {
 	private GitAccess gitAccess;
 
 	@Override
-  protected void setUp() throws IllegalStateException, GitAPIException {
+  protected void setUp() throws Exception {
 	  StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
