@@ -258,6 +258,12 @@ public class GitAccess {
 	 */
 	public void clone(URIish url, File directory, final ProgressDialog progressDialog, String branchName)
 			throws GitAPIException {
+	  try {
+      fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+    } catch (IndexLockExistsException e) {
+      // Ignore. We make a new clone / local repo.
+    }
+	  
 	  closeRepo();
 	  
 		// Intercept all authentication requests.
@@ -277,10 +283,7 @@ public class GitAccess {
 		    .setDirectory(directory)
 		    .setCredentialsProvider(AuthUtil.getCredentialsProvider(host))
 		    .setProgressMonitor(progressMonitor);
-		
 		try {
-		  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
-		  
 		  if (branchName != null) {
 		    git = cloneCommand.setBranch(branchName).call();
 		  } else {
@@ -290,9 +293,7 @@ public class GitAccess {
 		} catch (GitAPIException ex)  {
 		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
       throw ex;
-		} catch (IndexLockExistsException e) {
-      // Ignore. We should be able to clone without problems.
-    }
+		}
 		
 	}
 	
@@ -346,16 +347,24 @@ public class GitAccess {
     final File repo = new File(path + "/.git"); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     if (!isCurrentRepo(repo) ) {
       File workingCopy = repo.getParentFile();
-      closeRepo();
+      boolean indexLockExists = false;
       try {
         fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy));
+      } catch (IndexLockExistsException e) {
+        indexLockExists = true;
+      }
+      
+      closeRepo();
+      
+      try {
         git = Git.open(repo);
         repositoryOpened(workingCopy);
+        if (indexLockExists) {
+          PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage("Index lock exists.");
+        }
       } catch (IOException e) {
         fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy), e);
         throw e;
-      } catch (IndexLockExistsException e) {
-        // TODO: EXM-46411 maybe give a warning that the new repo has the index.lock problem, without blocking the opening of the WC
       }
     }
   }
@@ -482,16 +491,20 @@ public class GitAccess {
 	 */
 	public void createNewRepository(String path) throws GitAPIException {
 	  File wc = new File(path); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
-    closeRepo();
-    try {
+	  try {
       fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
+    } catch (IndexLockExistsException e) {
+      // Ignore. We create a brand new local repo.
+    }
+	  
+    closeRepo();
+    
+    try {
       git = Git.init().setInitialBranch(DEFAULT_BRANCH_NAME).setBare(false).setDirectory(wc).call();
       fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     } catch (GitAPIException e) {
       fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc), e);
       throw e;
-    } catch (IndexLockExistsException e) {
-      // Ignore. This cannot happen.
     }
 	}
 	
@@ -562,6 +575,13 @@ public class GitAccess {
 		Repository parentRepository = git.getRepository();
 		File submoduleDir = SubmoduleWalk.getSubmoduleDirectory(parentRepository, submodule);
 		
+		boolean indexLockExists = false;
+    try {
+      fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
+    } catch (IndexLockExistsException e) {
+      indexLockExists = true;
+    }
+		
 		try {
 		  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
 		  Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
@@ -583,9 +603,11 @@ public class GitAccess {
 		  // Start intercepting authentication requests.
 		  AuthenticationInterceptor.bind(getHostName());
 		  
+		  if (indexLockExists) {
+		    PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage("Index lock exists.");
+		  }
+		  
 		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
-		} catch (IndexLockExistsException e) {
-		  // TODO: perhaps give a warning, letting the user know the submodule has this problem
 		} catch (Exception e) {
 		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true), e);
 		}
@@ -821,12 +843,15 @@ public class GitAccess {
 	 * @param branchName - Name for the new branch
 	 */
 	public void createBranch(String branchName) {
+	  try {
+	    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
+	  } catch (IndexLockExistsException e) {
+      // Ignore. Branch creation works well even with index.lock existing.
+    } 
+	  
 		try {
-		  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
 			git.branchCreate().setName(branchName).call();
 			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
-		} catch (IndexLockExistsException e) {
-		  // Ignore
 		} catch (GitAPIException e) {
 		  fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName), e);
 		  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
@@ -842,10 +867,13 @@ public class GitAccess {
   public void createBranch(String branchName, String sourceCommit) {
     try {
       fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
+    } catch (IndexLockExistsException e) {
+      // Ignore. Branch creation works well even with index.lock existing.
+    }
+    
+    try {
       git.branchCreate().setName(branchName).setStartPoint(sourceCommit).call();
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
-    } catch (IndexLockExistsException e) {
-      // Ignore
     } catch (GitAPIException e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName), e);
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
@@ -864,15 +892,17 @@ public class GitAccess {
 	    String newBranchName,
 	    String sourceBranch) throws GitAPIException {
 	  try {
-	    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
+      fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
+    } catch (IndexLockExistsException e) {
+      // Ignore. Branch creation works well even with index.lock existing.
+    } 
+	  
+	  try {
       git.branchCreate()
         .setName(newBranchName)
         .setStartPoint(sourceBranch)
         .call();
-      
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
-    } catch (IndexLockExistsException e) {
-      // Ignore
     } catch (GitAPIException e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName), e);
       throw e;
@@ -887,13 +917,17 @@ public class GitAccess {
 	  DeleteBranchCommand command = git.branchDelete();
 	  command.setBranchNames(branchName);
 	  command.setForce(true);
+	  
 	  try {
-	    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
-	      command.call();
-	      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
-	  } catch (IndexLockExistsException e) {
-      // Ignore
-    }  catch(GitAPIException e) {
+      fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
+    } catch (IndexLockExistsException e) {
+      // Ignore. Branch deletion works well even with index.lock existing.
+    } 
+	  
+	  try {
+	    command.call();
+	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
+	  } catch(GitAPIException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName), e);
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 	  }
@@ -2843,10 +2877,13 @@ public class GitAccess {
   public void dropStash(int stashIndex) throws GitAPIException {
     try {
       fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
+    } catch (IndexLockExistsException e) {
+      // Ignore. Stash can be dropped.
+    } 
+    
+    try {
       git.stashDrop().setStashRef(stashIndex).call();
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
-    } catch (IndexLockExistsException e) {
-      // Ignore
     } catch (GitAPIException e) {
       LOGGER.error(e.getMessage(), e);
       fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
@@ -2863,11 +2900,14 @@ public class GitAccess {
   public void dropAllStashes() throws GitAPIException {
     try {
       fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
+    } catch (IndexLockExistsException e) {
+      // Ignore. Stashes can be dropped without nausea.
+    } 
+    
+    try {
       git.stashDrop().setAll(true).call();
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
-    } catch (IndexLockExistsException e) {
-      // Ignore
-    }  catch (GitAPIException e) {
+    } catch (GitAPIException e) {
       LOGGER.error(e.getMessage(), e);
       fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
       throw e;
@@ -2887,7 +2927,12 @@ public class GitAccess {
  */
 	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, IOException {
 	  try {
-	    fireOperationAboutToStart(new GitEventInfo(GitOperation.CREATE_TAG));
+      fireOperationAboutToStart(new GitEventInfo(GitOperation.CREATE_TAG));
+    } catch (IndexLockExistsException e) {
+      // Ignore. The commit can be tagged.
+    }
+	  
+	  try {
 	    RevWalk walk = new RevWalk(getRepository());
 	    RevCommit id = walk.parseCommit(getRepository().resolve(commitId));
       git.tag()
@@ -2898,9 +2943,7 @@ public class GitAccess {
         .setCredentialsProvider(new GPGCapableCredentialsProvider(OptionsManager.getInstance().getGPGPassphrase()))
         .call();
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CREATE_TAG));
-    } catch (IndexLockExistsException e) {
-      // Ignore
-    }  catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {
+    } catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {
       LOGGER.error(e.getMessage(), e);
       fireOperationFailed(new GitEventInfo(GitOperation.CREATE_TAG), e);
       throw e;
@@ -2953,27 +2996,29 @@ public class GitAccess {
   public void deleteTags(final boolean includeRemotes, final String... tags) throws GitAPIException  {
     try {
       fireOperationAboutToStart(new GitEventInfo(GitOperation.DELETE_TAG));
+    } catch (IndexLockExistsException e) {
+      // Ignore. The commit can be tagged.
+    }
+    
+    try {
       getGit()
         .tagDelete()
         .setTags(tags)
         .call();
-      final CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
       
       if(includeRemotes) {
         for(String name : tags) {
           final StringBuilder refTag = new StringBuilder(":").append(Constants.R_TAGS).append(name);
           getGit()
-          .push()
-          .setCredentialsProvider(credentialsProvider)
-          .setRefSpecs(new RefSpec(refTag.toString()))
-          .call();
+            .push()
+            .setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()))
+            .setRefSpecs(new RefSpec(refTag.toString()))
+            .call();
         }
       }
 
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.DELETE_TAG));
-    } catch (IndexLockExistsException e) {
-      // Ignore
-    }  catch (GitAPIException e) {
+    } catch (GitAPIException e) {
       fireOperationFailed(new GitEventInfo(GitOperation.DELETE_TAG), e);
       throw e;
     }
@@ -3160,17 +3205,20 @@ checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
 	 * @throws NoRepositorySelected
 	 */
 	public void updateConfigFile() throws NoRepositorySelected {
+	  try {
+      fireOperationAboutToStart(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
+    } catch (IndexLockExistsException e) {
+      // Ignore. We can update the config file without problems.
+    }  
+	  
 		try {
-		  fireOperationAboutToStart(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 			GitAccess.getInstance().getRepository().getConfig().save();
-		} catch (IndexLockExistsException e) {
-      // Ignore
-    }  catch (IOException e) {
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
+		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 			fireOperationFailed(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE), e);
 		}
 		
-		fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.UPDATE_CONFIG_FILE));
 	}
 	
 	
