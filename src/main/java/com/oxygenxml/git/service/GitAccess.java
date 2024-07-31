@@ -1839,16 +1839,18 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void setBranch(String branch) throws GitAPIException, IOException {
+	  ProgressMonitor progressMonitor = progressManager != null ? // the progress manager should be instantiated before to notify listener about operation start
+	      progressManager.getProgressMonitorByOperation(GitOperation.CHECKOUT) : null; 
 	  try {
 	    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 
 	    LogUtil.logSubmodule();
-
+	    
 	    git
-	      .checkout()
-	      .setProgressMonitor(progressManager != null ? progressManager.getProgressMonitorByOperation(GitOperation.CHECKOUT) : null)
-	      .setName(branch)
-	      .call();
+          .checkout()
+          .setProgressMonitor(progressMonitor)
+          .setName(branch)
+          .call();
 	    
 	    LogUtil.logSubmodule();
 	    
