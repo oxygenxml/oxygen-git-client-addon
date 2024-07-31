@@ -1861,13 +1861,12 @@ public class GitAccess {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
         throw e;
 	  } catch (IndexLockExistsException e) {
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
-    } catch(Exception ex) {
+        fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
+      } catch(JGitInternalException ex) {
         fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), ex);
         if(!ex.getMessage().contains("was canceled")) {
           throw ex;  
-        }
-        
+        } 
       }
 	}
 	
