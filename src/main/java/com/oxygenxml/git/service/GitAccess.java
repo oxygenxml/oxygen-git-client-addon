@@ -360,7 +360,8 @@ public class GitAccess {
         git = Git.open(repo);
         repositoryOpened(workingCopy);
         if (indexLockExists) {
-          PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage("Index lock exists.");
+          PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage(
+              Translator.getInstance().getTranslation(Tags.LOCK_FAILED_EXPLANATION));
         }
       } catch (IOException e) {
         fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy), e);
@@ -604,7 +605,8 @@ public class GitAccess {
 		  AuthenticationInterceptor.bind(getHostName());
 		  
 		  if (indexLockExists) {
-		    PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage("Index lock exists.");
+		    PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage(
+		        Translator.getInstance().getTranslation(Tags.LOCK_FAILED_EXPLANATION));
 		  }
 		  
 		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));

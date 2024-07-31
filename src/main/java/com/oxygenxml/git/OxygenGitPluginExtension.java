@@ -318,7 +318,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    @Override
       public void operationFailed(GitEventInfo gitEvent, Throwable t) {
 	      if (t instanceof IndexLockExistsException) {
-	        pluginWS.showErrorMessage("index.lock prevents operations execution");
+	        pluginWS.showErrorMessage(Translator.getInstance().getTranslation(Tags.LOCK_FAILED_EXPLANATION));
 	      }
 	    }
 	  });

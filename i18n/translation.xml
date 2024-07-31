@@ -4495,43 +4495,35 @@
 			address the
 			problem.
 		</comment>
-		<val lang="en_US">Another git process may be running in this repository.
-			Please make sure
-			all processes are terminated and then try again. If it still fails, a
-			git process may
-			have crashed in this repository earlier. Remove the lock file manually to
-			continue.
+		<val lang="en_US">Another git process may be running in this local repository.
+			Please make sure all processes are terminated and then try again.
+			If it still fails, a git process may have crashed in this repository earlier.
+			Remove the 'index.lock' file manually from the repository to continue.
 		</val>
-		<val lang="de_DE">Es kann sein, dass bereits ein anderer Git-Prozess in
-			diesem Repository
-			aktiv ist. Bitte stellen Sie sicher, dass alle anderen Git-Prozesse
-			beendet sind und
-			versuchen Sie es erneut. Falls die Aktion immernoch fehlschlägt kann es sein,
-			dass ein
-			anderer Git-Prozess in diesem Repository abgestürzt ist. Entfernen Sie die
-			Lock-Datei
-			manuell um fortzufahren.
+		<val lang="de_DE">Eine andere Git-Prozess könnte in diesem lokalen Repository ausgeführt werden.  
+            Bitte stellen Sie sicher, dass alle Prozesse beendet sind, und versuchen Sie es erneut.  
+            Wenn das Problem weiterhin besteht, könnte ein Git-Prozess in diesem Repository zuvor abgestürzt sein.  
+            Entfernen Sie die Datei 'index.lock' manuell aus dem Repository, um fortzufahren.
 		</val>
-		<val lang="fr_FR">Un autre processus git peut être en cours dans ce dépôt.
-			Veuillez vous
-			assurer que tous les processus sont terminés, puis réessayez. S'il échoue
-			toujours, un
-			processus git peut avoir planté dans ce dépôt plus tôt. Retirez le fichier de
-			verrouillage manuellement pour continuer.
+		<val lang="fr_FR">Un autre processus git pourrait être en cours d'exécution dans ce dépôt local.  
+            Veuillez vous assurer que tous les processus sont terminés, puis réessayez.  
+            Si cela échoue encore, il est possible qu'un processus git ait planté dans ce dépôt auparavant.  
+            Supprimez manuellement le fichier 'index.lock' du dépôt pour continuer.
 		</val>
-		<val lang="ja_JP">このリポジトリで別の git
-			プロセスが実行されている可能性があります。すべてのプロセスが終了していることを確認してから、再試行してください。それでも失敗する場合は、以前にこのリポジトリで
-			git プロセスがクラッシュした可能性があります。続行するには、ロック ファイルを手動で削除してください。</val>
-		<val lang="nl_NL">Er loopt mogelijk een ander git-proces in deze
-			repository. Zorg dat alle
-			processen worden beëindigd en probeer opnieuw. Als het nog steeds niet lukt,
-			dan is er
-			mogelijk eerder een git-proces onverwacht gestopt. Verwijder dan handmatig
-			het
-			lock-bestand om door te gaan.
+		<val lang="ja_JP">別の Git プロセスがこのローカルリポジトリで実行中かもしれません。
+            すべてのプロセスが終了していることを確認し、もう一度試してください。
+            それでも失敗する場合は、以前にこのリポジトリで Git プロセスがクラッシュした可能性があります。
+            続行するには、リポジトリから 'index.lock' ファイルを手動で削除してください。</val>
+		<val lang="nl_NL">Een ander git-proces is mogelijk bezig in deze lokale repository.
+		    Zorg ervoor dat alle processen zijn beëindigd en probeer het opnieuw.
+		    Als het nog steeds mislukt, is er mogelijk eerder een git-proces in deze repository gecrasht.
+		    Verwijder handmatig het bestand 'index.lock' uit de repository om verder te gaan.
 		</val>
-		<val lang="zh_CN">另一个 git 进程可能正在此存储库中运行. 请确保所有进程都已终止，然后重试. 如果它仍然失败，则该存储库中的
-			git 进程可能较早崩溃了. 手动删除锁定文件以继续.</val>
+		<val lang="zh_CN">另一 Git 进程可能正在此本地仓库中运行。
+		    请确保所有进程已终止，然后再试一次。
+		    如果仍然失败，可能是之前某个 Git 进程在该仓库中崩溃了。
+		    请手动删除仓库中的 'index.lock' 文件以继续操作。
+		</val>
 	</key>
 	<key value="Unable_to_create_file">
 		<comment>Message telling that a file couldn't be created.</comment>
