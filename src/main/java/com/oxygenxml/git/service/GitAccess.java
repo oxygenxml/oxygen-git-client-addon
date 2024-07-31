@@ -1857,6 +1857,8 @@ public class GitAccess {
 	    RepoUtil.checkoutSubmodules(git, e -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e));
 	    
 	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
+	  } catch(CanceledException ex) {
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), ex);
 	  } catch (GitAPIException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
         throw e;
@@ -1864,7 +1866,17 @@ public class GitAccess {
         fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
       } catch(JGitInternalException ex) {
         fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), ex);
-        if(!ex.getMessage().contains("was canceled")) {
+        boolean isCanceledByUser = false;
+        Throwable cause = ex.getCause();
+        while(cause != null) {
+          if(cause instanceof CanceledException) {
+            isCanceledByUser = true;
+            break;
+          }
+          cause = cause.getCause();
+        }
+       
+        if(!isCanceledByUser) {
           throw ex;  
         } 
       }
