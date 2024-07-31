@@ -107,5 +107,9 @@ public enum GitOperation {
   /**
    * Update the config file for current repository
    */
-  UPDATE_CONFIG_FILE
+  UPDATE_CONFIG_FILE,
+  /**
+   * Show history
+   */
+  SHOW_HISTORY
 }

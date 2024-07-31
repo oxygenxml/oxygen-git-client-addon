@@ -2235,10 +2235,13 @@ public class GitAccess {
 	 * @return a Vector with commits characteristics of the current repository.
 	 */
 	public List<CommitCharacteristics> getCommitsCharacteristics(HistoryStrategy strategy,  String filePath, RenameTracker renameTracker) {
-	  // TODO EXM-46411 I think we need to fire start, ended, failed here as well
+	  try {
+      fireOperationAboutToStart(new GitEventInfo(GitOperation.SHOW_HISTORY));
+	  } catch (IndexLockExistsException e) {
+	    // Ignore. The history can be shown.
+	  }
 	  
 		List<CommitCharacteristics> revisions = new ArrayList<>();
-
 		try {
 			Repository repository = this.getRepository();
 			if (filePath == null && statusCache.getStatus().hasUncommittedChanges()) {
@@ -2262,8 +2265,10 @@ public class GitAccess {
 			  break;
 			}
 			
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.SHOW_HISTORY));
 		} catch (NoWorkTreeException | NoRepositorySelected | IOException e) {
 			LOGGER.error(e.getMessage(), e);
+			fireOperationFailed(new GitEventInfo(GitOperation.SHOW_HISTORY), e);
 		}
 		
 		return revisions;
@@ -2447,11 +2452,12 @@ public class GitAccess {
       }
      
       final MergeResult res = mergeCommand.call();
-      if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
-        if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("We have conflicts here: {}", res.getConflicts());
-        }
-        final List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
+      MergeStatus mergeStatus = res.getMergeStatus();
+      if (mergeStatus.equals(MergeResult.MergeStatus.CONFLICTING)) {
+        Map<String, int[][]> conflicts = res.getConflicts();
+        LOGGER.debug("We have conflicts here: {}", conflicts);
+        
+        final List<String> conflictingFiles = new ArrayList<>(conflicts.keySet());
         MessagePresenterProvider.getBuilder(
             TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE), DialogType.WARNING)
             .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
@@ -2459,11 +2465,11 @@ public class GitAccess {
             .setCancelButtonVisible(false)
             .buildAndShow(); 
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
-      } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
-        if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("Failed because of this files: {}", res.getFailingPaths());
-        }
-        final List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
+      } else if (mergeStatus.equals(MergeResult.MergeStatus.FAILED)) {
+        Map<String, MergeFailureReason> failingPaths = res.getFailingPaths();
+        LOGGER.debug("Failed because of this files: {}", failingPaths);
+          
+        final List<String> failingFiles = new ArrayList<>(failingPaths.keySet());
         MessagePresenterProvider.getBuilder(
             TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.ERROR)
             .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(failingFiles)))
