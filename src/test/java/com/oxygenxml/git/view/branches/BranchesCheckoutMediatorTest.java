@@ -85,10 +85,11 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
   /**
    * Simulates the user request to create a branch.
    * 
-   * @param wasCalledCreateBranchOp This atomic boolean will be set true if the user create the branch.
-   * @param isRepositoryUpToDate    <code>true</code> if the repository is up to date.
+   * @param wasCalledCreateBranchOp           This atomic boolean will be set true if the user create the branch.
+   * @param isRepositoryUpToDate              <code>true</code> if the repository is up to date.
+   * @param warnUserIfRepositoryOutdated      <code>true</code> if the user should be warned if the repository is outdated.
    */
-  private void simulateBranchCreationRequest(AtomicBoolean wasCalledCreateBranchOp, boolean isRepositoryUpToDate) {
+  private void simulateBranchCreationRequest(AtomicBoolean wasCalledCreateBranchOp, boolean isRepositoryUpToDate, boolean warnUserIfRepositoryOutdated) {
     Mockito.when(gitCtrlMock.getGitAccess().getPullsBehind()).thenReturn(isRepositoryUpToDate ? 0 : 15);
 
     SwingUtilities.invokeLater(() -> {
@@ -97,7 +98,8 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
         public void createBranch(String branchName, boolean shouldCheckoutBranch) {
           wasCalledCreateBranchOp.set(true);
         }
-      });
+      }, 
+          warnUserIfRepositoryOutdated);
     });
   }
   
@@ -112,12 +114,31 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
   public void testConfirmationDialog_Displayed_Cancel() throws Exception {
     AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
     
-    simulateBranchCreationRequest(wasCalledCreateBranchOp, false);
+    simulateBranchCreationRequest(wasCalledCreateBranchOp, false, true);
     
     ((OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED)).getCancelButton().doClick();
     
     assertNull(TestHelper.findDialog("Create Branch"));
     assertFalse(wasCalledCreateBranchOp.get());
+  }
+  
+  /**
+   * <p><b>Description:</b> Tests if the confirmation dialog not displayed and create branch dialog is displayed if the repository is outdated but the user should be not warned.</p>
+   * <p><b>Bug ID:</b> EXM-54376</p>
+   *
+   * @author alex_smarandache
+   *
+   * @throws Exception
+   */
+  public void testConfirmationDialog_NotDisplayed_NotWarnUser() throws Exception {
+    AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
+    
+    simulateBranchCreationRequest(wasCalledCreateBranchOp, false, false);
+    
+    assertNull(TestHelper.findDialog(Tags.REPOSITORY_OUTDATED));
+    CreateBranchDialog createBranchDialog = (CreateBranchDialog) TestHelper.findDialog("Create Branch");
+    createBranchDialog.getOkButton().doClick();
+    Awaitility.await().atMost(Duration.FIVE_HUNDRED_MILLISECONDS).until(() -> wasCalledCreateBranchOp.get());
   }
   
   /**
@@ -131,7 +152,7 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
   public void testConfirmationDialog_Displayed_CreateBranchAnyway() throws Exception {
     AtomicBoolean wasCalledCreateBranchOp = new AtomicBoolean(false);
     
-    simulateBranchCreationRequest(wasCalledCreateBranchOp, false);
+    simulateBranchCreationRequest(wasCalledCreateBranchOp, false, true);
     
     OKOtherAndCancelDialog confirmationDialog = (OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED);
 
@@ -162,7 +183,7 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
       }
     }).when(gitCtrlMock).addGitListener(Mockito.any());
     
-    simulateBranchCreationRequest(wasCalledCreateBranchOp, false);
+    simulateBranchCreationRequest(wasCalledCreateBranchOp, false, true);
 
     ((OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
     
@@ -196,7 +217,7 @@ public class BranchesCheckoutMediatorTest extends JFCTestCase {
       }
     }).when(gitCtrlMock).addGitListener(Mockito.any());
     
-    simulateBranchCreationRequest(wasCalledCreateBranchOp, false);
+    simulateBranchCreationRequest(wasCalledCreateBranchOp, false, true);
 
     ((OKOtherAndCancelDialog) TestHelper.findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
     
