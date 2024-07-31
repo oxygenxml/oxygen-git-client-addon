@@ -1070,7 +1070,7 @@ public class GitAccess {
 	    if (!lockFailureMessage.isEmpty()) {
 	      // Lock failure
 	      PluginWorkspaceProvider.getPluginWorkspace()
-	      .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
+	          .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
 	      pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
 	    } else {
 	      ObjectId head = resolveHead(repository);

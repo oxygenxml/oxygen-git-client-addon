@@ -93,13 +93,12 @@ public class GitController extends GitControllerBase {
    * @return The result of the operation execution.
    */
   private Future<?> execute(String message, ExecuteCommandRunnable command) {
-    // Notify push about to start.
     PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), message);
     try {
       listeners.fireOperationAboutToStart(pushPullEvent);
     } catch (IndexLockExistsException e) {
-      // TODO EXM-46411 For push and pull I think we already have a mechanism,
-      // but maybe we want to use the new one
+      // Ignore. We already had a mechanism for pull. Let it do its job.
+      // The old mechanism also seems to update the status at the bottom of the Git Staging view.
     }
 
     return GitOperationScheduler.getInstance().schedule(command);
@@ -250,10 +249,7 @@ public class GitController extends GitControllerBase {
         );
       } catch (TransportException e) {
         String exMsg = e.getMessage();
-        boolean isAuthProblem = exMsg.contains(AuthUtil.NOT_AUTHORIZED)
-            || exMsg.contains(AuthUtil.AUTHENTICATION_NOT_SUPPORTED)
-            || exMsg.contains(AuthUtil.NOT_PERMITTED);
-        boolean shouldTryAgain = isAuthProblem ? 
+        boolean shouldTryAgain = isAuthProblem(exMsg) ? 
             AuthUtil.handleAuthException(
                 e,
                 hostName,
@@ -291,6 +287,19 @@ public class GitController extends GitControllerBase {
           notifyListeners(event);
         }
       }
+    }
+
+    /**
+     * Check if the given message represents an authentication problem.
+     * 
+     * @param exMsg The message.
+     * 
+     * @return <code>true</code> if it is an authentication problem.
+     */
+    private boolean isAuthProblem(String exMsg) {
+      return exMsg.contains(AuthUtil.NOT_AUTHORIZED)
+          || exMsg.contains(AuthUtil.AUTHENTICATION_NOT_SUPPORTED)
+          || exMsg.contains(AuthUtil.NOT_PERMITTED);
     }
     
     /**
