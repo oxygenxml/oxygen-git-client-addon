@@ -634,11 +634,12 @@ public class GitAccess {
    * @throws WrongRepositoryStateException Exception thrown when the state of the repository doesn't allow the execution
    * of a certain command. E.g. when a CommitCommand should be executed on a repository with unresolved conflicts this exception will be thrown.
    * @throws GitAPIException Other unexpected exceptions.
+	 * @throws IndexLockExistsException 
    */
   public void commit(String message) throws GitAPIException, NoHeadException, //NOSONAR See doc above.
       NoMessageException, UnmergedPathsException, //NOSONAR See doc above.
       ConcurrentRefUpdateException, WrongRepositoryStateException, //NOSONAR See doc above.
-      AbortedByHookException { //NOSONAR See doc above.
+      AbortedByHookException, IndexLockExistsException { //NOSONAR See doc above.
     commit(message, false);
   }
 
@@ -661,11 +662,12 @@ public class GitAccess {
 	 * @throws WrongRepositoryStateException Exception thrown when the state of the repository doesn't allow the execution
 	 * of a certain command. E.g. when a CommitCommand should be executed on a repository with unresolved conflicts this exception will be thrown.
 	 * @throws GitAPIException Other unexpected exceptions.
+	 * @throws IndexLockExistsException 
 	 */
 	public void commit(String message, boolean isAmendLastCommit) throws GitAPIException, NoHeadException, //NOSONAR See doc above.
       NoMessageException, UnmergedPathsException, //NOSONAR See doc above.
       ConcurrentRefUpdateException, WrongRepositoryStateException, //NOSONAR See doc above.
-      AbortedByHookException { //NOSONAR See doc above.
+      AbortedByHookException, IndexLockExistsException { //NOSONAR See doc above.
 	  List<FileStatus> files = getStagedFiles();
 	  Collection<String> filePaths = getFilePaths(files);
 		try {
@@ -676,14 +678,11 @@ public class GitAccess {
 		      .setCredentialsProvider(new GPGCapableCredentialsProvider(OptionsManager.getInstance().getGPGPassphrase()))
 		      .call();
 		  fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
-		} catch (IndexLockExistsException e) {
-		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
-      LOGGER.error(e.getMessage(), e);
-    } catch (CanceledException e) {
+		} catch (CanceledException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.debug(e.getMessage(), e);
 		  throw e;
-		} catch (GitAPIException e) {
+		} catch (GitAPIException |IndexLockExistsException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
 		  throw e;
