@@ -584,7 +584,6 @@ public class GitAccess {
     }
 		
 		try {
-		  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
 		  Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		  if (submoduleRepository == null) {
 		    // The submodule wasn't updated.
@@ -595,7 +594,6 @@ public class GitAccess {
 
 		    submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		  }
-		  
 		  // Close the current repository.
 		  closeRepo();
 
@@ -611,6 +609,7 @@ public class GitAccess {
 		  
 		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
 		} catch (Exception e) {
+		  e.printStackTrace();
 		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true), e);
 		}
 		
