@@ -3337,11 +3337,11 @@ public class GitAccess {
   }
   
   /**
-   * Install the progress factory needed to display operations progress.
+   * Set the progress factory needed to display operations progress.
    * 
    * @param progressManager The new manager that creates operation progress monitors.
    */
-  public void installOperationProgressSupport(OperationProgressFactory progressManager) {
+  public void setOperationProgressSupport(OperationProgressFactory progressManager) {
     this.progressManager = progressManager;
   }
 	

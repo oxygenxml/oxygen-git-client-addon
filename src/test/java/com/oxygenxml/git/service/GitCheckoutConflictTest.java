@@ -117,7 +117,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     super.setUp();
 
     gitAccess = GitAccess.getInstance();
-    gitAccess.installOperationProgressSupport(Mockito.mock(OperationProgressFactory.class));
+    gitAccess.setOperationProgressSupport(Mockito.mock(OperationProgressFactory.class));
     gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
     localRepo1 = gitAccess.getRepository();
     gitAccess.createNewRepository(SECOND_LOCAL_TEST_REPOSITORY);
