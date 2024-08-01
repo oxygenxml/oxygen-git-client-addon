@@ -3066,6 +3066,21 @@ public class GitAccess {
 		doCheckoutCommit(checkoutCommand, branchName);
 	}
 	
+	/**
+	 * @return The name of the head commit.
+	 */
+	public String getHeadName() {
+	  String result = null;
+	  try {
+	    Repository repo = getRepository();
+	    ObjectId id = repo.resolve(Constants.HEAD);
+	    result = id.getName();
+	  } catch (IOException | NoRepositorySelected e) {
+	    LOGGER.error(e.getMessage(), e);
+	  }
+	  
+	  return result;
+	}
 	
 	/**
 	 * Used to do a checkout commit. If the branchName is null, no branch will de created.
@@ -3076,8 +3091,8 @@ public class GitAccess {
 	 * @throws GitAPIException Errors while invoking git commands.
 	 */
 	private void doCheckoutCommit(CheckoutCommand checkoutCommand, String branchName) throws GitAPIException {
-if(checkoutCommand != null) {
-checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
+	  if(checkoutCommand != null) {
+	    checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
 	    if(branchName != null) {
 	      checkoutCommand.setCreateBranch(true).setName(branchName);
 	    } else {
