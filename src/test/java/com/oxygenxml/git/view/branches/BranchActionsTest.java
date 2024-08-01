@@ -91,6 +91,7 @@ public class BranchActionsTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
     
     GitController mock = new GitController();
+    mock.setBranchesCheckoutMediator(new BranchCheckoutMediator(mock));
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -157,6 +158,7 @@ public class BranchActionsTest extends GitTestBase {
       assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
 
       GitController mock = new GitController();
+      mock.setBranchesCheckoutMediator(new BranchCheckoutMediator(mock));
       BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
       branchManagementPanel.refreshBranches();
       flushAWT();
@@ -242,6 +244,7 @@ public class BranchActionsTest extends GitTestBase {
       assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
 
       GitController mock = new GitController();
+      mock.setBranchesCheckoutMediator(new BranchCheckoutMediator(mock));
       BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
       branchManagementPanel.refreshBranches();
       flushAWT();
@@ -258,12 +261,10 @@ public class BranchActionsTest extends GitTestBase {
       List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
       for (AbstractAction abstractAction : actionsForNode) {
         if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
-          SwingUtilities.invokeLater(() -> {
-            abstractAction.actionPerformed(null);
-          });
+          SwingUtilities.invokeLater(() -> abstractAction.actionPerformed(null));
           flushAWT();
-
           JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+          assertNotNull(createBranchDialog);
           JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
           assertNotNull(checkoutBranchCheckBox);
           checkoutBranchCheckBox.setSelected(false);
@@ -321,6 +322,7 @@ public class BranchActionsTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
     
     GitController mock = new GitController();
+    mock.setBranchesCheckoutMediator(new BranchCheckoutMediator(mock));
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -392,6 +394,7 @@ public class BranchActionsTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
     
     GitController mock = new GitController();
+    mock.setBranchesCheckoutMediator(new BranchCheckoutMediator(mock));
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -525,6 +528,7 @@ public class BranchActionsTest extends GitTestBase {
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
     
     GitController mock = new GitController();
+    mock.setBranchesCheckoutMediator(new BranchCheckoutMediator(mock));
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
