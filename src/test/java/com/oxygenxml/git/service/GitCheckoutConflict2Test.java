@@ -38,6 +38,7 @@ import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
@@ -73,6 +74,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
   protected GitAccess gitAccess;
   private String[] shownWarningMess = new String[1];
   private String[] errMsg = new String[1];
+
+  private GitController gitCtrl;
   
   @Override
   public void setUp() throws Exception {
@@ -185,6 +188,10 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     // Dummy icon
     Mockito.doReturn(null).when(imageUtilities).loadIcon((URL)Mockito.any());
     Mockito.when(pluginWSMock.getImageUtilities()).thenReturn(imageUtilities);
+    
+    gitCtrl = new GitController(gitAccess);
+    gitCtrl.setBranchesCheckoutMediator(new BranchCheckoutMediator(gitCtrl));
+    
   }
   
   @Override
@@ -250,11 +257,10 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitController mock = new GitController();
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(gitCtrl);
    
     // Simulate branch checkout from Git Branch Manager view
     GitTreeNode node = new GitTreeNode(
@@ -268,7 +274,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
           abstractAction.actionPerformed(null);
         });
        
-        ((OKOtherAndCancelDialog) findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
+        ((OKOtherAndCancelDialog) findDialog(Tags.REPOSITORY_OUTDATED)).getOtherButton().doClick();
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
@@ -354,11 +360,10 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitController mock = new GitController();
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(gitCtrl);
    
     // Simulate branch checkout from Git Branch Manager view
     GitTreeNode node = new GitTreeNode(
@@ -372,7 +377,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
           abstractAction.actionPerformed(null);
         });
 
-        ((OKOtherAndCancelDialog) findDialog(Tags.REPOSITORY_OUTDATED)).getOKButton().doClick();
+        ((OKOtherAndCancelDialog) findDialog(Tags.REPOSITORY_OUTDATED)).getOtherButton().doClick();
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
         assertNotNull(checkoutBranchCheckBox);
@@ -454,11 +459,10 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
-    GitController mock = new GitController();
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(gitCtrl);
    
     // Simulate branch checkout from Git Branch Manager view
     GitTreeNode node = new GitTreeNode(
@@ -474,7 +478,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
       
         OKOtherAndCancelDialog branchNotUpdatedDialogs = (OKOtherAndCancelDialog) findDialog(translator.getTranslation(Tags.REPOSITORY_OUTDATED));
         assertNotNull(branchNotUpdatedDialogs);
-        branchNotUpdatedDialogs.getOKButton().doClick();
+        branchNotUpdatedDialogs.getOtherButton().doClick();
         sleep(100);
       
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
@@ -543,7 +547,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 
-    GitController gitCtrl = new GitController();
+    
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     flushAWT();
