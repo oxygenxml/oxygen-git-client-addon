@@ -4,7 +4,6 @@ import javax.swing.SwingUtilities;
 
 import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
-import com.oxygenxml.git.view.dialog.internal.OnDialogCancel;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -37,13 +36,6 @@ public class GitOperationProgressDialog extends ProgressDialog {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if(info.getGitOperation() == operation) {
-          setCancelListener(new OnDialogCancel() {
-            @Override
-            public void doOnCancel() {
-              SwingUtilities.invokeLater(() -> setVisible(false));
-            }
-          });
-          
           SwingUtilities.invokeLater(() -> showWithDelay(minOperationDuration));
         }
         

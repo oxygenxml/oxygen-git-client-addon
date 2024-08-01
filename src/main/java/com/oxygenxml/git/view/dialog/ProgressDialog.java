@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +14,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import com.oxygenxml.git.view.actions.IProgressUpdater;
-import com.oxygenxml.git.view.dialog.internal.OnDialogCancel;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -44,11 +42,6 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   private boolean isCompleted = false;
   
   /**
-   * The listener to be called when operation is canceled.
-   */
-  private OnDialogCancel cancelListener;
-  
-  /**
    * The minimum time of an operation duration to display the progress.
    */
   public static final int MIN_OPERATION_DURATION_TIME = 2000;
@@ -71,7 +64,6 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
     this.getContentPane().removeAll();
     isCompleted = false;
     isCancelled = false;
-    cancelListener = null;
     
     noteLabel = new JLabel(" ");
 
@@ -125,7 +117,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   @Override
   protected void doCancel() {
     isCancelled = true;
-    Optional.ofNullable(cancelListener).ifPresent(OnDialogCancel::doOnCancel);
+    SwingUtilities.invokeLater(() -> setVisible(false));
   }
 
   /**
@@ -134,13 +126,6 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   @Override
   public boolean isCancelled() {
     return isCancelled;
-  }
-  
-  /**
-   * @param cancelListener The new listener to be called on cancel operation.
-   */
-  public void setCancelListener(OnDialogCancel cancelListener) {
-    this.cancelListener = cancelListener;
   }
 
   /**

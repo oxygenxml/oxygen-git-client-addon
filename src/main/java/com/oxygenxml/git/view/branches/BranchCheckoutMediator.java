@@ -16,7 +16,6 @@ import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.AskForBranchUpdateDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
-import com.oxygenxml.git.view.dialog.internal.OnDialogCancel;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -156,12 +155,6 @@ public class BranchCheckoutMediator {
 
     SwingUtilities.invokeLater(() -> {
       pullOperationProgressDialog.initUI();
-      pullOperationProgressDialog.setCancelListener(new OnDialogCancel() {
-        @Override
-        public void doOnCancel() {
-          SwingUtilities.invokeLater(() -> pullOperationProgressDialog.setVisible(false));
-        }
-      });
       pullOperationProgressDialog.showWithDelay(0);
     });
         
