@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -316,9 +317,17 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    }
 	    
 	    @Override
-      public void operationFailed(GitEventInfo gitEvent, Throwable t) {
+	    public void operationFailed(GitEventInfo gitEvent, Throwable t) {
 	      if (t instanceof IndexLockExistsException) {
-	        pluginWS.showErrorMessage(Translator.getInstance().getTranslation(Tags.LOCK_FAILED_EXPLANATION));
+	        try {
+	          String repoDir = GitAccess.getInstance().getRepository().getDirectory().getAbsolutePath();
+	          String message = MessageFormat.format(
+	              Translator.getInstance().getTranslation(Tags.LOCK_FAILED_EXPLANATION),
+	              new File(repoDir, "index.lock").getAbsolutePath());
+	          pluginWS.showErrorMessage(message);
+	        } catch (NoRepositorySelected e) {
+	          LOGGER.error(e.getMessage(), e);
+	        }
 	      }
 	    }
 	  });

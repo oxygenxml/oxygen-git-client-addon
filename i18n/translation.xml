@@ -8,6 +8,48 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Index_lock_in_repo">
+        <comment>Message about the fact that index.lock exists in the repo.</comment>
+        <val lang="en_US">A lock file exists in the current repository (location: ''{0}'').
+            This will prevent certain operations from completing.
+            Remove the file manually from the repository.</val>
+        <val lang="de_DE">Eine Sperrdatei existiert im aktuellen Repository (Ort: ''{0}'').
+            Dies wird verhindern, dass bestimmte Operationen abgeschlossen werden.
+            Entfernen Sie die Datei manuell aus dem Repository.</val>
+        <val lang="fr_FR">Un fichier de verrouillage existe dans le dépôt actuel (emplacement : ''{0}'').
+            Cela empêchera certaines opérations de se terminer.
+            Supprimez le fichier manuellement du dépôt.</val>
+        <val lang="ja_JP">現在のリポジトリにロックファイルが存在します（場所: ''{0}''）。
+            これにより、特定の操作が完了できなくなります。
+            リポジトリからファイルを手動で削除してください。</val>
+        <val lang="nl_NL">Er bestaat een vergrendelingsbestand in de huidige repository (locatie: ''{0}'').
+            Dit zal voorkomen dat bepaalde bewerkingen worden voltooid.
+            Verwijder het bestand handmatig uit de repository.</val>
+        <val lang="zh_CN">当前的仓库中存在一个锁定文件（位置: ''{0}''）。
+            这将阻止某些操作完成。
+            请手动从仓库中删除该文件。</val>
+    </key>
+    <key value="Index_lock_in_submodule">
+        <comment>Message about the fact that index.lock exists in the submodule.</comment>
+        <val lang="en_US">A lock file exists in the current submodule (location: ''{0}'').
+            This will prevent certain operations from completing.
+            Remove the file manually from the submodule.</val>
+        <val lang="de_DE">Eine Sperrdatei existiert im aktuellen Submodul (Ort: ''{0}'').
+            Dies wird bestimmte Operationen daran hindern, abgeschlossen zu werden.
+            Entfernen Sie die Datei manuell aus dem Submodul.</val>
+        <val lang="fr_FR">Un fichier de verrouillage existe dans le sous-module actuel (emplacement : ''{0}'').
+            Cela empêchera certaines opérations de se terminer.
+            Supprimez le fichier manuellement du sous-module.</val>
+        <val lang="ja_JP">現在のサブモジュールにロックファイルが存在します（場所：''{0}''）。
+            これにより、特定の操作が完了しない可能性があります。
+            サブモジュールからファイルを手動で削除してください。</val>
+        <val lang="nl_NL">Er bestaat een vergrendelingsbestand in de huidige submodule (locatie: ''{0}'').
+            Dit zal voorkomen dat bepaalde bewerkingen worden voltooid.
+            Verwijder het bestand handmatig uit de submodule.</val>
+        <val lang="zh_CN">当前子模块中存在一个锁文件（位置：''{0}''）。
+            这将阻止某些操作完成。
+            请手动从子模块中删除该文件。</val>
+    </key>
 	<key value="Update_Repo_Before_Create_Branch_Expl">
 		<comment>The explanation of the importance to update repository before to create new branch.</comment>
 		<val lang="en_US">Your local repository is not up to date. It is recommended to pull the latest changes from the remote repository before creating a new branch.</val>
@@ -4498,31 +4540,31 @@
 		<val lang="en_US">Another git process may be running in this local repository.
 			Please make sure all processes are terminated and then try again.
 			If it still fails, a git process may have crashed in this repository earlier.
-			Remove the 'index.lock' file manually from the repository to continue.
+			Remove the ''{0}'' file manually from the repository to continue.
 		</val>
 		<val lang="de_DE">Eine andere Git-Prozess könnte in diesem lokalen Repository ausgeführt werden.  
             Bitte stellen Sie sicher, dass alle Prozesse beendet sind, und versuchen Sie es erneut.  
             Wenn das Problem weiterhin besteht, könnte ein Git-Prozess in diesem Repository zuvor abgestürzt sein.  
-            Entfernen Sie die Datei 'index.lock' manuell aus dem Repository, um fortzufahren.
+            Entfernen Sie die Datei ''{0}'' manuell aus dem Repository, um fortzufahren.
 		</val>
 		<val lang="fr_FR">Un autre processus git pourrait être en cours d'exécution dans ce dépôt local.  
             Veuillez vous assurer que tous les processus sont terminés, puis réessayez.  
             Si cela échoue encore, il est possible qu'un processus git ait planté dans ce dépôt auparavant.  
-            Supprimez manuellement le fichier 'index.lock' du dépôt pour continuer.
+            Supprimez manuellement le fichier ''{0}'' du dépôt pour continuer.
 		</val>
 		<val lang="ja_JP">別の Git プロセスがこのローカルリポジトリで実行中かもしれません。
             すべてのプロセスが終了していることを確認し、もう一度試してください。
             それでも失敗する場合は、以前にこのリポジトリで Git プロセスがクラッシュした可能性があります。
-            続行するには、リポジトリから 'index.lock' ファイルを手動で削除してください。</val>
+            続行するには、リポジトリから ''{0}'' ファイルを手動で削除してください。</val>
 		<val lang="nl_NL">Een ander git-proces is mogelijk bezig in deze lokale repository.
 		    Zorg ervoor dat alle processen zijn beëindigd en probeer het opnieuw.
 		    Als het nog steeds mislukt, is er mogelijk eerder een git-proces in deze repository gecrasht.
-		    Verwijder handmatig het bestand 'index.lock' uit de repository om verder te gaan.
+		    Verwijder handmatig het bestand ''{0}'' uit de repository om verder te gaan.
 		</val>
 		<val lang="zh_CN">另一 Git 进程可能正在此本地仓库中运行。
 		    请确保所有进程已终止，然后再试一次。
 		    如果仍然失败，可能是之前某个 Git 进程在该仓库中崩溃了。
-		    请手动删除仓库中的 'index.lock' 文件以继续操作。
+		    请手动删除仓库中的 ''{0}'' 文件以继续操作。
 		</val>
 	</key>
 	<key value="Unable_to_create_file">

@@ -2017,5 +2017,15 @@ public class Tags {
    */
   public static final String UPDATE_REPO_BEFORE_CREATE_BRANCH_EXPL = "Update_Repo_Before_Create_Branch_Expl";
 
+  /**
+   * Message when index.lock exists in the repo to open.
+   */
+  public static final String INDEX_LOCK_IN_REPO = "Index_lock_in_repo";
+  
+  /**
+   * Message when index.lock exists in the submodule to open.
+   */
+  public static final String INDEX_LOCK_IN_SUBMODULE = "Index_lock_in_submodule";
+  
 }
 

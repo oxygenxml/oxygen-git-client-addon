@@ -360,8 +360,10 @@ public class GitAccess {
         git = Git.open(repo);
         repositoryOpened(workingCopy);
         if (indexLockExists) {
-          PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage(
-              Translator.getInstance().getTranslation(Tags.LOCK_FAILED_EXPLANATION));
+          String message = MessageFormat.format(
+              TRANSLATOR.getTranslation(Tags.INDEX_LOCK_IN_REPO),
+              new File(repo, "index.lock").getAbsolutePath());
+          PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage(message);
         }
       } catch (IOException e) {
         fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy), e);
@@ -603,8 +605,10 @@ public class GitAccess {
 		  AuthenticationInterceptor.bind(getHostName());
 		  
 		  if (indexLockExists) {
-		    PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage(
-		        Translator.getInstance().getTranslation(Tags.LOCK_FAILED_EXPLANATION));
+		    String message = MessageFormat.format(
+            TRANSLATOR.getTranslation(Tags.INDEX_LOCK_IN_SUBMODULE),
+            new File(submoduleDir, "index.lock").getAbsolutePath());
+        PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage(message);
 		  }
 		  
 		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
