@@ -613,7 +613,6 @@ public class GitAccess {
 		  
 		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
 		} catch (Exception e) {
-		  e.printStackTrace();
 		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true), e);
 		}
 		
