@@ -152,6 +152,7 @@ import com.oxygenxml.git.view.history.HistoryStrategy;
 import com.oxygenxml.git.view.history.RenameTracker;
 import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
+import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -1904,17 +1905,7 @@ public class GitAccess {
 	    throw e;
 	  } catch(JGitInternalException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
-	    boolean isCanceledByUser = false;
-	    Throwable cause = e.getCause();
-	    while(cause != null) {
-	      if(cause instanceof CanceledException) {
-	        isCanceledByUser = true;
-	        break;
-	      }
-	      cause = cause.getCause();
-	    }
-
-	    if(!isCanceledByUser) {
+	    if(!ExceptionHandlerUtil.isExceptionThrowedByCause(e, CanceledException.class)) {
 	      throw e;  
 	    } 
 	  }

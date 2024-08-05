@@ -45,6 +45,7 @@ import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -332,7 +333,7 @@ public class GitController extends GitControllerBase {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
 
       Throwable cause = e.getCause();
-      if(cause.getMessage().contains("was canceled")) {
+      if(ExceptionHandlerUtil.isExceptionThrowedByCause(e, CanceledException.class)) {
         event = Optional.of(new PushPullEvent(getOperation(), cause.getMessage()));
       } else if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
         String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
