@@ -48,12 +48,16 @@ public class OperationProgressManager implements OperationProgressFactory {
    */
   private ProgressDialog getProgressDialogByGitOperation(GitOperation operation) {
     if (operation == GitOperation.CHECKOUT && !operationsProgressDialogsCache.containsKey(operation)) {
-      operationsProgressDialogsCache.put(GitOperation.CHECKOUT, 
-          new GitOperationProgressDialog(gitCtrl, Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), GitOperation.CHECKOUT, 2000));
+      operationsProgressDialogsCache.put(
+          GitOperation.CHECKOUT, 
+          new GitOperationProgressDialog(
+              gitCtrl,
+              Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH),
+              GitOperation.CHECKOUT,
+              2000));
     }
     
     ProgressDialog dialog = operationsProgressDialogsCache.get(operation);
-    
     if(dialog != null) {
       dialog.initUI();
     }

@@ -1894,29 +1894,27 @@ public class GitAccess {
 	    RepoUtil.checkoutSubmodules(git, e -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e));
 	    
 	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
-	  } catch(CanceledException ex) {
-	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), ex);
+	  } catch(CanceledException | IndexLockExistsException e) {
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
 	  } catch (GitAPIException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
-        throw e;
-	  } catch (IndexLockExistsException e) {
-        fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
-      } catch(JGitInternalException ex) {
-        fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), ex);
-        boolean isCanceledByUser = false;
-        Throwable cause = ex.getCause();
-        while(cause != null) {
-          if(cause instanceof CanceledException) {
-            isCanceledByUser = true;
-            break;
-          }
-          cause = cause.getCause();
-        }
-       
-        if(!isCanceledByUser) {
-          throw ex;  
-        } 
-      }
+	    throw e;
+	  } catch(JGitInternalException e) {
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
+	    boolean isCanceledByUser = false;
+	    Throwable cause = e.getCause();
+	    while(cause != null) {
+	      if(cause instanceof CanceledException) {
+	        isCanceledByUser = true;
+	        break;
+	      }
+	      cause = cause.getCause();
+	    }
+
+	    if(!isCanceledByUser) {
+	      throw e;  
+	    } 
+	  }
 	}
 	
 	/**
