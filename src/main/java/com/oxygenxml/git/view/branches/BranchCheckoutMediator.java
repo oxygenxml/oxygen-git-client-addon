@@ -55,6 +55,11 @@ public class BranchCheckoutMediator {
   private static final Logger LOGGER = LoggerFactory.getLogger(BranchesTooltipsCache.class);
   
   /**
+   * The name proposed for the branch to be created.
+   */
+  private String currentProposedBranchName = null;
+  
+  /**
    * The progress dialog of the pull operation.
    */
   private final ProgressDialog pullOperationProgressDialog = new ProgressDialog(
@@ -87,18 +92,19 @@ public class BranchCheckoutMediator {
       IBranchesCreator branchCreator,
       boolean warnIfRepositoryIsOutdated) {
     try {
+      currentProposedBranchName = branchProposedName;
       ctrl.getGitAccess().fetch();
       boolean isRepoUpToDate = 0 == ctrl.getGitAccess().getPullsBehind();
       if(isRepoUpToDate || !warnIfRepositoryIsOutdated) {
-        showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
+        showCreateBranchDialog(createBranchDialogTitle, isCheckoutRemote, branchCreator);
       } else {
         AskForBranchUpdateDialog askForBranchDialog = new AskForBranchUpdateDialog();
         SwingUtilities.invokeLater(() -> {
           askForBranchDialog.setVisible(true);
           if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OK) {
-            tryPull(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
+            tryPull(createBranchDialogTitle, isCheckoutRemote, branchCreator);
           } else if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OTHER) {
-            showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
+            showCreateBranchDialog(createBranchDialogTitle, isCheckoutRemote, branchCreator);
           } 
         });
       }
@@ -113,16 +119,14 @@ public class BranchCheckoutMediator {
    * Show the create branch dialog.
    * 
    * @param dialogTitle           The title of the dialog.
-   * @param branchProposedName    The proposed name of the branch.
    * @param isCheckoutRemote      <code>true</code> if the checkout branch is a remote branch.
    * @param branchCreator         The branch creator after the user confirmation.
    */
   private void showCreateBranchDialog(
-      String dialogTitle, 
-      String branchProposedName, 
+      String dialogTitle,  
       boolean isCheckoutRemote, 
       IBranchesCreator branchCreator) {
-    CreateBranchDialog branchDialog = new CreateBranchDialog(dialogTitle, branchProposedName, isCheckoutRemote);
+    CreateBranchDialog branchDialog = new CreateBranchDialog(dialogTitle, currentProposedBranchName, isCheckoutRemote);
     if(branchDialog.getResult() == OKCancelDialog.RESULT_OK) {
       branchCreator.createBranch(branchDialog.getBranchName(), branchDialog.shouldCheckoutNewBranch());
     }
@@ -136,19 +140,17 @@ public class BranchCheckoutMediator {
    * If the pull fails, the process will be aborted.
    * 
    * @param dialogTitle          The title of the create branch dialog.
-   * @param nameToPropose        The name to propose for the new branch to be created.
    * @param isCheckoutRemote     <code>true</code> if the checkout branch is a remote branch.
    * @param branchCreator        The branch creator after the user confirmation.
    */
   private void tryPull(String dialogTitle, 
-      String nameToPropose, 
       boolean isCheckoutRemote, 
       IBranchesCreator branchCreator) {
     
     shouldShowPullDialog.set(true);
     
     if(pullListener == null) {
-      pullListener = createGitPullListener(dialogTitle, nameToPropose, isCheckoutRemote, branchCreator);
+      pullListener = createGitPullListener(dialogTitle, isCheckoutRemote, branchCreator);
       ctrl.addGitListener(pullListener);
     }
 
@@ -167,14 +169,12 @@ public class BranchCheckoutMediator {
    * Create the GIT pull listener to receive the pull operation.
    * 
    * @param dialogTitle          The title of the create branch dialog.
-   * @param nameToPropose        The name to propose for the new branch to be created.
    * @param isCheckoutRemote     <code>true</code> if the checkout branch is a remote branch.
    * @param branchCreator        The branch creator after the user confirmation.
    * 
    * @return The created listener.
    */
-  private GitEventListener createGitPullListener(String dialogTitle, String nameToPropose, boolean isCheckoutRemote,
-      IBranchesCreator branchCreator) {
+  private GitEventListener createGitPullListener(String dialogTitle, boolean isCheckoutRemote, IBranchesCreator branchCreator) {
     return new GitEventAdapter() {
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
@@ -198,7 +198,7 @@ public class BranchCheckoutMediator {
           
           SwingUtilities.invokeLater(() -> {
             pullOperationProgressDialog.dispose();
-            showCreateBranchDialog(dialogTitle, nameToPropose, isCheckoutRemote, branchCreator);
+            showCreateBranchDialog(dialogTitle, isCheckoutRemote, branchCreator);
           });
         }
       }
