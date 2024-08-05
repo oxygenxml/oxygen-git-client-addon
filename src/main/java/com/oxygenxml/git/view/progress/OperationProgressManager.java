@@ -59,7 +59,6 @@ public class OperationProgressManager implements OperationProgressFactory {
     ProgressDialog dialog = operationsProgressDialogsCache.get(operation);
     if(dialog != null) {
       dialog.initUI();
-      dialog.getCancelButton().doClick();
     }
     
     return dialog;
