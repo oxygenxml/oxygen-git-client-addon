@@ -24,6 +24,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
 import org.bouncycastle.openpgp.PGPException;
@@ -1808,11 +1810,12 @@ public class GitAccess {
 	public ScheduledFuture<?> restartMerge() {
 	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
+	      ProgressMonitor progressMonitor = progressManager != null ? progressManager.getProgressMonitorByOperation(GitOperation.MERGE_RESTART) : null;
 	      fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	      Repository repo = getRepository();
         RepositoryState repositoryState = repo.getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {
-	        git.rebase().setOperation(Operation.ABORT).call();
+	        git.rebase().setProgressMonitor(progressMonitor).setOperation(Operation.ABORT).call();
 	        // EXM-47461 Should update submodules as well.
 	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
 	        pull(credentialsProvider, PullType.REBASE, null, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
@@ -1820,7 +1823,7 @@ public class GitAccess {
 	        AnyObjectId commitToMerge = repo.resolve("MERGE_HEAD");
 	        git.clean().call();
 	        git.reset().setMode(ResetType.HARD).call();
-	        git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+	        git.merge().setProgressMonitor(progressMonitor).include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 	      }
 	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
 	    } catch (IOException | NoRepositorySelected | GitAPIException | IndexLockExistsException  e) {
@@ -2444,10 +2447,12 @@ public class GitAccess {
       throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
     
     try {
-      fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+      ProgressMonitor progressMonitor = progressManager != null ? progressManager.getProgressMonitorByOperation(GitOperation.MERGE) : null;
       
+      fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+     
       final ObjectId mergeBase = getRepository().resolve(branchName);
-      final MergeCommand mergeCommand = git.merge().include(mergeBase);
+      final MergeCommand mergeCommand = git.merge().setProgressMonitor(progressMonitor).include(mergeBase);
       if(isSquash) {
         mergeCommand.setStrategy(MergeStrategy.RESOLVE).setSquash(isSquash).setCommit(true);
       }
@@ -2459,25 +2464,29 @@ public class GitAccess {
         LOGGER.debug("We have conflicts here: {}", conflicts);
         
         final List<String> conflictingFiles = new ArrayList<>(conflicts.keySet());
-        MessagePresenterProvider.getBuilder(
-            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE), DialogType.WARNING)
-            .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
-            .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE))
-            .setCancelButtonVisible(false)
-            .buildAndShow(); 
+        SwingUtilities.invokeLater(() -> {
+          MessagePresenterProvider.getBuilder(
+              TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE), DialogType.WARNING)
+              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
+              .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE))
+              .setCancelButtonVisible(false)
+              .buildAndShow(); 
+        }); 
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if (mergeStatus.equals(MergeResult.MergeStatus.FAILED)) {
         Map<String, MergeFailureReason> failingPaths = res.getFailingPaths();
         LOGGER.debug("Failed because of this files: {}", failingPaths);
           
         final List<String> failingFiles = new ArrayList<>(failingPaths.keySet());
-        MessagePresenterProvider.getBuilder(
-            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.ERROR)
-            .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(failingFiles)))
-            .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
-            .setCancelButtonVisible(false)
-            .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
-            .buildAndShow();  
+        SwingUtilities.invokeLater(() -> {
+          MessagePresenterProvider.getBuilder(
+              TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.ERROR)
+              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(failingFiles)))
+              .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
+              .setCancelButtonVisible(false)
+              .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
+              .buildAndShow();
+        });
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if(isSquash) {
           fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));

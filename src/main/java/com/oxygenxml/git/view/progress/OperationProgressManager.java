@@ -31,6 +31,11 @@ public class OperationProgressManager implements OperationProgressFactory {
   private final Map<GitOperation, ProgressDialog> operationsProgressDialogsCache = new HashMap<>();
   
   /**
+   * The default delay for the operation in millis.
+   */
+  private static final int DEFAULT_OPERATION_DELAY = 2000;
+  
+  /**
    * Constructor.
    * 
    * @param gitCtrl The Git controller.
@@ -47,23 +52,55 @@ public class OperationProgressManager implements OperationProgressFactory {
    * @return The created progress dialog.
    */
   private ProgressDialog getProgressDialogByGitOperation(GitOperation operation) {
-    if (operation == GitOperation.CHECKOUT && !operationsProgressDialogsCache.containsKey(operation)) {
-      operationsProgressDialogsCache.put(
-          GitOperation.CHECKOUT, 
-          new GitOperationProgressDialog(
-              gitCtrl,
-              Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH),
-              GitOperation.CHECKOUT,
-              2000));
+    if(!operationsProgressDialogsCache.containsKey(operation)) {
+      addProgressDialogForOperation(operation);
     }
     
     ProgressDialog dialog = operationsProgressDialogsCache.get(operation);
     if(dialog != null) {
       dialog.initUI();
+      dialog.getCancelButton().doClick();
     }
     
     return dialog;
     
+  }
+
+  /**
+   * Add in the dialogs cache a progress dialog for the given operation.
+   * 
+   * @param operation The operation to follow the progress.
+   */
+  private void addProgressDialogForOperation(GitOperation operation) {
+    switch(operation) {
+    case CHECKOUT: {
+      operationsProgressDialogsCache.put(GitOperation.CHECKOUT, 
+          new GitOperationProgressDialog(gitCtrl, 
+              Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
+              GitOperation.CHECKOUT, DEFAULT_OPERATION_DELAY));
+      break;
+    }
+
+    case MERGE: {
+      operationsProgressDialogsCache.put(GitOperation.MERGE, 
+          new GitOperationProgressDialog(gitCtrl, 
+              Translator.getInstance().getTranslation(Tags.MERGE), 
+              GitOperation.MERGE, DEFAULT_OPERATION_DELAY));
+      break;
+    }
+    
+    case MERGE_RESTART: {
+      operationsProgressDialogsCache.put(GitOperation.MERGE_RESTART, 
+          new GitOperationProgressDialog(gitCtrl, 
+              Translator.getInstance().getTranslation(Tags.MERGE), 
+              GitOperation.MERGE_RESTART, DEFAULT_OPERATION_DELAY));
+      break;
+    }
+    
+    default: {
+      break;
+    }
+    }
   }
 
   /**
