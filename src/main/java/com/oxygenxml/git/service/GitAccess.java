@@ -3080,7 +3080,7 @@ public class GitAccess {
 	  try {
 	    Repository repo = getRepository();
 	    ObjectId id = repo.resolve(Constants.HEAD);
-	    result = id.getName();
+	    result = id != null ? id.getName() : null;
 	  } catch (IOException | NoRepositorySelected e) {
 	    LOGGER.error(e.getMessage(), e);
 	  }
