@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.SwingUtilities;
 
+import org.eclipse.jgit.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public class BranchCheckoutMediator {
    * 
    * @param ctrl The Git controller to manage git operations.
    */
-  public BranchCheckoutMediator(GitController ctrl) {
+  public BranchCheckoutMediator(@NonNull GitController ctrl) {
     this.ctrl = ctrl;
   }
   
@@ -85,26 +86,24 @@ public class BranchCheckoutMediator {
       boolean isCheckoutRemote, 
       IBranchesCreator branchCreator,
       boolean warnIfRepositoryIsOutdated) {
-    if(ctrl != null) {
-      try {
-        ctrl.getGitAccess().fetch();
-        boolean isRepoUpToDate = 0 == ctrl.getGitAccess().getPullsBehind();
-        if(isRepoUpToDate || !warnIfRepositoryIsOutdated) {
-          showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
-        } else {
-          AskForBranchUpdateDialog askForBranchDialog = new AskForBranchUpdateDialog();
-          SwingUtilities.invokeLater(() -> {
-            askForBranchDialog.setVisible(true);
-            if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OK) {
-              tryPull(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
-            } else if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OTHER) {
-              showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
-            } 
-          });
-        }
-      } catch(Exception ex) {
-        LOGGER.error(ex.getMessage(), ex);
+    try {
+      ctrl.getGitAccess().fetch();
+      boolean isRepoUpToDate = 0 == ctrl.getGitAccess().getPullsBehind();
+      if(isRepoUpToDate || !warnIfRepositoryIsOutdated) {
+        showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
+      } else {
+        AskForBranchUpdateDialog askForBranchDialog = new AskForBranchUpdateDialog();
+        SwingUtilities.invokeLater(() -> {
+          askForBranchDialog.setVisible(true);
+          if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OK) {
+            tryPull(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
+          } else if(askForBranchDialog.getResult() == OKOtherAndCancelDialog.RESULT_OTHER) {
+            showCreateBranchDialog(createBranchDialogTitle, branchProposedName, isCheckoutRemote, branchCreator);
+          } 
+        });
       }
+    } catch(Exception ex) {
+      LOGGER.error(ex.getMessage(), ex);
     } 
   }
 

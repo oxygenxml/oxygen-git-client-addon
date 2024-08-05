@@ -3,7 +3,6 @@ package com.oxygenxml.git.view.history.actions;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.swing.AbstractAction;
 
@@ -74,15 +73,11 @@ public class CreateBranchFromCommitAction extends AbstractAction {
       }
     }; 
     
-    Optional.ofNullable(gitController.getBranchesCheckoutMediator()).ifPresent(
-        (branchesMediator) -> 
-          branchesMediator.createBranch(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), 
-              null, 
-              false, branchesCreator, 
-              Objects.equals(gitController.getGitAccess().getHeadName(), commitId) // warn user only for local head in history if the repository is outdated
-          )
+    gitController.getBranchesCheckoutMediator().createBranch(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), 
+        null, 
+        false, branchesCreator, 
+        Objects.equals(gitController.getGitAccess().getHeadName(), commitId) // warn user only for local head in history if the repository is outdated
     );
-    
   }
   
 }

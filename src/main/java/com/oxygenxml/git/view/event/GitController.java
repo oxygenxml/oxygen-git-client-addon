@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 
 import javax.swing.SwingUtilities;
 
-import org.eclipse.jgit.annotations.Nullable;
+import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -107,14 +107,14 @@ public class GitController extends GitControllerBase {
   /**
    * @param branchesCheckoutMediator The new branches checkout mediator responsible with branches checkout.
    */
-  public void setBranchesCheckoutMediator(@Nullable BranchCheckoutMediator branchesCheckoutMediator) {
+  public void setBranchesCheckoutMediator(@NonNull BranchCheckoutMediator branchesCheckoutMediator) {
     this.branchesCheckoutMediator = branchesCheckoutMediator;
   }
   
   /**
    * @return The branches checkout mediator responsible with branches checkout.
    */
-  @Nullable
+  @NonNull
   public BranchCheckoutMediator getBranchesCheckoutMediator() {
     return branchesCheckoutMediator;
   }
