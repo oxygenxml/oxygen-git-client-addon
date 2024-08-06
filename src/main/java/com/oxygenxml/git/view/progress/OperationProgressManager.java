@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.progress;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import org.eclipse.jgit.lib.ProgressMonitor;
 
@@ -28,7 +27,7 @@ public class OperationProgressManager implements OperationProgressFactory {
   /**
    * A map with the operations and the progress dialogs.
    */
-  private final Map<GitOperation, ProgressDialog> operationsProgressDialogsCache = new HashMap<>();
+  private final EnumMap<GitOperation, ProgressDialog> operationsProgressDialogsCache = new EnumMap<>(GitOperation.class);
   
   /**
    * The default delay for the operation in millis.
