@@ -221,6 +221,7 @@ public class GitAccess {
 	/**
 	 * The progress manager for operations.
 	 */
+	@NonNull
 	private OperationProgressFactory progressManager;
 
 	/**
@@ -1811,7 +1812,7 @@ public class GitAccess {
 	public ScheduledFuture<?> restartMerge() {
 	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
-	      ProgressMonitor progressMonitor = progressManager != null ? progressManager.getProgressMonitorByOperation(GitOperation.MERGE_RESTART) : null;
+	      ProgressMonitor progressMonitor = progressManager.getProgressMonitorByOperation(GitOperation.MERGE_RESTART);
 	      fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	      Repository repo = getRepository();
         RepositoryState repositoryState = repo.getRepositoryState();
@@ -1880,8 +1881,8 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void setBranch(String branch) throws GitAPIException, IOException {
-	  ProgressMonitor progressMonitor = progressManager != null ? // the progress manager should be instantiated before to notify listener about operation start
-	      progressManager.getProgressMonitorByOperation(GitOperation.CHECKOUT) : null; 
+	  ProgressMonitor progressMonitor = // the progress manager should be instantiated before to notify listener about operation start
+	      progressManager.getProgressMonitorByOperation(GitOperation.CHECKOUT); 
 	  try {
 	    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 
@@ -2438,7 +2439,7 @@ public class GitAccess {
       throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
     
     try {
-      ProgressMonitor progressMonitor = progressManager != null ? progressManager.getProgressMonitorByOperation(GitOperation.MERGE) : null;
+      ProgressMonitor progressMonitor = progressManager.getProgressMonitorByOperation(GitOperation.MERGE);
       
       fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
      
@@ -3338,7 +3339,7 @@ public class GitAccess {
    * 
    * @param progressManager The new manager that creates operation progress monitors.
    */
-  public void setOperationProgressSupport(OperationProgressFactory progressManager) {
+  public void setOperationProgressSupport(@NonNull OperationProgressFactory progressManager) {
     this.progressManager = progressManager;
   }
 	
