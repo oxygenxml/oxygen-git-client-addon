@@ -39,7 +39,7 @@ public class ExceptionHandlerUtil {
    * 
    * @return <code>true</code> if the exception is caused by the given cause.
    */
-  public static boolean isExceptionThrowedByCause(final Exception exception, final Class<? extends Throwable> potentialCauseClass) {
+  public static boolean hasCauseOfType(final Exception exception, final Class<? extends Throwable> potentialCauseClass) {
     boolean isExceptionThrowedByCause = false;
     if(potentialCauseClass.isInstance(exception)) {
       isExceptionThrowedByCause = true;

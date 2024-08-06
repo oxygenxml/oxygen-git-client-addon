@@ -1905,7 +1905,7 @@ public class GitAccess {
 	    throw e;
 	  } catch(JGitInternalException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
-	    if(!ExceptionHandlerUtil.isExceptionThrowedByCause(e, CanceledException.class)) {
+	    if(!ExceptionHandlerUtil.hasCauseOfType(e, CanceledException.class)) {
 	      throw e;  
 	    } 
 	  }

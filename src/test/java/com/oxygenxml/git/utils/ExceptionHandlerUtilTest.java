@@ -33,8 +33,8 @@ public class ExceptionHandlerUtilTest {
     IOException ioException = new IOException(canceledException);
     JGitInternalException jgitException = new JGitInternalException("Here is my exception", ioException);
     
-    assertTrue(ExceptionHandlerUtil.isExceptionThrowedByCause(jgitException, CanceledException.class));
-    assertFalse(ExceptionHandlerUtil.isExceptionThrowedByCause(jgitException, MalformedURLException.class));
+    assertTrue(ExceptionHandlerUtil.hasCauseOfType(jgitException, CanceledException.class));
+    assertFalse(ExceptionHandlerUtil.hasCauseOfType(jgitException, MalformedURLException.class));
   }
 
 }

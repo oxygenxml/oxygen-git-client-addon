@@ -333,7 +333,7 @@ public class GitController extends GitControllerBase {
       PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
 
       Throwable cause = e.getCause();
-      if(ExceptionHandlerUtil.isExceptionThrowedByCause(e, CanceledException.class)) {
+      if(ExceptionHandlerUtil.hasCauseOfType(e, CanceledException.class)) {
         event = Optional.of(new PushPullEvent(getOperation(), cause.getMessage()));
       } else if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
         String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
