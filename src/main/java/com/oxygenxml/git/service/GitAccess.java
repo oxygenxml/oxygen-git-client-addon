@@ -2456,29 +2456,29 @@ public class GitAccess {
         LOGGER.debug("We have conflicts here: {}", conflicts);
         
         final List<String> conflictingFiles = new ArrayList<>(conflicts.keySet());
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() ->
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE), DialogType.WARNING)
               .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
               .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE))
               .setCancelButtonVisible(false)
-              .buildAndShow(); 
-        }); 
+              .buildAndShow()
+        ); 
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if (mergeStatus.equals(MergeResult.MergeStatus.FAILED)) {
         Map<String, MergeFailureReason> failingPaths = res.getFailingPaths();
         LOGGER.debug("Failed because of this files: {}", failingPaths);
           
         final List<String> failingFiles = new ArrayList<>(failingPaths.keySet());
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> 
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.ERROR)
               .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(failingFiles)))
               .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
               .setCancelButtonVisible(false)
               .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
-              .buildAndShow();
-        });
+              .buildAndShow()
+        );
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if(isSquash) {
           fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
