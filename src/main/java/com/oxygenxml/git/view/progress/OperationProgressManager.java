@@ -72,33 +72,35 @@ public class OperationProgressManager implements OperationProgressFactory {
    */
   private void addProgressDialogForOperation(GitOperation operation) {
     switch(operation) {
-    case CHECKOUT: {
-      operationsProgressDialogsCache.put(GitOperation.CHECKOUT, 
-          new GitOperationProgressDialog(gitCtrl, 
-              Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
-              GitOperation.CHECKOUT, DEFAULT_OPERATION_DELAY));
-      break;
-    }
+      case CHECKOUT:
+        operationsProgressDialogsCache.put(
+            GitOperation.CHECKOUT, 
+            new GitOperationProgressDialog(
+                gitCtrl, 
+                Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
+                GitOperation.CHECKOUT, DEFAULT_OPERATION_DELAY));
+        break;
 
-    case MERGE: {
-      operationsProgressDialogsCache.put(GitOperation.MERGE, 
-          new GitOperationProgressDialog(gitCtrl, 
-              Translator.getInstance().getTranslation(Tags.MERGE), 
-              GitOperation.MERGE, DEFAULT_OPERATION_DELAY));
-      break;
-    }
-    
-    case MERGE_RESTART: {
-      operationsProgressDialogsCache.put(GitOperation.MERGE_RESTART, 
-          new GitOperationProgressDialog(gitCtrl, 
-              Translator.getInstance().getTranslation(Tags.MERGE), 
-              GitOperation.MERGE_RESTART, DEFAULT_OPERATION_DELAY));
-      break;
-    }
-    
-    default: {
-      break;
-    }
+      case MERGE:
+        operationsProgressDialogsCache.put(
+            GitOperation.MERGE, 
+            new GitOperationProgressDialog(
+                gitCtrl, 
+                Translator.getInstance().getTranslation(Tags.MERGE), 
+                GitOperation.MERGE, DEFAULT_OPERATION_DELAY));
+        break;
+
+      case MERGE_RESTART: 
+        operationsProgressDialogsCache.put(
+            GitOperation.MERGE_RESTART, 
+            new GitOperationProgressDialog(
+                gitCtrl, 
+                Translator.getInstance().getTranslation(Tags.MERGE), 
+                GitOperation.MERGE_RESTART, DEFAULT_OPERATION_DELAY));
+        break;
+
+      default: 
+        break;
     }
   }
 
