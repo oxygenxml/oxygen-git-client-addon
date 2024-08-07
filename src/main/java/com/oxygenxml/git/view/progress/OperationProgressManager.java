@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.progress;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import org.eclipse.jgit.lib.ProgressMonitor;
 
@@ -28,7 +27,7 @@ public class OperationProgressManager implements OperationProgressFactory {
   /**
    * A map with the operations and the progress dialogs.
    */
-  private final Map<GitOperation, ProgressDialog> operationsProgressDialogsCache = new HashMap<>();
+  private final EnumMap<GitOperation, ProgressDialog> operationsProgressDialogsCache = new EnumMap<>(GitOperation.class);
   
   /**
    * The default delay for the operation in millis.
@@ -51,57 +50,59 @@ public class OperationProgressManager implements OperationProgressFactory {
    * 
    * @return The created progress dialog.
    */
-  private ProgressDialog getProgressDialogByGitOperation(GitOperation operation) {
-    if(!operationsProgressDialogsCache.containsKey(operation)) {
-      addProgressDialogForOperation(operation);
+  private ProgressDialog getProgressDialogForGitOperation(GitOperation operation) {
+    ProgressDialog dialog = operationsProgressDialogsCache.get(operation);
+    
+    if(dialog == null) {
+      dialog = createProgressDialogForOperation(operation);
+      operationsProgressDialogsCache.put(operation, dialog);
     }
     
-    ProgressDialog dialog = operationsProgressDialogsCache.get(operation);
-    if(dialog != null) {
-      dialog.initUI();
-    }
+    dialog.initUI();
     
     return dialog;
-    
   }
 
   /**
-   * Add in the dialogs cache a progress dialog for the given operation.
+   * Creates a progress dialog for the given operation.
    * 
    * @param operation The operation to follow the progress.
+   * 
+   * @return The created progress dialog.
    */
-  private void addProgressDialogForOperation(GitOperation operation) {
+  private GitOperationProgressDialog createProgressDialogForOperation(GitOperation operation) {
+    GitOperationProgressDialog progressDialog = null;
     switch(operation) {
-      case CHECKOUT:
-        operationsProgressDialogsCache.put(
-            GitOperation.CHECKOUT, 
-            new GitOperationProgressDialog(
-                gitCtrl, 
-                Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
-                GitOperation.CHECKOUT, DEFAULT_OPERATION_DELAY));
-        break;
-
-      case MERGE:
-        operationsProgressDialogsCache.put(
-            GitOperation.MERGE, 
-            new GitOperationProgressDialog(
-                gitCtrl, 
-                Translator.getInstance().getTranslation(Tags.MERGE), 
-                GitOperation.MERGE, DEFAULT_OPERATION_DELAY));
-        break;
-
-      case MERGE_RESTART: 
-        operationsProgressDialogsCache.put(
-            GitOperation.MERGE_RESTART, 
-            new GitOperationProgressDialog(
-                gitCtrl, 
-                Translator.getInstance().getTranslation(Tags.MERGE), 
-                GitOperation.MERGE_RESTART, DEFAULT_OPERATION_DELAY));
-        break;
-
-      default: 
-        break;
+    case CHECKOUT: {
+      progressDialog = 
+          new GitOperationProgressDialog(gitCtrl, 
+              Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
+              GitOperation.CHECKOUT, DEFAULT_OPERATION_DELAY);
+      break;
     }
+
+    case MERGE: {
+      progressDialog = 
+          new GitOperationProgressDialog(gitCtrl, 
+              Translator.getInstance().getTranslation(Tags.MERGE), 
+              GitOperation.MERGE, DEFAULT_OPERATION_DELAY);
+      break;
+    }
+    
+    case MERGE_RESTART: {
+      progressDialog = 
+          new GitOperationProgressDialog(gitCtrl, 
+              Translator.getInstance().getTranslation(Tags.MERGE), 
+              GitOperation.MERGE_RESTART, DEFAULT_OPERATION_DELAY);
+      break;
+    }
+    
+    default: {
+      break;
+    }
+    }
+    
+    return progressDialog;
   }
 
   /**
@@ -113,7 +114,7 @@ public class OperationProgressManager implements OperationProgressFactory {
    */
   @Override
   public ProgressMonitor getProgressMonitorByOperation(GitOperation operation) {
-    ProgressDialog progressDialog = getProgressDialogByGitOperation(operation);
+    ProgressDialog progressDialog = getProgressDialogForGitOperation(operation);
     return progressDialog != null ? new GitOperationProgressMonitor(progressDialog) : null;
   }
 
