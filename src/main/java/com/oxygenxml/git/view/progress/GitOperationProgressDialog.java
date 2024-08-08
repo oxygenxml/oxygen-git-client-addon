@@ -17,6 +17,11 @@ import com.oxygenxml.git.view.event.GitOperation;
 public class GitOperationProgressDialog extends ProgressDialog {
   
   /**
+   * The default delay for the operation in millis.
+   */
+  private static final int DEFAULT_OPERATION_DELAY = 2000;
+  
+  /**
    * Constructor.
    * 
    * @param gitController          The git controller.
@@ -27,8 +32,7 @@ public class GitOperationProgressDialog extends ProgressDialog {
   public GitOperationProgressDialog(
       GitController gitController, 
       String dialogTitle, 
-      GitOperation operation,
-      int minOperationDuration) {
+      GitOperation operation) {
     super(dialogTitle);
     
     gitController.addGitListener(new GitEventListener() {
@@ -36,7 +40,7 @@ public class GitOperationProgressDialog extends ProgressDialog {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if(info.getGitOperation() == operation) {
-          SwingUtilities.invokeLater(() -> showWithDelay(minOperationDuration));
+          SwingUtilities.invokeLater(() -> showWithDelay(DEFAULT_OPERATION_DELAY));
         }
         
       }

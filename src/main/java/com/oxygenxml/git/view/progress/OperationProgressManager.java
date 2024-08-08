@@ -30,11 +30,6 @@ public class OperationProgressManager implements OperationProgressFactory {
   private final EnumMap<GitOperation, ProgressDialog> operationsProgressDialogsCache = new EnumMap<>(GitOperation.class);
   
   /**
-   * The default delay for the operation in millis.
-   */
-  private static final int DEFAULT_OPERATION_DELAY = 2000;
-  
-  /**
    * Constructor.
    * 
    * @param gitCtrl The Git controller.
@@ -74,40 +69,31 @@ public class OperationProgressManager implements OperationProgressFactory {
     GitOperationProgressDialog progressDialog = null;
     
     Translator translator = Translator.getInstance();
+    String dialogTitle = null;
+    
     switch(operation) {
       case CHECKOUT: {
-        progressDialog = 
-            new GitOperationProgressDialog(
-                gitCtrl, 
-                translator.getTranslation(Tags.SWITCH_BRANCH), 
-                GitOperation.CHECKOUT,
-                DEFAULT_OPERATION_DELAY);
+        dialogTitle = translator.getTranslation(Tags.SWITCH_BRANCH);
         break;
       }
 
       case MERGE: {
-        progressDialog = 
-            new GitOperationProgressDialog(
-                gitCtrl, 
-                translator.getTranslation(Tags.MERGE), 
-                GitOperation.MERGE,
-                DEFAULT_OPERATION_DELAY);
+        dialogTitle = translator.getTranslation(Tags.MERGE);
         break;
       }
 
       case MERGE_RESTART: {
-        progressDialog = 
-            new GitOperationProgressDialog(
-                gitCtrl, 
-                translator.getTranslation(Tags.MERGE), 
-                GitOperation.MERGE_RESTART,
-                DEFAULT_OPERATION_DELAY);
+        dialogTitle = translator.getTranslation(Tags.MERGE);
         break;
       }
 
       default: {
         break;
       }
+    }
+    
+    if(dialogTitle != null) {
+      progressDialog = new GitOperationProgressDialog(gitCtrl, dialogTitle, operation);
     }
     
     return progressDialog;
