@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.progress;
 
 import java.util.EnumMap;
 
+import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.lib.ProgressMonitor;
 
 import com.oxygenxml.git.service.OperationProgressFactory;
@@ -60,11 +61,14 @@ public class OperationProgressManager implements OperationProgressFactory {
 
   /**
    * Creates a progress dialog for the given operation.
+   * <br>
+   * Note: The progress dialog will be created only for supported operations, <code>null</code> otherwise.
    * 
    * @param operation The operation to follow the progress.
    * 
    * @return The created progress dialog.
    */
+  @Nullable
   private GitOperationProgressDialog createProgressDialogForOperation(GitOperation operation) {
     GitOperationProgressDialog progressDialog = null;
     
