@@ -53,8 +53,6 @@ public class OperationProgressManager implements OperationProgressFactory {
       operationsProgressDialogsCache.put(operation, dialog);
     }
     
-    dialog.initUI();
-    
     return dialog;
   }
 
@@ -67,30 +65,30 @@ public class OperationProgressManager implements OperationProgressFactory {
    */
   private GitOperationProgressDialog createProgressDialogForOperation(GitOperation operation) {
     Translator translator = Translator.getInstance();
-    String dialogTitle = translator.getTranslation(Tags.OPERATION_IN_PROGRESS);
     
+    String dialogTitle;
     switch(operation) {
       case CHECKOUT: {
         dialogTitle = translator.getTranslation(Tags.SWITCH_BRANCH);
         break;
       }
 
-      case MERGE: {
-        dialogTitle = translator.getTranslation(Tags.MERGE);
-        break;
-      }
-
+      case MERGE:
       case MERGE_RESTART: {
         dialogTitle = translator.getTranslation(Tags.MERGE);
         break;
       }
 
       default: {
+        dialogTitle = translator.getTranslation(Tags.OPERATION_IN_PROGRESS);
         break;
       }
     }
     
-    return new GitOperationProgressDialog(gitCtrl, dialogTitle, operation);
+    GitOperationProgressDialog dialog = new GitOperationProgressDialog(gitCtrl, dialogTitle, operation);
+    dialog.initUI();
+    
+    return dialog;
   }
 
   /**
@@ -103,7 +101,7 @@ public class OperationProgressManager implements OperationProgressFactory {
   @Override
   public ProgressMonitor getProgressMonitorByOperation(GitOperation operation) {
     ProgressDialog progressDialog = getProgressDialogForGitOperation(operation);
-    return progressDialog != null ? new GitOperationProgressMonitor(progressDialog) : null;
+    return new GitOperationProgressMonitor(progressDialog);
   }
 
 }
