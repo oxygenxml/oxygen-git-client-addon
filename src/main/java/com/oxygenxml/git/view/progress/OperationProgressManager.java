@@ -73,33 +73,39 @@ public class OperationProgressManager implements OperationProgressFactory {
   private GitOperationProgressDialog createProgressDialogForOperation(GitOperation operation) {
     GitOperationProgressDialog progressDialog = null;
     switch(operation) {
-    case CHECKOUT: {
-      progressDialog = 
-          new GitOperationProgressDialog(gitCtrl, 
-              Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
-              GitOperation.CHECKOUT, DEFAULT_OPERATION_DELAY);
-      break;
-    }
+      case CHECKOUT: {
+        progressDialog = 
+            new GitOperationProgressDialog(
+                gitCtrl, 
+                Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
+                GitOperation.CHECKOUT,
+                DEFAULT_OPERATION_DELAY);
+        break;
+      }
 
-    case MERGE: {
-      progressDialog = 
-          new GitOperationProgressDialog(gitCtrl, 
-              Translator.getInstance().getTranslation(Tags.MERGE), 
-              GitOperation.MERGE, DEFAULT_OPERATION_DELAY);
-      break;
-    }
-    
-    case MERGE_RESTART: {
-      progressDialog = 
-          new GitOperationProgressDialog(gitCtrl, 
-              Translator.getInstance().getTranslation(Tags.MERGE), 
-              GitOperation.MERGE_RESTART, DEFAULT_OPERATION_DELAY);
-      break;
-    }
-    
-    default: {
-      break;
-    }
+      case MERGE: {
+        progressDialog = 
+            new GitOperationProgressDialog(
+                gitCtrl, 
+                Translator.getInstance().getTranslation(Tags.MERGE), 
+                GitOperation.MERGE,
+                DEFAULT_OPERATION_DELAY);
+        break;
+      }
+
+      case MERGE_RESTART: {
+        progressDialog = 
+            new GitOperationProgressDialog(
+                gitCtrl, 
+                Translator.getInstance().getTranslation(Tags.MERGE), 
+                GitOperation.MERGE_RESTART,
+                DEFAULT_OPERATION_DELAY);
+        break;
+      }
+
+      default: {
+        break;
+      }
     }
     
     return progressDialog;
