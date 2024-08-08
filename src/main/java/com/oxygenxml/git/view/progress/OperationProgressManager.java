@@ -72,12 +72,14 @@ public class OperationProgressManager implements OperationProgressFactory {
    */
   private GitOperationProgressDialog createProgressDialogForOperation(GitOperation operation) {
     GitOperationProgressDialog progressDialog = null;
+    
+    Translator translator = Translator.getInstance();
     switch(operation) {
       case CHECKOUT: {
         progressDialog = 
             new GitOperationProgressDialog(
                 gitCtrl, 
-                Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH), 
+                translator.getTranslation(Tags.SWITCH_BRANCH), 
                 GitOperation.CHECKOUT,
                 DEFAULT_OPERATION_DELAY);
         break;
@@ -87,7 +89,7 @@ public class OperationProgressManager implements OperationProgressFactory {
         progressDialog = 
             new GitOperationProgressDialog(
                 gitCtrl, 
-                Translator.getInstance().getTranslation(Tags.MERGE), 
+                translator.getTranslation(Tags.MERGE), 
                 GitOperation.MERGE,
                 DEFAULT_OPERATION_DELAY);
         break;
@@ -97,7 +99,7 @@ public class OperationProgressManager implements OperationProgressFactory {
         progressDialog = 
             new GitOperationProgressDialog(
                 gitCtrl, 
-                Translator.getInstance().getTranslation(Tags.MERGE), 
+                translator.getTranslation(Tags.MERGE), 
                 GitOperation.MERGE_RESTART,
                 DEFAULT_OPERATION_DELAY);
         break;
