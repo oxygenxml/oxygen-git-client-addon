@@ -22,8 +22,9 @@
             for comparing and merging changes. </p>
         </div>
         <div>
-          <h3>What's new in version 6.0.0</h3>
+          <h3>What's new in version 5.4.0</h3>
           <ol>
+            <li>Added the possibility to sign commits using GPG keys.</li>
             <li>Fixed the vertical space in the progress dialog box so that messages do not get truncated.</li>
           </ol>
         </div>
