@@ -12,9 +12,16 @@ import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -65,12 +72,17 @@ import com.oxygenxml.git.view.UndoRedoSupportInstaller;
 import com.oxygenxml.git.view.components.ApplicationLabel;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.dialog.internal.MessageDialogBuilder;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.util.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
@@ -89,6 +101,11 @@ public class CommitAndStatusPanel extends JPanel {
    * Max number of characters for the previous messages. 
    */
   private static final int PREV_MESS_MAX_WIDTH = 100;
+  
+  /**
+   * The plugin workspace.
+   */
+  private static final StandalonePluginWorkspace PLUGIN_WS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
   
   /**
    * Commit action.
@@ -153,9 +170,40 @@ public class CommitAndStatusPanel extends JPanel {
     }
     
     /**
+     * @return The modified editors from the project.
+     */
+    private List<WSEditor> getModifiedEditorsFromProject() {
+      List<WSEditor> projectEditors = new ArrayList<>();
+      appendModifiedEditorsFromEditingArea(PluginWorkspace.MAIN_EDITING_AREA, projectEditors);
+      appendModifiedEditorsFromEditingArea(PluginWorkspace.DITA_MAPS_EDITING_AREA, projectEditors);
+      return projectEditors;
+    }
+    
+    /**
+     * @param editingArea      The index of the editing area.
+     * @param projectEditors   The project editors.
+     */
+    private void appendModifiedEditorsFromEditingArea(int editingArea, List<WSEditor> projectEditors) {
+      for(URL fileURL : PLUGIN_WS.getAllEditorLocations(editingArea)) {
+        if(RepoUtil.isFileFromRepository(fileURL)) {
+          WSEditor editorAccess = PLUGIN_WS.getEditorAccess(fileURL, editingArea);
+          if(editorAccess.isModified()) {
+            projectEditors.add(editorAccess);
+          }
+        }
+      }
+    }
+        
+    /**
      * Commit the staged files.
      */
     private void executeCommit() {
+      List<WSEditor> modifiedEditors = getModifiedEditorsFromProject();
+      if(!modifiedEditors.isEmpty()) {
+        warnUserAboutUnsavedFiles(modifiedEditors);
+        return;
+      }
+      
       boolean commitSuccessful = false;
       try {
         // Prepare the flag for the timer. Unconditionally because the timer is not yet running.
@@ -164,6 +212,7 @@ public class CommitAndStatusPanel extends JPanel {
         cursorTimer.start();
 
         SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
+        
         final boolean isPreCommitEnaled = ValidationManager.getInstance().isPreCommitValidationEnabled();  
         if(!isPreCommitEnaled || ValidationManager.getInstance().checkCommitValid()) {
           gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
@@ -187,6 +236,41 @@ public class CommitAndStatusPanel extends JPanel {
           gitController.push();
         }
       }
+    }
+
+    /**
+     * Warn the user that there are unsaved files and commit cannot be performed.
+     * 
+     * @param modifiedEditors The modified editors for files.
+     */
+    private void warnUserAboutUnsavedFiles(List<WSEditor> modifiedEditors) {
+      Map<String, String> filesModified = new HashMap<>();
+      modifiedEditors.forEach(editor -> {
+        try {
+          File file = new File(editor.getEditorLocation().toURI());
+          filesModified.put(file.getName(), file.getAbsolutePath());
+        } catch (URISyntaxException e) {
+          LOGGER.error(e.getMessage(), e);
+        }
+      });
+      boolean shouldSaveFiles =
+      new MessageDialogBuilder(Translator.getInstance().getTranslation(Tags.UNSAVED_FILES_DETECTED), DialogType.WARNING)
+        .setOkButtonName(Translator.getInstance().getTranslation(Tags.SAVE_ALL))
+        .setTargetFilesWithTooltips(filesModified)
+        .setMessage(Translator.getInstance().getTranslation(Tags.CANNOT_COMMIT_BECAUSE_UNSAVED_FILES_MESSAGE))
+        .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
+      if(shouldSaveFiles) {
+        saveProjectEditors(modifiedEditors);
+      }
+    }
+
+    /**
+     * Save the given project editors.
+     * 
+     * @param editorsToSave  The editors to be saved.
+     */
+    private void saveProjectEditors(List<WSEditor> editorsToSave) {
+      editorsToSave.forEach(WSEditor::save);
     }
 
     /**

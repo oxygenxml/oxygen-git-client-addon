@@ -2028,9 +2028,24 @@ public class Tags {
   public static final String INDEX_LOCK_IN_SUBMODULE = "Index_lock_in_submodule";
   
   /**
-   * English: Operation in Progress
+   * English: Operation in Progress.
    */
   public static final String OPERATION_IN_PROGRESS = "Operation_In_Progress";
+  
+  /**
+   * English: Save all.
+   */
+  public static final String SAVE_ALL = "Save_All";
+  
+  /**
+   * English: Unsaved Files Detected.
+   */
+  public static final String UNSAVED_FILES_DETECTED = "Unsaved_Files_Detected";
+  
+  /**
+   * The message that warns user that there are unsaved files and the commit cannot be performed.
+   */
+  public static final String CANNOT_COMMIT_BECAUSE_UNSAVED_FILES_MESSAGE = "Cannot_Commit_Because_Unsaved_Files_Message";
   
 }
 

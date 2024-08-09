@@ -8,6 +8,33 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Cannot_Commit_Because_Unsaved_Files_Message">
+		<comment>The message that warns user that there are unsaved files and the commit cannot be performed.</comment>
+		<val lang="en_US">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
+		<val lang="de_DE">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
+		<val lang="fr_FR">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
+		<val lang="ja_JP">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
+		<val lang="nl_NL">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
+		<val lang="zh_CN">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
+	</key>
+	<key value="Unsaved_Files_Detected">
+		<comment>English: Unsaved Files Detected.</comment>
+		<val lang="en_US">Unsaved Files Detected</val>
+		<val lang="de_DE">Unsaved Files Detected</val>
+		<val lang="fr_FR">Unsaved Files Detected</val>
+		<val lang="ja_JP">Unsaved Files Detected</val>
+		<val lang="nl_NL">Unsaved Files Detected</val>
+		<val lang="zh_CN">Unsaved Files Detected</val>
+	</key>
+	<key value="Save_All">
+		<comment>English: Save all.</comment>
+		<val lang="en_US">Save all</val>
+		<val lang="de_DE">Save all</val>
+		<val lang="fr_FR">Save all</val>
+		<val lang="ja_JP">Save all</val>
+		<val lang="nl_NL">Save all</val>
+		<val lang="zh_CN">Save all</val>
+	</key>
 	<key value="Operation_In_Progress">
 		<comment>English: Operation in Progress.</comment>
 		<val lang="en_US">Operation in Progress</val>
