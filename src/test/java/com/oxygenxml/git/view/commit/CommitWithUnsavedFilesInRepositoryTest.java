@@ -22,6 +22,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
+/**
+ * Contains tests for the case when commit and there are unsaved modified files in repository.
+ * 
+ * @author alex_smarandache
+ */
 public class CommitWithUnsavedFilesInRepositoryTest extends GitTestBase {
 
   /**
