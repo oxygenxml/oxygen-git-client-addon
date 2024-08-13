@@ -221,7 +221,6 @@ public class GitAccess {
 	/**
 	 * The progress manager for operations.
 	 */
-	@NonNull
 	private OperationProgressFactory progressManager;
 
 	/**
@@ -688,11 +687,14 @@ public class GitAccess {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.debug(e.getMessage(), e);
 		  throw e;
-		} catch (GitAPIException |IndexLockExistsException e) {
+		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
 		  throw e;
-		} catch (JGitInternalException e) {
+		} catch (IndexLockExistsException e) {
+      fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
+      throw e;
+    } catch (JGitInternalException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
 		  Throwable cause = e.getCause();
@@ -1334,10 +1336,12 @@ public class GitAccess {
 	      git.add().addFilepattern(file.getFileLocation()).call();
 	    }
 	    fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.STAGE, filePaths));
-	  } catch (GitAPIException | IndexLockExistsException e) {
+	  } catch (GitAPIException e) {
 	    fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
 	    LOGGER.error(e.getMessage(), e);
-		}
+		} catch (IndexLockExistsException e) {
+      fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
+    }
 	}
 
 	/**
@@ -1376,10 +1380,12 @@ public class GitAccess {
 			}
 			
 			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.STAGE, filePaths));
-		} catch (GitAPIException | IndexLockExistsException e) {
+		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
-		}
+		} catch (IndexLockExistsException e) {
+      fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
+    }
 	}
 	
 	 /**
@@ -1446,10 +1452,12 @@ public class GitAccess {
 				reset.call();
 			}
 			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths));
-		} catch (GitAPIException | IndexLockExistsException e) {
+		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
-		}
+		} catch (IndexLockExistsException e) {
+      fireOperationFailed(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths), e);
+    }
 	}
 
 	/**
@@ -1608,9 +1616,11 @@ public class GitAccess {
       checkOut.addPath(path);
       checkOut.call();
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_FILE));
-    } catch (GitAPIException | IndexLockExistsException e) {
+    } catch (GitAPIException e) {
       fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_FILE), e);
       LOGGER.error(e.getMessage(), e);
+    } catch (IndexLockExistsException e) {
+      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_FILE), e);
     }
   }
   
@@ -1676,10 +1686,12 @@ public class GitAccess {
 		  checkoutCmd.addPaths(paths);
 			checkoutCmd.call();
 			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.DISCARD, paths));
-		} catch (GitAPIException | IndexLockExistsException e) {
+		} catch (GitAPIException e) {
       fireOperationFailed(new FileGitEventInfo(GitOperation.DISCARD, paths), e);
 		  LOGGER.error(e.getMessage(), e);
-		}
+		} catch (IndexLockExistsException e) {
+      fireOperationFailed(new FileGitEventInfo(GitOperation.DISCARD, paths), e);
+    }
 	}
 
 	/**
@@ -1828,9 +1840,11 @@ public class GitAccess {
 	        git.merge().setProgressMonitor(progressMonitor).include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 	      }
 	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
-	    } catch (IOException | NoRepositorySelected | GitAPIException | IndexLockExistsException  e) {
+	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
 	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
 	      LOGGER.error(e.getMessage(), e);
+	    } catch (IndexLockExistsException  e) {
+	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
 	    }
 	  });
 	}
@@ -2158,9 +2172,11 @@ public class GitAccess {
         git.reset().setMode(ResetType.HARD).call();
         
         fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles));
-      } catch (GitAPIException | IOException | NoRepositorySelected | IndexLockExistsException e) {
+      } catch (GitAPIException | IOException | NoRepositorySelected e) {
         fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
         LOGGER.error(e.getMessage(), e);
+      } catch (IndexLockExistsException e) {
+        fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
       }
     });
   }
@@ -2174,9 +2190,11 @@ public class GitAccess {
         fireOperationAboutToStart(new GitEventInfo(GitOperation.ABORT_REBASE));
         git.rebase().setOperation(Operation.ABORT).call();
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.ABORT_REBASE));
-      } catch (GitAPIException | IndexLockExistsException e) {
+      } catch (GitAPIException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
         LOGGER.error(e.getMessage(), e);
+      } catch (IndexLockExistsException e) {
+        fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
       }
     });
   }
@@ -2205,7 +2223,6 @@ public class GitAccess {
             .showErrorMessage(e.getMessage());
       } catch (IndexLockExistsException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
-        LOGGER.error(e.getMessage(), e);
       }
     });
   }
