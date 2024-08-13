@@ -105,7 +105,7 @@ public class CommitAndStatusPanel extends JPanel {
   /**
    * The plugin workspace.
    */
-  private static final StandalonePluginWorkspace PLUGIN_WS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+  private final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
   
   /**
    * Commit action.
@@ -184,9 +184,9 @@ public class CommitAndStatusPanel extends JPanel {
      * @param projectEditors   The project editors.
      */
     private void appendModifiedEditorsFromEditingArea(int editingArea, List<WSEditor> projectEditors) {
-      for(URL fileURL : PLUGIN_WS.getAllEditorLocations(editingArea)) {
+      for(URL fileURL : pluginWS.getAllEditorLocations(editingArea)) {
         if(RepoUtil.isFileFromRepository(fileURL)) {
-          WSEditor editorAccess = PLUGIN_WS.getEditorAccess(fileURL, editingArea);
+          WSEditor editorAccess = pluginWS.getEditorAccess(fileURL, editingArea);
           if(editorAccess.isModified()) {
             projectEditors.add(editorAccess);
           }
