@@ -46,8 +46,8 @@ public class CommitWithUnsavedFilesInRepositoryTest extends GitTestBase {
   public void setUp() throws Exception {
     super.setUp();
     
-    String local1Repository = "target/test-resources/GitPullCasesTest/testPullRebase-local";
-    String remoteRepository = "target/test-resources/GitPullCasesTest/testPullRebase-remote";
+    String local1Repository = "target/test-resources/CommitTests/testCommitWithUnsavedFiles-local";
+    String remoteRepository = "target/test-resources/CommitTests/testCommitWithUnsavedFiles-remote";
     Repository local1Repo = createRepository(local1Repository);
     Repository remoteRepo = createRepository(remoteRepository);
     bindLocalToRemote(local1Repo, remoteRepo);
