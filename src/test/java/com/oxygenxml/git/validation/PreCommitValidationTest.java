@@ -275,6 +275,7 @@ public class PreCommitValidationTest extends GitTestBase {
     final StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     final ResultsManager resultManager = Mockito.mock(ResultsManager.class);
     Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
+    Mockito.when(pluginWSMock.getAllEditorLocations(Mockito.anyInt())).thenReturn(new URL[0]);
     Mockito.when(pluginWSMock.getResultsManager()).thenReturn(resultManager);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     // Create a custom collector constructed to behave as if it contains validation problems
