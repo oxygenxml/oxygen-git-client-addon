@@ -10,12 +10,12 @@
 	</languageList>
 	<key value="Cannot_Commit_Because_Unsaved_Files_Message">
 		<comment>The message that warns user that there are unsaved files and the commit cannot be performed.</comment>
-		<val lang="en_US">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
-		<val lang="de_DE">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
-		<val lang="fr_FR">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
-		<val lang="ja_JP">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
-		<val lang="nl_NL">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
-		<val lang="zh_CN">The commit cannot be completed because there are unsaved changes in the repository files. Please save or remove your changes and try again.</val>
+		<val lang="en_US">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>
+		<val lang="de_DE">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>
+		<val lang="fr_FR">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>
+		<val lang="ja_JP">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>
+		<val lang="nl_NL">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>
+		<val lang="zh_CN">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>
 	</key>
 	<key value="Unsaved_Files_Detected">
 		<comment>English: Unsaved Files Detected.</comment>
