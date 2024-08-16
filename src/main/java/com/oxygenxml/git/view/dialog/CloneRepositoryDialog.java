@@ -741,7 +741,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
           if(!destFile.exists()) {
             destFile.mkdir();
           }
-          final ProgressDialog progressDialog = new ProgressDialog(TRANSLATOR.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE));
+          final ProgressDialog progressDialog = new ProgressDialog(
+            TRANSLATOR.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE), true);
           CloneWorker cloneWorker = new CloneWorker(
               progressDialog,
               sourceURL,

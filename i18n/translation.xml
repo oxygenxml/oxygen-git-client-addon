@@ -8,6 +8,15 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Hide">
+		<comment>English: Hide.</comment>
+		<val lang="en_US">Hide</val>
+		<val lang="de_DE">Hide</val>
+		<val lang="fr_FR">Hide</val>
+		<val lang="ja_JP">Hide</val>
+		<val lang="nl_NL">Hide</val>
+		<val lang="zh_CN">Hide</val>
+	</key>
 	<key value="Cannot_Commit_Because_Unsaved_Files_Message">
 		<comment>The message that warns user that there are unsaved files and the commit cannot be performed.</comment>
 		<val lang="en_US">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>

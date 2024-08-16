@@ -28,12 +28,14 @@ public class GitOperationProgressDialog extends ProgressDialog {
    * @param dialogTitle            The title of the current dialog.
    * @param operation              The Git operation of this dialog progress.
    * @param minOperationDuration   The minimum duration of an operation to show its progress.
+   * @param isCancelOperationSupported     <code>true</code> if the cancel operation is supported.
    */
   public GitOperationProgressDialog(
       GitController gitController, 
       String dialogTitle, 
-      GitOperation operation) {
-    super(dialogTitle);
+      GitOperation operation,
+      boolean isCancelOperationSupported) {
+    super(dialogTitle, isCancelOperationSupported);
     
     gitController.addGitListener(new GitEventListener() {
       

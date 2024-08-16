@@ -63,7 +63,7 @@ public class BranchCheckoutMediator {
    * The progress dialog of the pull operation.
    */
   private final ProgressDialog pullOperationProgressDialog = new ProgressDialog(
-      Translator.getInstance().getTranslation(Tags.PULL));
+      Translator.getInstance().getTranslation(Tags.PULL), true);
   
   
   /**

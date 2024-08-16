@@ -53,6 +53,8 @@ public class OperationProgressManager implements OperationProgressFactory {
       operationsProgressDialogsCache.put(operation, dialog);
     }
     
+    dialog.initUI();
+    
     return dialog;
   }
 
@@ -67,15 +69,18 @@ public class OperationProgressManager implements OperationProgressFactory {
     Translator translator = Translator.getInstance();
     
     String dialogTitle;
+    boolean isCancelOperationSupported = true;
     switch(operation) {
       case CHECKOUT: {
         dialogTitle = translator.getTranslation(Tags.SWITCH_BRANCH);
+        isCancelOperationSupported = true;
         break;
       }
 
       case MERGE:
       case MERGE_RESTART: {
         dialogTitle = translator.getTranslation(Tags.MERGE);
+        isCancelOperationSupported = false;
         break;
       }
 
@@ -85,8 +90,8 @@ public class OperationProgressManager implements OperationProgressFactory {
       }
     }
     
-    GitOperationProgressDialog dialog = new GitOperationProgressDialog(gitCtrl, dialogTitle, operation);
-    dialog.initUI();
+    GitOperationProgressDialog dialog = new GitOperationProgressDialog(
+        gitCtrl, dialogTitle, operation, isCancelOperationSupported);
     
     return dialog;
   }

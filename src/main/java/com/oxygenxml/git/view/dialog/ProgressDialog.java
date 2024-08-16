@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.actions.IProgressUpdater;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -37,6 +39,11 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   private boolean isCancelled;
   
   /**
+   * <code>true</code> if the cancel operation is supported.
+   */
+  private boolean isCancelOperationSupported;
+  
+  /**
    * <code>true</code> if the operation is completed.
    */
   private boolean isCompleted = false;
@@ -49,10 +56,12 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   /**
    * Constructor.
    * 
-   * @param dialogTitle The title of the dialog.
+   * @param dialogTitle                    The title of the dialog.
+   * @param isCancelOperationSupported     <code>true</code> if the cancel operation is supported.
    */
-  public ProgressDialog(String dialogTitle) {
+  public ProgressDialog(String dialogTitle, boolean isCancelOperationSupported) {
     super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "", true);
+    this.isCancelOperationSupported = isCancelOperationSupported;
     setTitle(dialogTitle);
     initUI();
   }
@@ -97,8 +106,11 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
     add(panel);
 
     getOkButton().setVisible(false);
+    if(!isCancelOperationSupported) {
+      this.setCancelButtonText(Translator.getInstance().getTranslation(Tags.HIDE));
+    }
 
-    setMinimumSize(new Dimension(400, 150));
+    setMinimumSize(new Dimension(400, 125));
     setResizable(false);
     pack();
   }

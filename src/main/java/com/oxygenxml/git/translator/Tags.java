@@ -2038,6 +2038,11 @@ public class Tags {
   public static final String SAVE_ALL = "Save_All";
   
   /**
+   * English: Hide.
+   */
+  public static final String HIDE = "Hide";
+  
+  /**
    * English: Unsaved Files Detected.
    */
   public static final String UNSAVED_FILES_DETECTED = "Unsaved_Files_Detected";
