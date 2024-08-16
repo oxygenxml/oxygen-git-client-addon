@@ -37,7 +37,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	 * @param host The host name.
 	 */
 	public SSHCapableUserCredentialsProvider(String username, String password, String passphrase, String host) {
-		super(username, password, host);
+		super(username, password != null ? password : "", host);
 		this.passphrase = passphrase;
 	}
 	

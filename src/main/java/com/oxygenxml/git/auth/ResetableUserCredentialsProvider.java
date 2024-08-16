@@ -68,7 +68,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   public ResetableUserCredentialsProvider(String username, String password, String host) {
     super(username, password);
     this.username = username;
-    this.password = password;
+    this.password = Optional.ofNullable(password).orElse("");
     this.host = host;
   }
 
@@ -130,11 +130,11 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
     if (credentials != null) {
       if (credentials.getType() == CredentialsType.USER_AND_PASSWORD) {
         username = ((UserAndPasswordCredentials) credentials).getUsername();
-        password = ((UserAndPasswordCredentials) credentials).getPassword();
+        password = Optional.ofNullable(((UserAndPasswordCredentials) credentials).getPassword()).orElse("");
       } else if (credentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
         // GitHub uses the username as token value, GitLab uses the password
         username = ((PersonalAccessTokenInfo) credentials).getTokenValue();
-        password = ((PersonalAccessTokenInfo) credentials).getTokenValue();
+        password = Optional.ofNullable(((PersonalAccessTokenInfo) credentials).getTokenValue()).orElse("");
       }
     }
   }
