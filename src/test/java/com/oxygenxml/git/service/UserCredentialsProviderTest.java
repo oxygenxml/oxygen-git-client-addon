@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -22,8 +23,12 @@ public class UserCredentialsProviderTest {
    */ 
   @Test
   public void testNullPasswordOnUserCredentialsProvider() {
-    SSHCapableUserCredentialsProvider credProvider = new SSHCapableUserCredentialsProvider("alex", null, "pass", "host");
-    assertNotNull(credProvider);
+    try {
+      SSHCapableUserCredentialsProvider credProvider = new SSHCapableUserCredentialsProvider("alex", null, "pass", "host");
+      assertTrue(credProvider.getPassword().isEmpty()); // prefer an empty string instead of null
+    } catch(Throwable t) {
+      fail("Instantiation of SSHCapableUserCredentialsProvider threw exception: " + t.getMessage());
+    }
   }
 
 }
