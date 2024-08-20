@@ -73,7 +73,6 @@ public class OperationProgressManager implements OperationProgressFactory {
     switch(operation) {
       case CHECKOUT: {
         dialogTitle = translator.getTranslation(Tags.SWITCH_BRANCH);
-        isCancelOperationSupported = true;
         break;
       }
 
