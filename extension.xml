@@ -25,6 +25,7 @@
           <h3>What's new in version 5.4.0</h3>
           <ol>
             <li>Added the possibility to sign commits using GPG keys.</li>
+            <li>When switching branches, merging branches, or restarting a merge, the progress of the operation is now shown when it takes more than two seconds to complete.</li>
             <li>Fixed the vertical space in the progress dialog box so that messages do not get truncated.</li>
           </ol>
         </div>
