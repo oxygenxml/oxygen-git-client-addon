@@ -990,11 +990,10 @@
 	<key value="Pull_Successful">
 		<comment>The message displayed when your pull is successful</comment>
 		<val lang="en_US">Pull successful. Repository up to date</val>
-		<val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand
-		</val>
+		<val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand</val>
 		<val lang="fr_FR">Pull réussi. Le dépôt est à jour</val>
 		<val lang="ja_JP">プルに成功しました。リポジトリは最新です</val>
-		<val lang="nl_NL">Pull sucecesvol. Repository is bijgewerkt.</val>
+		<val lang="nl_NL">Pull succesvol. Repository is bijgewerkt.</val>
 		<val lang="zh_CN">拉取成功. 存储库是最新的</val>
 	</key>
 	<key value="Pull_In_Progress">
