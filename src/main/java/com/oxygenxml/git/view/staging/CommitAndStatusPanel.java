@@ -226,8 +226,7 @@ public class CommitAndStatusPanel extends JPanel {
       } catch (GitAPIException | JGitInternalException e) {
         toggleCommitButtonAndUpdateMessageArea(false);
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-            "Commit failed. Reason: " + e.getMessage(),
-            e);
+            "Commit failed. Reason: " + e.getMessage());
       } finally {
         stopTimer();
         handleCommitEnded(commitSuccessful);
@@ -257,10 +256,10 @@ public class CommitAndStatusPanel extends JPanel {
         }
       });
       boolean shouldSaveFiles =
-      new MessageDialogBuilder(Translator.getInstance().getTranslation(Tags.UNSAVED_FILES_DETECTED), DialogType.WARNING)
-        .setOkButtonName(Translator.getInstance().getTranslation(Tags.SAVE_ALL))
+      new MessageDialogBuilder(translator.getTranslation(Tags.UNSAVED_FILES_DETECTED), DialogType.WARNING)
+        .setOkButtonName(translator.getTranslation(Tags.SAVE_ALL))
         .setTargetFilesWithTooltips(filesModified)
-        .setMessage(Translator.getInstance().getTranslation(Tags.CANNOT_COMMIT_BECAUSE_UNSAVED_FILES_MESSAGE))
+        .setMessage(translator.getTranslation(Tags.CANNOT_COMMIT_BECAUSE_UNSAVED_FILES_MESSAGE))
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
       if(shouldSaveFiles) {
         saveProjectEditors(modifiedEditors);
