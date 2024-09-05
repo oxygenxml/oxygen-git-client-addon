@@ -224,7 +224,10 @@ public class CommitAndStatusPanel extends JPanel {
       } catch (CanceledException | IndexLockExistsException e) {
         toggleCommitButtonAndUpdateMessageArea(false);
       } catch (GitAPIException | JGitInternalException e) {
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Commit failed. Reason: " + e.getMessage());
+        toggleCommitButtonAndUpdateMessageArea(false);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+            "Commit failed. Reason: " + e.getMessage(),
+            e);
       } finally {
         stopTimer();
         handleCommitEnded(commitSuccessful);
