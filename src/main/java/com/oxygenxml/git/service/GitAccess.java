@@ -698,18 +698,40 @@ public class GitAccess {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  LOGGER.error(e.getMessage(), e);
 		  Throwable cause = e.getCause();
-		  if (cause instanceof PGPException && cause.getMessage().toLowerCase().contains("passphrase")) {
-		    GPGPassphraseDialog dlg = new GPGPassphraseDialog(Translator.getInstance().getTranslation(Tags.ENTER_GPG_PASSPHRASE) + ".");
-		    if (dlg.getPassphrase() != null) {
-		      commit(message, isAmendLastCommit);
-		    } else {
-		      throw new CanceledException("Commit signing was cancelled.");
-		    }
+		  if (cause instanceof PGPException) {
+		    treatPGPExceptionWhenCommitting(message, isAmendLastCommit, cause);
 		  } else {
 		    throw e;
 		  }
 		}
 	}
+
+	/**
+	 * Treat PGPException when committing.
+	 * 
+	 * @param commitMessage     The commit message.
+	 * @param isAmendLastCommit <code>true</code> if we are ammending the last commit.
+	 * @param ex                Exception
+	 * 
+	 * @throws GitAPIException
+	 * @throws IndexLockExistsException
+	 */
+  private void treatPGPExceptionWhenCommitting(String commitMessage, boolean isAmendLastCommit, Throwable ex)
+      throws GitAPIException, IndexLockExistsException {
+    if (ex.getMessage().toLowerCase().contains("passphrase")) {
+      GPGPassphraseDialog dlg = new GPGPassphraseDialog(Translator.getInstance().getTranslation(Tags.ENTER_GPG_PASSPHRASE) + ".");
+      if (dlg.getPassphrase() != null) {
+        commit(commitMessage, isAmendLastCommit);
+      } else {
+        throw new CanceledException("Commit signing was cancelled.");
+      }
+    } else {
+      String details = "Make sure the GPG home directory is properly configured. It can be specified by setting the \"GNUPGHOME\" environment variable "
+          + "or the \"jgit.gpg.home\" Java system property. If neither is set, the default location is \"%APPDATA%\\gnupg\" on Windows "
+          + "and \"~/.gnupg\" on other operating systems.";
+      throw new JGitInternalException(ex.getMessage() + "\n\n" + details, ex);
+    }
+  }
 
 	/**
 	 * Get file paths for the given file statuses.
