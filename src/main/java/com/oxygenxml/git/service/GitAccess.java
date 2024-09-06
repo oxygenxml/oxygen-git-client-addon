@@ -3294,6 +3294,36 @@ public class GitAccess {
 		return getRepository().getDirectory().getPath() + pathDelimiter + Constants.CONFIG;
 	}
 	
+	/**
+	 * Get obsolete local branches, i.e. the local branches who track deleted remote branches.
+	 * 
+	 * @return the obsolete local branches.
+	 * 
+	 * @throws NoRepositorySelected
+	 */
+	public List<Ref> getLocalBranchesThatNoLongerHaveRemotes() throws NoRepositorySelected {
+	  List<Ref> obsoleteBranches = new ArrayList<>();
+	  
+	  Repository repository = getRepository();
+	  List<Ref> localBranchList = getLocalBranchList();
+	  for (Ref localBranch : localBranchList) {
+	    final String branchName = Repository.shortenRefName(localBranch.getName());
+	    BranchConfig branchConfig = new BranchConfig(repository.getConfig(), branchName);
+	    String remoteBranch = branchConfig.getRemoteTrackingBranch();
+	    if (remoteBranch != null && !remoteBranch.isBlank()) {
+	      try {
+	        if (repository.findRef(remoteBranch) == null) {
+	          obsoleteBranches.add(localBranch);
+	        }
+	      } catch (IOException ex) {
+	        LOGGER.error(ex, ex);
+	      }
+	    }
+	  } 
+	  
+	  return obsoleteBranches;
+	}
+	
 	
 	/**
 	 * Compute a list with all remote branches. 
