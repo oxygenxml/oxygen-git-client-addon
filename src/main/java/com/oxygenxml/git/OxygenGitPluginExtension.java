@@ -426,6 +426,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    parentFrame.addWindowListener(panelRefreshWindowListener);
 
 	    LoggingUtil.setupLogger();
+	    
+	    OutdatedBranchChecker.init(gitController);
 
 	  } catch (Throwable t) { // NOSONAR
 	    // Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
