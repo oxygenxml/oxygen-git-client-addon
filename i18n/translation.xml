@@ -41,6 +41,24 @@
         <val lang="zh_CN">Some of your local branches are linked to remote branches that no longer exist.
          It's recommended to delete these local branches to avoid accidentally working on outdated resources.\n\nBranches:</val>
     </key>
+    <key value="Delete_branches">
+        <comment>The message for branches deletion.</comment>
+        <val lang="en_US">Delete branches</val>
+        <val lang="de_DE">Delete branches</val>
+        <val lang="fr_FR">Delete branches</val>
+        <val lang="ja_JP">Delete branches</val>
+        <val lang="nl_NL">Delete branches</val>
+        <val lang="zh_CN">Delete branches</val>
+    </key>
+    <key value="Outdated_branches_deletion_confirmation">
+        <comment>Outdated branches deletion confirmation mesage</comment>
+        <val lang="en_US">Are you sure you want to delete all the following outdated branches?\n{0}</val>
+        <val lang="de_DE">Are you sure you want to delete all the following outdated branches?\n{0}</val>
+        <val lang="fr_FR">Are you sure you want to delete all the following outdated branches?\n{0}</val>
+        <val lang="ja_JP">Are you sure you want to delete all the following outdated branches?\n{0}</val>
+        <val lang="nl_NL">Are you sure you want to delete all the following outdated branches?\n{0}</val>
+        <val lang="zh_CN">Are you sure you want to delete all the following outdated branches?\n{0}</val>
+    </key>
 	<key value="Cannot_Commit_Because_Unsaved_Files_Message">
 		<comment>The message that warns user that there are unsaved files and the commit cannot be performed.</comment>
 		<val lang="en_US">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>

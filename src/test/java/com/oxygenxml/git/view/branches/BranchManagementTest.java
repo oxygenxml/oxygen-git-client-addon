@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.branches;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 
@@ -1015,7 +1016,7 @@ public class BranchManagementTest extends GitTestBase{
     flushAWT();
     
     JTree tree = branchManagementPanel.getTree();
-    gitAccess.deleteBranch(LOCAL_BRANCH_NAME2);
+    gitAccess.deleteBranches(Arrays.asList(LOCAL_BRANCH_NAME2));
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     DefaultMutableTreeNode leaf = root.getFirstLeaf();
     JLabel rendererLabel = (JLabel) tree.getCellRenderer()

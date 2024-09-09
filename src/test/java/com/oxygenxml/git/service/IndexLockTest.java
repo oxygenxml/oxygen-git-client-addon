@@ -98,7 +98,7 @@ public class IndexLockTest extends GitTestBase {
     // The following operations don't fail
     gitAccess.createBranch("");
     gitAccess.createBranch("", "");
-    gitAccess.deleteBranch("");
+    gitAccess.deleteBranches(Collections.emptyList());
     gitAccess.deleteTags(false, "");
     gitAccess.dropAllStashes();
     gitAccess.dropStash(0);

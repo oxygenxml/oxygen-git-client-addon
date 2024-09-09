@@ -941,25 +941,26 @@ public class GitAccess {
 	}
 	
 	/**
-	 * Deletes from the current repository a local branch with a specified name.
-	 * @param branchName The name of the branch to be deleted.
+	 * Deletes the given local branches from the local repo.
+	 * 
+	 * @param branchName The names of the branches to be deleted.
 	 */
-	public void deleteBranch(String branchName) {
+	public void deleteBranches(Collection<String> branchNames) {
 	  DeleteBranchCommand command = git.branchDelete();
-	  command.setBranchNames(branchName);
+	  command.setBranchNames(branchNames);
 	  command.setForce(true);
 	  
 	  try {
-      fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
+      fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames));
     } catch (IndexLockExistsException e) {
       // Ignore. Branch deletion works well even with index.lock existing.
     } 
 	  
 	  try {
 	    command.call();
-	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
+	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames));
 	  } catch(GitAPIException e) {
-	    fireOperationFailed(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName), e);
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames), e);
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 	  }
 	}

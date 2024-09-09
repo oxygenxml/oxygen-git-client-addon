@@ -180,7 +180,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
           == noOfRefreshes);
       
-      GitAccess.getInstance().deleteBranch("new_branch");
+      GitAccess.getInstance().deleteBranches(Arrays.asList("new_branch"));
       initialNoOfRefreshes[0]++;
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
           == noOfRefreshes);

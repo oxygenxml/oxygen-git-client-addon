@@ -31,6 +31,11 @@ public class Tags {
   public static final String OUTDATED_BRANCHES_INFO = "Outdated_branches_info";
   
   /**
+   * Outdated branches deletion confirmation.
+   */
+  public static final String OUTDATED_BRANCHES_DELETION_CONFIRMATION = "Outdated_branches_deletion_confirmation";
+  
+  /**
    * Error message.
    */
   public static final String COULD_NO_LOAD_REPO_CORRESPONDING_TO_PROJECT = 
@@ -147,6 +152,10 @@ public class Tags {
    * Delete branch.
    */
   public static final String DELETE_BRANCH = "Delete_branch";
+  /**
+   * Delete branches.
+   */
+  public static final String DELETE_BRANCHES = "Delete_branches";
   /**
    * The tool tip for the button that opens the branch manager side view.
    */

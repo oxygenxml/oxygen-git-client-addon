@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -431,7 +432,7 @@ public class BranchTreeMenuActionsProvider {
           ctrl.asyncTask(() -> {
             String branch = BranchesUtil.createBranchPath(nodePath,
                 BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
-            ctrl.getGitAccess().deleteBranch(branch);
+            ctrl.getGitAccess().deleteBranches(Arrays.asList(branch));
             return null;
           }, ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
         }
