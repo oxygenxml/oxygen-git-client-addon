@@ -65,16 +65,16 @@ public class MessageDialogBuilder {
   }
  
   /**
-   * Set the new target files and the tooltip for these. Contains the target files and their tooltips.
+   * Set the new target resources and the tooltips for these.
    * <br>
    * Note: the targetFiles attribute will be set <code>null</code> when call this method.
    * 
-   * @param targetFilesWithTooltips
+   * @param targetResourcesWithTooltips
    * 
    * @return This dialog builder.
    */
-  public MessageDialogBuilder setTargetFilesWithTooltips(final Map<String, String> targetFilesWithTooltips) {
-    dialogInfo.targetFilesWithTooltips = targetFilesWithTooltips;
+  public MessageDialogBuilder setTargetResourcesWithTooltips(final Map<String, String> targetResourcesWithTooltips) {
+    dialogInfo.targetFilesWithTooltips = targetResourcesWithTooltips;
     return this;
   }
 

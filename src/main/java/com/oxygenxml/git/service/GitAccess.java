@@ -1664,7 +1664,7 @@ public class GitAccess {
     } else if (gitStatus.hasUncommittedChanges()) {
       MessagePresenterProvider.getBuilder(
           TRANSLATOR.getTranslation(Tags.REVERT_COMMIT), DialogType.ERROR)
-          .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(gitStatus.getUncommittedChanges())))
+          .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(gitStatus.getUncommittedChanges())))
           .setMessage(TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
           .setCancelButtonVisible(false)
           .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
@@ -1679,7 +1679,7 @@ public class GitAccess {
         if (!conflictingFiles.isEmpty()) {
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.REVERT_COMMIT), DialogType.WARNING)
-              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
+              .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
               .setMessage(TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS))
               .setCancelButtonVisible(false)
               .buildAndShow();         
@@ -2498,7 +2498,7 @@ public class GitAccess {
         SwingUtilities.invokeLater(() ->
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE), DialogType.WARNING)
-              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
+              .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(conflictingFiles)))
               .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE))
               .setCancelButtonVisible(false)
               .buildAndShow()
@@ -2512,7 +2512,7 @@ public class GitAccess {
         SwingUtilities.invokeLater(() -> 
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.ERROR)
-              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(failingFiles)))
+              .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(failingFiles)))
               .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
               .setCancelButtonVisible(false)
               .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
@@ -2662,7 +2662,7 @@ public class GitAccess {
         if(isPop) {
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
-              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingList))
+              .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingList))
               .setMessage(TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS))
               .setCancelButtonVisible(false)
               .buildAndShow();
@@ -2670,7 +2670,7 @@ public class GitAccess {
         } else {
           MessagePresenterProvider.getBuilder(
               TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
-              .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingList))
+              .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingList))
               .setMessage(TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
                   + " "
                   + TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT))
@@ -2682,7 +2682,7 @@ public class GitAccess {
       case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
         MessagePresenterProvider.getBuilder(
             TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.ERROR)
-            .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(getConflictingFiles())))
+            .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(new ArrayList<>(getConflictingFiles())))
             .setMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                 + ". "
                 + TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST))
@@ -2820,7 +2820,7 @@ public class GitAccess {
   			if(!missingFiles.isEmpty()) {
   				MessagePresenterProvider.getBuilder(
   	          TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.ERROR)
-  	          .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(missingFiles))
+  	          .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(missingFiles))
   	          .setMessage(TRANSLATOR.getTranslation(Tags.MISSING_UNTRACKED_FILES))
   	          .setCancelButtonVisible(false)
   	          .buildAndShow();
@@ -2833,7 +2833,7 @@ public class GitAccess {
   	if(!overwrittenFiles.isEmpty()) {
   		MessagePresenterProvider.getBuilder(
           TRANSLATOR.getTranslation(Tags.APPLY_STASH), DialogType.WARNING)
-          .setTargetFilesWithTooltips(FileStatusUtil
+          .setTargetResourcesWithTooltips(FileStatusUtil
           		.comuteFilesTooltips(overwrittenFiles.stream()
           		.map(FileStatus::getFileLocation)
           		.collect(Collectors.toList())))

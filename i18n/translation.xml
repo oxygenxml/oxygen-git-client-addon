@@ -17,6 +17,30 @@
 		<val lang="nl_NL">Hide</val>
 		<val lang="zh_CN">Hide</val>
 	</key>
+	<key value="Outdated_branches_detected">
+        <comment>Dialog box title</comment>
+        <val lang="en_US">Outdated branches detected</val>
+        <val lang="de_DE">Outdated branches detected</val>
+        <val lang="fr_FR">Outdated branches detected</val>
+        <val lang="ja_JP">Outdated branches detected</val>
+        <val lang="nl_NL">Outdated branches detected</val>
+        <val lang="zh_CN">Outdated branches detected</val>
+    </key>
+    <key value="Outdated_branches_info">
+        <comment>Dialog box message</comment>
+        <val lang="en_US">Some of your local branches are linked to remote branches that no longer exist.
+         It's recommended to delete these local branches to avoid accidentally working on outdated resources.\n\nBranches:</val>
+        <val lang="de_DE">Some of your local branches are linked to remote branches that no longer exist.
+         It's recommended to delete these local branches to avoid accidentally working on outdated resources.\n\nBranches:</val>
+        <val lang="fr_FR">Some of your local branches are linked to remote branches that no longer exist.
+         It's recommended to delete these local branches to avoid accidentally working on outdated resources.\n\nBranches:</val>
+        <val lang="ja_JP">Some of your local branches are linked to remote branches that no longer exist.
+         It's recommended to delete these local branches to avoid accidentally working on outdated resources.\n\nBranches:</val>
+        <val lang="nl_NL">Some of your local branches are linked to remote branches that no longer exist.
+         It's recommended to delete these local branches to avoid accidentally working on outdated resources.\n\nBranches:</val>
+        <val lang="zh_CN">Some of your local branches are linked to remote branches that no longer exist.
+         It's recommended to delete these local branches to avoid accidentally working on outdated resources.\n\nBranches:</val>
+    </key>
 	<key value="Cannot_Commit_Because_Unsaved_Files_Message">
 		<comment>The message that warns user that there are unsaved files and the commit cannot be performed.</comment>
 		<val lang="en_US">The commit cannot be completed because there are unsaved changes in the local repository files you are currently editing. Save or discard your unsaved changes and try again.</val>

@@ -21,6 +21,16 @@ public class Tags {
   public static final String LAST_COMMIT_DETAILS = "Last_Commit_Details";
   
   /**
+   * Outdated branches detected
+   */
+  public static final String OUTDATED_BRANCHES_DETECTED = "Outdated_branches_detected";
+  
+  /**
+   * Outdated branches info
+   */
+  public static final String OUTDATED_BRANCHES_INFO = "Outdated_branches_info";
+  
+  /**
    * Error message.
    */
   public static final String COULD_NO_LOAD_REPO_CORRESPONDING_TO_PROJECT = 

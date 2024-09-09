@@ -258,7 +258,7 @@ public class CommitAndStatusPanel extends JPanel {
       boolean shouldSaveFiles =
       new MessageDialogBuilder(translator.getTranslation(Tags.UNSAVED_FILES_DETECTED), DialogType.WARNING)
         .setOkButtonName(translator.getTranslation(Tags.SAVE_ALL))
-        .setTargetFilesWithTooltips(filesModified)
+        .setTargetResourcesWithTooltips(filesModified)
         .setMessage(translator.getTranslation(Tags.CANNOT_COMMIT_BECAUSE_UNSAVED_FILES_MESSAGE))
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK;
       if(shouldSaveFiles) {

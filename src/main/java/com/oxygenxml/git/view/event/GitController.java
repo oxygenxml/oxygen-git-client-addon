@@ -163,7 +163,7 @@ public class GitController extends GitControllerBase {
     conflictingFilesList.addAll(response.getConflictingFiles());
     MessagePresenterProvider.getBuilder(
         TRANSLATOR.getTranslation(Tags.PULL_STATUS), DialogType.WARNING)
-        .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingFilesList))
+        .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(conflictingFilesList))
         .setMessage(TRANSLATOR.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS))
         .setCancelButtonVisible(false)
         .buildAndShow();       
@@ -182,7 +182,7 @@ public class GitController extends GitControllerBase {
     }
     SwingUtilities.invokeLater(() -> MessagePresenterProvider.getBuilder(
         TRANSLATOR.getTranslation(Tags.PULL_STATUS), DialogType.ERROR)
-        .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips(filesWithChanges))
+        .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips(filesWithChanges))
         .setMessage(message)
         .setCancelButtonVisible(false)
         .buildAndShow());

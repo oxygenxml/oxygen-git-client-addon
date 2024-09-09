@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.oxygenxml.git.OutdatedBranchChecker;
 import com.oxygenxml.git.ProjectHelper;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -474,6 +475,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 			initWorkingCopyCombo();
 			// The listener was inhibited to avoid unnecessary repository load. Do it now.
 			loadRepository();
+			
+			OutdatedBranchChecker.initCheck();
 		}
 	}
 

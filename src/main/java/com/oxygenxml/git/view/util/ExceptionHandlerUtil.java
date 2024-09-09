@@ -66,7 +66,7 @@ public class ExceptionHandlerUtil {
     if(e instanceof CheckoutConflictException) {
       MessagePresenterProvider.getBuilder(
           TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE), DialogType.WARNING)
-          .setTargetFilesWithTooltips(FileStatusUtil.comuteFilesTooltips((((CheckoutConflictException)e).getConflictingPaths())))
+          .setTargetResourcesWithTooltips(FileStatusUtil.comuteFilesTooltips((((CheckoutConflictException)e).getConflictingPaths())))
           .setMessage(TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE))
           .setCancelButtonVisible(false)
           .buildAndShow(); 

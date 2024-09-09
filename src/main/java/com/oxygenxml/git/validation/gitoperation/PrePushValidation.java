@@ -219,7 +219,7 @@ public class PrePushValidation implements IPreOperationValidation {
         .getBuilder(TRANSLATOR.getTranslation(Tags.PRE_PUSH_VALIDATION), DialogType.ERROR)
         .setMessage(TRANSLATOR.getTranslation(Tags.PRE_PUSH_MAIN_FILES_NOT_FOUND_MESSAGE))
         .setOkButtonVisible(false)
-        .setTargetFilesWithTooltips(notFoundFilesWithTooltips)
+        .setTargetResourcesWithTooltips(notFoundFilesWithTooltips)
         .setCancelButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
         .buildAndShow();
         mainFiles = Collections.emptyList();
