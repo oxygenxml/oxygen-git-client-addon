@@ -18,6 +18,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
@@ -95,8 +96,7 @@ public class OutdatedBranchChecker {
    */
   private static synchronized void checkForOutdatedBranches() {
     try {
-      GitAccess gitAccess = GitAccess.getInstance();
-      List<Ref> obsoleteBranches = gitAccess.getLocalBranchesThatNoLongerHaveRemotes();
+      List<Ref> obsoleteBranches = BranchesUtil.getLocalBranchesThatNoLongerHaveRemotes();
       if (!obsoleteBranches.isEmpty()) {
         Map <String, String> branches = new HashMap<>();
         for (Ref ref : obsoleteBranches) {
@@ -125,7 +125,7 @@ public class OutdatedBranchChecker {
               new String[] {i18n.getTranslation(Tags.YES), i18n.getTranslation(Tags.NO)},
               new int[] {1, 0});
           if (userDecision == 1) {
-            gitAccess.deleteBranches(branches.keySet());
+            GitAccess.getInstance().deleteBranches(branches.keySet());
           }
         }
       }

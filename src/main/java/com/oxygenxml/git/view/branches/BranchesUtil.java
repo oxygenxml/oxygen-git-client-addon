@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
@@ -13,6 +14,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
@@ -29,6 +32,11 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  *
  */
 public class BranchesUtil {
+
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(BranchesUtil.class.getName());
 
   /**
    * i18n.
@@ -49,6 +57,37 @@ public class BranchesUtil {
   private BranchesUtil() {
     // Private to avoid instantiations
     throw new UnsupportedOperationException("Instantiation of this utility class is not allowed!");
+  }
+  
+  /**
+   * Get obsolete local branches, i.e. the local branches who track deleted remote branches.
+   * 
+   * @return the obsolete local branches.
+   * 
+   * @throws NoRepositorySelected
+   */
+  public static List<Ref> getLocalBranchesThatNoLongerHaveRemotes() throws NoRepositorySelected {
+    List<Ref> obsoleteBranches = new ArrayList<>();
+    
+    GitAccess gitAccess = GitAccess.getInstance();
+    Repository repository = gitAccess.getRepository();
+    List<Ref> localBranchList = gitAccess.getLocalBranchList();
+    for (Ref localBranch : localBranchList) {
+      final String branchName = Repository.shortenRefName(localBranch.getName());
+      BranchConfig branchConfig = new BranchConfig(repository.getConfig(), branchName);
+      String remoteBranch = branchConfig.getRemoteTrackingBranch();
+      if (remoteBranch != null && !remoteBranch.isBlank()) {
+        try {
+          if (repository.findRef(remoteBranch) == null) {
+            obsoleteBranches.add(localBranch);
+          }
+        } catch (IOException ex) {
+          LOGGER.error(ex, ex);
+        }
+      }
+    } 
+    
+    return obsoleteBranches;
   }
 
   /**

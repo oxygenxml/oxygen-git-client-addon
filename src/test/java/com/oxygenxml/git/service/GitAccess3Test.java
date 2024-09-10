@@ -9,6 +9,7 @@ import org.eclipse.jgit.transport.RefSpec;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 
 /**
@@ -87,7 +88,7 @@ public class GitAccess3Test extends GitTestBase {
     assertEquals(LOCAL_BRANCH_NAME2, gitAccess.getRepository().getBranch());
     
     // ======================== no obsolete branch =================================
-    List<Ref> obsoleteBranches = gitAccess.getLocalBranchesThatNoLongerHaveRemotes();
+    List<Ref> obsoleteBranches = BranchesUtil.getLocalBranchesThatNoLongerHaveRemotes();
     assertTrue(obsoleteBranches.isEmpty());
     
     // ========================= Local branch 1 will become "obsolete" ==============================
@@ -97,7 +98,7 @@ public class GitAccess3Test extends GitTestBase {
       .setRemote("origin")
       .call();
     
-    obsoleteBranches = gitAccess.getLocalBranchesThatNoLongerHaveRemotes();
+    obsoleteBranches = BranchesUtil.getLocalBranchesThatNoLongerHaveRemotes();
     assertEquals(1, obsoleteBranches.size());
     
   }
