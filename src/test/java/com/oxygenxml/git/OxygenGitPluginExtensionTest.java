@@ -3,7 +3,8 @@ package com.oxygenxml.git;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jgit.gpg.bc.internal.BouncyCastleGpgSigner;
-import org.eclipse.jgit.lib.GpgSigner;
+import org.eclipse.jgit.lib.GpgConfig.GpgFormat;
+import org.eclipse.jgit.lib.Signers;
 import org.junit.Test;
 
 public class OxygenGitPluginExtensionTest {
@@ -18,7 +19,7 @@ public class OxygenGitPluginExtensionTest {
    */
   @Test
   public void testDefaultGpgSigner() throws Exception {
-    assertTrue(GpgSigner.getDefault() instanceof BouncyCastleGpgSigner);
+    assertTrue(Signers.get(GpgFormat.OPENPGP) instanceof BouncyCastleGpgSigner);
   }
   
 }
