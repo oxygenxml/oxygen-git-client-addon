@@ -56,7 +56,7 @@ public class OutdatedBranchChecker {
   /**
    * Timer.
    */
-  private static final Timer OUTDATED_BRANCH_CHECKER_TIMER = new Timer("Outdated Branch Checker Timer");
+  private static Timer outdatedBranchCheckerTimer;
   
   /**
    * Init checker.
@@ -68,7 +68,13 @@ public class OutdatedBranchChecker {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-          OUTDATED_BRANCH_CHECKER_TIMER.schedule(
+          if (outdatedBranchCheckerTimer != null) {
+            outdatedBranchCheckerTimer.cancel();
+          }
+          
+          outdatedBranchCheckerTimer = new Timer("Outdated Branch Checker Timer");
+          
+          outdatedBranchCheckerTimer.schedule(
               new TimerTask() {
                 @Override
                 public void run() {
@@ -77,7 +83,7 @@ public class OutdatedBranchChecker {
               },
               TIMER_DELAY_AFTER_REPO_IS_LOADED);
           
-          OUTDATED_BRANCH_CHECKER_TIMER.scheduleAtFixedRate(
+          outdatedBranchCheckerTimer.scheduleAtFixedRate(
               new TimerTask() {
                 @Override
                 public void run() {
