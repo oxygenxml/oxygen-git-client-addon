@@ -185,6 +185,8 @@ public class WorkingCopyXprDetectionTest extends GitTestBase {
     
     gitAccess.setRepositorySynchronously(repo.getAbsolutePath());
     
+    Thread.sleep(500); // NOSONAR
+    
     assertNotNull(wcChangeEventInfo[0]);
     assertTrue(wcChangeEventInfo[0] instanceof WorkingCopyGitEventInfo);
     
