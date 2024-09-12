@@ -23,6 +23,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.transport.SshSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +46,6 @@ import com.oxygenxml.git.service.lfs.LFSSupport;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
-import com.oxygenxml.git.utils.GitAddonSystemProperties;
-import com.oxygenxml.git.utils.LoggingUtil;
 import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.actions.GitActionsMenuBar;
@@ -371,10 +370,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    // Uncomment this to start with fresh options. For testing purposes
 	    // PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null); NOSONAR
 
-	    if (!"true".equals(System.getProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS))) {
-	      org.eclipse.jgit.transport.SshSessionFactory.setInstance(
-	          new GitClientSshdSessionFactory(new ResolvingProxyDataFactory()));
-	    } 
+	    SshSessionFactory.setInstance(
+	        new GitClientSshdSessionFactory(new ResolvingProxyDataFactory()));
 
 	    AuthenticationInterceptor.install();
 
@@ -425,8 +422,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    // Call the refresh command when the Oxygen window is activated
 	    parentFrame.addWindowListener(panelRefreshWindowListener);
 
-	    LoggingUtil.setupLogger();
-	    
 	    OutdatedBranchChecker.init(gitController);
 
 	  } catch (Throwable t) { // NOSONAR
