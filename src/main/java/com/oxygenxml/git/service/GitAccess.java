@@ -137,6 +137,7 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.utils.URIUtil;
 import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
+import com.oxygenxml.git.view.actions.IProgressUpdater;
 import com.oxygenxml.git.view.dialog.GPGPassphraseDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
@@ -217,11 +218,6 @@ public class GitAccess {
 	 * Keeps a cache of the computed status to avoid processing overhead.
 	 */
 	private StatusCache statusCache = null;
-	
-	/**
-	 * The progress manager for operations.
-	 */
-	private OperationProgressFactory progressManager;
 
 	/**
 	 * Singleton instance.
@@ -1839,20 +1835,21 @@ public class GitAccess {
 
 	/**
 	 * Restore to the initial state of the repository. Only applicable if the
-	 * repository has conflicts
+	 * repository has conflicts.
+   * @param progressMonitor        The optional progress monitor for this operation.
 	 * 
 	 * @return The restart merge task.
 	 */
 	@SuppressWarnings("java:S1452")
-	public ScheduledFuture<?> restartMerge() {
+	public ScheduledFuture<?> restartMerge(Optional<IGitViewProgressMonitor> progressMonitor) {
 	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
-	      ProgressMonitor progressMonitor = progressManager.getProgressMonitorByOperation(GitOperation.MERGE_RESTART);
 	      fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
+	      progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
 	      Repository repo = getRepository();
         RepositoryState repositoryState = repo.getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {
-	        git.rebase().setProgressMonitor(progressMonitor).setOperation(Operation.ABORT).call();
+	        git.rebase().setProgressMonitor(progressMonitor.orElse(null)).setOperation(Operation.ABORT).call();
 	        // EXM-47461 Should update submodules as well.
 	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
 	        pull(credentialsProvider, PullType.REBASE, null, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
@@ -1860,14 +1857,17 @@ public class GitAccess {
 	        AnyObjectId commitToMerge = repo.resolve("MERGE_HEAD");
 	        git.clean().call();
 	        git.reset().setMode(ResetType.HARD).call();
-	        git.merge().setProgressMonitor(progressMonitor).include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+	        git.merge().setProgressMonitor(progressMonitor.orElse(null)).include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 	      }
 	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
+	      progressMonitor.ifPresent(pm -> pm.markAsCompleted());
 	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
 	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
+	      progressMonitor.ifPresent(pm -> pm.markAsFailed());
 	      LOGGER.error(e.getMessage(), e);
 	    } catch (IndexLockExistsException  e) {
 	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
+	      progressMonitor.ifPresent(pm -> pm.markAsFailed());
 	    }
 	  });
 	}
@@ -1913,21 +1913,21 @@ public class GitAccess {
 	/**
 	 * Sets the given branch as the current branch
 	 * 
-	 * @param branch The short name of the branch to set.
+	 * @param branch                The short name of the branch to set.
+	 * @param progressMonitor       The optional progress monitor for this operation.
 	 * 
-	 * @throws GitAPIException
+	 * @throws GitAPIException When the operation cannot be completed.
 	 */
-	public void setBranch(String branch) throws GitAPIException, IOException {
-	  ProgressMonitor progressMonitor = // the progress manager should be instantiated before to notify listener about operation start
-	      progressManager.getProgressMonitorByOperation(GitOperation.CHECKOUT); 
+	public void setBranch(String branch, Optional<IGitViewProgressMonitor> progressMonitor) throws GitAPIException, IOException {
 	  try {
 	    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
+	    progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
 
 	    LogUtil.logSubmodule();
 	    
 	    git
           .checkout()
-          .setProgressMonitor(progressMonitor)
+          .setProgressMonitor(progressMonitor.orElse(null))
           .setName(branch)
           .call();
 	    
@@ -1936,13 +1936,17 @@ public class GitAccess {
 	    RepoUtil.checkoutSubmodules(git, e -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e));
 	    
 	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
+	    progressMonitor.ifPresent(pm -> pm.markAsCompleted());
 	  } catch(CanceledException | IndexLockExistsException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
+	    progressMonitor.ifPresent(pm -> pm.markAsFailed());
 	  } catch (GitAPIException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
+	    progressMonitor.ifPresent(pm -> pm.markAsFailed());
 	    throw e;
 	  } catch(JGitInternalException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
+	    progressMonitor.ifPresent(pm -> pm.markAsFailed());
 	    if(!ExceptionHandlerUtil.hasCauseOfType(e, CanceledException.class)) {
 	      throw e;  
 	    } 
@@ -2440,13 +2444,14 @@ public class GitAccess {
    * 
    * @param branchName The full name of the branch to be merged into the current
    *                   one (e.g. refs/heads/dev).
+  * @param progressMonitor  The optional progress monitor for this operation.
    * 
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
-    internalMerge(branchName, false, null);
+  public void mergeBranch(String branchName, final Optional<IGitViewProgressMonitor> progressMonitor) throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
+    internalMerge(branchName, false, null, progressMonitor);
   }
   
   /**
@@ -2459,32 +2464,32 @@ public class GitAccess {
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  public void squashAndMergeBranch(final String branchName, final String commitMessage) 
+  public void squashAndMergeBranch(final String branchName, final String commitMessage, final Optional<IGitViewProgressMonitor> progressMonitor) 
       throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
-     internalMerge(branchName, true, commitMessage);
+     internalMerge(branchName, true, commitMessage, progressMonitor);
   }
 
   /**
    * Merge the given branch into the current branch.
    * 
-   * @param branchName    The full name of the branch to be merged into the current one(e.g. refs/heads/dev).
-   * @param isSquashMerge <code>true</code> if is a squash commit. 
-   * @param message       The commit message for squashed commit.
+   * @param branchName       The full name of the branch to be merged into the current one(e.g. refs/heads/dev).
+   * @param isSquashMerge    <code>true</code> if is a squash commit. 
+   * @param message          The commit message for squashed commit.
+   * @param progressMonitor  The optional progress monitor for this operation.
    * 
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  private void internalMerge(final String branchName, boolean isSquash, final String message)
+  private void internalMerge(final String branchName, boolean isSquash, final String message, final Optional<IGitViewProgressMonitor> progressMonitor)
       throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
     
-    try {
-      ProgressMonitor progressMonitor = progressManager.getProgressMonitorByOperation(GitOperation.MERGE);
-      
+    try { 
       fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+      progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
      
       final ObjectId mergeBase = getRepository().resolve(branchName);
-      final MergeCommand mergeCommand = git.merge().setProgressMonitor(progressMonitor).include(mergeBase);
+      final MergeCommand mergeCommand = git.merge().setProgressMonitor(progressMonitor.orElse(null)).include(mergeBase);
       if(isSquash) {
         mergeCommand.setStrategy(MergeStrategy.RESOLVE).setSquash(isSquash).setCommit(true);
       }
@@ -2505,6 +2510,7 @@ public class GitAccess {
               .buildAndShow()
         ); 
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+        progressMonitor.ifPresent(pm -> pm.markAsCompleted());
       } else if (mergeStatus.equals(MergeResult.MergeStatus.FAILED)) {
         Map<String, MergeFailureReason> failingPaths = res.getFailingPaths();
         LOGGER.debug("Failed because of this files: {}", failingPaths);
@@ -2520,8 +2526,10 @@ public class GitAccess {
               .buildAndShow()
         );
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+        progressMonitor.ifPresent(pm -> pm.markAsCompleted());
       } else if(isSquash) {
           fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+          progressMonitor.ifPresent(pm -> pm.markAsCompleted());
           final List<FileStatus> stagedFiles = getStagedFiles();
           if(stagedFiles != null && !stagedFiles.isEmpty()) {
             commit(message != null? message : "");
@@ -2532,14 +2540,18 @@ public class GitAccess {
           }
       } else {
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+        progressMonitor.ifPresent(pm -> pm.markAsCompleted());
       }
       
     } catch(NoChangesInSquashedCommitException e) {
+      progressMonitor.ifPresent(pm -> pm.markAsFailed());
       throw e;
     } catch (GitAPIException | IOException | NoRepositorySelected e) {
+      progressMonitor.ifPresent(pm -> pm.markAsFailed());
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
       throw e;
     } catch (IndexLockExistsException e) {
+      progressMonitor.ifPresent(pm -> pm.markAsFailed());
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
     }
     
@@ -3371,15 +3383,6 @@ public class GitAccess {
    */
   public boolean repositoryHasConflicts() {
     return getStatus().repositoryHasConflicts();
-  }
-  
-  /**
-   * Set the progress factory needed to display operations progress.
-   * 
-   * @param progressManager The new manager that creates operation progress monitors.
-   */
-  public void setOperationProgressSupport(@NonNull OperationProgressFactory progressManager) {
-    this.progressManager = progressManager;
   }
 	
 }

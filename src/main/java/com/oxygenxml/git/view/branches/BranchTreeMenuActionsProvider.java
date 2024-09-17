@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoChangesInSquashedCommitException;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -26,9 +28,11 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.SquashMergeDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
@@ -146,6 +150,8 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.CHECKOUT)) {
       @Override
       public void actionPerformed(ActionEvent e) {
+        final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+            new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH), true)));
         ctrl.asyncTask(() -> {
           RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
           String branchToSet = BranchesUtil.createBranchPath(
@@ -154,16 +160,16 @@ public class BranchTreeMenuActionsProvider {
           if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
             int answer = showUncommittedChangesWhenChangingBranchMsg(branchToSet);
             if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
-              ctrl.getGitAccess().setBranch(branchToSet);
+              ctrl.getGitAccess().setBranch(branchToSet, progMon);
               BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
             } else if (answer == OKOtherAndCancelDialog.RESULT_OK) {
               boolean wasStashCreated = StashUtil.stashChanges();
               if(wasStashCreated) {
-                ctrl.getGitAccess().setBranch(branchToSet);
+                ctrl.getGitAccess().setBranch(branchToSet, progMon);
               }
             }
           } else {
-            ctrl.getGitAccess().setBranch(branchToSet);
+            ctrl.getGitAccess().setBranch(branchToSet, progMon);
             BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
           }
           return null;
@@ -276,13 +282,15 @@ public class BranchTreeMenuActionsProvider {
         }
 
         RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+        final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+            new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH), true)));
         if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           int answer = showUncommittedChangesWhenChangingBranchMsg(branchName);
           if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
-            ctrl.getGitAccess().setBranch(branchName);
+            ctrl.getGitAccess().setBranch(branchName, progMon);
           }
         } else {
-          ctrl.getGitAccess().setBranch(branchName);
+          ctrl.getGitAccess().setBranch(branchName, progMon);
         }
 
         return null;
@@ -358,6 +366,8 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(mergeActionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
+        final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+            new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.MERGE), false)));
         ctrl.asyncTask(
             () -> {
               if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
@@ -382,7 +392,7 @@ public class BranchTreeMenuActionsProvider {
                    
                 if (answer == OKCancelDialog.RESULT_OK) {
                   try {
-                    ctrl.getGitAccess().mergeBranch(nodePath);
+                    ctrl.getGitAccess().mergeBranch(nodePath, progMon);
                   } catch (GitAPIException | IOException | NoRepositorySelected ex) {
                     LOGGER.error(ex.getMessage(), ex);
                     ExceptionHandlerUtil.handleMergeException(ex);

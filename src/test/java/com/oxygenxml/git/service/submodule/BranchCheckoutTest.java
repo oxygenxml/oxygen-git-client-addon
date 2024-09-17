@@ -2,6 +2,7 @@ package com.oxygenxml.git.service.submodule;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
@@ -79,7 +80,7 @@ public class BranchCheckoutTest extends GitTestBase {
       
       // Switch to a new branch and forward the submodule.
       GitAccess.getInstance().createBranch("v2");
-      GitAccess.getInstance().setBranch("v2");
+      GitAccess.getInstance().setBranch("v2", Optional.empty());
 
       // Move the submodule target forward.
       TestUtil.commitOneFile(submoduleRepo, fileName, "version 2");
@@ -96,7 +97,7 @@ public class BranchCheckoutTest extends GitTestBase {
       
       
       // Switch back on 'main' branch.
-      GitAccess.getInstance().setBranch("main");
+      GitAccess.getInstance().setBranch("main", Optional.empty());
       content = TestUtil.read(new File(mainRepo.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules was set to previous commit", "version 1", content);
     } finally {

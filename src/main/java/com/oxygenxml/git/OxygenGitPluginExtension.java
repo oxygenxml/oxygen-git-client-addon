@@ -61,7 +61,6 @@ import com.oxygenxml.git.view.event.OperationUtil;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
-import com.oxygenxml.git.view.progress.OperationProgressManager;
 import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -352,7 +351,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  });
 
 	  gitController.setBranchesCheckoutMediator(new BranchCheckoutMediator(gitController));
-	  gitController.getGitAccess().setOperationProgressSupport(new OperationProgressManager(gitController));
 	  LFSSupport.install(gitController);
 
 	  final UtilAccess utilAccess = pluginWS.getUtilAccess();

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.JComboBox;
 import javax.swing.JToolTip;
@@ -26,15 +27,18 @@ import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -358,7 +362,9 @@ public class BranchSelectionCombo extends JComboBox<String> {
 
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        GIT_ACCESS.setBranch(newBranchName);
+        final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+            new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH), true)));
+        GIT_ACCESS.setBranch(newBranchName, progMon);
         BranchesUtil.fixupFetchInConfig(GIT_ACCESS.getRepository().getConfig());
       } catch (CheckoutConflictException ex) {
         restoreCurrentBranchSelectionInMenu();

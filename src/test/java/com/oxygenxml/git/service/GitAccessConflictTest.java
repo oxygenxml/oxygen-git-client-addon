@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
@@ -33,7 +34,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.progress.OperationProgressManager;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -252,8 +252,6 @@ public class GitAccessConflictTest extends TestCase {
 		
 	// Pulling now will say that the merge was not concluded and we should commit
     assertEquals(RepositoryState.MERGING_RESOLVED, gitAccess.getRepository().getRepositoryState());
-
-    gitAccess.setOperationProgressSupport(new OperationProgressManager(gitCtrl));
     
     gitCtrl.pull();
     Awaitility.await().atMost(1500, TimeUnit.MILLISECONDS).until(() ->
@@ -263,7 +261,6 @@ public class GitAccessConflictTest extends TestCase {
 
   @Test
   public void testRestartMerge() throws Exception {
-    gitAccess.setOperationProgressSupport(new OperationProgressManager(new GitController(gitAccess)));
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     OptionsManager.getInstance().saveSelectedRepository(FIRST_LOCAL_TEST_REPOSITPRY);
 
@@ -292,7 +289,7 @@ public class GitAccessConflictTest extends TestCase {
     RepositoryState expected = RepositoryState.MERGING_RESOLVED;
     assertEquals(expected, actual);
 
-    gitAccess.restartMerge();
+    gitAccess.restartMerge(Optional.empty());
     Awaitility.await().atMost(1500, TimeUnit.MILLISECONDS).until(() ->
     RepositoryState.MERGING.equals(gitAccess.getRepository().getRepositoryState())
         );
@@ -309,7 +306,6 @@ public class GitAccessConflictTest extends TestCase {
     // LOCAL 1
     //----------------
     gitAccess = GitAccess.getInstance();
-    gitAccess.setOperationProgressSupport(new OperationProgressManager(new GitController(gitAccess)));
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     // Create a file in the remote.
     File remoteParent = new File(FIRST_LOCAL_TEST_REPOSITPRY);
@@ -427,7 +423,6 @@ public class GitAccessConflictTest extends TestCase {
     // LOCAL 1
     //----------------
     gitAccess = GitAccess.getInstance();
-    gitAccess.setOperationProgressSupport(new OperationProgressManager(new GitController(gitAccess)));
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     // Create a file in the remote.
     File remoteParent = new File(FIRST_LOCAL_TEST_REPOSITPRY);
@@ -547,7 +542,6 @@ public class GitAccessConflictTest extends TestCase {
     // LOCAL 1
     //----------------
     gitAccess = GitAccess.getInstance();
-    gitAccess.setOperationProgressSupport(new OperationProgressManager(new GitController(gitAccess)));
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     // Create a file in the remote.
     File remoteParent = new File(FIRST_LOCAL_TEST_REPOSITPRY);
@@ -862,7 +856,6 @@ public class GitAccessConflictTest extends TestCase {
         return cmd == ConflictResolution.RESOLVE_USING_THEIRS;
       }
     };
-    gitAccess.setOperationProgressSupport(Mockito.mock(OperationProgressFactory.class));
     gitCtrl.asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
@@ -889,7 +882,7 @@ public class GitAccessConflictTest extends TestCase {
         getFileContent(local1File));
     
     // Restart merge
-    gitAccess.restartMerge();
+    gitAccess.restartMerge(Optional.empty());
     Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
       RepositoryState.REBASING_MERGE.equals(gitAccess.getRepository().getRepositoryState()));
     

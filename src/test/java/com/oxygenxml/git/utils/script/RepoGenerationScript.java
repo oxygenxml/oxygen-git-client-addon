@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -202,10 +203,10 @@ public class RepoGenerationScript {
         Awaitility.await().atMost(1000, TimeUnit.MILLISECONDS).untilAsserted(() -> {
           // Not sure why we need this. Without it, the order of changes is messed up. 
           GitAccess.getInstance().createBranch(localBranchShortName);
-          GitAccess.getInstance().setBranch(localBranchShortName);
+          GitAccess.getInstance().setBranch(localBranchShortName, Optional.empty());
         });
       } else {
-        GitAccess.getInstance().setBranch(localBranchShortName);
+        GitAccess.getInstance().setBranch(localBranchShortName, Optional.empty());
       }
 
       if (LOGGER.isDebugEnabled()) {

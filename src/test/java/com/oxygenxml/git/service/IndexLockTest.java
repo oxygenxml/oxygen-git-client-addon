@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.mockito.Mockito;
@@ -84,13 +85,13 @@ public class IndexLockTest extends GitTestBase {
     }
     gitAccess.continueRebase();
     gitAccess.createStash(false, "");
-    gitAccess.mergeBranch("");
+    gitAccess.mergeBranch("", Optional.empty());
     gitAccess.popStash("");
     gitAccess.resetAll(Collections.emptyList());
     gitAccess.resetToCommit(ResetType.MIXED, "");
     gitAccess.resetToCommit(ResetType.HARD, "");
     gitAccess.revertCommit("");
-    gitAccess.squashAndMergeBranch("", "");
+    gitAccess.squashAndMergeBranch("", "", Optional.empty());
     
     assertEquals(17, errorMessages.size());
     assertEquals(17, errorMessages.stream().filter(msg -> msg.equals("Lock_failed_explanation")).count());

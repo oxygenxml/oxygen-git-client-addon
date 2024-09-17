@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.staging;
 
+import java.util.Optional;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
@@ -59,7 +61,7 @@ public class FlatView7Test extends FlatViewTestBase {
 		// Create local branch
 		Git git = GitAccess.getInstance().getGit();
 		git.branchCreate().setName("new_branch").call();
-		GitAccess.getInstance().setBranch("new_branch");
+		GitAccess.getInstance().setBranch("new_branch", Optional.empty());
 		
 
 		ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
@@ -100,7 +102,7 @@ public class FlatView7Test extends FlatViewTestBase {
 						+ "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
 						branchesCombo.getToolTipText());
 
-		GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+		GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
 		flushAWT();
 
 		// Commit a new file locally

@@ -606,7 +606,6 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     OptionsManager.getInstance().loadOptions(wsOptions);
     
     gitAccess.getStatusCache().installEditorsHook(pluginWSMock);
-    gitAccess.setOperationProgressSupport(Mockito.mock(OperationProgressFactory.class));
     ctrl.setBranchesCheckoutMediator(new BranchCheckoutMediator(ctrl));
     
     Mockito.when(pluginWSMock.getAllEditorLocations(Mockito.anyInt())).thenReturn(new URL[0]);

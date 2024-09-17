@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -117,7 +118,6 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     super.setUp();
 
     gitAccess = GitAccess.getInstance();
-    gitAccess.setOperationProgressSupport(Mockito.mock(OperationProgressFactory.class));
     gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
     localRepo1 = gitAccess.getRepository();
     gitAccess.createNewRepository(SECOND_LOCAL_TEST_REPOSITORY);
@@ -246,13 +246,13 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
         gitAccess.getGit().getRepository().getFullBranch());
-    gitAccess.setBranch("new_branch");
+    gitAccess.setBranch("new_branch", Optional.empty());
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "altfel");;
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
     
     // move to main branch
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     
     // Pull to create conflict
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
@@ -317,13 +317,13 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
         gitAccess.getGit().getRepository().getFullBranch());
-    gitAccess.setBranch("new_branch");
+    gitAccess.setBranch("new_branch", Optional.empty());
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "altfel");;
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
     
     // move to main
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     
     // Pull to create conflict
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
@@ -374,13 +374,13 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
         gitAccess.getGit().getRepository().getFullBranch());
-    gitAccess.setBranch("new_branch");;
+    gitAccess.setBranch("new_branch", Optional.empty());
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "altfel");;
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     gitAccess.commit("commit on nnew branch");
     
     // move to main
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     
     // change file.txt to create checkout conflict
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "new changes");;
@@ -425,13 +425,13 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
         gitAccess.getGit().getRepository().getFullBranch());
-    gitAccess.setBranch("new_branch");
+    gitAccess.setBranch("new_branch", Optional.empty());
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "altfel");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit 2");
     
     // move to main branch
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
@@ -489,13 +489,13 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
         gitAccess.getGit().getRepository().getFullBranch());
-    gitAccess.setBranch("new_branch");
+    gitAccess.setBranch("new_branch", Optional.empty());
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "altfel");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit 2");
     
     // move to main branch
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     

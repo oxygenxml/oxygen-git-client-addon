@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.branches;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
@@ -129,7 +130,7 @@ public class BranchMergingTest extends GitTestBase {
     refreshSupport.call();
     
     // Move back to the main branch
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     // Merge LocalBranch into main
@@ -207,7 +208,7 @@ public class BranchMergingTest extends GitTestBase {
     refreshSupport.call();
     
     // Move back to the main branch
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     // Merge LocalBranch into main
@@ -292,7 +293,7 @@ public class BranchMergingTest extends GitTestBase {
     refreshSupport.call();
     
     // Move back to the main branch
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     // Merge LocalBranch into main
@@ -421,7 +422,7 @@ public class BranchMergingTest extends GitTestBase {
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
     // Move back to the main branch
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getBranchInfo().getBranchName());
     refreshSupport.call();
     
@@ -502,7 +503,7 @@ public class BranchMergingTest extends GitTestBase {
     refreshSupport.call();
     
     // ------------- Checkout branch: LOCAL_BRANCH_NAME1  -------------
-    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.setBranch(LOCAL_BRANCH_NAME1, Optional.empty());
     
     // Commit on this branch
     setFileContent(file1, "local file 1 on new branch");
@@ -514,7 +515,7 @@ public class BranchMergingTest extends GitTestBase {
     refreshSupport.call();
 
     // ------------- Move to the main branch and commit something there ---------------
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     
     setFileContent(file1, "local file 1 modifications");
     setFileContent(file2, "local file 2 modifications");
@@ -622,7 +623,7 @@ public class BranchMergingTest extends GitTestBase {
     
     // Create new branch and commit some changes
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
-    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.setBranch(LOCAL_BRANCH_NAME1, Optional.empty());
 
     setFileContent(file1, "branch file1 modification ");
     setFileContent(file2, "branch file2 modification ");
@@ -631,7 +632,7 @@ public class BranchMergingTest extends GitTestBase {
     gitAccess.commit("Commit on secondary branch");
 
     // Move on main branch, make some uncommitted modifications
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     
     setFileContent(file1, "file1 something xx...xx...");
     setFileContent(file2, "file2 something xx...xx...");
@@ -737,7 +738,7 @@ public class BranchMergingTest extends GitTestBase {
     flushAWT();
     
     // ------------- Checkout branch: LOCAL_BRANCH_NAME1  -------------
-    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.setBranch(LOCAL_BRANCH_NAME1, Optional.empty());
     
     // Commit on this branch
     setFileContent(file, "local file ... new branch");
@@ -745,7 +746,7 @@ public class BranchMergingTest extends GitTestBase {
     gitAccess.commit("Commit on secondary branch");
 
     // ------------- Move to the main branch and commit something there ---------------
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     
     setFileContent(file, "file modifications");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));

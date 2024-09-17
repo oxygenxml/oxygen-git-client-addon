@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -21,7 +22,9 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
@@ -325,7 +328,9 @@ public class GitResourceContextualMenu extends JPopupMenu {
                 options,
                 optionIds);
         if (result == optionIds[0]) {
-          GIT_ACCESS.restartMerge();
+          final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+              new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.MERGE), false)));
+          GIT_ACCESS.restartMerge(progMon);
         }
       }
     };

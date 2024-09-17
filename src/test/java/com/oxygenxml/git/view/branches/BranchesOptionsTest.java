@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.mockito.Mockito;
 
@@ -142,16 +143,16 @@ public class BranchesOptionsTest extends GitTestBase {
       sleep(50);
       invokeRefresher();
       gitAccess.createBranch(LOCAL_BRANCH_NAME1);
-      gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+      gitAccess.setBranch(LOCAL_BRANCH_NAME1, Optional.empty());
       sleep(50);
       invokeRefresher();
       gitAccess.createBranch(LOCAL_BRANCH_NAME2);
-      gitAccess.setBranch(LOCAL_BRANCH_NAME2);
+      gitAccess.setBranch(LOCAL_BRANCH_NAME2, Optional.empty());
       sleep(50);
       invokeRefresher();
       invokeRefresher();
       invokeRefresher(); // Call the refresh support more times with the same repository and branch to make sure that the setOption is not called for this case.
-      gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+      gitAccess.setBranch(LOCAL_BRANCH_NAME1, Optional.empty());
       sleep(50);
       invokeRefresher();
       gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY2);

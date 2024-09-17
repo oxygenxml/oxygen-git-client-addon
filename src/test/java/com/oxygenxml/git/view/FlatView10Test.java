@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
@@ -129,7 +130,7 @@ public class FlatView10Test extends FlatViewTestBase {
     assertFalse(abortMergeButtonPanel[0].isShowing());
     
     // Restart merge
-    GitAccess.getInstance().restartMerge();
+    GitAccess.getInstance().restartMerge(Optional.empty());
     flushAWT();
     sleep(300);
     
@@ -147,7 +148,7 @@ public class FlatView10Test extends FlatViewTestBase {
     assertFalse(abortMergeButtonPanel[0].isShowing());
     
     // Restart merge
-    GitAccess.getInstance().restartMerge();
+    GitAccess.getInstance().restartMerge(Optional.empty());
     flushAWT();
     sleep(300);
     

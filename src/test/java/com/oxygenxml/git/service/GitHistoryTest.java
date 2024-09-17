@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -168,7 +169,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
-      GitAccess.getInstance().setBranch("main");
+      GitAccess.getInstance().setBranch("main", Optional.empty());
   
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
   
@@ -199,7 +200,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
           "", mapDump.toString());
   
   
-      GitAccess.getInstance().setBranch("feature");
+      GitAccess.getInstance().setBranch("feature", Optional.empty());
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
   
       dump = dumpHistory(commitsCharacteristics);
@@ -239,7 +240,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
-      GitAccess.getInstance().setBranch("main");
+      GitAccess.getInstance().setBranch("main", Optional.empty());
       
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
   
@@ -262,7 +263,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
           expected, dump);
   
   
-      GitAccess.getInstance().setBranch("feature");
+      GitAccess.getInstance().setBranch("feature", Optional.empty());
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, new RenameTracker());
   
       dump = dumpHistory(commitsCharacteristics);

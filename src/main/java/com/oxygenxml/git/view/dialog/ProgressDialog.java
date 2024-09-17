@@ -169,6 +169,7 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   /**
    * @param millis These milliseconds are used to not show the progress dialog for quickly operations.
    */
+  @Override
   public void showWithDelay(long millis) {
     Runnable command = () -> SwingUtilities.invokeLater(() -> {
       if(!isCancelled && !isCompleted) {
@@ -176,6 +177,14 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
       }
     });
     Executors.newSingleThreadScheduledExecutor().schedule(command, millis, TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Mark the operation as failed.
+   */
+  @Override
+  public void markAsFailed() {
+    doCancel();
   }
 
 }

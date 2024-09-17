@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 
@@ -168,7 +169,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTableModels("", "CHANGED, test.txt");
     
     // Restart merge
-    ScheduledFuture<?> restartMerge = GitAccess.getInstance().restartMerge();
+    ScheduledFuture<?> restartMerge = GitAccess.getInstance().restartMerge(Optional.empty());
     restartMerge.get();
     
     flushAWT();

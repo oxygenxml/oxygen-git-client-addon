@@ -2,6 +2,7 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -71,7 +72,7 @@ public class GitAccess3Test extends GitTestBase {
     
     // ========================= Local branch 1 ===================================
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
-    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.setBranch(LOCAL_BRANCH_NAME1, Optional.empty());
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
     // Change file on the secondary branch
@@ -84,7 +85,7 @@ public class GitAccess3Test extends GitTestBase {
     
     // ========================== Local branch 2 ===================================
     gitAccess.createBranch(LOCAL_BRANCH_NAME2);
-    gitAccess.setBranch(LOCAL_BRANCH_NAME2);
+    gitAccess.setBranch(LOCAL_BRANCH_NAME2, Optional.empty());
     assertEquals(LOCAL_BRANCH_NAME2, gitAccess.getRepository().getBranch());
     
     // ======================== no obsolete branch =================================

@@ -1,7 +1,8 @@
 package com.oxygenxml.git.view.actions;
 
 import org.eclipse.jgit.annotations.NonNull;
-import org.eclipse.jgit.lib.ProgressMonitor;
+
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 
 /**
  * The progress monitor of a Git operation.
@@ -9,7 +10,7 @@ import org.eclipse.jgit.lib.ProgressMonitor;
  * @author alex_smarandache
  *
  */
-public class GitOperationProgressMonitor implements ProgressMonitor {
+public class GitOperationProgressMonitor implements IGitViewProgressMonitor {
 
   /**
    * The title of the task.
@@ -87,5 +88,28 @@ public class GitOperationProgressMonitor implements ProgressMonitor {
   @Override
   public void showDuration(boolean enabled) {
     // Not of interest
+  }
+
+  @Override
+  public void showWithDelay(long millisDelay) {
+    if(progressUpdater != null) {
+      progressUpdater.showWithDelay(millisDelay);
+    }
+    
+  }
+
+  @Override
+  public void markAsCompleted() {
+    if(progressUpdater != null) {
+      progressUpdater.markAsCompleted();
+    }    
+  }
+
+  @Override
+  public void markAsFailed() {
+    if(progressUpdater != null) {
+      progressUpdater.markAsFailed();
+    }
+    
   }
 }

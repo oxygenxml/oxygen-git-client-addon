@@ -8,6 +8,18 @@ package com.oxygenxml.git.view.actions;
 public interface IProgressUpdater {
   
   /**
+   * The default delay for the operation in millis.
+   */
+  static final int DEFAULT_OPERATION_DELAY = 2000;
+  
+  /**
+   * Show the progress with a delay if it is still not finished.
+   * 
+   * @param millisDelay The delay in milliseconds.
+   */
+  void showWithDelay(long millisDelay);
+  
+  /**
    * @param note  Set the new note to be displayed.
    */
   void setNote(String note);
@@ -21,6 +33,11 @@ public interface IProgressUpdater {
    * When the progress is finished with success.
    */
   void markAsCompleted();
+  
+  /**
+   * When the progress is finished with fail.
+   */
+  void markAsFailed();
   
   /**
    * @return <code>true</code> if the operation was completed.

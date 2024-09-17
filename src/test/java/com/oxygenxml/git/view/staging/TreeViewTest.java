@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.JButton;
@@ -391,7 +392,7 @@ public class TreeViewTest extends FlatViewTestBase {
     assertTreeModels("", "CHANGED, test.txt");
     
     // Restart merge
-    ScheduledFuture<?> restartMerge = GitAccess.getInstance().restartMerge();
+    ScheduledFuture<?> restartMerge = GitAccess.getInstance().restartMerge(Optional.empty());
     restartMerge.get();
     flushAWT();
     assertTreeModels("CONFLICT, test.txt", "");

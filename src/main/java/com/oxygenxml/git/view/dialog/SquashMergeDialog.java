@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,6 +28,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.util.ExceptionHandlerUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -152,7 +154,8 @@ public class SquashMergeDialog extends OKCancelDialog {
   @Override
   protected void doOK() {
     try {
-      GitAccess.getInstance().squashAndMergeBranch(selectedBranch, commitMessageTextArea.getText());
+      GitAccess.getInstance().squashAndMergeBranch(selectedBranch, commitMessageTextArea.getText(), 
+          Optional.of(new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.SQUASH_MERGE), false))));
     } catch (GitAPIException | IOException | NoRepositorySelected | NoChangesInSquashedCommitException e) {
       LOGGER.error(e.getMessage(), e);
       ExceptionHandlerUtil.handleMergeException(e);

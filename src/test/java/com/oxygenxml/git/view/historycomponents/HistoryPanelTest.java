@@ -5,6 +5,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.JTable;
@@ -302,7 +303,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     //=======================
     // Change branch.
     //=======================
-    GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     
     // History panel uses the scheduler to perform the change.
     ScheduledFuture<?> schedule = GitOperationScheduler.getInstance().schedule(() -> {});

@@ -3,6 +3,7 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -142,7 +143,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
     flushAWT();
 
     // ------------- Checkout branch: LOCAL_BRANCH_NAME1 -------------
-     gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+     gitAccess.setBranch(LOCAL_BRANCH_NAME1, Optional.empty());
 
     // Commit on this branch
     setFileContent(file1, "local file 1 on new branch");
@@ -153,7 +154,7 @@ public class GitAccessRevertMergingConflictsTest extends GitTestBase {
 
     // ------------- Move to the main branch and commit something there
     // ---------------
-    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
 
     setFileContent(file1, "local file 1 modifications");
     setFileContent(file2, "local file 2 modifications");
