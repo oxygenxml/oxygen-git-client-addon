@@ -2047,11 +2047,6 @@ public class Tags {
   public static final String INDEX_LOCK_IN_SUBMODULE = "Index_lock_in_submodule";
   
   /**
-   * English: Operation in Progress.
-   */
-  public static final String OPERATION_IN_PROGRESS = "Operation_In_Progress";
-  
-  /**
    * English: Save all.
    */
   public static final String SAVE_ALL = "Save_All";

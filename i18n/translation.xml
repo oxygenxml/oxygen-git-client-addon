@@ -86,15 +86,6 @@
 		<val lang="nl_NL">Save all</val>
 		<val lang="zh_CN">Save all</val>
 	</key>
-	<key value="Operation_In_Progress">
-		<comment>English: Operation in Progress.</comment>
-		<val lang="en_US">Operation in Progress</val>
-		<val lang="de_DE">Operation in Progress</val>
-		<val lang="fr_FR">Operation in Progress</val>
-		<val lang="ja_JP">Operation in Progress</val>
-		<val lang="nl_NL">Operation in Progress</val>
-		<val lang="zh_CN">Operation in Progress</val>
-	</key>
 	<key value="Index_lock_in_repo">
         <comment>Message about the fact that index.lock exists in the repo.</comment>
         <val lang="en_US">A lock file exists in the current repository (location: ''{0}'').
