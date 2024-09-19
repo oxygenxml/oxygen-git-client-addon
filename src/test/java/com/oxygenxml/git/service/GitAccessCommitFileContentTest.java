@@ -2,6 +2,7 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Optional;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
