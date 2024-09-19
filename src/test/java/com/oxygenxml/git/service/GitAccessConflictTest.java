@@ -253,7 +253,7 @@ public class GitAccessConflictTest extends TestCase {
 	// Pulling now will say that the merge was not concluded and we should commit
     assertEquals(RepositoryState.MERGING_RESOLVED, gitAccess.getRepository().getRepositoryState());
     
-    gitCtrl.pull();
+    gitCtrl.pull(null);
     Awaitility.await().atMost(1500, TimeUnit.MILLISECONDS).until(() ->
       "Conclude_Merge_Message".equals(shownWarningMess[0])
     );

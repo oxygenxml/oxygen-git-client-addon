@@ -18,7 +18,6 @@ import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
-import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
@@ -30,6 +29,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatusUtil;
@@ -40,6 +40,7 @@ import com.oxygenxml.git.service.exceptions.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.view.actions.IProgressUpdater;
 import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
@@ -88,15 +89,17 @@ public class GitController extends GitControllerBase {
   /**
    * Execute an push or pull action, depending on the given command.
    * 
-   * @param message An optional message about the operation.
-   * @param command The command runnable to execute.
-   * 
+   * @param message          An optional message about the operation.
+   * @param command          The command runnable to execute.
+   * @param progressMonitor  The optional progress manager.
+   *
    * @return The result of the operation execution.
    */
-  private Future<?> execute(String message, ExecuteCommandRunnable command) {
+  private Future<?> execute(String message, ExecuteCommandRunnable command, Optional<IGitViewProgressMonitor> progressMonitor) {
     PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), message);
     try {
       listeners.fireOperationAboutToStart(pushPullEvent);
+      progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
     } catch (IndexLockExistsException e) {
       // Ignore. We already had a mechanism for pull. Let it do its job.
       // The old mechanism also seems to update the status at the bottom of the Git Staging view.
@@ -123,20 +126,24 @@ public class GitController extends GitControllerBase {
   /**
    * Push.
    * 
+   * @param progressMonitor  The optional progress manager.
+   *
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
-  public Future<?> push() {
-    return execute(TRANSLATOR.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable());
+  public Future<?> push(Optional<IGitViewProgressMonitor> progressMonitor) {
+    return execute(TRANSLATOR.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable(progressMonitor), progressMonitor);
   }
 
   /**
    * Pull.
    * 
+   * @param progressMonitor    Receive the progress of the current operation.
+   * 
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
-  public Future<?> pull() {
+  public Future<?> pull(IGitViewProgressMonitor progressMonitor) {
     return	pull(PullType.MERGE_FF, null);
   }
 
@@ -149,8 +156,9 @@ public class GitController extends GitControllerBase {
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
-  public Future<?> pull(PullType pullType, ProgressMonitor progressMonitor) {
-    return execute(TRANSLATOR.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType, progressMonitor));
+  public Future<?> pull(PullType pullType, IGitViewProgressMonitor progressMonitor) {
+    return execute(TRANSLATOR.getTranslation(Tags.PULL_IN_PROGRESS), 
+      new ExecutePullRunnable(pullType, progressMonitor), Optional.ofNullable(progressMonitor));
   }
 
   /**
@@ -209,6 +217,11 @@ public class GitController extends GitControllerBase {
      * @return The git operation performed by this command.
      */
     protected abstract GitOperation getOperation();
+    
+    /**
+     * @return The optional progress monitor for the operation.
+     */
+    protected abstract Optional<IGitViewProgressMonitor> getProgressMonitor();
 
     /**
      * Executes the command. If authentication is to be tried again, the method will be called recursively.
@@ -285,6 +298,15 @@ public class GitController extends GitControllerBase {
         LOGGER.error(e.getMessage(), e);
       } finally {
         if (notifyFinish) {
+          event.ifPresent(pullPushEvent -> {
+            getProgressMonitor().ifPresent(pm -> {
+              if(pullPushEvent.getCause() != null) {
+                pm.markAsFailed();
+              } else {
+                pm.markAsCompleted();
+              }
+            });
+          });
           notifyListeners(event);
         }
       }
@@ -438,6 +460,20 @@ public class GitController extends GitControllerBase {
    * Execute PUSH.
    */
   private class ExecutePushRunnable extends ExecuteCommandRunnable {
+    
+    /**
+     * The progress monitor.
+     */
+    private final Optional<IGitViewProgressMonitor> pm;
+    
+    /**
+     * Constructor.
+     * 
+     * @param pm The progress monitor.
+     */
+    public ExecutePushRunnable(Optional<IGitViewProgressMonitor> pm) {
+      this.pm = pm;
+    }
 
     @Override
     protected GitOperation getOperation() {
@@ -486,6 +522,11 @@ public class GitController extends GitControllerBase {
     protected String composeAndReturnFailureMessage(String message) {
       return TRANSLATOR.getTranslation(Tags.PUSH_FAILED) + ": " + message;
     }
+
+    @Override
+    protected Optional<IGitViewProgressMonitor> getProgressMonitor() {
+      return pm;
+    }
   }
 
   /**
@@ -495,9 +536,9 @@ public class GitController extends GitControllerBase {
 
     private final PullType pullType;
     
-    private final ProgressMonitor progressMonitor;
+    private final IGitViewProgressMonitor progressMonitor;
 
-    public ExecutePullRunnable(PullType pullType, ProgressMonitor progressMonitor) {
+    public ExecutePullRunnable(PullType pullType, IGitViewProgressMonitor progressMonitor) {
       this.pullType = pullType;
       this.progressMonitor = progressMonitor;
     }
@@ -537,7 +578,7 @@ public class GitController extends GitControllerBase {
           PullResponse response = gitAccess.pull(
               credentialsProvider,
               pullType,
-              progressMonitor,
+              Optional.ofNullable(progressMonitor),
               OptionsManager.getInstance().getUpdateSubmodulesOnPull());
           event = treatPullResponse(response);
         }
@@ -586,6 +627,11 @@ public class GitController extends GitControllerBase {
     @Override
     protected String composeAndReturnFailureMessage(String message) {
       return TRANSLATOR.getTranslation(Tags.PULL_FAILED) + ": " + message;
+    }
+
+    @Override
+    protected Optional<IGitViewProgressMonitor> getProgressMonitor() {
+      return Optional.ofNullable(progressMonitor);
     }
   }
  

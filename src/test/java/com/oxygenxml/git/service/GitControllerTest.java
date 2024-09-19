@@ -1,5 +1,6 @@
 package com.oxygenxml.git.service;
 
+import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -91,7 +92,7 @@ public class GitControllerTest {
       }
     });
     
-    Future<?> push = ctrl.push();
+    Future<?> push = ctrl.push(Optional.empty());
     push.get();
     
     Assert.assertEquals("Not the expected events", 

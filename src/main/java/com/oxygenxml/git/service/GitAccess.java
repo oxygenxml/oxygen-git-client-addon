@@ -1059,7 +1059,7 @@ public class GitAccess {
 	 * 
 	 * @param credentialsProvider Credentials provider.
 	 * @param pullType            One of ff, no-ff, ff-only, rebase.
-	 * @param monitor             The monitor progress for the pull operation.
+	 * @param monitor             The optional monitor progress for the pull operation.
 	 * @param updateSubmodules    <code>true</code> to execute the equivalent of a "git submodule update --recursive"
 	 * 
 	 * @return The result, if successful.
@@ -1073,7 +1073,7 @@ public class GitAccess {
 	public PullResponse pull(
 	    CredentialsProvider credentialsProvider,
 	    PullType pullType,
-	    ProgressMonitor monitor,
+	    Optional<IGitViewProgressMonitor> monitor,
 	    boolean updateSubmodules) throws GitAPIException {
 	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  AuthenticationInterceptor.install();
@@ -1088,7 +1088,7 @@ public class GitAccess {
 	    PullCommand pullCmd = git.pull()
 	        .setRebase(PullType.REBASE == pullType)
 	        .setCredentialsProvider(credentialsProvider)
-	        .setProgressMonitor(monitor)
+	        .setProgressMonitor(monitor.orElse(null))
 	        .setRemote(getRemoteFromCurrentBranch());
 	    PullResult pullCommandResult = pullCmd.call();
 
@@ -1852,7 +1852,8 @@ public class GitAccess {
 	        git.rebase().setProgressMonitor(progressMonitor.orElse(null)).setOperation(Operation.ABORT).call();
 	        // EXM-47461 Should update submodules as well.
 	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
-	        pull(credentialsProvider, PullType.REBASE, null, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
+	        GitOperationProgressMonitor pullPM = new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.PULL), true));
+	        pull(credentialsProvider, PullType.REBASE, Optional.of(pullPM), OptionsManager.getInstance().getUpdateSubmodulesOnPull());
 	      } else {
 	        AnyObjectId commitToMerge = repo.resolve("MERGE_HEAD");
 	        git.clean().call();

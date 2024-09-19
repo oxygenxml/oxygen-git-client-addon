@@ -47,7 +47,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
 
       GitController ctrl = new GitController();
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull().get();
+      ctrl.pull(null).get();
 
       String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules must be initialized and updated", "version 1", content);
@@ -59,7 +59,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
 
       // Pull again.
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull().get();
+      ctrl.pull(null).get();
       content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules must be initialized and updated", "version 2", content);
     } finally {
@@ -169,7 +169,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
 
       GitController ctrl = new GitController();
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull().get();
+      ctrl.pull(null).get();
 
       assertEquals(
           "The submodules must be initialized and updated", 
@@ -264,7 +264,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
       
       GitController ctrl = new GitController();
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull().get();
+      ctrl.pull(null).get();
       
       String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules must be initialized and updated", "version 1", content);
@@ -277,7 +277,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
       OptionsManager.getInstance().setUpdateSubmodulesOnPull(false);
       // Pull again.
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull().get();
+      ctrl.pull(null).get();
       content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules must no be initialized and updated automatically", "version 1", content);
     } finally {

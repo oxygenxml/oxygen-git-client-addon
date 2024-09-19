@@ -93,7 +93,7 @@ public class FlatView2Test extends FlatViewTestBase {
     PullResponse pullResponse = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
     assertTrue(showErrorMessageCalled[0]);
-    Future<?> execute = ((GitController) stagingPanel.getGitController()).pull();
+    Future<?> execute = ((GitController) stagingPanel.getGitController()).pull(null);
     execute.get();
     flushAWT();
     assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());

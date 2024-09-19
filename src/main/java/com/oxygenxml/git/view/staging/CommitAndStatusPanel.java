@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -69,8 +70,10 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.validation.ValidationManager;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.components.ApplicationLabel;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.dialog.internal.MessageDialogBuilder;
 import com.oxygenxml.git.view.event.GitController;
@@ -235,7 +238,7 @@ public class CommitAndStatusPanel extends JPanel {
         if (commitSuccessful 
             && autoPushWhenCommittingToggle.isSelected() 
             && (!validationManager.isPrePushValidationEnabled() || validationManager.checkPushValid())) {
-          gitController.push();
+          gitController.push(Optional.ofNullable(new GitOperationProgressMonitor(new ProgressDialog(translator.getTranslation(Tags.PUSH), true))));
         }
       }
     }

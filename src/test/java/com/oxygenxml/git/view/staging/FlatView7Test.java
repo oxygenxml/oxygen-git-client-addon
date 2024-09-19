@@ -82,7 +82,7 @@ public class FlatView7Test extends FlatViewTestBase {
 				branchesCombo.getToolTipText());
 
 		// Push to create the remote branch
-		((GitController) stagingPanel.getGitController()).push();
+		((GitController) stagingPanel.getGitController()).push(Optional.empty());
 		waitForScheduler();
 		
 		branchesCombo.refresh();

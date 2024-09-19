@@ -98,7 +98,7 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void pull() throws Exception {
     // Execute pull command and wait for it to finish.
-    ((GitController) stagingPanel.getGitController()).pull().get();
+    ((GitController) stagingPanel.getGitController()).pull(null).get();
   }
   
   /**

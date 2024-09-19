@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTable;
@@ -192,7 +193,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       remoteConfig.update(config);
       config.save();
       
-      PUSH_PULL_CONTROLLER.push();
+      PUSH_PULL_CONTROLLER.push(Optional.empty());
       initialNoOfRefreshes[0]++;
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
           == noOfRefreshes);

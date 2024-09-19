@@ -20,7 +20,9 @@ import com.oxygenxml.git.service.exceptions.RepositoryUnavailableException;
 import com.oxygenxml.git.service.exceptions.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
@@ -201,7 +203,7 @@ public class RemoteRepositoryChangeWatcher {
         .setOkButtonName(translator.getTranslation(Tags.PULL_CHANGES))
         .setCancelButtonName(translator.getTranslation(Tags.CLOSE))
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK) {
-      gitController.pull();
+      gitController.pull(new GitOperationProgressMonitor(new ProgressDialog(translator.getTranslation(Tags.PULL), true)));
     }
   }
   

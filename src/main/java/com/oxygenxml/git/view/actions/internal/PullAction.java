@@ -2,12 +2,12 @@ package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
 
-import org.eclipse.jgit.lib.ProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
@@ -43,7 +43,7 @@ public class PullAction extends BaseGitAbstractAction {
     /**
      * The progress monitor of the action.
      */
-    private final ProgressMonitor progressMonitor;
+    private final IGitViewProgressMonitor progressMonitor;
    
     
 	
@@ -55,7 +55,7 @@ public class PullAction extends BaseGitAbstractAction {
      * @param pullType        The pull type.
      * @param progressMonitor The progress monitor of the action.
      */
-    public PullAction(final GitController gitController, final String name, final PullType pullType, final ProgressMonitor progressMonitor) {
+    public PullAction(final GitController gitController, final String name, final PullType pullType, final IGitViewProgressMonitor progressMonitor) {
       super(name);
       this.pullType = pullType;
       this.progressMonitor = progressMonitor;
