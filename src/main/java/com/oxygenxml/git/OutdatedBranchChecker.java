@@ -8,6 +8,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+import javax.swing.SwingUtilities;
+
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -112,28 +115,31 @@ public class OutdatedBranchChecker {
               null);
         }
         
-        int userChoice = MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.WARNING)
-          .setMessage(i18n.getTranslation(Tags.OUTDATED_BRANCHES_INFO))
-          .setTargetResourcesWithTooltips(branches)
-          .setOkButtonName(i18n.getTranslation(Tags.DELETE_BRANCHES))
-          .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
-          .buildAndShow()
-          .getResult();
-        if (userChoice == OKCancelDialog.RESULT_OK) {
-          int userDecision = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-              i18n.getTranslation(Tags.DELETE_BRANCHES),
-              MessageFormat.format(
-                  i18n.getTranslation(Tags.OUTDATED_BRANCHES_DELETION_CONFIRMATION),
-                  branches.keySet().stream()
-                    .sorted(String.CASE_INSENSITIVE_ORDER)
-                    .map(item -> "- " + item)
-                    .collect(Collectors.joining("\n"))),
-              new String[] {i18n.getTranslation(Tags.YES), i18n.getTranslation(Tags.NO)},
-              new int[] {1, 0});
-          if (userDecision == 1) {
-            GitAccess.getInstance().deleteBranches(branches.keySet());
-          }
-        }
+        SwingUtilities.invokeLater(() -> {
+          int userChoice = MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.WARNING)
+              .setMessage(i18n.getTranslation(Tags.OUTDATED_BRANCHES_INFO))
+              .setTargetResourcesWithTooltips(branches)
+              .setOkButtonName(i18n.getTranslation(Tags.DELETE_BRANCHES))
+              .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
+              .buildAndShow()
+              .getResult();
+            if (userChoice == OKCancelDialog.RESULT_OK) {
+              int userDecision = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+                  i18n.getTranslation(Tags.DELETE_BRANCHES),
+                  MessageFormat.format(
+                      i18n.getTranslation(Tags.OUTDATED_BRANCHES_DELETION_CONFIRMATION),
+                      branches.keySet().stream()
+                        .sorted(String.CASE_INSENSITIVE_ORDER)
+                        .map(item -> "- " + item)
+                        .collect(Collectors.joining("\n"))),
+                  new String[] {i18n.getTranslation(Tags.YES), i18n.getTranslation(Tags.NO)},
+                  new int[] {1, 0});
+              if (userDecision == 1) {
+                GitOperationScheduler.getInstance().schedule(() -> GitAccess.getInstance().deleteBranches(branches.keySet())); 
+              }
+            }
+        });
+        
       }
     } catch (NoRepositorySelected e) {
       LOGGER.warn(e, e);
