@@ -20,7 +20,11 @@ import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.PullType;
 
 import junit.framework.TestCase;
@@ -352,7 +356,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
-        null,
+        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true))),
         updateSubmodules);
   }
 }

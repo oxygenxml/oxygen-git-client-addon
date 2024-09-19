@@ -67,12 +67,15 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -823,7 +826,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
-        null,
+        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true))),
         updateSubmodules);
   }
   

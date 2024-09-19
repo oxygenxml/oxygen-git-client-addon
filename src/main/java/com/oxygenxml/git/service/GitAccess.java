@@ -2621,7 +2621,7 @@ public class GitAccess {
    *
    * @throws GitAPIException 
    */
-  public StashApplyStatus popStash(String stashRef) throws GitAPIException {
+  public StashApplyStatus popStash(String stashRef, Optional<IGitViewProgressMonitor> pm) throws GitAPIException {
     StashApplyStatus status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
     try {
       fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_POP));

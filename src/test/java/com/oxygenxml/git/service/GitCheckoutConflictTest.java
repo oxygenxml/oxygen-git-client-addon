@@ -34,8 +34,10 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelsRefreshSupport;
@@ -109,7 +111,7 @@ public class GitCheckoutConflictTest extends JFCTestCase {
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
-        null,
+        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true))),
         updateSubmodules);
   }
 
