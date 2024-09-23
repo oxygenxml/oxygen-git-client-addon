@@ -40,6 +40,10 @@ public class OutdatedBranchChecker {
    * Logger for logging.
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(OutdatedBranchChecker.class.getName());
+  /**
+   * Utility class.
+   */
+  private OutdatedBranchChecker() {}
   
   /**
    * i18n
