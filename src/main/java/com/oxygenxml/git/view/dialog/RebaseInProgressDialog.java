@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -15,6 +16,7 @@ import javax.swing.WindowConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
@@ -93,7 +95,7 @@ public class RebaseInProgressDialog extends JDialog {
   private ActionListener createContinueRebaseActionListener() {
     return e -> {
       setVisible(false);
-      GitAccess.getInstance().continueRebase();
+      GitAccess.getInstance().continueRebase(Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CONTINUE_REBASE), true))));
     };
   }
   
@@ -103,7 +105,7 @@ public class RebaseInProgressDialog extends JDialog {
   private ActionListener createAbortRebaseActionListener() {
     return e -> {
       setVisible(false);
-      GitAccess.getInstance().abortRebase();
+      GitAccess.getInstance().abortRebase(Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.ABORT_REBASE), true))));
     };
   }
   

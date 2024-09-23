@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.history.actions;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 
@@ -13,10 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.branches.IBranchesCreator;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -57,8 +61,10 @@ public class CreateBranchFromCommitAction extends AbstractAction {
       public void createBranch(String branchName, boolean shouldCheckoutBranch) {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
+            final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+                new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), true)));
             if(shouldCheckoutBranch) {
-              GitAccess.getInstance().checkoutCommitAndCreateBranch(branchName, commitId);
+              GitAccess.getInstance().checkoutCommitAndCreateBranch(branchName, commitId, progMon);
             } else {
               GitAccess.getInstance().createBranch(branchName, commitId);
             }

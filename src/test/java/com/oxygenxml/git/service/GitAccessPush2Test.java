@@ -1,7 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Optional;
 
 import org.eclipse.jgit.lib.Repository;
 
@@ -57,7 +57,7 @@ public class GitAccessPush2Test extends GitTestBase {
     gitAccess.commit("file test added");
     push("", "");
     
-    gitAccess.checkoutRemoteBranchWithNewName("localBranch", GitAccess.DEFAULT_BRANCH_NAME);
+    gitAccess.checkoutRemoteBranchWithNewName("localBranch", GitAccess.DEFAULT_BRANCH_NAME, Optional.empty());
     String detectedBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("localBranch", detectedBranchName);
     assertEquals("origin/" + GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getUpstreamBranchShortNameFromConfig(detectedBranchName));

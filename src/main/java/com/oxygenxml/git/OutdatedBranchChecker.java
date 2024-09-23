@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -21,8 +22,10 @@ import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -139,7 +142,8 @@ public class OutdatedBranchChecker {
                   new String[] {i18n.getTranslation(Tags.YES), i18n.getTranslation(Tags.NO)},
                   new int[] {1, 0});
               if (userDecision == 1) {
-                GitOperationScheduler.getInstance().schedule(() -> GitAccess.getInstance().deleteBranches(branches.keySet())); 
+                GitOperationScheduler.getInstance().schedule(() -> GitAccess.getInstance().deleteBranches(branches.keySet(), Optional.of(
+                    new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.DELETE_BRANCHES), true))))); 
               }
             }
         });

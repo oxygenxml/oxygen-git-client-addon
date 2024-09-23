@@ -9,11 +9,12 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
-import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.validation.ValidationManager;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 
 /**
@@ -40,19 +41,13 @@ public class PushAction extends BaseGitAbstractAction {
 	private final GitController gitController;
 
 	/**
-   * The progress monitor of the action.
-   */
-  private final IGitViewProgressMonitor progressMonitor;
-
-	/**
 	 * Constructor.
 	 * 
 	 * @param gitController The Git Controller.
 	 */
-	public PushAction(final GitController gitController, final IGitViewProgressMonitor progressMonitor) {
+	public PushAction(final GitController gitController) {
 		super(TRANSLATOR.getTranslation(Tags.PUSH));
 		this.gitController = gitController;
-		this.progressMonitor = progressMonitor;
 		this.putValue(SMALL_ICON, Icons.getIcon(Icons.GIT_PUSH_ICON));
 	}
 
@@ -68,7 +63,7 @@ public class PushAction extends BaseGitAbstractAction {
 				GitOperationScheduler.getInstance().schedule(() -> {
 				  if(!ValidationManager.getInstance().isPrePushValidationEnabled() 
 				      || ValidationManager.getInstance().checkPushValid()) {
-				    gitController.push(Optional.ofNullable(progressMonitor));
+				    gitController.push(Optional.of(new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.PUSH), true))));
 				  }
 				});
 				

@@ -7,8 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 
@@ -36,16 +37,14 @@ public class PullAction extends BaseGitAbstractAction {
     private final PullType pullType;
     
     /**
+     * The name of the pull action.
+     */
+    private final String name;
+    
+    /**
      * The Git Controller.
      */
     private final transient GitController gitController;
-    
-    /**
-     * The progress monitor of the action.
-     */
-    private final IGitViewProgressMonitor progressMonitor;
-   
-    
 	
     /**
      * Constructor.
@@ -53,12 +52,11 @@ public class PullAction extends BaseGitAbstractAction {
      * @param gitController   Git Controller.
      * @param name            Action name.
      * @param pullType        The pull type.
-     * @param progressMonitor The progress monitor of the action.
      */
-    public PullAction(final GitController gitController, final String name, final PullType pullType, final IGitViewProgressMonitor progressMonitor) {
+    public PullAction(final GitController gitController, final String name, final PullType pullType) {
       super(name);
+      this.name = name;
       this.pullType = pullType;
-      this.progressMonitor = progressMonitor;
       putValue(PULL_TYPE_ACTION_PROP, pullType);
       this.gitController = gitController;
     }
@@ -71,7 +69,7 @@ public class PullAction extends BaseGitAbstractAction {
           if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Pull action invoked");
           }
-          gitController.pull(pullType, progressMonitor);
+          gitController.pull(pullType, new GitOperationProgressMonitor(new ProgressDialog(name, true)));
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {

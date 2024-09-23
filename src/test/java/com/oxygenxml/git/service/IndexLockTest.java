@@ -71,19 +71,19 @@ public class IndexLockTest extends GitTestBase {
     new OxygenGitPluginExtension().applicationStarted(pluginWS);
 
     // The following operations should fail with index.lock-related message
-    gitAccess.abortMerge();
-    gitAccess.abortRebase();
+    gitAccess.abortMerge(Optional.empty());
+    gitAccess.abortRebase(Optional.empty());
     gitAccess.add(new FileStatus(GitChangeType.ADD, ""));
     gitAccess.addAll(Collections.emptyList());
     gitAccess.applyStash("");
-    gitAccess.checkoutCommit("", "");
-    gitAccess.checkoutRemoteBranchWithNewName("", "", "");
+    gitAccess.checkoutCommit("", "", Optional.empty());
+    gitAccess.checkoutRemoteBranchWithNewName("", "", Optional.empty(), "");
     try {
       gitAccess.commit("");
     } catch (IndexLockExistsException e) {
       // ignore
     }
-    gitAccess.continueRebase();
+    gitAccess.continueRebase(Optional.empty());
     gitAccess.createStash(false, "");
     gitAccess.mergeBranch("", Optional.empty());
     gitAccess.popStash("");
@@ -99,7 +99,7 @@ public class IndexLockTest extends GitTestBase {
     // The following operations don't fail
     gitAccess.createBranch("");
     gitAccess.createBranch("", "");
-    gitAccess.deleteBranches(Collections.emptyList());
+    gitAccess.deleteBranches(Collections.emptyList(), Optional.empty());
     gitAccess.deleteTags(false, "");
     gitAccess.dropAllStashes();
     gitAccess.dropStash(0);

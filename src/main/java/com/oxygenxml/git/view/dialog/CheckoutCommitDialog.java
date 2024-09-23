@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
@@ -33,10 +34,12 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.TextFormatUtil;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -313,21 +316,23 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	@Override
 	protected void doOK() {
 		try {
+		  final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+              new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CHECKOUT), true)));
 			if(createNewBranchRadio.isSelected()) {
 				if("".equals(branchNameTextField.getText())) {
 					previousBranchNameUpdate = null;
 					updateUI("");
 					return;
 				} else if(commit != null) {
-				  GitAccess.getInstance().checkoutCommit(commit, branchNameTextField.getText());	
+				  GitAccess.getInstance().checkoutCommit(commit, branchNameTextField.getText(), progMon);	
 				} else {
-				  GitAccess.getInstance().checkoutCommit(commitPath, branchNameTextField.getText());	
+				  GitAccess.getInstance().checkoutCommit(commitPath, branchNameTextField.getText(), progMon);	
 				}
 			} else {
 				if(commit != null) {
-					GitAccess.getInstance().checkoutCommit(commit, null);	
+					GitAccess.getInstance().checkoutCommit(commit, null, progMon);	
 				} else {
-					GitAccess.getInstance().checkoutCommit(commitPath, null);	
+					GitAccess.getInstance().checkoutCommit(commitPath, null, progMon);	
 				}
 			}
 		} catch (GitAPIException e) {

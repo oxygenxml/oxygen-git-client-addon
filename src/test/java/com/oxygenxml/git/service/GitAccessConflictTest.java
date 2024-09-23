@@ -404,7 +404,7 @@ public class GitAccessConflictTest extends TestCase {
     RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
-    gitAccess.continueRebase();
+    gitAccess.continueRebase(Optional.empty());
     Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
       RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     
@@ -522,7 +522,7 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
     // Abort. Go back to the state before trying to pull.
-    gitAccess.abortRebase();
+    gitAccess.abortRebase(Optional.empty());
     Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
       RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     
@@ -642,7 +642,7 @@ public class GitAccessConflictTest extends TestCase {
     RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
-    gitAccess.continueRebase();
+    gitAccess.continueRebase(Optional.empty());
     Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> 
       RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     gitStatus = gitAccess.getStatus();
@@ -760,7 +760,7 @@ public class GitAccessConflictTest extends TestCase {
     RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
-    gitAccess.abortRebase();
+    gitAccess.abortRebase(Optional.empty());
     Awaitility.await().atMost(Duration.ONE_SECOND).until(() ->
       RepositoryState.SAFE.equals(gitAccess.getRepository().getRepositoryState()));
     

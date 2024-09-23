@@ -117,7 +117,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
           }
         }
       };
-      GitAccess.getInstance().checkoutCommitAndCreateBranch("new_branch", commitCharacteristics.getCommitId());
+      GitAccess.getInstance().checkoutCommitAndCreateBranch("new_branch", commitCharacteristics.getCommitId(), Optional.empty());
       waitForScheduler();
       Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).until(() -> 
         "new_branch".equals(branchName.get())
@@ -181,7 +181,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
           == noOfRefreshes);
       
-      GitAccess.getInstance().deleteBranches(Arrays.asList("new_branch"));
+      GitAccess.getInstance().deleteBranches(Arrays.asList("new_branch"), Optional.empty());
       initialNoOfRefreshes[0]++;
       Awaitility.await().atMost(Duration.ONE_SECOND).until(() -> initialNoOfRefreshes[0] 
           == noOfRefreshes);

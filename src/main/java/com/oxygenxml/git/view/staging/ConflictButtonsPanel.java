@@ -4,6 +4,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.util.Optional;
 
 import javax.swing.JPanel;
 
@@ -13,9 +14,12 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
@@ -29,7 +33,7 @@ public class ConflictButtonsPanel extends JPanel {
   /**
    * i18n
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * Merge conflict panel ID.
    */
@@ -95,19 +99,23 @@ public class ConflictButtonsPanel extends JPanel {
     
     // Merge conflict buttons panel
     JPanel mergeConflictCard = new JPanel(flowLayout);
-    Button abortMergeButton = new Button(translator.getTranslation(Tags.ABORT_MERGE));
-    abortMergeButton.addActionListener(e -> GitAccess.getInstance().abortMerge());
+    Button abortMergeButton = new Button(TRANSLATOR.getTranslation(Tags.ABORT_MERGE));
+    final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+        new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.ABORT_MERGE), true)));
+    abortMergeButton.addActionListener(e -> GitAccess.getInstance().abortMerge(progMon));
     mergeConflictCard.add(abortMergeButton);
     
     // Rebase conflict buttons panel
     JPanel rebaseConflictCard = new JPanel(flowLayout);
 
-    Button abortRebaseButton = new Button(translator.getTranslation(Tags.ABORT_REBASE));
-    abortRebaseButton.addActionListener(e -> GitAccess.getInstance().abortRebase());
+    Button abortRebaseButton = new Button(TRANSLATOR.getTranslation(Tags.ABORT_REBASE));
+    abortRebaseButton.addActionListener(e -> GitAccess.getInstance().abortRebase(
+        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.ABORT_REBASE), true)))));
     rebaseConflictCard.add(abortRebaseButton);
 
-    Button continueRebaseButton = new Button(translator.getTranslation(Tags.CONTINUE_REBASE));
-    continueRebaseButton.addActionListener(e -> GitAccess.getInstance().continueRebase());
+    Button continueRebaseButton = new Button(TRANSLATOR.getTranslation(Tags.CONTINUE_REBASE));
+    continueRebaseButton.addActionListener(e -> GitAccess.getInstance().continueRebase(
+        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.CONTINUE_REBASE), true)))));
     rebaseConflictCard.add(continueRebaseButton);
     
     // Add to the main panel

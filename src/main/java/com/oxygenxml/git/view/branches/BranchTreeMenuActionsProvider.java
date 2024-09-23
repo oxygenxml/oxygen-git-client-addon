@@ -218,7 +218,9 @@ public class BranchTreeMenuActionsProvider {
        */
       private void createBranchAsync(String nodePath, String branchPath, String branchName) {
         ctrl.asyncTask(() -> {
-          ctrl.getGitAccess().checkoutRemoteBranchWithNewName(branchName, branchPath, BranchesUtil.getRemoteForBranch(nodePath));
+          final Optional<IGitViewProgressMonitor> progMon = Optional.of(
+              new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), true)));
+          ctrl.getGitAccess().checkoutRemoteBranchWithNewName(branchName, branchPath, progMon, BranchesUtil.getRemoteForBranch(nodePath));
           BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
 
           return null;
@@ -442,7 +444,8 @@ public class BranchTreeMenuActionsProvider {
           ctrl.asyncTask(() -> {
             String branch = BranchesUtil.createBranchPath(nodePath,
                 BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
-            ctrl.getGitAccess().deleteBranches(Arrays.asList(branch));
+            ctrl.getGitAccess().deleteBranches(Arrays.asList(branch), Optional.of(
+                new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.DELETE_BRANCH), true))));
             return null;
           }, ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
         }

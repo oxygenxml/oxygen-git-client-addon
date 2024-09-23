@@ -144,7 +144,7 @@ public class GitController extends GitControllerBase {
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull(IGitViewProgressMonitor progressMonitor) {
-    return	pull(PullType.MERGE_FF, null);
+    return	pull(PullType.MERGE_FF, progressMonitor);
   }
 
   /**

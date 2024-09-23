@@ -16,7 +16,6 @@ import com.google.common.collect.Sets;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -37,7 +36,6 @@ import com.oxygenxml.git.view.actions.internal.ShowTagsAction;
 import com.oxygenxml.git.view.actions.internal.StashChangesAction;
 import com.oxygenxml.git.view.actions.internal.SubmodulesAction;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -264,8 +262,7 @@ public class GitActionsManager  {
   @NonNull
   public AbstractAction getPushAction() {
     if(pushAction == null) {
-      pushAction = new PushAction(gitController, 
-          new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.PUSH), true)));
+      pushAction = new PushAction(gitController);
       final boolean hasRepository = hasRepository();
       SwingUtilities.invokeLater(() -> pushAction.setEnabled(hasRepository));
     }
@@ -280,10 +277,8 @@ public class GitActionsManager  {
   @NonNull
   public AbstractAction getPullMergeAction() {
     if(pullMergeAction == null) {
-      IGitViewProgressMonitor progressMonitor = 
-          new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.PULL_MERGE), true));
       pullMergeAction = new PullAction(gitController, 
-          TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF, progressMonitor);
+          TRANSLATOR.getTranslation(Tags.PULL_MERGE), PullType.MERGE_FF);
       final boolean hasRepository = hasRepository();
       SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(hasRepository));
     }
@@ -298,10 +293,8 @@ public class GitActionsManager  {
   @NonNull
   public AbstractAction getPullRebaseAction() {
     if(pullRebaseAction == null) {
-      IGitViewProgressMonitor progressMonitor = 
-          new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.PULL_REBASE), true));
       pullRebaseAction = new PullAction(gitController, 
-          TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE, progressMonitor);
+          TRANSLATOR.getTranslation(Tags.PULL_REBASE), PullType.REBASE);
       final boolean hasRepository = hasRepository();
       SwingUtilities.invokeLater(() -> pullRebaseAction.setEnabled(hasRepository));
     }

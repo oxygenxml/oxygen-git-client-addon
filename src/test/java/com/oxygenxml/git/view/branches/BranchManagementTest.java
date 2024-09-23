@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Optional;
 
 import javax.swing.JLabel;
 import javax.swing.JTree;
@@ -1016,7 +1017,7 @@ public class BranchManagementTest extends GitTestBase{
     flushAWT();
     
     JTree tree = branchManagementPanel.getTree();
-    gitAccess.deleteBranches(Arrays.asList(LOCAL_BRANCH_NAME2));
+    gitAccess.deleteBranches(Arrays.asList(LOCAL_BRANCH_NAME2), Optional.empty());
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     DefaultMutableTreeNode leaf = root.getFirstLeaf();
     JLabel rendererLabel = (JLabel) tree.getCellRenderer()
