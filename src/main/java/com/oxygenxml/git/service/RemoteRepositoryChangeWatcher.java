@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -203,7 +204,7 @@ public class RemoteRepositoryChangeWatcher {
         .setOkButtonName(translator.getTranslation(Tags.PULL_CHANGES))
         .setCancelButtonName(translator.getTranslation(Tags.CLOSE))
         .buildAndShow().getResult() == OKCancelDialog.RESULT_OK) {
-      gitController.pull(new GitOperationProgressMonitor(new ProgressDialog(translator.getTranslation(Tags.PULL), true)));
+      gitController.pull(Optional.of(new GitOperationProgressMonitor(new ProgressDialog(translator.getTranslation(Tags.PULL), true))));
     }
   }
   

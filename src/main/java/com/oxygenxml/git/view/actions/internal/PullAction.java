@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,7 @@ public class PullAction extends BaseGitAbstractAction {
           if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Pull action invoked");
           }
-          gitController.pull(pullType, new GitOperationProgressMonitor(new ProgressDialog(name, true)));
+          gitController.pull(pullType, Optional.of(new GitOperationProgressMonitor(new ProgressDialog(name, true))));
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {

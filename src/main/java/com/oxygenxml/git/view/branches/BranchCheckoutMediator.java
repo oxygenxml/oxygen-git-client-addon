@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.branches;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.SwingUtilities;
@@ -162,7 +163,7 @@ public class BranchCheckoutMediator {
     PullType pullType = OptionsManager.getInstance().getDefaultPullType();
     ctrl.pull(
         pullType == PullType.UKNOWN ? PullType.MERGE_FF : pullType, 
-        new GitOperationProgressMonitor(pullOperationProgressDialog));
+        Optional.of(new GitOperationProgressMonitor(pullOperationProgressDialog)));
   }
 
   /**
