@@ -36,7 +36,12 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   /**
    * <code>true</code> if the operation is canceled.
    */
-  private boolean isCancelled;
+  private boolean isCancelled = false;
+  
+  /**
+   * <code>true</code> if the operation is failed.
+   */
+  private boolean isFailed = false;
   
   /**
    * <code>true</code> if the cancel operation is supported.
@@ -152,12 +157,13 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
 
   @Override
   public void setVisible(boolean visible) {
-    if(!visible && !isCompleted) {
+    if(!visible && !isCompleted && !isFailed) {
       isCancelled = true;
     }
     
     super.setVisible(visible);
   }
+  
   /**
    *  @return <code>true</code> if the operation is completed.
    */
@@ -184,7 +190,16 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
    */
   @Override
   public void markAsFailed() {
-    doCancel();
+    this.isFailed = true;
+    SwingUtilities.invokeLater(() -> setVisible(false));
+  }
+
+  /**
+   *  @return <code>true</code> if the operation fail.
+   */
+  @Override
+  public boolean isFailed() {
+    return isFailed;
   }
 
 }
