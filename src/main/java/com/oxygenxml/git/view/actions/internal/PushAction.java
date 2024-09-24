@@ -68,7 +68,7 @@ public class PushAction extends BaseGitAbstractAction {
 				        new GitOperationProgressMonitor(
 				            new ProgressDialog(
 				                TRANSLATOR.getTranslation(Tags.PUSH),
-				                true)));
+				                false)));
             gitController.push(progressMonitor);
 				  }
 				});

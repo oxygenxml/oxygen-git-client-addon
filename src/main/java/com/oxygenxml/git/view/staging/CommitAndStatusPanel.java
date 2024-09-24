@@ -238,7 +238,7 @@ public class CommitAndStatusPanel extends JPanel {
         if (commitSuccessful 
             && autoPushWhenCommittingToggle.isSelected() 
             && (!validationManager.isPrePushValidationEnabled() || validationManager.checkPushValid())) {
-          gitController.push(Optional.of(new GitOperationProgressMonitor(new ProgressDialog(translator.getTranslation(Tags.PUSH), true))));
+          gitController.push(Optional.of(new GitOperationProgressMonitor(new ProgressDialog(translator.getTranslation(Tags.PUSH), false))));
         }
       }
     }
