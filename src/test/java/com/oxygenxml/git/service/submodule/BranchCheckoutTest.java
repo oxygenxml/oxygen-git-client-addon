@@ -64,7 +64,7 @@ public class BranchCheckoutTest extends GitTestBase {
 
       GitController ctrl = new GitController();
       GitAccess.getInstance().setGit(new Git(mainRepo));
-      ctrl.pull(null).get();
+      ctrl.pull(Optional.empty()).get();
 
       String content = TestUtil.read(new File(mainRepo.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules must be initialized and updated", "version 1", content);

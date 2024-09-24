@@ -143,7 +143,7 @@ public class GitController extends GitControllerBase {
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
-  public Future<?> pull(IGitViewProgressMonitor progressMonitor) {
+  public Future<?> pull(Optional<IGitViewProgressMonitor> progressMonitor) {
     return	pull(PullType.MERGE_FF, progressMonitor);
   }
 
@@ -156,9 +156,9 @@ public class GitController extends GitControllerBase {
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
-  public Future<?> pull(PullType pullType, IGitViewProgressMonitor progressMonitor) {
+  public Future<?> pull(PullType pullType, Optional<IGitViewProgressMonitor> progressMonitor) {
     return execute(TRANSLATOR.getTranslation(Tags.PULL_IN_PROGRESS), 
-      new ExecutePullRunnable(pullType, progressMonitor), Optional.ofNullable(progressMonitor));
+      new ExecutePullRunnable(pullType, progressMonitor), progressMonitor);
   }
 
   /**
@@ -536,9 +536,9 @@ public class GitController extends GitControllerBase {
 
     private final PullType pullType;
     
-    private final IGitViewProgressMonitor progressMonitor;
+    private final Optional<IGitViewProgressMonitor> progressMonitor;
 
-    public ExecutePullRunnable(PullType pullType, IGitViewProgressMonitor progressMonitor) {
+    public ExecutePullRunnable(PullType pullType, Optional<IGitViewProgressMonitor> progressMonitor) {
       this.pullType = pullType;
       this.progressMonitor = progressMonitor;
     }
@@ -578,7 +578,7 @@ public class GitController extends GitControllerBase {
           PullResponse response = gitAccess.pull(
               credentialsProvider,
               pullType,
-              Optional.ofNullable(progressMonitor),
+              progressMonitor,
               OptionsManager.getInstance().getUpdateSubmodulesOnPull());
           event = treatPullResponse(response);
         }
@@ -631,7 +631,7 @@ public class GitController extends GitControllerBase {
 
     @Override
     protected Optional<IGitViewProgressMonitor> getProgressMonitor() {
-      return Optional.ofNullable(progressMonitor);
+      return progressMonitor;
     }
   }
  

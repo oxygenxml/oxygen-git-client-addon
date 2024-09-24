@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.Git;
@@ -47,7 +48,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
 
       GitController ctrl = new GitController();
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull(null).get();
+      ctrl.pull(Optional.empty()).get();
 
       String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules must be initialized and updated", "version 1", content);
@@ -169,7 +170,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
 
       GitController ctrl = new GitController();
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull(null).get();
+      ctrl.pull(Optional.empty()).get();
 
       assertEquals(
           "The submodules must be initialized and updated", 
@@ -264,7 +265,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
       
       GitController ctrl = new GitController();
       GitAccess.getInstance().setGit(new Git(db2));
-      ctrl.pull(null).get();
+      ctrl.pull(Optional.empty()).get();
       
       String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
       assertEquals("The submodules must be initialized and updated", "version 1", content);

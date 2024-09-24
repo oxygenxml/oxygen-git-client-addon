@@ -2,6 +2,7 @@ package com.oxygenxml.git.service;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -161,7 +162,7 @@ public class GitAccessTest extends TestCase {
       GitAccess.getInstance().setGit(gitMock);
       
       GitController gitCtrl = new GitController(GitAccess.getInstance());
-      Future<?> pullResp = gitCtrl.pull(null);
+      Future<?> pullResp = gitCtrl.pull(Optional.empty());
       pullResp.get();
       
       Awaitility.await().atMost(500, TimeUnit.MILLISECONDS)

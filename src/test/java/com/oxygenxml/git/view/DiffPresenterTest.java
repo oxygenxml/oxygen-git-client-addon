@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.JFrame;
 
@@ -412,7 +413,7 @@ public class DiffPresenterTest extends GitTestBase {
     TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());

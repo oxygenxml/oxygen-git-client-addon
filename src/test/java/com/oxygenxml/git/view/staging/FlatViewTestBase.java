@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -98,7 +99,7 @@ public abstract class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void pull() throws Exception {
     // Execute pull command and wait for it to finish.
-    ((GitController) stagingPanel.getGitController()).pull(null).get();
+    ((GitController) stagingPanel.getGitController()).pull(Optional.empty()).get();
   }
   
   /**

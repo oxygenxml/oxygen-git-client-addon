@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 
@@ -93,7 +94,7 @@ public class FlatView2Test extends FlatViewTestBase {
     PullResponse pullResponse = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
     assertTrue(showErrorMessageCalled[0]);
-    Future<?> execute = ((GitController) stagingPanel.getGitController()).pull(null);
+    Future<?> execute = ((GitController) stagingPanel.getGitController()).pull(Optional.empty());
     execute.get();
     flushAWT();
     assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());
@@ -412,7 +413,7 @@ public class FlatView2Test extends FlatViewTestBase {
         super.showRebaseInProgressDialog();
       }
     };
-    ppc.pull(PullType.REBASE, null);
+    ppc.pull(PullType.REBASE, Optional.empty());
     s.acquire();
     flushAWT();
     
@@ -507,7 +508,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertTrue(rebasePanel.isShowing());
     
     GitController ppc = (GitController) stagingPanel.getGitController();
-    ppc.pull(PullType.REBASE, null);
+    ppc.pull(PullType.REBASE, Optional.empty());
     flushAWT();
     
     JDialog interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
@@ -601,7 +602,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
       // Pull again. Rebase in progress dialog is shown
       GitController ppc = (GitController) stagingPanel.getGitController();
-      ppc.pull(PullType.REBASE, null);
+      ppc.pull(PullType.REBASE, Optional.empty());
       flushAWT();
 
       JDialog rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);

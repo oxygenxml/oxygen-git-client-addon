@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import org.eclipse.jgit.api.Git;
@@ -112,7 +113,7 @@ public class GitPullCasesTest extends GitTestBase {
     instance.commit("Another");
     push("", "");
     
-    pc.pull(null).get();
+    pc.pull(Optional.empty()).get();
     
     assertTrue(filesWithChanges.isEmpty());
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
@@ -189,7 +190,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder b = new StringBuilder();
     TestUtil.collectPushPullEvents(pc, b);
     
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     
     assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
@@ -287,7 +288,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder b = new StringBuilder();
     TestUtil.collectPushPullEvents(pc, b);
     
-    pc.pull(null).get();
+    pc.pull(Optional.empty()).get();
     
     assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
@@ -513,7 +514,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder b = new StringBuilder();
     TestUtil.collectPushPullEvents(pc, b);
     
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
 
     assertEquals(
         "[Pull_failed_because_conflicting_paths] FOR [test.txt]",
@@ -574,7 +575,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder b = new StringBuilder();
     TestUtil.collectPushPullEvents(pc, b);
     
-    pc.pull(null).get();
+    pc.pull(Optional.empty()).get();
 
     assertEquals(
         "[Pull_failed_because_conflicting_paths] FOR [test.txt]",
@@ -667,7 +668,7 @@ public class GitPullCasesTest extends GitTestBase {
     // Another change, uncommitted
     setFileContent(local1_2File, "updated 1 2");
     
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     
     assertEquals(
         "[Pull_rebase_failed_because_uncommitted] FOR [test_1_2.txt]",
@@ -722,7 +723,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     //Try to pull
     GitController gitController = new GitController();
-    Future<?> pull = gitController.pull(PullType.MERGE_FF, null);
+    Future<?> pull = gitController.pull(PullType.MERGE_FF, Optional.empty());
     pull.get();
     
     //Verify an exception was intercepted

@@ -257,7 +257,7 @@ public class GitAccessConflictTest extends TestCase {
 	// Pulling now will say that the merge was not concluded and we should commit
     assertEquals(RepositoryState.MERGING_RESOLVED, gitAccess.getRepository().getRepositoryState());
     
-    gitCtrl.pull(null);
+    gitCtrl.pull(Optional.empty());
     Awaitility.await().atMost(1500, TimeUnit.MILLISECONDS).until(() ->
       "Conclude_Merge_Message".equals(shownWarningMess[0])
     );
@@ -367,7 +367,7 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
@@ -484,7 +484,7 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
@@ -602,7 +602,7 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
@@ -720,7 +720,7 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
@@ -841,7 +841,7 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
