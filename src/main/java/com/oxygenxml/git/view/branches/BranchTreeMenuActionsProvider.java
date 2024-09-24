@@ -224,7 +224,7 @@ public class BranchTreeMenuActionsProvider {
               new GitOperationProgressMonitor(
                   new ProgressDialog(
                       TRANSLATOR.getTranslation(Tags.CREATE_BRANCH),
-                      true)));
+                      false)));
           ctrl.getGitAccess().checkoutRemoteBranchWithNewName(
               branchName,
               branchPath,

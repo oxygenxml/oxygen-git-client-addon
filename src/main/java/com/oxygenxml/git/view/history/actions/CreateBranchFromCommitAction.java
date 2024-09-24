@@ -62,7 +62,7 @@ public class CreateBranchFromCommitAction extends AbstractAction {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
             final Optional<IGitViewProgressMonitor> progMon = Optional.of(
-                new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), true)));
+                new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), false)));
             if(shouldCheckoutBranch) {
               GitAccess.getInstance().checkoutCommitAndCreateBranch(branchName, commitId, progMon);
             } else {

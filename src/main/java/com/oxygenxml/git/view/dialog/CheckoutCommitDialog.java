@@ -317,7 +317,7 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 	protected void doOK() {
 		try {
 		  final Optional<IGitViewProgressMonitor> progMon = Optional.of(
-              new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CHECKOUT), true)));
+              new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CHECKOUT), false)));
 			if(createNewBranchRadio.isSelected()) {
 				if("".equals(branchNameTextField.getText())) {
 					previousBranchNameUpdate = null;
