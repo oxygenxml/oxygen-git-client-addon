@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -63,7 +64,12 @@ public class PushAction extends BaseGitAbstractAction {
 				GitOperationScheduler.getInstance().schedule(() -> {
 				  if(!ValidationManager.getInstance().isPrePushValidationEnabled() 
 				      || ValidationManager.getInstance().checkPushValid()) {
-				    gitController.push(Optional.of(new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.PUSH), true))));
+				    Optional<IGitViewProgressMonitor> progressMonitor = Optional.of(
+				        new GitOperationProgressMonitor(
+				            new ProgressDialog(
+				                TRANSLATOR.getTranslation(Tags.PUSH),
+				                true)));
+            gitController.push(progressMonitor);
 				  }
 				});
 				
