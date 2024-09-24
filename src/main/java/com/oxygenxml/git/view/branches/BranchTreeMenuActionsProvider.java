@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import javax.swing.AbstractAction;
 
@@ -217,20 +219,29 @@ public class BranchTreeMenuActionsProvider {
        * @param branchName   The branch name.
        */
       private void createBranchAsync(String nodePath, String branchPath, String branchName) {
-        ctrl.asyncTask(() -> {
+        Callable<Object> task = () -> {
           final Optional<IGitViewProgressMonitor> progMon = Optional.of(
-              new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), true)));
-          ctrl.getGitAccess().checkoutRemoteBranchWithNewName(branchName, branchPath, progMon, BranchesUtil.getRemoteForBranch(nodePath));
+              new GitOperationProgressMonitor(
+                  new ProgressDialog(
+                      TRANSLATOR.getTranslation(Tags.CREATE_BRANCH),
+                      true)));
+          ctrl.getGitAccess().checkoutRemoteBranchWithNewName(
+              branchName,
+              branchPath,
+              progMon,
+              BranchesUtil.getRemoteForBranch(nodePath));
           BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
 
           return null;
-        }, ex -> {
+        };
+        Consumer<Throwable> errorHandler = ex -> {
           if (ex instanceof CheckoutConflictException) {
             treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
           } else {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
-        });
+        };
+        ctrl.asyncTask(task, errorHandler);
       }
     };
   }
@@ -247,21 +258,22 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        ctrl.getBranchesCheckoutMediator().createBranch(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), null, false,
-            (branchName, shouldCheckoutNewBranch) -> {
-              ctrl.asyncTask(
-                  () -> doCreateBranch(nodePath, branchName, shouldCheckoutNewBranch),
-                  ex -> {
-                    if (ex instanceof CheckoutConflictException) {
-                      treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-                    } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
-                      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-                    }
-                  }
-                  );
-            },
-            true
-            );
+        IBranchesCreator branchCreator = (branchName, shouldCheckoutNewBranch) -> 
+          ctrl.asyncTask(
+              () -> doCreateBranch(nodePath, branchName, shouldCheckoutNewBranch),
+              ex -> {
+                if (ex instanceof CheckoutConflictException) {
+                  treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
+                } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
+                  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                }
+              });
+        ctrl.getBranchesCheckoutMediator().createBranch(
+            TRANSLATOR.getTranslation(Tags.CREATE_BRANCH),
+            null,
+            false,
+            branchCreator,
+            true);
       }
 
       /**
