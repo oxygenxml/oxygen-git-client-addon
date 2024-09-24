@@ -298,15 +298,15 @@ public class GitController extends GitControllerBase {
         LOGGER.error(e.getMessage(), e);
       } finally {
         if (notifyFinish) {
-          event.ifPresent(pullPushEvent -> {
-            getProgressMonitor().ifPresent(pm -> {
-              if(pullPushEvent.getCause() != null) {
-                pm.markAsFailed();
-              } else {
-                pm.markAsCompleted();
-              }
-            });
-          });
+          Optional<IGitViewProgressMonitor> pm = getProgressMonitor();
+          if(getProgressMonitor().isPresent()) {
+            if(event.isPresent() && event.get().getCause() != null) {
+              pm.get().markAsFailed();
+            } else {
+              pm.get().markAsCompleted();
+            } 
+          }
+          
           notifyListeners(event);
         }
       }
