@@ -225,7 +225,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     GitAccess.getInstance().clone(
         new URIish(remote2.getDirectory().toURI().toURL().toString()), 
         directory,
-        null, 
+        Optional.empty(), 
         null);
     
     assertEquals(

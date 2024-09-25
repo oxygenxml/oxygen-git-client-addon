@@ -65,6 +65,7 @@ import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.IGitViewProgressMonitor;
 import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -72,6 +73,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.components.ApplicationLabel;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -141,12 +143,17 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
     @Override
     protected Void doInBackground() throws Exception {
       CloneRepositoryDialog.this.setVisible(false);
+      
+      IGitViewProgressMonitor progressMonitor = new GitOperationProgressMonitor(progressDialog);
+      
+      progressDialog.setNote("Initializing...");
+      progressMonitor.beginTask("Initializing ", 0);
+      
       GitAccess.getInstance().clone(
           sourceUrl,
           destFile,
-          progressDialog,
+          Optional.of(progressMonitor),
           branch != null && branch != DEFAULT_BRANCH_MARKER ? branch.getName() : null);
-      progressDialog.dispose();
       return null;
     }
 
@@ -741,16 +748,13 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
           if(!destFile.exists()) {
             destFile.mkdir();
           }
-          final ProgressDialog progressDialog = new ProgressDialog(
-            TRANSLATOR.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE), true);
           CloneWorker cloneWorker = new CloneWorker(
-              progressDialog,
+              new ProgressDialog(TRANSLATOR.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE), true),
               sourceURL,
               destFile,
               (Ref) branchesComboBox.getSelectedItem());
           cloneWorker.execute();
           // Make sure we present the dialog after this one is closed.
-          SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
           areValid = true;
         }
       } else {

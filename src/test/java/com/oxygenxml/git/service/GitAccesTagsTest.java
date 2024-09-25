@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -187,7 +188,7 @@ public class GitAccesTagsTest extends TestCase {
     
     File file = new File(REPOSITORY_TEST_CLONE);
     URL url = gitAccess.getRepository().getDirectory().toURI().toURL();
-    gitAccess.clone(new URIish(url), file, null, "refs/heads/main");
+    gitAccess.clone(new URIish(url), file, Optional.empty(), "refs/heads/main");
 
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String commitId = commitsCharacteristics.get(0).getCommitId();
@@ -242,7 +243,7 @@ public class GitAccesTagsTest extends TestCase {
   public void testPush() throws GitAPIException, NoRepositorySelected, RevisionSyntaxException, IOException {
     File file = new File(REPOSITORY_TEST_CLONE);
     URL url = gitAccess.getRepository().getDirectory().toURI().toURL();
-    gitAccess.clone(new URIish(url), file, null, "refs/heads/main");
+    gitAccess.clone(new URIish(url), file, Optional.empty(), "refs/heads/main");
 
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(HistoryStrategy.CURRENT_BRANCH, null, null);
     String commitId = commitsCharacteristics.get(0).getCommitId();

@@ -51,7 +51,6 @@ public class GitOperationProgressMonitor implements IGitViewProgressMonitor {
         int percent = (int) percentFloat;
         text = taskTitle + " " + percent + "% completed";
       } else {
-        progressUpdater.markAsCompleted();
         text = taskTitle + "100% completed";
       }
       progressUpdater.setNote(text);

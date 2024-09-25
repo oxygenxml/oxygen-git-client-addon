@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jgit.api.SubmoduleAddCommand;
@@ -91,7 +92,7 @@ public class GitCloneTest extends GitTestBase {
       gitAccess.clone(
           new URIish(remoteRepo.getDirectory().toURI().toURL()),
           cloneDest,
-          null,
+          Optional.empty(),
           null);
       assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
       
@@ -107,7 +108,7 @@ public class GitCloneTest extends GitTestBase {
       gitAccess.clone(
           new URIish(remoteRepo.getDirectory().toURI().toURL()),
           cloneDest2,
-          null,
+          Optional.empty(),
           "refs/heads/slave");
       assertEquals("slave", gitAccess.getRepository().getBranch());
       // EXM-47079 Test the fetch value
@@ -183,7 +184,7 @@ public class GitCloneTest extends GitTestBase {
     gitAccess.clone(
         new URIish(localRepoP.getDirectory().toURI().toURL()),
         cloneDest,
-        null,
+        Optional.empty(),
         null);
     
     // The newly cloned repository must be removed when the test is done.

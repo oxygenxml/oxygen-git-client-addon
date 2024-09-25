@@ -84,7 +84,6 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
@@ -255,45 +254,42 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException
 	 */
-	public void clone(URIish url, File directory, final ProgressDialog progressDialog, String branchName)
-			throws GitAPIException {
+	public void clone(URIish url, File directory, final Optional<IGitViewProgressMonitor> monitor, String branchName)
+	    throws GitAPIException {
 	  try {
-      fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
-    } catch (IndexLockExistsException e) {
-      // Ignore. We make a new clone / local repo.
-    }
-	  
+	    fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+	  } catch (IndexLockExistsException e) {
+	    // Ignore. We make a new clone / local repo.
+	  }
+
 	  closeRepo();
-	  
-		// Intercept all authentication requests.
-    String host = url.getHost();
-    AuthenticationInterceptor.bind(host);
-    
-		ProgressMonitor progressMonitor = new GitOperationProgressMonitor(progressDialog);
-		if (progressDialog != null) {
-		  progressDialog.setNote("Initializing...");
-		  progressMonitor.beginTask("Initializing ", 0);
-		}
-		
-    CloneCommand cloneCommand = 
-		    Git.cloneRepository()
-		    .setCloneSubmodules(true)
-		    .setURI(url.toString())
-		    .setDirectory(directory)
-		    .setCredentialsProvider(AuthUtil.getCredentialsProvider(host))
-		    .setProgressMonitor(progressMonitor);
-		try {
-		  if (branchName != null) {
-		    git = cloneCommand.setBranch(branchName).call();
-		  } else {
-		    git = cloneCommand.call();
-		  } 
-		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
-		} catch (GitAPIException ex)  {
-		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
-      throw ex;
-		}
-		
+
+	  monitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+	  // Intercept all authentication requests. 
+	  String host = url.getHost();
+	  AuthenticationInterceptor.bind(host);
+
+	  CloneCommand cloneCommand = 
+	      Git.cloneRepository()
+	      .setCloneSubmodules(true)
+	      .setURI(url.toString())
+	      .setDirectory(directory)
+	      .setCredentialsProvider(AuthUtil.getCredentialsProvider(host))
+	      .setProgressMonitor(monitor.orElse(null));
+	  try {
+	    if (branchName != null) {
+	      git = cloneCommand.setBranch(branchName).call();
+	    } else {
+	      git = cloneCommand.call();
+	    } 
+	    fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+	    monitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	  } catch (GitAPIException ex)  {
+	    fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
+	    monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    throw ex;
+	  }
+
 	}
 	
 	/**
