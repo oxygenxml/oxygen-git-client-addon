@@ -263,7 +263,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertFalse(submoduleActions.isEnabled());
 
     // ================= Set submodule ====================
-    Future<?> pull = gitController.pull(null);
+    Future<?> pull = gitController.pull(Optional.empty());
     hasSubmodules[0] = true;
     pull.get();
     flushAWT();

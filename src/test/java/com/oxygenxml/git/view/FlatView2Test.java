@@ -645,7 +645,7 @@ public class FlatView2Test extends FlatViewTestBase {
       flushAWT();
       
       // Pull again.
-      ppc.pull(PullType.REBASE, null);
+      ppc.pull(PullType.REBASE, Optional.empty());
       flushAWT();
 
       // Rebase in progress dialog shown

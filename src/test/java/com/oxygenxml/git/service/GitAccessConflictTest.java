@@ -374,7 +374,7 @@ public class GitAccessConflictTest extends TestCase {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -491,7 +491,7 @@ public class GitAccessConflictTest extends TestCase {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -609,7 +609,7 @@ public class GitAccessConflictTest extends TestCase {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -727,7 +727,7 @@ public class GitAccessConflictTest extends TestCase {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -848,7 +848,7 @@ public class GitAccessConflictTest extends TestCase {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();

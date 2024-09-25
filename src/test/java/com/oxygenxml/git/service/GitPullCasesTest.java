@@ -100,7 +100,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder b = new StringBuilder();
     TestUtil.collectPushPullEvents(pc, b);
     
-    pc.pull(null).get();
+    pc.pull(Optional.empty()).get();
     
     assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
@@ -203,7 +203,7 @@ public class GitPullCasesTest extends GitTestBase {
     instance.commit("Another");
     push("", "");
     
-    pc.pull(PullType.REBASE, null).get();
+    pc.pull(PullType.REBASE, Optional.empty()).get();
     
     assertTrue(filesWithChanges.isEmpty());
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
@@ -301,7 +301,7 @@ public class GitPullCasesTest extends GitTestBase {
     instance.commit("Another");
     push("", "");
     
-    pc.pull(null).get();
+    pc.pull(Optional.empty()).get();
     
     assertTrue(filesWithChanges.isEmpty());
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
