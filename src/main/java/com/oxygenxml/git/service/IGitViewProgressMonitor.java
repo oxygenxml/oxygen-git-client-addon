@@ -27,5 +27,10 @@ public interface IGitViewProgressMonitor extends ProgressMonitor {
    */
   void markAsFailed();
   
+  /**
+   * Reset the progress to the default state to can reuse it.
+   */
+  void reset();
+  
 
 }

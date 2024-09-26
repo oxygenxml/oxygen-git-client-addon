@@ -48,5 +48,10 @@ public interface IProgressUpdater {
    * @return <code>true</code> if the operation fail.
    */
   boolean isFailed();
+  
+  /**
+   * Reset the progress to the default state to can reuse it.
+   */
+  void reset();
 
 }

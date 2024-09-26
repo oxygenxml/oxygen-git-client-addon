@@ -109,6 +109,12 @@ public class GitOperationProgressMonitor implements IGitViewProgressMonitor {
     if(progressUpdater != null) {
       progressUpdater.markAsFailed();
     }
-    
+  }
+  
+  @Override
+  public void reset() {
+    if(progressUpdater != null) {
+      progressUpdater.reset();
+    }
   }
 }

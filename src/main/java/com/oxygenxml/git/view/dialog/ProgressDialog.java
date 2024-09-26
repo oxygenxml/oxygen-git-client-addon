@@ -178,10 +178,11 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
   @Override
   public void showWithDelay(long millis) {
     Runnable command = () -> SwingUtilities.invokeLater(() -> {
-      if(!isCancelled && !isCompleted) {
+      if(!isCancelled && !isCompleted && !isFailed) {
         setVisible(true);
       }
     });
+    
     Executors.newSingleThreadScheduledExecutor().schedule(command, millis, TimeUnit.MILLISECONDS);
   }
 
@@ -202,4 +203,13 @@ public class ProgressDialog extends OKCancelDialog implements IProgressUpdater {
     return isFailed;
   }
 
+  /**
+   * Reset the progress to the default state to can reuse it.
+   */
+  @Override
+  public void reset() {
+    this.isCancelled = false;
+    this.isCompleted = false;
+    this.isFailed = false;
+  }
 }

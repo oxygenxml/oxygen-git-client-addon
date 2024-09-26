@@ -21,6 +21,7 @@ import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
@@ -338,7 +339,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
    */
   protected final PushResponse push(String username, String password) throws GitAPIException {
     return GitAccess.getInstance().push(
-        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()));
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()), Optional.empty());
   }
   
   /**
@@ -356,8 +357,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
   protected PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
-        pullType,
-        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true))),
-        updateSubmodules);
+        PullConfig.builder().updateSubmodule(updateSubmodules).pullType(pullType).build(),
+        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true))));
   }
 }

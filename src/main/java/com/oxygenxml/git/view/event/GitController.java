@@ -37,10 +37,10 @@ import com.oxygenxml.git.service.exceptions.IndexLockExistsException;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.RebaseConflictsException;
 import com.oxygenxml.git.service.exceptions.RebaseUncommittedChangesException;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
-import com.oxygenxml.git.view.actions.IProgressUpdater;
 import com.oxygenxml.git.view.branches.BranchCheckoutMediator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
@@ -99,7 +99,6 @@ public class GitController extends GitControllerBase {
     PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), message);
     try {
       listeners.fireOperationAboutToStart(pushPullEvent);
-      progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
     } catch (IndexLockExistsException e) {
       // Ignore. We already had a mechanism for pull. Let it do its job.
       // The old mechanism also seems to update the status at the bottom of the Git Staging view.
@@ -237,6 +236,8 @@ public class GitController extends GitControllerBase {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Preparing for push/pull command");
         }
+        // make sure reset progress that is a try again operation
+        getProgressMonitor().ifPresent(IGitViewProgressMonitor::reset);
         event = doOperation(credentialsProvider);
       } catch(CanceledException e) {
         event = Optional.of(new PushPullEvent(getOperation(), null, e));
@@ -298,15 +299,6 @@ public class GitController extends GitControllerBase {
         LOGGER.error(e.getMessage(), e);
       } finally {
         if (notifyFinish) {
-          Optional<IGitViewProgressMonitor> pm = getProgressMonitor();
-          if(pm.isPresent()) {
-            if(event.isPresent() && event.get().getCause() != null) {
-              pm.get().markAsFailed();
-            } else {
-              pm.get().markAsCompleted();
-            } 
-          }
-          
           notifyListeners(event);
         }
       }
@@ -492,7 +484,7 @@ public class GitController extends GitControllerBase {
     @Override
     protected Optional<PushPullEvent> doOperation(CredentialsProvider credentialsProvider)
         throws  GitAPIException {
-      PushResponse response = gitAccess.push(credentialsProvider);
+      PushResponse response = gitAccess.push(credentialsProvider, pm);
       PushPullEvent event = null;
       if (Status.OK == response.getStatus()) {
         event = new PushPullEvent(GitOperation.PUSH, TRANSLATOR.getTranslation(Tags.PUSH_SUCCESSFUL));
@@ -513,6 +505,7 @@ public class GitController extends GitControllerBase {
           errMess += " " + TRANSLATOR.getTranslation(Tags.NO_DETAILS_AVAILABLE);
         }
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(errMess);
+        event = new PushPullEvent(GitOperation.PUSH, errMess);
       }
 
       return Optional.ofNullable(event);
@@ -577,9 +570,8 @@ public class GitController extends GitControllerBase {
         } else {
           PullResponse response = gitAccess.pull(
               credentialsProvider,
-              pullType,
-              progressMonitor,
-              OptionsManager.getInstance().getUpdateSubmodulesOnPull());
+              PullConfig.builder().pullType(pullType).updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).build(),
+              progressMonitor);
           event = treatPullResponse(response);
         }
       }

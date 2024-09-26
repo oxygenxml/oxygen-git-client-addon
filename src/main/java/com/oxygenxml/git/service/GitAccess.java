@@ -60,9 +60,13 @@ import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.StashApplyFailureException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
@@ -129,6 +133,7 @@ import com.oxygenxml.git.service.exceptions.RebaseUncommittedChangesException;
 import com.oxygenxml.git.service.exceptions.RepoNotInitializedException;
 import com.oxygenxml.git.service.exceptions.RepositoryUnavailableException;
 import com.oxygenxml.git.service.exceptions.SSHPassphraseRequiredException;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
@@ -965,92 +970,119 @@ public class GitAccess {
 	 * Pushes all the commits from the local repository to the remote repository
 	 * 
 	 * @param credentialsProvider The credentials provider.
+	 * @param monitor             The optional monitor progress.
 	 * 
 	 * @return a response.
 	 *          
 	 * @throws GitAPIException
 	 */
-	public PushResponse push(CredentialsProvider credentialsProvider)
-			throws GitAPIException {
+	public PushResponse push(CredentialsProvider credentialsProvider, Optional<IGitViewProgressMonitor> monitor)
+	    throws GitAPIException {
 
-		AuthenticationInterceptor.install();
+	  AuthenticationInterceptor.install();
+	  PushResponse pushResponse = doPushInternal(credentialsProvider, monitor);
+	  if(monitor.isPresent()) {
+	    if(RemoteRefUpdate.Status.OK == pushResponse.getStatus() || pushResponse.getStatus() == RemoteRefUpdate.Status.UP_TO_DATE) {
+	      monitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	    } else {
+	      monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    }
+	  }
 
-		PushResponse response = new PushResponse();
+	  return pushResponse;
+	}
 
-		Repository repo = git.getRepository();
-		RepositoryState repoState = repo.getRepositoryState();
-		if (repoState == RepositoryState.MERGING
-				|| repoState == RepositoryState.REBASING
-				|| repoState == RepositoryState.REBASING_MERGE
-				|| repoState == RepositoryState.REBASING_REBASING
-				|| repoState == RepositoryState.REVERTING) {
-			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-			response.setMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-			return response;
-		}
+	/**
+	 * Pushes all the commits from the local repository to the remote repository
+	 * 
+	 * @param credentialsProvider The credentials provider.
+	 * @param monitor             The optional monitor progress.
+	 * 
+	 * @return a response.
+	 *          
+	 * @throws GitAPIException
+	 */
+	private PushResponse doPushInternal(CredentialsProvider credentialsProvider, Optional<IGitViewProgressMonitor> monitor)
+	    throws GitAPIException, InvalidRemoteException, TransportException {
+	  PushResponse response = new PushResponse();
 
-		if (getPullsBehind() > 0) {
-			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD);
-			response.setMessage(TRANSLATOR.getTranslation(Tags.BRANCH_BEHIND));
-			return response;
-		}
+	  Repository repo = git.getRepository();
+	  RepositoryState repoState = repo.getRepositoryState();
+	  if (repoState == RepositoryState.MERGING
+	      || repoState == RepositoryState.REBASING
+	      || repoState == RepositoryState.REBASING_MERGE
+	      || repoState == RepositoryState.REBASING_REBASING
+	      || repoState == RepositoryState.REVERTING) {
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	    response.setMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+	    return response;
+	  }
 
-		try {
-			if (getPushesAhead() == 0) {
-				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
-				response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_UP_TO_DATE));
-				return response;
-			}
-		} catch (RepoNotInitializedException e) {
-			LOGGER.debug(e.getMessage(), e);
-		}
+	  if (getPullsBehind() > 0) {
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD);
+	    response.setMessage(TRANSLATOR.getTranslation(Tags.BRANCH_BEHIND));
+	    return response;
+	  }
 
+	  try {
+	    if (getPushesAhead() == 0) {
+	      response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
+	      response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_UP_TO_DATE));
+	      return response;
+	    }
+	  } catch (RepoNotInitializedException e) {
+	    LOGGER.debug(e.getMessage(), e);
+	  }
 
-		PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider).setRemote(getRemoteFromCurrentBranch());
-		String localBranchName = getBranchInfo().getBranchName();
-		String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
-		if (upstreamBranch != null) {
-			pushCommand.setRefSpecs(
-					Arrays.asList(
-							new RefSpec(localBranchName + ":" + upstreamBranch.substring(upstreamBranch.indexOf('/') + 1))));
-		}
-		Iterable<PushResult> pushResults = pushCommand.call();
+	  PushCommand pushCommand = git
+	      .push()
+	      .setProgressMonitor(monitor.orElse(null))
+	      .setCredentialsProvider(credentialsProvider)
+	      .setRemote(getRemoteFromCurrentBranch());
+	  String localBranchName = getBranchInfo().getBranchName();
+	  String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
+	  if (upstreamBranch != null) {
+	    pushCommand.setRefSpecs(
+	        Arrays.asList(
+	            new RefSpec(localBranchName + ":" + upstreamBranch.substring(upstreamBranch.indexOf('/') + 1))));
+	  }
+	  Iterable<PushResult> pushResults = pushCommand.call();
 
-		LOGGER.debug("Push Ended");
+	  LOGGER.debug("Push Ended");
 
-		Iterator<PushResult> results = pushResults.iterator();
-		while (results.hasNext()) {
-			PushResult result = results.next();
-			for (RemoteRefUpdate info : result.getRemoteUpdates()) {
-				try {
-					if (getRemoteFromConfig(localBranchName) == null) {
-						repo.getConfig().setString(
-								ConfigConstants.CONFIG_BRANCH_SECTION,
-								localBranchName,
-								ConfigConstants.CONFIG_KEY_REMOTE,
-								Constants.DEFAULT_REMOTE_NAME);
-						repo.getConfig().setString(
-								ConfigConstants.CONFIG_BRANCH_SECTION,
-								localBranchName,
-								ConfigConstants.CONFIG_KEY_MERGE,
-								info.getRemoteName());
-						repo.getConfig().save();
-					}
-				} catch (NoRepositorySelected | IOException ex) {
-					PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-				} 
+	  Iterator<PushResult> results = pushResults.iterator();
+	  while (results.hasNext()) {
+	    PushResult result = results.next();
+	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
+	      try {
+	        if (getRemoteFromConfig(localBranchName) == null) {
+	          repo.getConfig().setString(
+	              ConfigConstants.CONFIG_BRANCH_SECTION,
+	              localBranchName,
+	              ConfigConstants.CONFIG_KEY_REMOTE,
+	              Constants.DEFAULT_REMOTE_NAME);
+	          repo.getConfig().setString(
+	              ConfigConstants.CONFIG_BRANCH_SECTION,
+	              localBranchName,
+	              ConfigConstants.CONFIG_KEY_MERGE,
+	              info.getRemoteName());
+	          repo.getConfig().save();
+	        }
+	      } catch (NoRepositorySelected | IOException ex) {
+	        monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+	      } 
 
-				response.setStatus(info.getStatus());
-				response.setMessage(info.getMessage());
+	      response.setStatus(info.getStatus());
+	      response.setMessage(info.getMessage());
 
-				return response; // NOSONAR
-			}
-		}
-		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-		response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
+	      return response; // NOSONAR
+	    }
+	  }
+	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	  response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 
-
-		return response;
+	  return response;
 	}
 
 	/**
@@ -1058,9 +1090,8 @@ public class GitAccess {
 	 * repository
 	 * 
 	 * @param credentialsProvider Credentials provider.
-	 * @param pullType            One of ff, no-ff, ff-only, rebase.
+	 * @param pullConfig          The configuration for the pull.
 	 * @param monitor             The optional monitor progress for the pull operation.
-	 * @param updateSubmodules    <code>true</code> to execute the equivalent of a "git submodule update --recursive"
 	 * 
 	 * @return The result, if successful.
 	 *  
@@ -1072,12 +1103,55 @@ public class GitAccess {
 	 */
 	public PullResponse pull(
 	    CredentialsProvider credentialsProvider,
-	    PullType pullType,
-	    Optional<IGitViewProgressMonitor> monitor,
-	    boolean updateSubmodules) throws GitAPIException {
-	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
-	  AuthenticationInterceptor.install();
+	    PullConfig pullConfig,
+	    Optional<IGitViewProgressMonitor> monitor) throws GitAPIException {
 
+	  AuthenticationInterceptor.install();
+	  monitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+
+	  PullResponse pullResponseToReturn = null;
+	  try {
+	    pullResponseToReturn = doPullInternal(credentialsProvider, pullConfig, monitor);
+	  } catch(GitAPIException ex) {
+	    monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    throw ex;
+	  }
+
+	  if(monitor.isPresent()) {
+	    if(pullResponseToReturn.getStatus().isSuccessful()) {
+	      monitor.get().markAsCompleted();
+	    } else {
+	      monitor.get().markAsFailed();
+	    }
+	  }
+
+	  return pullResponseToReturn;
+	}
+
+	/**
+     * Pulls the files that are not on the local repository from the remote
+     * repository
+     * 
+     * @param credentialsProvider Credentials provider.
+     * @param pullConfig          The configuration for the pull.
+     * @param monitor             The optional monitor progress for the pull operation.
+     * 
+     * @return The result, if successful.
+     *  
+     * @throws CheckoutConflictException There is a conflict between the local
+     *                                   repository and the remote one. The same
+     *                                   file that is in conflict is changed inside
+     *                                   the working copy so operation is aborted.
+     * @throws GitAPIException other errors.
+     */
+	private PullResponse doPullInternal(
+	    CredentialsProvider credentialsProvider, 
+	    PullConfig pullConfig,
+	    Optional<IGitViewProgressMonitor> monitor)
+	        throws GitAPIException, WrongRepositoryStateException, InvalidConfigurationException, InvalidRemoteException,
+	        CanceledException, RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException,
+	        CheckoutConflictException, RebaseUncommittedChangesException {
+	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  if (!getConflictingFiles().isEmpty()) {
 	    pullResponseToReturn.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
 	  } else {
@@ -1086,10 +1160,10 @@ public class GitAccess {
 	    Repository repository = git.getRepository();
 	    ObjectId oldHead = resolveHead(repository);
 	    PullCommand pullCmd = git.pull()
-	        .setRebase(PullType.REBASE == pullType)
+	        .setRebase(PullType.REBASE == pullConfig.getPullType())
 	        .setCredentialsProvider(credentialsProvider)
 	        .setProgressMonitor(monitor.orElse(null))
-	        .setRemote(getRemoteFromCurrentBranch());
+	        .setRemote(pullConfig.getRemote().orElse(getRemoteFromCurrentBranch()));
 	    PullResult pullCommandResult = pullCmd.call();
 
 	    // Get fetch result
@@ -1098,7 +1172,7 @@ public class GitAccess {
 	    if (!lockFailureMessage.isEmpty()) {
 	      // Lock failure
 	      PluginWorkspaceProvider.getPluginWorkspace()
-	          .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
+	      .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
 	      pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
 	    } else {
 	      ObjectId head = resolveHead(repository);
@@ -1115,16 +1189,14 @@ public class GitAccess {
 	    }
 	  }
 
-	  if (updateSubmodules && pullResponseToReturn.getStatus().isSuccessful()) {
+	  if (pullConfig.isUpdateSubmodule() && pullResponseToReturn.getStatus().isSuccessful()) {
 	    try {
 	      RepoUtil.updateSubmodules(git);
 	    } catch (IOException e) {
 	      throw new GitAPIException(e.getMessage(), e) {};
 	    }
 	  }
-
 	  return pullResponseToReturn;
-
 	}
 
 	/**
@@ -1853,7 +1925,9 @@ public class GitAccess {
 	        // EXM-47461 Should update submodules as well.
 	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
 	        GitOperationProgressMonitor pullPM = new GitOperationProgressMonitor(new ProgressDialog(TRANSLATOR.getTranslation(Tags.PULL), true));
-	        pull(credentialsProvider, PullType.REBASE, Optional.of(pullPM), OptionsManager.getInstance().getUpdateSubmodulesOnPull());
+	        pull(credentialsProvider, 
+	            PullConfig.builder().pullType(PullType.REBASE).updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).build(), 
+	            Optional.of(pullPM));
 	      } else {
 	        AnyObjectId commitToMerge = repo.resolve("MERGE_HEAD");
 	        git.clean().call();

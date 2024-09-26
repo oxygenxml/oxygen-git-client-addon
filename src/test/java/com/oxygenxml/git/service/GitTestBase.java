@@ -67,6 +67,7 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
@@ -792,7 +793,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   protected final void pushOneFileToRemote(String repository, String fileName, String fileContent) throws Exception {
     commitOneFile(repository, fileName, fileContent);
     GitAccess.getInstance().push(
-        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()));
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()), Optional.empty());
   }
   
   /**
@@ -807,7 +808,7 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
    */
   protected final PushResponse push(String username, String password) throws GitAPIException {
     return GitAccess.getInstance().push(
-        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()));
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()), Optional.empty());
   }
   
   /**
@@ -825,9 +826,8 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
   protected PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
     return GitAccess.getInstance().pull(
         new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
-        pullType,
-        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true))),
-        updateSubmodules);
+        PullConfig.builder().pullType(pullType).updateSubmodule(updateSubmodules).build(),
+        Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true))));
   }
   
   /**
