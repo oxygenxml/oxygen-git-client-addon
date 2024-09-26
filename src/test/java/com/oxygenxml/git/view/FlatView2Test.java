@@ -26,6 +26,7 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitController;
@@ -413,7 +414,7 @@ public class FlatView2Test extends FlatViewTestBase {
         super.showRebaseInProgressDialog();
       }
     };
-    ppc.pull(PullType.REBASE, Optional.empty());
+    ppc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty());
     s.acquire();
     flushAWT();
     
@@ -508,7 +509,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertTrue(rebasePanel.isShowing());
     
     GitController ppc = (GitController) stagingPanel.getGitController();
-    ppc.pull(PullType.REBASE, Optional.empty());
+    ppc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty());
     flushAWT();
     
     JDialog interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
@@ -602,7 +603,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
       // Pull again. Rebase in progress dialog is shown
       GitController ppc = (GitController) stagingPanel.getGitController();
-      ppc.pull(PullType.REBASE, Optional.empty());
+      ppc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty());
       flushAWT();
 
       JDialog rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
@@ -645,7 +646,7 @@ public class FlatView2Test extends FlatViewTestBase {
       flushAWT();
       
       // Pull again.
-      ppc.pull(PullType.REBASE, Optional.empty());
+      ppc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty());
       flushAWT();
 
       // Rebase in progress dialog shown

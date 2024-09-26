@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitEventListener;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
@@ -162,7 +163,7 @@ public class BranchCheckoutMediator {
         
     PullType pullType = OptionsManager.getInstance().getDefaultPullType();
     ctrl.pull(
-        pullType == PullType.UKNOWN ? PullType.MERGE_FF : pullType, 
+        PullConfig.builder().updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).pullType(pullType == PullType.UKNOWN ? PullType.MERGE_FF : pullType).build(),
         Optional.of(new GitOperationProgressMonitor(pullOperationProgressDialog)));
   }
 

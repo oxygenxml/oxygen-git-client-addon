@@ -143,21 +143,23 @@ public class GitController extends GitControllerBase {
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull(Optional<IGitViewProgressMonitor> progressMonitor) {
-    return	pull(PullType.MERGE_FF, progressMonitor);
+    return	pull(
+              PullConfig.builder().pullType(PullType.MERGE_FF).updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).build(), 
+              progressMonitor);
   }
 
   /**
    * Pull and choose the merging strategy.
    * 
-   * @param pullType           The pull type / merging strategy.
+   * @param pullConfig         The pull configuration.
    * @param progressMonitor    Receive the progress of the current operation.
    * 
    * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
-  public Future<?> pull(PullType pullType, Optional<IGitViewProgressMonitor> progressMonitor) {
+  public Future<?> pull(PullConfig pullConfig, Optional<IGitViewProgressMonitor> progressMonitor) {
     return execute(TRANSLATOR.getTranslation(Tags.PULL_IN_PROGRESS), 
-      new ExecutePullRunnable(pullType, progressMonitor), progressMonitor);
+      new ExecutePullRunnable(pullConfig, progressMonitor), progressMonitor);
   }
 
   /**
@@ -527,12 +529,12 @@ public class GitController extends GitControllerBase {
    */
   private class ExecutePullRunnable extends ExecuteCommandRunnable {
 
-    private final PullType pullType;
+    private final PullConfig pullConfig;
     
     private final Optional<IGitViewProgressMonitor> progressMonitor;
 
-    public ExecutePullRunnable(PullType pullType, Optional<IGitViewProgressMonitor> progressMonitor) {
-      this.pullType = pullType;
+    public ExecutePullRunnable(PullConfig pullConfig, Optional<IGitViewProgressMonitor> progressMonitor) {
+      this.pullConfig = pullConfig;
       this.progressMonitor = progressMonitor;
     }
     @Override
@@ -556,7 +558,7 @@ public class GitController extends GitControllerBase {
       RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
 
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Do pull. Pull type: {}", pullType);
+        LOGGER.debug("Do pull. Pull type: {}", pullConfig.getPullType());
         LOGGER.debug("Repo state: {}", repositoryState);
       }
 
@@ -570,7 +572,7 @@ public class GitController extends GitControllerBase {
         } else {
           PullResponse response = gitAccess.pull(
               credentialsProvider,
-              PullConfig.builder().pullType(pullType).updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).build(),
+              pullConfig,
               progressMonitor);
           event = treatPullResponse(response);
         }
@@ -593,9 +595,9 @@ public class GitController extends GitControllerBase {
           break;
         case CONFLICTS:
           showPullSuccessfulWithConflicts(response);
-          if (pullType == PullType.REBASE) {
+          if (pullConfig.getPullType() == PullType.REBASE) {
             event = new PushPullEvent(getOperation(), ActionStatus.PULL_REBASE_CONFLICT_GENERATED);
-          } else if (pullType == PullType.MERGE_FF) {
+          } else if (pullConfig.getPullType() == PullType.MERGE_FF) {
             event = new PushPullEvent(getOperation(), ActionStatus.PULL_MERGE_CONFLICT_GENERATED);
           }
           break;

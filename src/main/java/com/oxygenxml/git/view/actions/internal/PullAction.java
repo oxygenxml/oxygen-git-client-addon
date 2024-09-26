@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.GitController;
@@ -70,7 +71,8 @@ public class PullAction extends BaseGitAbstractAction {
           if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Pull action invoked");
           }
-          gitController.pull(pullType, Optional.of(new GitOperationProgressMonitor(new ProgressDialog(name, true))));
+          gitController.pull(pullType == PullType.REBASE ? PullConfig.createSimplePullRebaseConfig() : PullConfig.createSimplePullMergeConfig(), 
+              Optional.of(new GitOperationProgressMonitor(new ProgressDialog(name, true))));
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {

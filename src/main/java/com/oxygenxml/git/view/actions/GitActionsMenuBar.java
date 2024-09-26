@@ -71,6 +71,7 @@ public class GitActionsMenuBar implements MenuBarCustomizer, UpdateActionsStates
 		pullMenuItem.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullMergeAction()));
 		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getPullRebaseAction()));
+		pullMenuItem.add(OxygenUIComponentsFactory.createMenuItem(actionsManager.getAdvancedPullAction()));
 		pullMenuItem.setEnabled(isPullButtonEnabled());
 		gitMenu.add(pullMenuItem);
 

@@ -459,6 +459,7 @@ public class ToolbarPanel extends JPanel {
     buttonMenu.add(gitActionsManager.getPushAction());
     buttonMenu.add(gitActionsManager.getPullMergeAction());
     buttonMenu.add(gitActionsManager.getPullRebaseAction());
+    buttonMenu.add(gitActionsManager.getAdvancedPullAction());
     buttonMenu.addSeparator();
     buttonMenu.add(gitActionsManager.getShowBranchesAction());
     buttonMenu.add(gitActionsManager.getShowTagsAction());

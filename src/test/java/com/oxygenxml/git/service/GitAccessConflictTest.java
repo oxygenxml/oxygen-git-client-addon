@@ -367,14 +367,14 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -484,14 +484,14 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -602,14 +602,14 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -720,14 +720,14 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();
@@ -841,14 +841,14 @@ public class GitAccessConflictTest extends TestCase {
     assertEquals("changed in local 1", getFileContent(local1File));
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Another");
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
     
     // Show the "Interrupted rebase" dialog
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertTrue(wasRebaseInterrupted[0]);
     
     Status status = gitAccess.getGit().status().call();

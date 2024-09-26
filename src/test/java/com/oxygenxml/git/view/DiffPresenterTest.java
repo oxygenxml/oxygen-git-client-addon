@@ -26,6 +26,7 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
@@ -413,7 +414,7 @@ public class DiffPresenterTest extends GitTestBase {
     TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
-    pc.pull(PullType.REBASE, Optional.empty()).get();
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());

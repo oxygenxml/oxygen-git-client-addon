@@ -2,6 +2,7 @@ package com.oxygenxml.git.service.internal;
 
 import java.util.Optional;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.view.event.PullType;
 
 import lombok.Builder;
@@ -35,4 +36,17 @@ public class PullConfig {
   @Builder.Default
   private boolean updateSubmodule = false;
   
+  /**
+   * @return A configuration for a simple pull merge.
+   */
+  public static PullConfig createSimplePullMergeConfig() {
+    return PullConfig.builder().updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).pullType(PullType.MERGE_FF).build();
+  }
+  
+  /**
+   * @return A configuration for a simple pull rebase.
+   */
+  public static PullConfig createSimplePullRebaseConfig() {
+    return PullConfig.builder().updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).pullType(PullType.REBASE).build();
+  }
 }

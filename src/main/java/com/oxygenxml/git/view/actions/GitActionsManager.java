@@ -19,6 +19,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.internal.AdvancedPullAction;
 import com.oxygenxml.git.view.actions.internal.CloneRepositoryAction;
 import com.oxygenxml.git.view.actions.internal.EditConfigFileAction;
 import com.oxygenxml.git.view.actions.internal.ListStashesAction;
@@ -95,6 +96,11 @@ public class GitActionsManager  {
    * Pull merge action.
    */
   private AbstractAction pullMergeAction;
+  
+  /**
+   * The action to configure an advanced pull.
+   */
+  private AbstractAction advancedPullAction;
 
   /**
    * Pull rebase action.
@@ -288,7 +294,7 @@ public class GitActionsManager  {
 
 
   /**
-   * @return The pull merge action.
+   * @return The pull rebase action.
    */
   @NonNull
   public AbstractAction getPullRebaseAction() {
@@ -300,6 +306,21 @@ public class GitActionsManager  {
     }
 
     return pullRebaseAction;
+  }
+  
+  
+  /**
+   * @return The action to configure an advanced pull operation.
+   */
+  @NonNull
+  public AbstractAction getAdvancedPullAction() {
+    if(advancedPullAction == null) {
+      advancedPullAction = new AdvancedPullAction(gitController);
+      final boolean hasRepository = hasRepository();
+      SwingUtilities.invokeLater(() -> advancedPullAction.setEnabled(hasRepository));
+    }
+
+    return advancedPullAction;
   }
 
 
@@ -541,6 +562,10 @@ public class GitActionsManager  {
       SwingUtilities.invokeLater(() -> pushAction.setEnabled(false));
     }
 
+    if(advancedPullAction != null) {
+      SwingUtilities.invokeLater(() -> advancedPullAction.setEnabled(false));
+    }
+    
     if(pullMergeAction != null) {
       SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(false));
     }
@@ -598,6 +623,10 @@ public class GitActionsManager  {
 
     if(pullMergeAction != null) {
       SwingUtilities.invokeLater(() -> pullMergeAction.setEnabled(true));
+    }
+    
+    if(advancedPullAction != null) {
+      SwingUtilities.invokeLater(() -> advancedPullAction.setEnabled(true));
     }
 
     if(pullRebaseAction != null) {
