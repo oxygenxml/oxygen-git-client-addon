@@ -1164,6 +1164,9 @@ public class GitAccess {
 	        .setCredentialsProvider(credentialsProvider)
 	        .setProgressMonitor(monitor.orElse(null))
 	        .setRemote(pullConfig.getRemote().orElse(getRemoteFromCurrentBranch()));
+	    if(pullConfig.getBranchName().isPresent()) {
+	      pullCmd.setRemoteBranchName(pullConfig.getBranchName().get());
+	    }
 	    PullResult pullCommandResult = pullCmd.call();
 
 	    // Get fetch result

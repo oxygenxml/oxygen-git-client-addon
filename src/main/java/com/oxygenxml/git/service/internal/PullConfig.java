@@ -8,6 +8,11 @@ import com.oxygenxml.git.view.event.PullType;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * This class contains the information about the configuration to execute the pull operation.
+ * 
+ * @author alex_smarandache
+ */
 @Builder
 @Getter
 public class PullConfig {
