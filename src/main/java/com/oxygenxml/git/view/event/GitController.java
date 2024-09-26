@@ -299,7 +299,7 @@ public class GitController extends GitControllerBase {
       } finally {
         if (notifyFinish) {
           Optional<IGitViewProgressMonitor> pm = getProgressMonitor();
-          if(getProgressMonitor().isPresent()) {
+          if(pm.isPresent()) {
             if(event.isPresent() && event.get().getCause() != null) {
               pm.get().markAsFailed();
             } else {
