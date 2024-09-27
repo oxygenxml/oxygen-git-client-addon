@@ -8,6 +8,7 @@ import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
+import com.oxygenxml.git.view.remotes.RemotesViewUtil;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -23,8 +24,6 @@ public class SetRemoteAction extends BaseGitAbstractAction {
 	 * The translator for the messages that are displayed in this panel
 	 */
 	private static final Translator TRANSLATOR = Translator.getInstance();
-	
-	
 	
 	/**
 	 * Constructor.
@@ -45,13 +44,13 @@ public class SetRemoteAction extends BaseGitAbstractAction {
 	 */
 	private void setRemote() {
 		CurrentBranchRemotesDialog dialog = new CurrentBranchRemotesDialog();
-		if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_REMOTE_NOT_EXISTS) {
+		if(dialog.getStatusResult() == RemotesViewUtil.STATUS_REMOTE_NOT_EXISTS) {
 			OKCancelDialog addRemoteDialog = new AddRemoteDialog();
 			addRemoteDialog.setVisible(true);
 			if(addRemoteDialog.getResult() == OKCancelDialog.RESULT_OK) {
 				setRemote();
 			}
-		} else if(dialog.getStatusResult() == CurrentBranchRemotesDialog.STATUS_BRANCHES_NOT_EXIST) {
+		} else if(dialog.getStatusResult() == RemotesViewUtil.STATUS_BRANCHES_NOT_EXIST) {
 		  MessagePresenterProvider.getBuilder(
           TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), DialogType.ERROR)
           .setMessage(TRANSLATOR.getTranslation(Tags.NO_BRANCHES_FOUNDED))
