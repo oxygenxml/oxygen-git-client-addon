@@ -143,9 +143,9 @@ public class GitController extends GitControllerBase {
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull(Optional<IGitViewProgressMonitor> progressMonitor) {
-    return	pull(
-              PullConfig.builder().pullType(PullType.MERGE_FF).updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).build(), 
-              progressMonitor);
+    return pull(
+        PullConfig.builder().pullType(PullType.MERGE_FF).updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).build(), 
+        progressMonitor);
   }
 
   /**
@@ -458,7 +458,7 @@ public class GitController extends GitControllerBase {
     /**
      * The progress monitor.
      */
-    private final Optional<IGitViewProgressMonitor> pm;
+    private final Optional<IGitViewProgressMonitor> progressMonitor;
     
     /**
      * Constructor.
@@ -466,7 +466,7 @@ public class GitController extends GitControllerBase {
      * @param pm The progress monitor.
      */
     public ExecutePushRunnable(Optional<IGitViewProgressMonitor> pm) {
-      this.pm = pm;
+      this.progressMonitor = pm;
     }
 
     @Override
@@ -486,7 +486,7 @@ public class GitController extends GitControllerBase {
     @Override
     protected Optional<PushPullEvent> doOperation(CredentialsProvider credentialsProvider)
         throws  GitAPIException {
-      PushResponse response = gitAccess.push(credentialsProvider, pm);
+      PushResponse response = gitAccess.push(credentialsProvider, progressMonitor);
       PushPullEvent event = null;
       if (Status.OK == response.getStatus()) {
         event = new PushPullEvent(GitOperation.PUSH, TRANSLATOR.getTranslation(Tags.PUSH_SUCCESSFUL));
@@ -520,7 +520,7 @@ public class GitController extends GitControllerBase {
 
     @Override
     protected Optional<IGitViewProgressMonitor> getProgressMonitor() {
-      return pm;
+      return progressMonitor;
     }
   }
 
@@ -528,15 +528,27 @@ public class GitController extends GitControllerBase {
    * Execute command runnable.
    */
   private class ExecutePullRunnable extends ExecuteCommandRunnable {
-
+    /**
+     * Pull operation configuration.
+     */
     private final PullConfig pullConfig;
     
+    /**
+     * Monitors progress.
+     */
     private final Optional<IGitViewProgressMonitor> progressMonitor;
 
+    /**
+     * Create new pull runnable.
+     * 
+     * @param pullConfig      Pull configuration.
+     * @param progressMonitor Progress monitor.
+     */
     public ExecutePullRunnable(PullConfig pullConfig, Optional<IGitViewProgressMonitor> progressMonitor) {
       this.pullConfig = pullConfig;
       this.progressMonitor = progressMonitor;
     }
+    
     @Override
     protected GitOperation getOperation() {
       return GitOperation.PULL;
