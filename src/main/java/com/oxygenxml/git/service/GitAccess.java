@@ -970,22 +970,25 @@ public class GitAccess {
 	 * Pushes all the commits from the local repository to the remote repository
 	 * 
 	 * @param credentialsProvider The credentials provider.
-	 * @param monitor             The optional monitor progress.
+	 * @param progressMonitor     The optional progress monitor.
 	 * 
 	 * @return a response.
 	 *          
 	 * @throws GitAPIException
 	 */
-	public PushResponse push(CredentialsProvider credentialsProvider, Optional<IGitViewProgressMonitor> monitor)
+	public PushResponse push(CredentialsProvider credentialsProvider, Optional<IGitViewProgressMonitor> progressMonitor)
 	    throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
-	  PushResponse pushResponse = doPushInternal(credentialsProvider, monitor);
-	  if(monitor.isPresent()) {
-	    if(RemoteRefUpdate.Status.OK == pushResponse.getStatus() || pushResponse.getStatus() == RemoteRefUpdate.Status.UP_TO_DATE) {
-	      monitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	  PushResponse pushResponse = doPushInternal(credentialsProvider, progressMonitor);
+	  if(progressMonitor.isPresent()) {
+	    org.eclipse.jgit.transport.RemoteRefUpdate.Status pushResponseStatus = pushResponse.getStatus();
+      boolean isSuccessfulResponse = RemoteRefUpdate.Status.OK == pushResponseStatus || RemoteRefUpdate.Status.UP_TO_DATE == pushResponseStatus;
+      IGitViewProgressMonitor monitor = progressMonitor.get();
+      if(isSuccessfulResponse) {
+	      monitor.markAsCompleted();
 	    } else {
-	      monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	      monitor.markAsFailed();
 	    }
 	  }
 
@@ -1003,7 +1006,7 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	private PushResponse doPushInternal(CredentialsProvider credentialsProvider, Optional<IGitViewProgressMonitor> monitor)
-	    throws GitAPIException, InvalidRemoteException, TransportException {
+	    throws GitAPIException {
 	  PushResponse response = new PushResponse();
 
 	  Repository repo = git.getRepository();
@@ -1091,7 +1094,7 @@ public class GitAccess {
 	 * 
 	 * @param credentialsProvider Credentials provider.
 	 * @param pullConfig          The configuration for the pull.
-	 * @param monitor             The optional monitor progress for the pull operation.
+	 * @param progressMonitor     The optional monitor progress for the pull operation.
 	 * 
 	 * @return The result, if successful.
 	 *  
@@ -1104,25 +1107,27 @@ public class GitAccess {
 	public PullResponse pull(
 	    CredentialsProvider credentialsProvider,
 	    PullConfig pullConfig,
-	    Optional<IGitViewProgressMonitor> monitor) throws GitAPIException {
+	    Optional<IGitViewProgressMonitor> progressMonitor) throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
-	  monitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+	  
+	  progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
 
 	  PullResponse pullResponseToReturn = null;
 	  try {
-	    pullResponseToReturn = doPullInternal(credentialsProvider, pullConfig, monitor);
-	  } catch(GitAPIException ex) {
-	    monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
-	    throw ex;
-	  }
-
-	  if(monitor.isPresent()) {
-	    if(pullResponseToReturn.getStatus().isSuccessful()) {
-	      monitor.get().markAsCompleted();
-	    } else {
-	      monitor.get().markAsFailed();
+	    pullResponseToReturn = doPullInternal(credentialsProvider, pullConfig, progressMonitor);
+	    
+	    if(progressMonitor.isPresent()) {
+	      IGitViewProgressMonitor monitor = progressMonitor.get();
+        if(pullResponseToReturn.getStatus().isSuccessful()) {
+	        monitor.markAsCompleted();
+	      } else {
+	        monitor.markAsFailed();
+	      }
 	    }
+	  } catch(GitAPIException ex) {
+	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    throw ex;
 	  }
 
 	  return pullResponseToReturn;
