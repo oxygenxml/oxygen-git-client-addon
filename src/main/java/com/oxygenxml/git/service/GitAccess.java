@@ -60,13 +60,9 @@ import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidConfigurationException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
-import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.StashApplyFailureException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
@@ -1152,10 +1148,7 @@ public class GitAccess {
 	private PullResponse doPullInternal(
 	    CredentialsProvider credentialsProvider, 
 	    PullConfig pullConfig,
-	    Optional<IGitViewProgressMonitor> monitor)
-	        throws GitAPIException, WrongRepositoryStateException, InvalidConfigurationException, InvalidRemoteException,
-	        CanceledException, RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException,
-	        CheckoutConflictException, RebaseUncommittedChangesException {
+	    Optional<IGitViewProgressMonitor> monitor) throws GitAPIException {
 	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  if (!getConflictingFiles().isEmpty()) {
 	    pullResponseToReturn.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
@@ -1169,9 +1162,11 @@ public class GitAccess {
 	        .setCredentialsProvider(credentialsProvider)
 	        .setProgressMonitor(monitor.orElse(null))
 	        .setRemote(pullConfig.getRemote().orElse(getRemoteFromCurrentBranch()));
-	    if(pullConfig.getBranchName().isPresent()) {
-	      pullCmd.setRemoteBranchName(pullConfig.getBranchName().get());
+	    Optional<String> branchName = pullConfig.getBranchName();
+      if(branchName.isPresent()) {
+	      pullCmd.setRemoteBranchName(branchName.get());
 	    }
+      
 	    PullResult pullCommandResult = pullCmd.call();
 
 	    // Get fetch result
@@ -1179,8 +1174,7 @@ public class GitAccess {
 	    String lockFailureMessage = createLockFailureMessageIfNeeded(trackingRefUpdates);
 	    if (!lockFailureMessage.isEmpty()) {
 	      // Lock failure
-	      PluginWorkspaceProvider.getPluginWorkspace()
-	      .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
+	      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
 	      pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
 	    } else {
 	      ObjectId head = resolveHead(repository);
@@ -1204,6 +1198,7 @@ public class GitAccess {
 	      throw new GitAPIException(e.getMessage(), e) {};
 	    }
 	  }
+	  
 	  return pullResponseToReturn;
 	}
 
