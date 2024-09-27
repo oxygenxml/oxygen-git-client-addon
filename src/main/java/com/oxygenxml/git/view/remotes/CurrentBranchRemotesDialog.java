@@ -5,8 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -19,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -75,13 +74,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
         );
 
     setOkButtonText(TRANSLATOR.getTranslation(Tags.TRACK_BRANCH));
-    final List<RemoteBranchItem> branchesToAdd = new ArrayList<>();
-
     currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
 
     try {
       RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
-      currentStatus = RemotesViewUtil.addRemoteBranches(branchesToAdd, remoteBranchItems, currentBranch);
+      currentStatus = RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
     } catch (NoRepositorySelected | URISyntaxException e) {
       LOGGER.error(e.getMessage(), e);
     }
@@ -183,10 +180,9 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
 
   /**
-   * !!! Used for tests !!! 
-   *
    * @return The remote branch items.
    */
+  @TestOnly
   public JComboBox<RemoteBranchItem> getRemoteBranchItems() {
     return remoteBranchItems;
   }

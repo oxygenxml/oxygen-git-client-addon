@@ -2066,5 +2066,14 @@ public class Tags {
    */
   public static final String CANNOT_COMMIT_BECAUSE_UNSAVED_FILES_MESSAGE = "Cannot_Commit_Because_Unsaved_Files_Message";
   
+  /**
+   * English: Pull from.
+   */
+  public static final String PULL_FROM_REMOTE_BRANCH = "Pull_From_Remote_Branch";
+  
+  /**
+   * English: Pull type.
+   */
+  public static final String PULL_TYPE = "Pull_Type";
 }
 

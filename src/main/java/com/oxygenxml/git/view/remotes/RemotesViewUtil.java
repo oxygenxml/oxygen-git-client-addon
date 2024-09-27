@@ -80,7 +80,6 @@ public class RemotesViewUtil {
   /**
    * Add remote branches for current repository. 
    * 
-   * @param branchesToAdd      List to add the branches.
    * @param remoteBranchItems  The combobox with remote branches.
    * @param currentBranch      The name of the current branch.
    *
@@ -92,9 +91,9 @@ public class RemotesViewUtil {
    * @throws NoRepositorySelected 
    */
   public static int addRemoteBranches(
-      final List<RemoteBranchItem> branchesToAdd, 
       final JComboBox<RemoteBranchItem> remoteBranchItems, 
       final String currentBranch) throws URISyntaxException, NoRepositorySelected {
+    final List<RemoteBranchItem> branchesToAdd = new ArrayList<>();
     final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
     final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
     final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()

@@ -8,6 +8,15 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Pull_Type">
+		<comment>English: Pull type.</comment>
+		<val lang="en_US">Pull type</val>
+		<val lang="de_DE">Pull type</val>
+		<val lang="fr_FR">Pull type</val>
+		<val lang="ja_JP">Pull type</val>
+		<val lang="nl_NL">Pull type</val>
+		<val lang="zh_CN">Pull type</val>
+	</key>
 	<key value="Hide">
 		<comment>English: Hide.</comment>
 		<val lang="en_US">Hide</val>
@@ -182,6 +191,15 @@
         	<val lang="nl_NL">Kan niet pullen (rebasen) omdat er niet-gecommitte lokale wijzigingen zijn in de onderstaande bestanden. De binnenkomende remote wijzigingen zouden deze bestanden niet kunnen wijzigen, maar een rebase kan niet worden uitgevoerd als er niet-gecommitte lokale wijzigingen zijn.\n\nCommit, stash, of verwijder de lokale wijzigingen en probeer het opnieuw.</val>
         	<val lang="zh_CN">由于以下文件存在未提交的本地更改，无法拉取（变基）。远程的更改可能不会修改这些文件，但是当存在未提交的本地更改时，无法执行变基操作。\n\n提交、存储或丢弃本地更改，然后重试。</val>
     	</key>
+    	<key value="Pull_From_Remote_Branch">
+		<comment>English: Pull from.</comment>
+		<val lang="en_US">Pull from</val>
+		<val lang="de_DE">Pull von</val>
+		<val lang="fr_FR">Pull depuis</val>
+		<val lang="ja_JP">からプッシュする</val>
+		<val lang="nl_NL">Pull van</val>
+		<val lang="zh_CN">从拉取</val>
+	</key>
     	<key value="Could_no_load_repo_corresponding_to_project">
 		<comment>Error message shown when the repo corresponding to the loaded project could not be loaded.</comment>
 		<val lang="en_US">Could not load repository after switching to the new project.</val>
