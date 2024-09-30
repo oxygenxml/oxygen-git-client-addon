@@ -26,11 +26,12 @@ import org.slf4j.LoggerFactory;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
 import com.oxygenxml.git.view.remotes.RemoteBranchItem;
@@ -87,14 +88,19 @@ public class AdvancedPullDialog extends OKCancelDialog {
   private PullConfig pullConfig;
 
   /**
+   * The Git controller.
+   */
+  private final GitController gitCtrl;
+  /**
    * Constructor.
    */
-  public AdvancedPullDialog() {
+  public AdvancedPullDialog(final GitController gitCtrl) {
     super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
         TRANSLATOR.getTranslation(Tags.PULL), true
         );
     
-    currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
+    this.gitCtrl = gitCtrl;
+    currentBranch = gitCtrl.getGitAccess().getBranchInfo().getBranchName();
     setOkButtonText(TRANSLATOR.getTranslation(Tags.PULL_CHANGES));
 
     RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
@@ -194,7 +200,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
           );
 
       toReturn.setBorder(padding);
-      toReturn.setText(TRANSLATOR.getTranslation(value == PullType.REBASE ? Tags.REBASE : Tags.MERGE));
+      toReturn.setText(TRANSLATOR.getTranslation(value == PullType.REBASE ? Tags.REBASE : Tags.MERGE_LOWERCASE));
 
       return toReturn;
     });
@@ -239,7 +245,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          if (GitAccess.getInstance().getRepository() != null) {
+          if (gitCtrl.getGitAccess().getRepository() != null) {
             RemotesRepositoryDialog remotesRepoDialog = new RemotesRepositoryDialog();
             remotesRepoDialog.configureRemotes();
             if(remotesRepoDialog.getResult() == OKCancelDialog.RESULT_OK) {
@@ -292,6 +298,14 @@ public class AdvancedPullDialog extends OKCancelDialog {
   @Nullable
   public PullConfig getPullConfig() {
     return pullConfig;
+  }
+  
+  /**
+   * @return The remote branch items.
+   */
+  @TestOnly
+  public JComboBox<RemoteBranchItem> getRemoteBranchItems() {
+    return remoteBranchItems;
   }
 
 }

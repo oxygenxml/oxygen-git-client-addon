@@ -2075,5 +2075,10 @@ public class Tags {
    * English: Pull type.
    */
   public static final String PULL_TYPE = "Pull_Type";
+  
+  /**
+   * English: merge.
+   */
+  public static final String MERGE_LOWERCASE = "Merge_Lowercase";
 }
 

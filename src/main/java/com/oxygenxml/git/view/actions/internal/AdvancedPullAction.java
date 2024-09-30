@@ -50,7 +50,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PullAction.class);
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Advanced pull action invoked");
         }
-        AdvancedPullDialog pullToConfigDialog = new AdvancedPullDialog();
+        AdvancedPullDialog pullToConfigDialog = new AdvancedPullDialog(gitController);
         pullToConfigDialog.setVisible(true);
         if(pullToConfigDialog.getResult() == OKCancelDialog.RESULT_OK) {
           PullConfig pullConfig = pullToConfigDialog.getPullConfig();

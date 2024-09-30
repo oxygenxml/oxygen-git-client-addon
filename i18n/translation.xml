@@ -8,6 +8,15 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Merge_Lowercase">
+		<comment>English: merge.</comment>
+		<val lang="en_US">merge</val>
+		<val lang="de_DE">merge</val>
+		<val lang="fr_FR">merge</val>
+		<val lang="ja_JP">merge</val>
+		<val lang="nl_NL">merge</val>
+		<val lang="zh_CN">merge</val>
+	</key>
 	<key value="Pull_Type">
 		<comment>English: Pull type.</comment>
 		<val lang="en_US">Pull type</val>
