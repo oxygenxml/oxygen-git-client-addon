@@ -10,33 +10,33 @@
 	</languageList>
 	<key value="Stash_important_changes">
         <comment>Message to suggest stashing important changes before deleting branch</comment>
-        <val lang="en_US">If the current changes are important, stash them so you can apply them to another branch
-         later. Afterward, switch to another branch and delete "{0}".</val>
-        <val lang="de_DE">If the current changes are important, stash them so you can apply them to another branch
-         later. Afterward, switch to another branch and delete "{0}".</val>
-        <val lang="fr_FR">If the current changes are important, stash them so you can apply them to another branch
-         later. Afterward, switch to another branch and delete "{0}".</val>
-        <val lang="ja_JP">If the current changes are important, stash them so you can apply them to another branch
-         later. Afterward, switch to another branch and delete "{0}".</val>
-        <val lang="nl_NL">If the current changes are important, stash them so you can apply them to another branch
-         later. Afterward, switch to another branch and delete "{0}".</val>
-        <val lang="zh_CN">If the current changes are important, stash them so you can apply them to another branch
-         later. Afterward, switch to another branch and delete "{0}".</val>
+        <val lang="en_US">If the current changes are important, stash them so they can be applied to another branch
+         later. Afterward, switch to a different branch and delete "{0}".</val>
+        <val lang="de_DE">If the current changes are important, stash them so they can be applied to another branch
+         later. Afterward, switch to a different branch and delete "{0}".</val>
+        <val lang="fr_FR">If the current changes are important, stash them so they can be applied to another branch
+         later. Afterward, switch to a different branch and delete "{0}".</val>
+        <val lang="ja_JP">If the current changes are important, stash them so they can be applied to another branch
+         later. Afterward, switch to a different branch and delete "{0}".</val>
+        <val lang="nl_NL">If the current changes are important, stash them so they can be applied to another branch
+         later. Afterward, switch to a different branch and delete "{0}".</val>
+        <val lang="zh_CN">If the current changes are important, stash them so they can be applied to another branch
+         later. Afterward, switch to a different branch and delete "{0}".</val>
     </key>
     <key value="Outdated_current_branch">
         <comment>Shown when the current branch is outdated (is not linked to a remote branch)</comment>
-        <val lang="en_US">The current branch, "{0}", is the only one not linked to a remote branch 
-          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
-        <val lang="de_DE">The current branch, "{0}", is the only one not linked to a remote branch 
-          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
-        <val lang="fr_FR">The current branch, "{0}", is the only one not linked to a remote branch 
-          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
-        <val lang="ja_JP">The current branch, "{0}", is the only one not linked to a remote branch 
-          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
-        <val lang="nl_NL">The current branch, "{0}", is the only one not linked to a remote branch 
-          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
-        <val lang="zh_CN">The current branch, "{0}", is the only one not linked to a remote branch 
-          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="en_US">The current branch, "{0}", is the only one linked to a remote branch 
+          that no longer exists. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="de_DE">The current branch, "{0}", is the only one linked to a remote branch 
+          that no longer exists. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="fr_FR">The current branch, "{0}", is the only one linked to a remote branch 
+          that no longer exists. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="ja_JP">The current branch, "{0}", is the only one linked to a remote branch 
+          that no longer exists. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="nl_NL">The current branch, "{0}", is the only one linked to a remote branch 
+          that no longer exists. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="zh_CN">The current branch, "{0}", is the only one linked to a remote branch 
+          that no longer exists. Continuing to work on it is not recommended as it may lead to integration issues.</val>
     </key>
     <key value="Cannot_delete_current_branch">
         <comment>Shown when trying to delete the current branch</comment>
