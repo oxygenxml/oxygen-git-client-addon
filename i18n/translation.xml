@@ -8,6 +8,45 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Stash_important_changes">
+        <comment>Message to suggest stashing important changes before deleting branch</comment>
+        <val lang="en_US">If the current changes are important, stash them so you can apply them to another branch
+         later. Afterward, switch to another branch and delete "{0}".</val>
+        <val lang="de_DE">If the current changes are important, stash them so you can apply them to another branch
+         later. Afterward, switch to another branch and delete "{0}".</val>
+        <val lang="fr_FR">If the current changes are important, stash them so you can apply them to another branch
+         later. Afterward, switch to another branch and delete "{0}".</val>
+        <val lang="ja_JP">If the current changes are important, stash them so you can apply them to another branch
+         later. Afterward, switch to another branch and delete "{0}".</val>
+        <val lang="nl_NL">If the current changes are important, stash them so you can apply them to another branch
+         later. Afterward, switch to another branch and delete "{0}".</val>
+        <val lang="zh_CN">If the current changes are important, stash them so you can apply them to another branch
+         later. Afterward, switch to another branch and delete "{0}".</val>
+    </key>
+    <key value="Outdated_current_branch">
+        <comment>Shown when the current branch is outdated (is not linked to a remote branch)</comment>
+        <val lang="en_US">The current branch, "{0}", is the only one not linked to a remote branch 
+          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="de_DE">The current branch, "{0}", is the only one not linked to a remote branch 
+          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="fr_FR">The current branch, "{0}", is the only one not linked to a remote branch 
+          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="ja_JP">The current branch, "{0}", is the only one not linked to a remote branch 
+          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="nl_NL">The current branch, "{0}", is the only one not linked to a remote branch 
+          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+        <val lang="zh_CN">The current branch, "{0}", is the only one not linked to a remote branch 
+          anymore. Continuing to work on it is not recommended as it may lead to integration issues.</val>
+    </key>
+    <key value="Cannot_delete_current_branch">
+        <comment>Shown when trying to delete the current branch</comment>
+        <val lang="en_US">Branch "{0}" cannot be deleted because it is the current branch of the repository.</val>
+        <val lang="de_DE">Branch "{0}" cannot be deleted because it is the current branch of the repository.</val>
+        <val lang="fr_FR">Branch "{0}" cannot be deleted because it is the current branch of the repository.</val>
+        <val lang="ja_JP">Branch "{0}" cannot be deleted because it is the current branch of the repository.</val>
+        <val lang="nl_NL">Branch "{0}" cannot be deleted because it is the current branch of the repository.</val>
+        <val lang="zh_CN">Branch "{0}" cannot be deleted because it is the current branch of the repository.</val>
+    </key>
 	<key value="Merge_Lowercase">
 		<comment>English: merge.</comment>
 		<val lang="en_US">merge</val>
