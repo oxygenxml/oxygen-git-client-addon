@@ -133,14 +133,10 @@ public class OutdatedBranchChecker {
         
         SwingUtilities.invokeLater(() -> {
           if (branchesAndTooltips.containsKey(currentBranchName) && branchesAndTooltips.size() == 1) {
-            MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.INFO)
-              .setMessage(
-                  MessageFormat.format(i18n.getTranslation(Tags.OUTDATED_CURRENT_BRANCH), currentBranchName)
-                    + "\n\n"
-                    + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName))
-              .setOkButtonVisible(false)
-              .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
-              .buildAndShow();
+            showCurrentBranchRelatedMessage(
+                MessageFormat.format(i18n.getTranslation(Tags.OUTDATED_CURRENT_BRANCH), currentBranchName)
+                + "\n\n"
+                + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName));
           } else {
             showOutdatedBranchesDialog(branchesAndTooltips, currentBranchName);
           }
@@ -209,15 +205,24 @@ public class OutdatedBranchChecker {
     GitOperationScheduler.getInstance().schedule(deleteBranchesTask);
 
     if (shouldDeleteCurrentBranch) {
-      MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.ERROR)
-        .setMessage(
-            MessageFormat.format(i18n.getTranslation(Tags.CANNOT_DELETE_CURRENT_BRANCH), currentBranchName)
-              + "\n\n"
-              + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName))
-        .setOkButtonVisible(false)
-        .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
-        .buildAndShow();
+      showCurrentBranchRelatedMessage(
+          MessageFormat.format(i18n.getTranslation(Tags.CANNOT_DELETE_CURRENT_BRANCH), currentBranchName)
+          + "\n\n"
+          + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName));
     }
+  }
+
+  /**
+   * Show a message related to the fact than the current branch cannot be deleted.
+   * 
+   * @param message The message to show.
+   */
+  private static void showCurrentBranchRelatedMessage(String message) {
+    MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.INFO)
+      .setMessage(message)
+      .setOkButtonVisible(false)
+      .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
+      .buildAndShow();
   }
 
 }
