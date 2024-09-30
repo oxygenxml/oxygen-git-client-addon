@@ -21,6 +21,21 @@ public class Tags {
   public static final String LAST_COMMIT_DETAILS = "Last_Commit_Details";
   
   /**
+   * Message to suggest stashing important changes before deleting branch.
+   */
+  public static final String STASH_IMPORTANT_CHANGES = "Stash_important_changes";
+  
+  /**
+   * Shown when the current branch is outdated (is not linked to a remote branch)
+   */
+  public static final String OUTDATED_CURRENT_BRANCH = "Outdated_current_branch";
+  
+  /**
+   * Shown when trying to delete the current branch
+   */
+  public static final String CANNOT_DELETE_CURRENT_BRANCH = "Cannot_delete_current_branch";
+  
+  /**
    * Outdated branches detected
    */
   public static final String OUTDATED_BRANCHES_DETECTED = "Outdated_branches_detected";

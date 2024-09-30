@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -43,10 +44,16 @@ public class OutdatedBranchChecker {
    * Logger for logging.
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(OutdatedBranchChecker.class.getName());
+  
   /**
-   * Utility class.
-   */
-  private OutdatedBranchChecker() {}
+    * Constructor.
+    *
+    * @throws UnsupportedOperationException when invoked.
+    */
+  private OutdatedBranchChecker() {
+    // Private to avoid instantiations
+    throw new UnsupportedOperationException("Instantiation of this utility class is not allowed!");
+  }
   
   /**
    * i18n
@@ -114,43 +121,100 @@ public class OutdatedBranchChecker {
     try {
       List<Ref> obsoleteBranches = BranchesUtil.getLocalBranchesThatNoLongerHaveRemotes();
       if (!obsoleteBranches.isEmpty()) {
-        Map <String, String> branches = new HashMap<>();
+        Map <String, String> branchesAndTooltips = new HashMap<>();
         for (Ref ref : obsoleteBranches) {
-          branches.put(
+          branchesAndTooltips.put(
               Repository.shortenRefName(ref.getName()),
               // No tooltip
               null);
         }
         
+        String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+        
         SwingUtilities.invokeLater(() -> {
-          int userChoice = MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.WARNING)
-              .setMessage(i18n.getTranslation(Tags.OUTDATED_BRANCHES_INFO))
-              .setTargetResourcesWithTooltips(branches)
-              .setOkButtonName(i18n.getTranslation(Tags.DELETE_BRANCHES))
-              .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
-              .buildAndShow()
-              .getResult();
-            if (userChoice == OKCancelDialog.RESULT_OK) {
-              int userDecision = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-                  i18n.getTranslation(Tags.DELETE_BRANCHES),
-                  MessageFormat.format(
-                      i18n.getTranslation(Tags.OUTDATED_BRANCHES_DELETION_CONFIRMATION),
-                      branches.keySet().stream()
-                        .sorted(String.CASE_INSENSITIVE_ORDER)
-                        .map(item -> "- " + item)
-                        .collect(Collectors.joining("\n"))),
-                  new String[] {i18n.getTranslation(Tags.YES), i18n.getTranslation(Tags.NO)},
-                  new int[] {1, 0});
-              if (userDecision == 1) {
-                GitOperationScheduler.getInstance().schedule(() -> GitAccess.getInstance().deleteBranches(branches.keySet(), Optional.of(
-                    new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.DELETE_BRANCHES), true))))); 
-              }
-            }
+          if (branchesAndTooltips.containsKey(currentBranchName) && branchesAndTooltips.size() == 1) {
+            MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.INFO)
+              .setMessage(
+                  MessageFormat.format(i18n.getTranslation(Tags.OUTDATED_CURRENT_BRANCH), currentBranchName)
+                    + "\n\n"
+                    + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName))
+              .setOkButtonName(i18n.getTranslation(Tags.CLOSE))
+              .buildAndShow();
+          } else {
+            showOutdatedBranchesDialog(branchesAndTooltips, currentBranchName);
+          }
         });
         
       }
     } catch (NoRepositorySelected e) {
       LOGGER.warn(e, e);
+    }
+  }
+
+  /**
+   * Show the dialog that presents the outdated branches.
+   * 
+   * @param branchesAndTooltips        The branches to present in the dialog and their tooltips.
+   * @param currentBranchName          The name of the current branch.
+   */
+  private static void showOutdatedBranchesDialog(
+      Map<String, String> branchesAndTooltips,
+      String currentBranchName) {
+    int userChoice = MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.WARNING)
+        .setMessage(i18n.getTranslation(Tags.OUTDATED_BRANCHES_INFO))
+        .setTargetResourcesWithTooltips(branchesAndTooltips)
+        .setOkButtonName(i18n.getTranslation(Tags.DELETE_BRANCHES))
+        .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
+        .buildAndShow()
+        .getResult();
+    if (userChoice == OKCancelDialog.RESULT_OK) {
+      Set<String> branchesToDelete = branchesAndTooltips.keySet();
+      int userDecision = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+          i18n.getTranslation(Tags.DELETE_BRANCHES),
+          MessageFormat.format(
+              i18n.getTranslation(Tags.OUTDATED_BRANCHES_DELETION_CONFIRMATION),
+              branchesToDelete.stream()
+              .sorted(String.CASE_INSENSITIVE_ORDER)
+              .map(item -> "- " + item)
+              .collect(Collectors.joining("\n"))),
+          new String[] { i18n.getTranslation(Tags.YES), i18n.getTranslation(Tags.NO) },
+          new int[] { 1, 0 });
+      if (userDecision == 1) {
+        tryDeleteBranches(branchesToDelete, currentBranchName);
+      }
+    }
+  }
+
+  /**
+   * Try to delete the given branches. The current branch will not be deleted.
+   * 
+   * @param branchesToDelete  The branches to delete.
+   * @param currentBranchName The name of the current branch.
+   */
+  private static void tryDeleteBranches(
+      Set<String> branchesToDelete,
+      String currentBranchName) {
+    boolean shouldDeleteCurrentBranch = branchesToDelete.contains(currentBranchName);
+    if (shouldDeleteCurrentBranch) {
+      branchesToDelete.remove(currentBranchName);
+    }
+
+    Runnable deleteBranchesTask = () -> {
+      ProgressDialog progressDialog = new ProgressDialog(Translator.getInstance().getTranslation(Tags.DELETE_BRANCHES), true);
+      GitAccess.getInstance().deleteBranches(
+          branchesToDelete,
+          Optional.of(new GitOperationProgressMonitor(progressDialog)));
+    };
+    GitOperationScheduler.getInstance().schedule(deleteBranchesTask);
+
+    if (shouldDeleteCurrentBranch) {
+      MessagePresenterProvider.getBuilder(i18n.getTranslation(Tags.OUTDATED_BRANCHES_DETECTED), DialogType.ERROR)
+        .setMessage(
+            MessageFormat.format(i18n.getTranslation(Tags.CANNOT_DELETE_CURRENT_BRANCH), currentBranchName)
+              + "\n\n"
+              + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName))
+        .setOkButtonName(i18n.getTranslation(Tags.CLOSE))
+        .buildAndShow();
     }
   }
 
