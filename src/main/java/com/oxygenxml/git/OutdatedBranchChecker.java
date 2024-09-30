@@ -138,7 +138,8 @@ public class OutdatedBranchChecker {
                   MessageFormat.format(i18n.getTranslation(Tags.OUTDATED_CURRENT_BRANCH), currentBranchName)
                     + "\n\n"
                     + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName))
-              .setOkButtonName(i18n.getTranslation(Tags.CLOSE))
+              .setOkButtonVisible(false)
+              .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
               .buildAndShow();
           } else {
             showOutdatedBranchesDialog(branchesAndTooltips, currentBranchName);
@@ -213,7 +214,8 @@ public class OutdatedBranchChecker {
             MessageFormat.format(i18n.getTranslation(Tags.CANNOT_DELETE_CURRENT_BRANCH), currentBranchName)
               + "\n\n"
               + MessageFormat.format(i18n.getTranslation(Tags.STASH_IMPORTANT_CHANGES), currentBranchName))
-        .setOkButtonName(i18n.getTranslation(Tags.CLOSE))
+        .setOkButtonVisible(false)
+        .setCancelButtonName(i18n.getTranslation(Tags.CLOSE))
         .buildAndShow();
     }
   }
