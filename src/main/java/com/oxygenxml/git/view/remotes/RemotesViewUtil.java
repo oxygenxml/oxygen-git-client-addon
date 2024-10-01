@@ -59,21 +59,25 @@ public class RemotesViewUtil {
     final ListCellRenderer<? super RemoteBranch> oldRender = remoteBranchItems.getRenderer();
     remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
 
-        final JLabel toReturn = (JLabel) 
-            oldRender.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        
-        final Border padding = BorderFactory.createEmptyBorder(
-                0, 
-                UIConstants.COMPONENT_LEFT_PADDING, 
-                0, 
-                UIConstants.COMPONENT_RIGHT_PADDING
-                );
+      final JLabel toReturn = (JLabel) 
+          oldRender.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-        toReturn.setBorder(padding);
-        toReturn.setText(TextFormatUtil.shortenText(toReturn.getText(), MAXIMUM_REMOTE_ITEM_NO_OF_CHARACTERS, 
-            0, "..."));
+      final Border padding = BorderFactory.createEmptyBorder(
+          0, 
+          UIConstants.COMPONENT_LEFT_PADDING, 
+          0, 
+          UIConstants.COMPONENT_RIGHT_PADDING
+          );
+      toReturn.setBorder(padding);
+      
+      toReturn.setText(
+          TextFormatUtil.shortenText(
+              toReturn.getText(),
+              MAXIMUM_REMOTE_ITEM_NO_OF_CHARACTERS, 
+              0,
+              "..."));
 
-        return toReturn;
+      return toReturn;
     });
   }
   
@@ -96,27 +100,25 @@ public class RemotesViewUtil {
     final List<RemoteBranch> branchesToAdd = new ArrayList<>();
     final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
     final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
-    final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
-        .getRemotesFromConfig().keySet());
-    boolean foundedBranchRemoteForCurrentLocalBranch = false;
-    boolean existsRemotes = false;
-    int currentStatus = STATUS_REMOTE_NOT_EXISTS;
+    final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance().getRemotesFromConfig().keySet());
+    boolean foundBranchRemoteForCurrentLocalBranch = false;
 
     for(String remote : remotesNames) {
-      existsRemotes = true;
-      final URIish sourceURL = new URIish(config.getString(ConfigConstants.CONFIG_REMOTE_SECTION,
-          remote, ConfigConstants.CONFIG_KEY_URL));
-      final Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(
-          sourceURL, null);
+      final URIish sourceURL = new URIish(
+          config.getString(
+              ConfigConstants.CONFIG_REMOTE_SECTION,
+              remote,
+              ConfigConstants.CONFIG_KEY_URL));
+      final Collection<Ref> branchesConfig = GitAccess.getInstance().doListRemoteBranchesInternal(sourceURL, null);
 
       for(Ref branch: branchesConfig) {
         final String branchName = branch.getName();
-        final String remoteC = branchConfig.getRemote();
-        final String mergeC = branchConfig.getMerge();
-        if(remoteC !=null && remoteC.equals(remote) 
-            && mergeC != null && mergeC.equals(branchName)) {
+        final String remoteFromConfig = branchConfig.getRemote();
+        final String mergeFromConfig = branchConfig.getMerge();
+        if(remoteFromConfig != null && remoteFromConfig.equals(remote) 
+            && mergeFromConfig != null && mergeFromConfig.equals(branchName)) {
           final RemoteBranch remoteItem = new RemoteBranch(remote, branchName);
-          foundedBranchRemoteForCurrentLocalBranch = true;
+          foundBranchRemoteForCurrentLocalBranch = true;
           remoteItem.setFirstSelection(true);
           branchesToAdd.add(remoteItem);
         } else {
@@ -125,22 +127,24 @@ public class RemotesViewUtil {
       }
     }
 
-    if(!foundedBranchRemoteForCurrentLocalBranch) {
+    if(!foundBranchRemoteForCurrentLocalBranch) {
       final RemoteBranch remoteItem = new RemoteBranch(null, null);
       remoteItem.setFirstSelection(true);
       remoteBranchItems.addItem(remoteItem);    
       remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
     }
 
-    if(!existsRemotes) {
+    int currentStatus;
+    if (remotesNames.isEmpty()) {
       currentStatus = STATUS_REMOTE_NOT_EXISTS;
-    } else if(branchesToAdd.isEmpty()) {
+    } else if (branchesToAdd.isEmpty()) {
       currentStatus = STATUS_BRANCHES_NOT_EXIST;
     } else {
       currentStatus = STATUS_REMOTE_OK;
       branchesToAdd.sort((b1, b2) -> {
         int comparasionResult = !b1.isUndefined() && !b2.isUndefined() ? 
-            Boolean.compare(b2.branchFullName.endsWith(currentBranch), b1.branchFullName.endsWith(currentBranch)) : 0;
+            Boolean.compare(b2.branchFullName.endsWith(currentBranch), b1.branchFullName.endsWith(currentBranch)) 
+              : 0;
         if(comparasionResult == 0) {
           comparasionResult = b1.toString().compareTo(b2.toString());
         }

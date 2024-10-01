@@ -96,8 +96,8 @@ public class AdvancedPullDialog extends OKCancelDialog {
    */
   public AdvancedPullDialog(final GitController gitCtrl) {
     super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-        TRANSLATOR.getTranslation(Tags.PULL), true
-        );
+        TRANSLATOR.getTranslation(Tags.PULL),
+        true);
     
     this.gitCtrl = gitCtrl;
     currentBranch = gitCtrl.getGitAccess().getBranchInfo().getBranchName();
