@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.Security;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -421,6 +423,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	    parentFrame.addWindowListener(panelRefreshWindowListener);
 
 	    OutdatedBranchChecker.init(gitController);
+	    
+	    // For GPG-based commit signing
+	    Security.addProvider(new BouncyCastleProvider());
 
 	  } catch (Throwable t) { // NOSONAR
 	    // Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
