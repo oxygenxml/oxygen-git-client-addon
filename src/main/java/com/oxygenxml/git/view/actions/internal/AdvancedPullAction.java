@@ -7,10 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.RemoteNotFoundException;
 import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.AdvancedPullDialog;
+import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -59,9 +63,34 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PullAction.class);
           }
         }
       }
-    } catch (NoRepositorySelected e1) {
+    } catch (NoRepositorySelected ex) {
       if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e1.getMessage(), e1);
+        LOGGER.debug(ex.getMessage(), ex);
+      }
+    } catch (RemoteNotFoundException ex) {
+      treatRemoteNotFound(ex);
+    }
+  }
+
+
+  /**
+   * Treat the exception when the remote is not found. 
+   * 
+   * @param ex The exception.
+   */
+  private void treatRemoteNotFound(RemoteNotFoundException ex) {
+    if(RemoteNotFoundException.STATUS_BRANCHES_NOT_EXIST == ex.getStatus()) {
+      MessagePresenterProvider.getBuilder(
+          Translator.getInstance().getTranslation(Tags.PULL), DialogType.ERROR)
+      .setMessage(Translator.getInstance().getTranslation(Tags.NO_BRANCHES_FOUNDED))
+      .setCancelButtonVisible(false)
+      .setOkButtonName(Translator.getInstance().getTranslation(Tags.CLOSE))
+      .buildAndShow();  
+    } else {
+      OKCancelDialog addRemoteDialog = new AddRemoteDialog();
+      addRemoteDialog.setVisible(true);
+      if(addRemoteDialog.getResult() == OKCancelDialog.RESULT_OK) {
+        actionPerformed(null);
       }
     }
   }

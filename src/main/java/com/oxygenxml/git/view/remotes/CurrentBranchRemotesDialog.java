@@ -19,6 +19,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.RemoteNotFoundException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.branches.BranchConfigurations;
@@ -61,14 +62,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
   private final String currentBranch;
 
   /**
-   * The current dialog status.
-   */
-  private int currentStatus = RemotesViewUtil.STATUS_REMOTE_OK;
-
-  /**
    * Constructor.
+   * 
+   * @throws RemoteNotFoundException This exception appear when a remote is not found.
    */
-  public CurrentBranchRemotesDialog() {
+  public CurrentBranchRemotesDialog() throws RemoteNotFoundException {
     super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
         TRANSLATOR.getTranslation(Tags.CONFIGURE_REMOTE_FOR_BRANCH), true
         );
@@ -78,31 +76,27 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
     try {
       RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
-      currentStatus = RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
+      RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
     } catch (NoRepositorySelected | URISyntaxException e) {
       LOGGER.error(e.getMessage(), e);
     }
 
-    if(currentStatus == RemotesViewUtil.STATUS_REMOTE_NOT_EXISTS || currentStatus == RemotesViewUtil.STATUS_BRANCHES_NOT_EXIST) {
-      this.doCancel();
-    } else if(currentStatus == RemotesViewUtil.STATUS_REMOTE_OK){
-      getContentPane().add(createGUIPanel());
+    getContentPane().add(createGUIPanel());
 
-      pack();
-      repaint();
+    pack();
+    repaint();
 
-      JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
-          (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-      if (parentFrame != null) {
-        setIconImage(parentFrame.getIconImage());
-        setLocationRelativeTo(parentFrame);
-      }
-
-      setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-      this.setVisible(true);
-      this.setResizable(false);
+    JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+    if (parentFrame != null) {
+      setIconImage(parentFrame.getIconImage());
+      setLocationRelativeTo(parentFrame);
     }
+
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+    this.setVisible(true);
+    this.setResizable(false);
   }
 
 
@@ -169,15 +163,6 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
     super.doOK();
   }
-
-
-  /**
-   * @return The dialog status.
-   */
-  public int getStatusResult() {
-    return currentStatus;
-  }
-
 
   /**
    * @return The remote branch items.

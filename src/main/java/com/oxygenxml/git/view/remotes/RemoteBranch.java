@@ -60,12 +60,13 @@ public class RemoteBranch {
 
   @Override
   public String toString() {
-      String branchShortName = NONE;
+      String branchToString = NONE;
       if(!isUndefined()) {
-        branchShortName  = branchFullName != null ? Repository.shortenRefName(branchFullName) : null;
+        String branchShortName = branchFullName != null ? Repository.shortenRefName(branchFullName) : null;
+        branchToString = remote + "/" + branchShortName;
       } 
       
-      return branchShortName;
+      return branchToString;
   }
 
 }

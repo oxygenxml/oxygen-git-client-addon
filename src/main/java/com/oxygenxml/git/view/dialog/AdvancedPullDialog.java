@@ -28,6 +28,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.annotation.TestOnly;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.RemoteNotFoundException;
 import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -76,12 +77,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
    * The current branch.
    */
   private final String currentBranch;
-
-  /**
-   * The current dialog status.
-   */
-  private int currentStatus = RemotesViewUtil.STATUS_REMOTE_OK;
-
+  
   /**
    * The configuration of the pull operation.
    */
@@ -91,10 +87,13 @@ public class AdvancedPullDialog extends OKCancelDialog {
    * The Git controller.
    */
   private final GitController gitCtrl;
+  
   /**
    * Constructor.
+   * 
+   * @throws RemoteNotFoundException   This exception appear when a remote is not found.
    */
-  public AdvancedPullDialog(final GitController gitCtrl) {
+  public AdvancedPullDialog(final GitController gitCtrl) throws RemoteNotFoundException {
     super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
         TRANSLATOR.getTranslation(Tags.PULL),
         true);
@@ -105,10 +104,6 @@ public class AdvancedPullDialog extends OKCancelDialog {
 
     RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
     loadRemotesRepositories();
-
-    if(currentStatus == RemotesViewUtil.STATUS_REMOTE_NOT_EXISTS || currentStatus == RemotesViewUtil.STATUS_BRANCHES_NOT_EXIST) {
-      this.doCancel();
-    }
 
     getContentPane().add(createGUIPanel());
 
@@ -130,11 +125,13 @@ public class AdvancedPullDialog extends OKCancelDialog {
 
   /**
    * This method clear the remote branches combo box and reload it.
+   * 
+   * @throws RemoteNotFoundException This exception appear when a remote is not found.
    */
-  private void loadRemotesRepositories() {
+  private void loadRemotesRepositories() throws RemoteNotFoundException {
     remoteBranchItems.removeAllItems();
     try {
-      currentStatus = RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
+      RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
     } catch (NoRepositorySelected | URISyntaxException e) {
       LOGGER.error(e.getMessage(), e);
     }
@@ -249,7 +246,11 @@ public class AdvancedPullDialog extends OKCancelDialog {
             RemotesRepositoryDialog remotesRepoDialog = new RemotesRepositoryDialog();
             remotesRepoDialog.configureRemotes();
             if(remotesRepoDialog.getResult() == OKCancelDialog.RESULT_OK) {
-              loadRemotesRepositories();
+              try {
+                loadRemotesRepositories();
+              } catch (RemoteNotFoundException ex) {
+                LOGGER.debug(ex.getMessage(), ex);
+              }
             }
           }
         } catch (NoRepositorySelected e1) {
@@ -282,14 +283,6 @@ public class AdvancedPullDialog extends OKCancelDialog {
     }
 
     super.doOK();
-  }
-
-
-  /**
-   * @return The dialog status.
-   */
-  public int getStatusResult() {
-    return currentStatus;
   }
 
   /**

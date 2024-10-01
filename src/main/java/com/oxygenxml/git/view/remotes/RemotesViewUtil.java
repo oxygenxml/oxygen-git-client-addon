@@ -19,6 +19,7 @@ import org.eclipse.jgit.transport.URIish;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.RemoteNotFoundException;
 import com.oxygenxml.git.utils.TextFormatUtil;
 import com.oxygenxml.git.view.branches.BranchConfigurations;
 
@@ -33,22 +34,6 @@ public class RemotesViewUtil {
    * Maximum number of characters for a remote branch item.
    */
   private static final int MAXIMUM_REMOTE_ITEM_NO_OF_CHARACTERS = 60;
-  
-  /**
-   * Constant for status when the remote exists.
-   */
-  public static final int STATUS_REMOTE_OK = 0;
-  
-  /**
-   * Constant for status when the remote doesn't exists.
-   */
-  public static final int STATUS_REMOTE_NOT_EXISTS = 1;
-
-  /**
-   * Constant for status when branches are not founded.
-   */
-  public static final int STATUS_BRANCHES_NOT_EXIST = 2;
-
 
   /**
    * Install the renderer to present the remote branches in combo.
@@ -93,10 +78,12 @@ public class RemotesViewUtil {
    * 
    * @throws URISyntaxException
    * @throws NoRepositorySelected 
+   * 
+   * @throws RemoteNotFoundException  When no remote or branch remote is found.
    */
-  public static int addRemoteBranches(
+  public static void addRemoteBranches(
       final JComboBox<RemoteBranch> remoteBranchItems, 
-      final String currentBranch) throws URISyntaxException, NoRepositorySelected {
+      final String currentBranch) throws URISyntaxException, NoRepositorySelected, RemoteNotFoundException {
     final List<RemoteBranch> remoteBranches = new ArrayList<>();
     final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
     final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
@@ -109,18 +96,14 @@ public class RemotesViewUtil {
       addUndefinedRemoteBranchForCurrentLocal(remoteBranchItems);
     }
 
-    int currentStatus;
     if (remotesNames.isEmpty()) {
-      currentStatus = STATUS_REMOTE_NOT_EXISTS;
+      throw new RemoteNotFoundException(RemoteNotFoundException.STATUS_REMOTE_NOT_EXISTS);
     } else if (remoteBranches.isEmpty()) {
-      currentStatus = STATUS_BRANCHES_NOT_EXIST;
+      throw new RemoteNotFoundException(RemoteNotFoundException.STATUS_BRANCHES_NOT_EXIST);
     } else {
-      currentStatus = STATUS_REMOTE_OK;
       sortBranchesAlphabetically(currentBranch, remoteBranches);
       addRemoteBranchesInCombo(remoteBranchItems, remoteBranches);
     }
-    
-    return currentStatus;
   }
 
   /**
