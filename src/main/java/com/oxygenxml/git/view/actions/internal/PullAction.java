@@ -71,7 +71,10 @@ public class PullAction extends GitAbstractAction {
           if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Pull action invoked");
           }
-          gitController.pull(pullType == PullType.REBASE ? PullConfig.createSimplePullRebaseConfig() : PullConfig.createSimplePullMergeConfig(), 
+          PullConfig pullConfig = pullType == PullType.REBASE ? PullConfig.createSimplePullRebaseConfig() 
+              : PullConfig.createSimplePullMergeConfig();
+          gitController.pull(
+              pullConfig, 
               Optional.of(new GitOperationProgressMonitor(new ProgressDialog(name, true))));
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
