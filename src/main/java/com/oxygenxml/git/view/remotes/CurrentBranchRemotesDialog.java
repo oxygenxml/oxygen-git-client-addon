@@ -155,12 +155,12 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
   @Override
   protected void doOK() {
     RemoteBranch currentSelectedBranch = (RemoteBranch) remoteBranchItems.getSelectedItem();
-    if(!currentSelectedBranch.isUndefined() && !currentSelectedBranch.isFirstSelection()) {
+    if(!currentSelectedBranch.isUndefined() && !currentSelectedBranch.isCurrentBranch()) {
       try {
         BranchConfigurations branchConfig = new BranchConfigurations(
             GitAccess.getInstance().getRepository().getConfig(), currentBranch);
-        branchConfig.setRemote(currentSelectedBranch.remote);
-        branchConfig.setMerge(currentSelectedBranch.branchFullName);
+        branchConfig.setRemote(currentSelectedBranch.getRemote());
+        branchConfig.setMerge(currentSelectedBranch.getBranchFullName());
         GitAccess.getInstance().updateConfigFile();
       } catch (NoRepositorySelected e) {
         LOGGER.error(e.getMessage(), e);

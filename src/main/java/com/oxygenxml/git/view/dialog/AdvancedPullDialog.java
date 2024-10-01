@@ -274,8 +274,8 @@ public class AdvancedPullDialog extends OKCancelDialog {
     if(!currentSelectedBranch.isUndefined()) {
       pullConfig = PullConfig
           .builder()
-          .branchName(Optional.of(currentSelectedBranch.branchFullName))
-          .remote(Optional.of(currentSelectedBranch.remote))
+          .branchName(Optional.of(currentSelectedBranch.getBranchFullName()))
+          .remote(Optional.of(currentSelectedBranch.getRemote()))
           .pullType((PullType) pullTypesCombo.getSelectedItem())
           .updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull())
           .build();

@@ -2,12 +2,15 @@ package com.oxygenxml.git.view.remotes;
 
 import org.eclipse.jgit.lib.Repository;
 
+import lombok.Getter;
+
 /**
  * Used to store information about a remote branch.
  * 
  * @author alex_smarandache
  *
  */
+@Getter
 public class RemoteBranch {
   
   /**
@@ -18,22 +21,17 @@ public class RemoteBranch {
   /**
    * The remote from config.
    */
-  public final String remote;
+  private final String remote;
   
   /**
    * A branch from current remote.
    */
-  public final String branchFullName;
-  
-  /**
-   * The branch short name.
-   */
-  private final String branchShortName;
+  private final String branchFullName;
 
   /**
-   * <code>true</code> if this item represents the first selection.
+   * <code>true</code> if this item represents the current branch.
    */
-  private boolean isFirstSelection = false;
+  private boolean isCurrentBranch = false;
   
   /**
    * Constructor.
@@ -44,21 +42,13 @@ public class RemoteBranch {
   public RemoteBranch(final String remote, final String branchFullName) {
       this.remote = remote;
       this.branchFullName = branchFullName;
-      this.branchShortName = branchFullName != null ? Repository.shortenRefName(branchFullName) : null;
   }
   
   /**
-   * @return <code>true</code> if this item represents the first selection.
+   * @param isCurrentBranch <code>true</code> if this item represents the current branch.
    */
-  public boolean isFirstSelection() {
-      return isFirstSelection;
-  }
-
-  /**
-   * @param isFirstSelection <code>true</code> if this item represents the first selection.
-   */
-  public void setFirstSelection(boolean isFirstSelection) {
-      this.isFirstSelection = isFirstSelection;
+  public void setIsCurrentBranch(boolean isCurrentBranch) {
+      this.isCurrentBranch = isCurrentBranch;
   }
   
   /**
@@ -70,7 +60,12 @@ public class RemoteBranch {
 
   @Override
   public String toString() {
-      return isUndefined() ? NONE : remote + "/" + branchShortName;
+      String branchShortName = NONE;
+      if(!isUndefined()) {
+        branchShortName  = branchFullName != null ? Repository.shortenRefName(branchFullName) : null;
+      } 
+      
+      return branchShortName;
   }
 
 }

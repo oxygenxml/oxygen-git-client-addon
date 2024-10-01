@@ -119,7 +119,7 @@ public class RemotesViewUtil {
             && mergeFromConfig != null && mergeFromConfig.equals(branchName)) {
           final RemoteBranch remoteItem = new RemoteBranch(remote, branchName);
           foundBranchRemoteForCurrentLocalBranch = true;
-          remoteItem.setFirstSelection(true);
+          remoteItem.setIsCurrentBranch(true);
           branchesToAdd.add(remoteItem);
         } else {
           branchesToAdd.add(new RemoteBranch(remote, branchName));
@@ -129,7 +129,7 @@ public class RemotesViewUtil {
 
     if(!foundBranchRemoteForCurrentLocalBranch) {
       final RemoteBranch remoteItem = new RemoteBranch(null, null);
-      remoteItem.setFirstSelection(true);
+      remoteItem.setIsCurrentBranch(true);
       remoteBranchItems.addItem(remoteItem);    
       remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
     }
@@ -143,7 +143,7 @@ public class RemotesViewUtil {
       currentStatus = STATUS_REMOTE_OK;
       branchesToAdd.sort((b1, b2) -> {
         int comparasionResult = !b1.isUndefined() && !b2.isUndefined() ? 
-            Boolean.compare(b2.branchFullName.endsWith(currentBranch), b1.branchFullName.endsWith(currentBranch)) 
+            Boolean.compare(b2.getBranchFullName().endsWith(currentBranch), b1.getBranchFullName().endsWith(currentBranch)) 
               : 0;
         if(comparasionResult == 0) {
           comparasionResult = b1.toString().compareTo(b2.toString());
@@ -153,7 +153,7 @@ public class RemotesViewUtil {
 
       branchesToAdd.forEach(branch -> {
         remoteBranchItems.addItem(branch);
-        if(branch.isFirstSelection()) {
+        if(branch.isCurrentBranch()) {
           remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
         }
       });
