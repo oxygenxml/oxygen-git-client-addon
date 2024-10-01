@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.PrivateRepositoryException;
+import com.oxygenxml.git.service.exceptions.RepositoryUnavailableException;
+import com.oxygenxml.git.service.exceptions.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -65,11 +68,17 @@ public class BranchesUtil {
    * @return the obsolete local branches.
    * 
    * @throws NoRepositorySelected
+   * @throws RepositoryUnavailableException 
+   * @throws PrivateRepositoryException 
+   * @throws SSHPassphraseRequiredException 
    */
-  public static List<Ref> getLocalBranchesThatNoLongerHaveRemotes() throws NoRepositorySelected {
+  public static List<Ref> getLocalBranchesThatNoLongerHaveRemotes() 
+      throws NoRepositorySelected, SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
     List<Ref> obsoleteBranches = new ArrayList<>();
     
     GitAccess gitAccess = GitAccess.getInstance();
+    gitAccess.fetch();
+    
     Repository repository = gitAccess.getRepository();
     List<Ref> localBranchList = gitAccess.getLocalBranchList();
     for (Ref localBranch : localBranchList) {

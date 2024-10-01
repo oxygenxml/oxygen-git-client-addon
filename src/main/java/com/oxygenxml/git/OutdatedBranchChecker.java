@@ -21,6 +21,9 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
+import com.oxygenxml.git.service.exceptions.PrivateRepositoryException;
+import com.oxygenxml.git.service.exceptions.RepositoryUnavailableException;
+import com.oxygenxml.git.service.exceptions.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
@@ -145,7 +148,9 @@ public class OutdatedBranchChecker {
       }
     } catch (NoRepositorySelected e) {
       LOGGER.warn(e, e);
-    }
+    } catch (SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException e) {
+      LOGGER.error(e, e);
+    } 
   }
 
   /**
