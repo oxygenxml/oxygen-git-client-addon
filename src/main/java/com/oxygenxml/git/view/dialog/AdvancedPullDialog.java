@@ -34,7 +34,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
-import com.oxygenxml.git.view.remotes.RemoteBranchItem;
+import com.oxygenxml.git.view.remotes.RemoteBranch;
 import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
 import com.oxygenxml.git.view.remotes.RemotesViewUtil;
 
@@ -65,7 +65,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
   /**
    * Combo box with all remotes from current repository.
    */
-  private final JComboBox<RemoteBranchItem> remoteBranchItems = new JComboBox<>();
+  private final JComboBox<RemoteBranch> remoteBranchItems = new JComboBox<>();
 
   /**
    * The combobox for pull types.
@@ -270,11 +270,11 @@ public class AdvancedPullDialog extends OKCancelDialog {
 
   @Override
   protected void doOK() {
-    RemoteBranchItem currentSelectedBranch = (RemoteBranchItem) remoteBranchItems.getSelectedItem();
+    RemoteBranch currentSelectedBranch = (RemoteBranch) remoteBranchItems.getSelectedItem();
     if(!currentSelectedBranch.isUndefined()) {
       pullConfig = PullConfig
           .builder()
-          .branchName(Optional.of(currentSelectedBranch.branch))
+          .branchName(Optional.of(currentSelectedBranch.branchFullName))
           .remote(Optional.of(currentSelectedBranch.remote))
           .pullType((PullType) pullTypesCombo.getSelectedItem())
           .updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull())
@@ -304,7 +304,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
    * @return The remote branch items.
    */
   @TestOnly
-  public JComboBox<RemoteBranchItem> getRemoteBranchItems() {
+  public JComboBox<RemoteBranch> getRemoteBranchItems() {
     return remoteBranchItems;
   }
 

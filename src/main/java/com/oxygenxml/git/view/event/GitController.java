@@ -143,9 +143,11 @@ public class GitController extends GitControllerBase {
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull(Optional<IGitViewProgressMonitor> progressMonitor) {
-    return pull(
-        PullConfig.builder().pullType(PullType.MERGE_FF).updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).build(), 
-        progressMonitor);
+    PullConfig pullConfig = PullConfig.builder()
+        .pullType(PullType.MERGE_FF)
+        .updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull())
+        .build();
+    return pull(pullConfig, progressMonitor);
   }
 
   /**

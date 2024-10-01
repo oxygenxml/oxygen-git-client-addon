@@ -55,8 +55,8 @@ public class RemotesViewUtil {
    * 
    * @param remoteBranchItems The combobox with remote branches.
    */
-  public static void installRemoteBranchesRenderer(JComboBox<RemoteBranchItem> remoteBranchItems) {
-    final ListCellRenderer<? super RemoteBranchItem> oldRender = remoteBranchItems.getRenderer();
+  public static void installRemoteBranchesRenderer(JComboBox<RemoteBranch> remoteBranchItems) {
+    final ListCellRenderer<? super RemoteBranch> oldRender = remoteBranchItems.getRenderer();
     remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
 
         final JLabel toReturn = (JLabel) 
@@ -91,9 +91,9 @@ public class RemotesViewUtil {
    * @throws NoRepositorySelected 
    */
   public static int addRemoteBranches(
-      final JComboBox<RemoteBranchItem> remoteBranchItems, 
+      final JComboBox<RemoteBranch> remoteBranchItems, 
       final String currentBranch) throws URISyntaxException, NoRepositorySelected {
-    final List<RemoteBranchItem> branchesToAdd = new ArrayList<>();
+    final List<RemoteBranch> branchesToAdd = new ArrayList<>();
     final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
     final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
     final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance()
@@ -115,18 +115,18 @@ public class RemotesViewUtil {
         final String mergeC = branchConfig.getMerge();
         if(remoteC !=null && remoteC.equals(remote) 
             && mergeC != null && mergeC.equals(branchName)) {
-          final RemoteBranchItem remoteItem = new RemoteBranchItem(remote, branchName);
+          final RemoteBranch remoteItem = new RemoteBranch(remote, branchName);
           foundedBranchRemoteForCurrentLocalBranch = true;
           remoteItem.setFirstSelection(true);
           branchesToAdd.add(remoteItem);
         } else {
-          branchesToAdd.add(new RemoteBranchItem(remote, branchName));
+          branchesToAdd.add(new RemoteBranch(remote, branchName));
         }
       }
     }
 
     if(!foundedBranchRemoteForCurrentLocalBranch) {
-      final RemoteBranchItem remoteItem = new RemoteBranchItem(null, null);
+      final RemoteBranch remoteItem = new RemoteBranch(null, null);
       remoteItem.setFirstSelection(true);
       remoteBranchItems.addItem(remoteItem);    
       remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
@@ -140,7 +140,7 @@ public class RemotesViewUtil {
       currentStatus = STATUS_REMOTE_OK;
       branchesToAdd.sort((b1, b2) -> {
         int comparasionResult = !b1.isUndefined() && !b2.isUndefined() ? 
-            Boolean.compare(b2.branch.endsWith(currentBranch), b1.branch.endsWith(currentBranch)) : 0;
+            Boolean.compare(b2.branchFullName.endsWith(currentBranch), b1.branchFullName.endsWith(currentBranch)) : 0;
         if(comparasionResult == 0) {
           comparasionResult = b1.toString().compareTo(b2.toString());
         }

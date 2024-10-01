@@ -3,12 +3,12 @@ package com.oxygenxml.git.view.remotes;
 import org.eclipse.jgit.lib.Repository;
 
 /**
- * Used to help us to store the remote branch informations.
+ * Used to store information about a remote branch.
  * 
  * @author alex_smarandache
  *
  */
-public class RemoteBranchItem {
+public class RemoteBranch {
   
   /**
    * Constant when no remote or repo are selected.
@@ -23,31 +23,29 @@ public class RemoteBranchItem {
   /**
    * A branch from current remote.
    */
-  public final String branch;
+  public final String branchFullName;
   
   /**
    * The branch short name.
    */
   private final String branchShortName;
-  
-/**
-* <code>true</code> if this item represents the first selection.
-*/
+
+  /**
+   * <code>true</code> if this item represents the first selection.
+   */
   private boolean isFirstSelection = false;
-  
   
   /**
    * Constructor.
    * 
    * @param remote
-   * @param branch
+   * @param branchFullName
    */
-  public RemoteBranchItem(final String remote, final String branch) {
+  public RemoteBranch(final String remote, final String branchFullName) {
       this.remote = remote;
-      this.branch = branch;
-      this.branchShortName = branch != null ? Repository.shortenRefName(branch) : null;
+      this.branchFullName = branchFullName;
+      this.branchShortName = branchFullName != null ? Repository.shortenRefName(branchFullName) : null;
   }
-  
   
   /**
    * @return <code>true</code> if this item represents the first selection.
@@ -67,7 +65,7 @@ public class RemoteBranchItem {
    * @return <code>true</code> if the remote or branch are undefined.
    */
   public boolean isUndefined() {
-      return remote == null || branch == null;
+      return remote == null || branchFullName == null;
   }
 
   @Override

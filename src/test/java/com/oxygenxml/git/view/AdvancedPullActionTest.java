@@ -24,7 +24,7 @@ import com.oxygenxml.git.view.dialog.AdvancedPullDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
-import com.oxygenxml.git.view.remotes.RemoteBranchItem;
+import com.oxygenxml.git.view.remotes.RemoteBranch;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
 /**
@@ -161,17 +161,17 @@ public class AdvancedPullActionTest extends GitTestBase {
       flushAWT();
 
       // Verify that the correct remote repositories are listed
-      JComboBox<com.oxygenxml.git.view.remotes.RemoteBranchItem> remoteBranches = advancedPullDialog.getRemoteBranchItems();
+      JComboBox<com.oxygenxml.git.view.remotes.RemoteBranch> remoteBranches = advancedPullDialog.getRemoteBranchItems();
       assertNotNull(remoteBranches);
       assertEquals(2, remoteBranches.getItemCount());
       assertEquals("origin", gitAccess.getRemoteFromCurrentBranch());
 
       // Select the second remote repository
-      RemoteBranchItem currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
+      RemoteBranch currentSelected = (RemoteBranch) remoteBranches.getSelectedItem();
       assertEquals("origin/main", currentSelected.toString());
 
       remoteBranches.setSelectedIndex(1);
-      currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
+      currentSelected = (RemoteBranch) remoteBranches.getSelectedItem();
       assertEquals("remote2_name/main", currentSelected.toString());
 
       flushAWT();
@@ -196,7 +196,7 @@ public class AdvancedPullActionTest extends GitTestBase {
       remoteBranches = trackRemotesDialog.getRemoteBranchItems();
       assertNotNull(remoteBranches);
       assertEquals("origin", gitAccess.getRemoteFromCurrentBranch());
-      currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
+      currentSelected = (RemoteBranch) remoteBranches.getSelectedItem();
       assertEquals("origin/main", currentSelected.toString());
 
     } finally {

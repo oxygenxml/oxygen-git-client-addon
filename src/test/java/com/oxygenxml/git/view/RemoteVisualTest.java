@@ -25,7 +25,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.actions.GitActionsManager;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.remotes.CurrentBranchRemotesDialog;
-import com.oxygenxml.git.view.remotes.RemoteBranchItem;
+import com.oxygenxml.git.view.remotes.RemoteBranch;
 import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
 import com.oxygenxml.git.view.remotes.RemotesTableModel;
 import com.oxygenxml.git.view.staging.StagingPanel;
@@ -456,15 +456,15 @@ public class RemoteVisualTest extends GitTestBase {
       assertNotNull(trackRemoteDialog);
       flushAWT();
       
-      JComboBox<com.oxygenxml.git.view.remotes.RemoteBranchItem> remoteBranches = trackRemoteDialog[0].getRemoteBranchItems();
+      JComboBox<com.oxygenxml.git.view.remotes.RemoteBranch> remoteBranches = trackRemoteDialog[0].getRemoteBranchItems();
       assertNotNull(remoteBranches);
       assertEquals(2, remoteBranches.getItemCount());
       assertEquals("origin", gitAccess.getRemoteFromCurrentBranch());
-      RemoteBranchItem currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
+      RemoteBranch currentSelected = (RemoteBranch) remoteBranches.getSelectedItem();
       assertEquals("origin/main", currentSelected.toString());
       
       remoteBranches.setSelectedIndex(1);
-      currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
+      currentSelected = (RemoteBranch) remoteBranches.getSelectedItem();
       assertEquals("remote2_name/main", currentSelected.toString());
       
       flushAWT();
@@ -482,7 +482,7 @@ public class RemoteVisualTest extends GitTestBase {
       remoteBranches = trackRemoteDialog[0].getRemoteBranchItems();
       assertNotNull(remoteBranches);
       assertEquals(remote2, gitAccess.getRemoteFromCurrentBranch());
-      currentSelected = (RemoteBranchItem) remoteBranches.getSelectedItem();
+      currentSelected = (RemoteBranch) remoteBranches.getSelectedItem();
       assertEquals("remote2_name/main", currentSelected.toString());
 
     } finally {

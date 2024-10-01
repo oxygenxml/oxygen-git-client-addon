@@ -53,7 +53,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
   /**
    * Combo box with all remotes from current repository.
    */
-  private final JComboBox<RemoteBranchItem> remoteBranchItems = new JComboBox<>();
+  private final JComboBox<RemoteBranch> remoteBranchItems = new JComboBox<>();
 
   /**
    * The current branch.
@@ -154,13 +154,13 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
   @Override
   protected void doOK() {
-    RemoteBranchItem currentSelectedBranch = (RemoteBranchItem) remoteBranchItems.getSelectedItem();
+    RemoteBranch currentSelectedBranch = (RemoteBranch) remoteBranchItems.getSelectedItem();
     if(!currentSelectedBranch.isUndefined() && !currentSelectedBranch.isFirstSelection()) {
       try {
         BranchConfigurations branchConfig = new BranchConfigurations(
             GitAccess.getInstance().getRepository().getConfig(), currentBranch);
         branchConfig.setRemote(currentSelectedBranch.remote);
-        branchConfig.setMerge(currentSelectedBranch.branch);
+        branchConfig.setMerge(currentSelectedBranch.branchFullName);
         GitAccess.getInstance().updateConfigFile();
       } catch (NoRepositorySelected e) {
         LOGGER.error(e.getMessage(), e);
@@ -183,7 +183,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
    * @return The remote branch items.
    */
   @TestOnly
-  public JComboBox<RemoteBranchItem> getRemoteBranchItems() {
+  public JComboBox<RemoteBranch> getRemoteBranchItems() {
     return remoteBranchItems;
   }
 
