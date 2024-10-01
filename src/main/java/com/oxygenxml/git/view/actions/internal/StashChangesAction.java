@@ -12,7 +12,7 @@ import com.oxygenxml.git.view.stash.StashUtil;
  * @author Alex_Smarandache
  *
  */
-public class StashChangesAction extends BaseGitAbstractAction {
+public class StashChangesAction extends GitAbstractAction {
 	
 	/**
 	 * The translator for translations.

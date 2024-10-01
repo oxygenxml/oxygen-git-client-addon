@@ -20,7 +20,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * 
  * @author alex_smarandache
  */
-public class AdvancedPullAction extends BaseGitAbstractAction {
+public class AdvancedPullAction extends GitAbstractAction {
   
   /**
    * Logger for logging.

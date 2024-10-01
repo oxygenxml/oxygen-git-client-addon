@@ -14,14 +14,14 @@ import ro.sync.exml.workspace.api.standalone.actions.ActionsProvider;
  * @author alex_smarandache
  *
  */
-public abstract class BaseGitAbstractAction extends AbstractAction {
+public abstract class GitAbstractAction extends AbstractAction {
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param actionName
 	 */
-	public BaseGitAbstractAction(final String actionName) {
+	public GitAbstractAction(final String actionName) {
 		super(actionName);
 		final StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 		if(pluginWorkspace != null) {

@@ -13,7 +13,7 @@ import com.oxygenxml.git.view.history.HistoryController;
  * @author alex_smarandache
  *
  */
-public class ShowHistoryAction extends BaseGitAbstractAction {
+public class ShowHistoryAction extends GitAbstractAction {
 
 	/**
 	 * The history controller.

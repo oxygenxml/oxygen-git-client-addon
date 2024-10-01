@@ -13,7 +13,7 @@ import com.oxygenxml.git.view.stash.ListStashesDialog;
  * @author Alex_Smarandache
  *
  */
-public class ListStashesAction extends BaseGitAbstractAction {
+public class ListStashesAction extends GitAbstractAction {
 
 	/**
 	 * The translator for translations.

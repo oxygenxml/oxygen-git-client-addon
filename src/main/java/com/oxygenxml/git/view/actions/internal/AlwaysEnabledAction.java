@@ -13,7 +13,7 @@ package com.oxygenxml.git.view.actions.internal;
  * @author alex_smarandache
  *
  */
-public abstract class AlwaysEnabledAction extends BaseGitAbstractAction {
+public abstract class AlwaysEnabledAction extends GitAbstractAction {
   
   /**
    * Constructor.

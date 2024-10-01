@@ -18,7 +18,7 @@ import com.oxygenxml.git.view.remotes.RemotesRepositoryDialog;
  * @author alex_smarandache
  *
  */
-public class ManageRemoteRepositoriesAction extends BaseGitAbstractAction {
+public class ManageRemoteRepositoriesAction extends GitAbstractAction {
 
 	/**
 	 * The translator for translations.

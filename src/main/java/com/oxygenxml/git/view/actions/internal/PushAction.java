@@ -24,7 +24,7 @@ import com.oxygenxml.git.view.event.GitController;
  * @author alex_smarandache
  *
  */
-public class PushAction extends BaseGitAbstractAction {
+public class PushAction extends GitAbstractAction {
 
 	/**
 	 * The translator for translations.

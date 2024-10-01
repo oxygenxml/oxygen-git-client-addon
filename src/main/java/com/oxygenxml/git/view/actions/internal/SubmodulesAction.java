@@ -13,7 +13,7 @@ import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
  * @author alex_smarandache
  *
  */
-public class SubmodulesAction extends BaseGitAbstractAction {
+public class SubmodulesAction extends GitAbstractAction {
 	/**
 	 * The translator for translations.
 	 */

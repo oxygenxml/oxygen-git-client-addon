@@ -13,7 +13,7 @@ import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
  * @author alex_smarandache
  *
  */
-public class ShowBranchesAction extends BaseGitAbstractAction {
+public class ShowBranchesAction extends GitAbstractAction {
 
 	/**
 	 * The translator.

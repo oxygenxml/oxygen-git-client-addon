@@ -20,7 +20,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Alex_Smarandache
  *
  */
-public class EditConfigFileAction extends BaseGitAbstractAction {
+public class EditConfigFileAction extends GitAbstractAction {
 	
 	/**
 	 * The translator for translations.

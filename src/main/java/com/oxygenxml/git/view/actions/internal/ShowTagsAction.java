@@ -19,7 +19,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Alex_Smarandache
  *
  */
-public class ShowTagsAction extends BaseGitAbstractAction {
+public class ShowTagsAction extends GitAbstractAction {
 	
 	/**
 	 * The translator for translations.

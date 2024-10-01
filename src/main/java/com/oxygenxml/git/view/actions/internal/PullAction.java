@@ -21,7 +21,7 @@ import com.oxygenxml.git.view.event.PullType;
  * @author alex_smarandache
  *
  */
-public class PullAction extends BaseGitAbstractAction {
+public class PullAction extends GitAbstractAction {
 	
 	/**
 	 * Logger for logging.

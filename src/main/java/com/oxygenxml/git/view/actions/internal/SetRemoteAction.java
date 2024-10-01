@@ -18,7 +18,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author alex_smarandache
  *
  */
-public class SetRemoteAction extends BaseGitAbstractAction {
+public class SetRemoteAction extends GitAbstractAction {
 
 	/**
 	 * The translator for the messages that are displayed in this panel
