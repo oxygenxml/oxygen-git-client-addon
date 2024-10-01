@@ -45,13 +45,19 @@ public class PullConfig {
    * @return A configuration for a simple pull merge.
    */
   public static PullConfig createSimplePullMergeConfig() {
-    return PullConfig.builder().updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).pullType(PullType.MERGE_FF).build();
+    return PullConfig.builder()
+        .updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull())
+        .pullType(PullType.MERGE_FF)
+        .build();
   }
   
   /**
    * @return A configuration for a simple pull rebase.
    */
   public static PullConfig createSimplePullRebaseConfig() {
-    return PullConfig.builder().updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).pullType(PullType.REBASE).build();
+    return PullConfig.builder()
+        .updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull())
+        .pullType(PullType.REBASE)
+        .build();
   }
 }
