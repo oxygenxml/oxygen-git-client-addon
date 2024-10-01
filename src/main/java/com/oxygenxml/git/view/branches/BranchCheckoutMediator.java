@@ -162,8 +162,12 @@ public class BranchCheckoutMediator {
     });
         
     PullType pullType = OptionsManager.getInstance().getDefaultPullType();
+    PullConfig pullConfig = PullConfig.builder()
+        .updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull())
+        .pullType(pullType == PullType.UKNOWN ? PullType.MERGE_FF : pullType)
+        .build();
     ctrl.pull(
-        PullConfig.builder().updateSubmodule(OptionsManager.getInstance().getUpdateSubmodulesOnPull()).pullType(pullType == PullType.UKNOWN ? PullType.MERGE_FF : pullType).build(),
+        pullConfig,
         Optional.of(new GitOperationProgressMonitor(pullOperationProgressDialog)));
   }
 
