@@ -92,13 +92,15 @@ public class OutdatedBranchChecker {
             outdatedBranchCheckerTimer.cancel();
           }
           
+          GitOperationScheduler gitOperationScheduler = GitOperationScheduler.getInstance();
+          
           outdatedBranchCheckerTimer = new Timer("Outdated Branch Checker Timer");
           
           outdatedBranchCheckerTimer.schedule(
               new TimerTask() {
                 @Override
                 public void run() {
-                  checkForOutdatedBranches();
+                  gitOperationScheduler.schedule(() -> checkForOutdatedBranches());
                 }
               },
               TIMER_DELAY_AFTER_REPO_IS_LOADED);
@@ -107,7 +109,7 @@ public class OutdatedBranchChecker {
               new TimerTask() {
                 @Override
                 public void run() {
-                  checkForOutdatedBranches();
+                  gitOperationScheduler.schedule(() -> checkForOutdatedBranches());
                 }
               },
               PERIODIC_CHECK_INTERVAL,
