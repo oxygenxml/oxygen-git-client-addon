@@ -97,10 +97,94 @@ public class RemotesViewUtil {
   public static int addRemoteBranches(
       final JComboBox<RemoteBranch> remoteBranchItems, 
       final String currentBranch) throws URISyntaxException, NoRepositorySelected {
-    final List<RemoteBranch> branchesToAdd = new ArrayList<>();
+    final List<RemoteBranch> remoteBranches = new ArrayList<>();
     final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
     final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
     final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance().getRemotesFromConfig().keySet());
+    
+    boolean foundBranchRemoteForCurrentLocalBranch = appendRemoteNames(remoteBranches, config, branchConfig,
+        remotesNames);
+
+    if(!foundBranchRemoteForCurrentLocalBranch) {
+      addUndefinedRemoteBranchForCurrentLocal(remoteBranchItems);
+    }
+
+    int currentStatus;
+    if (remotesNames.isEmpty()) {
+      currentStatus = STATUS_REMOTE_NOT_EXISTS;
+    } else if (remoteBranches.isEmpty()) {
+      currentStatus = STATUS_BRANCHES_NOT_EXIST;
+    } else {
+      currentStatus = STATUS_REMOTE_OK;
+      sortBranchesAlphabetically(currentBranch, remoteBranches);
+      addRemoteBranchesInCombo(remoteBranchItems, remoteBranches);
+    }
+    
+    return currentStatus;
+  }
+
+  /**
+   * Add the remote branches as items in the combobox.
+   * 
+   * @param remoteBranchesComboItems  The remote branches items in the combobox.
+   * @param remoteBranches            The remote branches.  
+   */
+  private static void addRemoteBranchesInCombo(final JComboBox<RemoteBranch> remoteBranchesComboItems,
+      final List<RemoteBranch> remoteBranches) {
+    remoteBranches.forEach(branch -> {
+      remoteBranchesComboItems.addItem(branch);
+      if(branch.isCurrentBranch()) {
+        remoteBranchesComboItems.setSelectedIndex(remoteBranchesComboItems.getItemCount() - 1);
+      }
+    });
+  }
+
+  /**
+   * Sort the given remote branches list alphabetically.
+   * 
+   * @param currentBranch   The current  branch.
+   * @param remoteBranches  The remote branches
+   */
+  private static void sortBranchesAlphabetically(final String currentBranch, final List<RemoteBranch> remoteBranches) {
+    remoteBranches.sort((b1, b2) -> {
+      int comparasionResult = !b1.isUndefined() && !b2.isUndefined() ? 
+          Boolean.compare(b2.getBranchFullName().endsWith(currentBranch), b1.getBranchFullName().endsWith(currentBranch)) 
+            : 0;
+      if(comparasionResult == 0) {
+        comparasionResult = b1.toString().compareTo(b2.toString());
+      }
+      return comparasionResult;
+    });
+  }
+
+  /**
+   * This method must be called only when the current local branch has no remote branch associated. Thus, a undefined branch will be paired with the local branch as its remote branch.
+   * 
+   * @param remoteBranchItems   The current remote branches.
+   */
+  private static void addUndefinedRemoteBranchForCurrentLocal(final JComboBox<RemoteBranch> remoteBranchItems) {
+    final RemoteBranch remoteItem = new RemoteBranch(null, null);
+    remoteItem.setIsCurrentBranch(true);
+    remoteBranchItems.addItem(remoteItem);    
+    remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
+  }
+
+  /**
+   * 
+   * @param branchesToAdd   The branches to be added.
+   * @param config          Configuration of the repository.
+   * @param branchConfig    The configuration of the branch.
+   * @param remotesNames    The names for remote branches.
+   * 
+   * @return <code>true</code> if the current local branch has a remote branch.
+   * 
+   * @throws URISyntaxException When a problem occurs.
+   */
+  private static boolean appendRemoteNames(
+      final List<RemoteBranch> branchesToAdd, 
+      final StoredConfig config,
+      final BranchConfigurations branchConfig, 
+      final List<String> remotesNames) throws URISyntaxException {
     boolean foundBranchRemoteForCurrentLocalBranch = false;
 
     for(String remote : remotesNames) {
@@ -126,40 +210,8 @@ public class RemotesViewUtil {
         }
       }
     }
-
-    if(!foundBranchRemoteForCurrentLocalBranch) {
-      final RemoteBranch remoteItem = new RemoteBranch(null, null);
-      remoteItem.setIsCurrentBranch(true);
-      remoteBranchItems.addItem(remoteItem);    
-      remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
-    }
-
-    int currentStatus;
-    if (remotesNames.isEmpty()) {
-      currentStatus = STATUS_REMOTE_NOT_EXISTS;
-    } else if (branchesToAdd.isEmpty()) {
-      currentStatus = STATUS_BRANCHES_NOT_EXIST;
-    } else {
-      currentStatus = STATUS_REMOTE_OK;
-      branchesToAdd.sort((b1, b2) -> {
-        int comparasionResult = !b1.isUndefined() && !b2.isUndefined() ? 
-            Boolean.compare(b2.getBranchFullName().endsWith(currentBranch), b1.getBranchFullName().endsWith(currentBranch)) 
-              : 0;
-        if(comparasionResult == 0) {
-          comparasionResult = b1.toString().compareTo(b2.toString());
-        }
-        return comparasionResult;
-      });
-
-      branchesToAdd.forEach(branch -> {
-        remoteBranchItems.addItem(branch);
-        if(branch.isCurrentBranch()) {
-          remoteBranchItems.setSelectedIndex(remoteBranchItems.getItemCount() - 1);
-        }
-      });
-    }
     
-    return currentStatus;
+    return foundBranchRemoteForCurrentLocalBranch;
   }
 
 }
