@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
@@ -125,12 +126,13 @@ public class BranchSelectionComboTest extends GitTestBase {
       assertEquals("main", currentBranch);
 
       // select the "Local Branch" (aka the broken one)
-      branchesCombo.setSelectedIndex(0);
+      SwingUtilities.invokeLater(() -> branchesCombo.setSelectedIndex(0));
+      flushAWT();
 
       // wait for swith dialog to appear  
       JDialog switchBranchDialog = TestUtil.waitForDialog(translator.getTranslation(Tags.SWITCH_BRANCH), this);
       JButton yesButton = TestUtil.findButton(switchBranchDialog, translator.getTranslation(Tags.MOVE_CHANGES));
-      yesButton.doClick();
+      SwingUtilities.invokeLater(() -> yesButton.doClick());
       flushAWT();
 
       String currentBranchAfterSwitchFailed = (String) branchesCombo.getSelectedItem();

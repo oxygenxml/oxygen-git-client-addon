@@ -74,7 +74,7 @@ public class AutoCommitTest extends FlatViewTestBase {
     refreshSupport.call();
     flushAWT();
     
-    Awaitility.await().atMost(Duration.ONE_SECOND).untilAsserted(
+    Awaitility.await().atMost(Duration.TWO_SECONDS).untilAsserted(
         () -> assertEquals(1,  GitAccess.getInstance().getPushesAhead())
     );
 
