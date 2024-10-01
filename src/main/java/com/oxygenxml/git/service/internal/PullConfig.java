@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * This class contains the information about the configuration to execute the pull operation.
+ * Pull operation configuration.
  * 
  * @author alex_smarandache
  */
@@ -42,7 +42,7 @@ public class PullConfig {
   private boolean updateSubmodule = false;
   
   /**
-   * @return A configuration for a simple pull merge.
+   * @return A configuration for a simple pull with merge.
    */
   public static PullConfig createSimplePullMergeConfig() {
     return PullConfig.builder()
@@ -52,7 +52,7 @@ public class PullConfig {
   }
   
   /**
-   * @return A configuration for a simple pull rebase.
+   * @return A configuration for a simple pull with rebase.
    */
   public static PullConfig createSimplePullRebaseConfig() {
     return PullConfig.builder()
