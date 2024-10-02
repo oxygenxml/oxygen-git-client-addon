@@ -257,9 +257,12 @@ public class AdvancedPullDialog extends OKCancelDialog {
               loadRemotesRepositories();
             }
           }
-        } catch (NoRepositorySelected | RemoteNotFoundException | URISyntaxException ex) {
+        } catch (NoRepositorySelected | URISyntaxException ex) {
           LOGGER.error(ex.getMessage(), ex);
-        } 
+        } catch(RemoteNotFoundException ex) {
+          doCancel();
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.NO_REMOTE_EXCEPTION_MESSAGE));
+        }
       }
     };
     manageRemotesAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REMOTE));
