@@ -62,10 +62,11 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PullAction.class);
         if(pullToConfigDialog.getResult() == OKCancelDialog.RESULT_OK) {
           PullConfig pullConfig = pullToConfigDialog.getPullConfig();
           if(pullConfig != null) {
-            gitController.pull(
-                pullConfig, 
-                Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true)))
-            );
+            GitOperationProgressMonitor progressMonitor = new GitOperationProgressMonitor(
+                new ProgressDialog(
+                    Translator.getInstance().getTranslation(Tags.PULL),
+                    true));
+            gitController.pull(pullConfig, Optional.of(progressMonitor));
           }
         }
       }
