@@ -134,7 +134,7 @@ public class RemotesViewUtil {
   private static void sortBranchesAlphabetically(final String currentBranch, final List<RemoteBranch> remoteBranches) {
     remoteBranches.sort((b1, b2) -> {
       int comparasionResult;
-      if (RemoteBranch.UNDEFINED_BRANCH.equals(b1) || RemoteBranch.UNDEFINED_BRANCH.equals(b1)) {
+      if (RemoteBranch.UNDEFINED_BRANCH.equals(b1) || RemoteBranch.UNDEFINED_BRANCH.equals(b2)) {
         comparasionResult = b1.toString().compareTo(b2.toString());
       } else {
         comparasionResult = Boolean.compare(
