@@ -44,7 +44,7 @@ public class SetRemoteAction extends GitAbstractAction {
    */
   private void setRemote() {
     try {
-      new CurrentBranchRemotesDialog();
+      new CurrentBranchRemotesDialog().showDialog();
     } catch(RemoteNotFoundException ex) {
       if(ex.getStatus() == RemoteNotFoundException.STATUS_REMOTE_NOT_EXISTS) {
         OKCancelDialog addRemoteDialog = new AddRemoteDialog();

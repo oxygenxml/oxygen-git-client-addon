@@ -90,16 +90,24 @@ public class AdvancedPullDialog extends OKCancelDialog {
   
   /**
    * Constructor.
-   * 
-   * @throws RemoteNotFoundException   This exception appear when a remote is not found.
    */
-  public AdvancedPullDialog(final GitController gitCtrl) throws RemoteNotFoundException {
+  public AdvancedPullDialog(final GitController gitCtrl) {
     super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
         TRANSLATOR.getTranslation(Tags.PULL),
         true);
     
     this.gitCtrl = gitCtrl;
     currentBranch = gitCtrl.getGitAccess().getBranchInfo().getBranchName();
+  }
+
+
+  /**
+   * This message shows the dialog.
+   * 
+   * @throws RemoteNotFoundException When the remote repository or branches cannot be found.
+   */
+  public void showDialog() throws RemoteNotFoundException {
+    
     setOkButtonText(TRANSLATOR.getTranslation(Tags.PULL_CHANGES));
 
     RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
@@ -120,6 +128,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
     this.setResizable(false);
+    setVisible(true);
   }
 
 
@@ -272,7 +281,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
   @Override
   protected void doOK() {
     RemoteBranch currentSelectedBranch = (RemoteBranch) remoteBranchItems.getSelectedItem();
-    if(!currentSelectedBranch.isUndefined()) {
+    if(!RemoteBranch.UNDEFINED_BRANCH.equals(currentSelectedBranch)) {
       pullConfig = PullConfig
           .builder()
           .branchName(Optional.of(currentSelectedBranch.getBranchFullName()))

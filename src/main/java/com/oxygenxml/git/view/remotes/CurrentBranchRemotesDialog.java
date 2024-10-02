@@ -73,7 +73,15 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
     setOkButtonText(TRANSLATOR.getTranslation(Tags.TRACK_BRANCH));
     currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
+  }
 
+
+  /**
+   * This message shows the dialog.
+   * 
+   * @throws RemoteNotFoundException When the remote repository or branches cannot be found.
+   */
+  public void showDialog() throws RemoteNotFoundException {
     try {
       RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
       RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
@@ -95,8 +103,8 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
 
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    this.setVisible(true);
     this.setResizable(false);
+    this.setVisible(true);
   }
 
 
