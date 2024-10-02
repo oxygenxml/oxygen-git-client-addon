@@ -97,7 +97,20 @@ public class AdvancedPullDialog extends OKCancelDialog {
         true);
     
     this.gitCtrl = gitCtrl;
-    currentBranch = gitCtrl.getGitAccess().getBranchInfo().getBranchName();
+    this.currentBranch = gitCtrl.getGitAccess().getBranchInfo().getBranchName();
+    
+    setOkButtonText(TRANSLATOR.getTranslation(Tags.PULL_CHANGES));
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    setResizable(false);
+    
+    JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+    if (parentFrame != null) {
+      setIconImage(parentFrame.getIconImage());
+      setLocationRelativeTo(parentFrame);
+    }
+    
+    RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
   }
 
 
@@ -109,27 +122,13 @@ public class AdvancedPullDialog extends OKCancelDialog {
    * @throws URISyntaxException      When a URI syntax exception appear.
    */
   public void showDialog() throws RemoteNotFoundException, NoRepositorySelected, URISyntaxException {
-    
-    setOkButtonText(TRANSLATOR.getTranslation(Tags.PULL_CHANGES));
-
-    RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
     loadRemotesRepositories();
 
     getContentPane().add(createGUIPanel());
-
+    
     pack();
     repaint();
-
-    JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
-        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-    if (parentFrame != null) {
-      setIconImage(parentFrame.getIconImage());
-      setLocationRelativeTo(parentFrame);
-    }
-
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-    this.setResizable(false);
+    
     setVisible(true);
   }
 

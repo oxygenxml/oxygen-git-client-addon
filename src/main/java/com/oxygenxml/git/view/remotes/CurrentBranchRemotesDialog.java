@@ -72,7 +72,19 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
         );
 
     setOkButtonText(TRANSLATOR.getTranslation(Tags.TRACK_BRANCH));
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    setResizable(false);
+    
+    JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+    if (parentFrame != null) {
+      setIconImage(parentFrame.getIconImage());
+      setLocationRelativeTo(parentFrame);
+    }
+    
     currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
+    
+    RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
   }
 
 
@@ -83,7 +95,6 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
    */
   public void showDialog() throws RemoteNotFoundException {
     try {
-      RemotesViewUtil.installRemoteBranchesRenderer(remoteBranchItems);
       RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
     } catch (NoRepositorySelected | URISyntaxException e) {
       LOGGER.error(e.getMessage(), e);
@@ -94,17 +105,7 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
     pack();
     repaint();
 
-    JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
-        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-    if (parentFrame != null) {
-      setIconImage(parentFrame.getIconImage());
-      setLocationRelativeTo(parentFrame);
-    }
-
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-    this.setResizable(false);
-    this.setVisible(true);
+    setVisible(true);
   }
 
 
