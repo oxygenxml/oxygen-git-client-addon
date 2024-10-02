@@ -104,9 +104,11 @@ public class AdvancedPullDialog extends OKCancelDialog {
   /**
    * This message shows the dialog.
    * 
-   * @throws RemoteNotFoundException When the remote repository or branches cannot be found.
+   * @throws RemoteNotFoundException This exception appear when a remote is not found.
+   * @throws NoRepositorySelected    When no repository is  selected.
+   * @throws URISyntaxException      When a URI syntax exception appear.
    */
-  public void showDialog() throws RemoteNotFoundException {
+  public void showDialog() throws RemoteNotFoundException, NoRepositorySelected, URISyntaxException {
     
     setOkButtonText(TRANSLATOR.getTranslation(Tags.PULL_CHANGES));
 
@@ -136,14 +138,12 @@ public class AdvancedPullDialog extends OKCancelDialog {
    * This method clear the remote branches combo box and reload it.
    * 
    * @throws RemoteNotFoundException This exception appear when a remote is not found.
+   * @throws NoRepositorySelected    When no repository is  selected.
+   * @throws URISyntaxException      When a URI syntax exception appear.
    */
-  private void loadRemotesRepositories() throws RemoteNotFoundException {
+  private void loadRemotesRepositories() throws RemoteNotFoundException, NoRepositorySelected, URISyntaxException {
     remoteBranchItems.removeAllItems();
-    try {
-      RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
-    } catch (NoRepositorySelected | URISyntaxException e) {
-      LOGGER.error(e.getMessage(), e);
-    }
+    RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
   }
 
 
@@ -255,17 +255,11 @@ public class AdvancedPullDialog extends OKCancelDialog {
             RemotesRepositoryDialog remotesRepoDialog = new RemotesRepositoryDialog();
             remotesRepoDialog.configureRemotes();
             if(remotesRepoDialog.getResult() == OKCancelDialog.RESULT_OK) {
-              try {
-                loadRemotesRepositories();
-              } catch (RemoteNotFoundException ex) {
-                LOGGER.debug(ex.getMessage(), ex);
-              }
+              loadRemotesRepositories();
             }
           }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1.getMessage(), e1);
-          }
+        } catch (NoRepositorySelected | RemoteNotFoundException | URISyntaxException ex) {
+          LOGGER.error(ex.getMessage(), ex);
         } 
       }
     };

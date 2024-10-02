@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -63,10 +64,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PullAction.class);
           }
         }
       }
-    } catch (NoRepositorySelected ex) {
-      if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug(ex.getMessage(), ex);
-      }
+    } catch (NoRepositorySelected | URISyntaxException ex) {
+      LOGGER.error(ex.getMessage(), ex);
     } catch (RemoteNotFoundException ex) {
       treatRemoteNotFound(ex);
     }
