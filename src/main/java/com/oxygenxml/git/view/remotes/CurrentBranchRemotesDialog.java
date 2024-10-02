@@ -92,13 +92,11 @@ public class CurrentBranchRemotesDialog extends OKCancelDialog {
    * This message shows the dialog.
    * 
    * @throws RemoteNotFoundException When the remote repository or branches cannot be found.
+   * @throws NoRepositorySelected    When no repository is  selected.
+   * @throws URISyntaxException      When a URI syntax exception appear.
    */
-  public void showDialog() throws RemoteNotFoundException {
-    try {
-      RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
-    } catch (NoRepositorySelected | URISyntaxException e) {
-      LOGGER.error(e.getMessage(), e);
-    }
+  public void showDialog() throws RemoteNotFoundException, NoRepositorySelected, URISyntaxException {
+    RemotesViewUtil.addRemoteBranches(remoteBranchItems, currentBranch);
 
     getContentPane().add(createGUIPanel());
 

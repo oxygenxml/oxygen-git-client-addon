@@ -1,7 +1,12 @@
 package com.oxygenxml.git.view.actions.internal;
 
 import java.awt.event.ActionEvent;
+import java.net.URISyntaxException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
 import com.oxygenxml.git.service.exceptions.RemoteNotFoundException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -24,6 +29,11 @@ public class SetRemoteAction extends GitAbstractAction {
    * The translator for the messages that are displayed in this panel
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(AdvancedPullAction.class);
 
   /**
    * Constructor.
@@ -45,6 +55,8 @@ public class SetRemoteAction extends GitAbstractAction {
   private void setRemote() {
     try {
       new CurrentBranchRemotesDialog().showDialog();
+    } catch (NoRepositorySelected | URISyntaxException ex) {
+      LOGGER.error(ex.getMessage(), ex);
     } catch(RemoteNotFoundException ex) {
       if(ex.getStatus() == RemoteNotFoundException.STATUS_REMOTE_NOT_EXISTS) {
         OKCancelDialog addRemoteDialog = new AddRemoteDialog();

@@ -32,7 +32,7 @@ public class AdvancedPullAction extends GitAbstractAction {
   /**
    * Logger for logging.
    */
-private static final Logger LOGGER = LoggerFactory.getLogger(PullAction.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AdvancedPullAction.class);
   
   /**
    * The Git Controller.
