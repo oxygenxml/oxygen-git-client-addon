@@ -134,12 +134,12 @@ public class RemotesViewUtil {
   private static void sortBranchesAlphabetically(final String currentBranch, final List<RemoteBranch> remoteBranches) {
     remoteBranches.sort((b1, b2) -> {
       int comparasionResult;
-      if (!b1.isUndefined() && !b2.isUndefined()) {
+      if (RemoteBranch.UNDEFINED_BRANCH.equals(b1) || RemoteBranch.UNDEFINED_BRANCH.equals(b1)) {
+        comparasionResult = b1.toString().compareTo(b2.toString());
+      } else {
         comparasionResult = Boolean.compare(
             b2.getBranchFullName().endsWith(currentBranch),
             b1.getBranchFullName().endsWith(currentBranch)); 
-      } else {
-        comparasionResult = b1.toString().compareTo(b2.toString());
       }
       return comparasionResult;
     });
