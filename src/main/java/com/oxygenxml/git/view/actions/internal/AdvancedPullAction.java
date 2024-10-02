@@ -12,9 +12,11 @@ import com.oxygenxml.git.service.exceptions.RemoteNotFoundException;
 import com.oxygenxml.git.service.internal.PullConfig;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.actions.GitOperationProgressMonitor;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.AdvancedPullDialog;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.event.GitController;
 
@@ -60,7 +62,10 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PullAction.class);
         if(pullToConfigDialog.getResult() == OKCancelDialog.RESULT_OK) {
           PullConfig pullConfig = pullToConfigDialog.getPullConfig();
           if(pullConfig != null) {
-            gitController.pull(pullConfig, Optional.empty());
+            gitController.pull(
+                pullConfig, 
+                Optional.of(new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.PULL), true)))
+            );
           }
         }
       }
