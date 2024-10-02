@@ -38,11 +38,11 @@ public class RemotesViewUtil {
   /**
    * Install the renderer to present the remote branches in combo.
    * 
-   * @param remoteBranchItems The combobox with remote branches.
+   * @param remoteBranchCombo The combobox with remote branches.
    */
-  public static void installRemoteBranchesRenderer(JComboBox<RemoteBranch> remoteBranchItems) {
-    final ListCellRenderer<? super RemoteBranch> oldRender = remoteBranchItems.getRenderer();
-    remoteBranchItems.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+  public static void installRemoteBranchesRenderer(JComboBox<RemoteBranch> remoteBranchCombo) {
+    final ListCellRenderer<? super RemoteBranch> oldRender = remoteBranchCombo.getRenderer();
+    remoteBranchCombo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
 
       final JLabel toReturn = (JLabel) 
           oldRender.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -69,7 +69,7 @@ public class RemotesViewUtil {
   /**
    * Add remote branches for current repository. 
    * 
-   * @param remoteBranchItems  The combobox with remote branches.
+   * @param remoteBranchCombo  The combobox with remote branches.
    * @param currentBranch      The name of the current branch.
    *
    * @return The current status of the operation. <br><b>RemoteViewUtil.STATUS_REMOTE_OK</b> - if the remote are added successfully.
@@ -82,18 +82,20 @@ public class RemotesViewUtil {
    * @throws RemoteNotFoundException  When no remote or branch remote is found.
    */
   public static void addRemoteBranches(
-      final JComboBox<RemoteBranch> remoteBranchItems, 
+      final JComboBox<RemoteBranch> remoteBranchCombo, 
       final String currentBranch) throws URISyntaxException, NoRepositorySelected, RemoteNotFoundException {
     final List<RemoteBranch> remoteBranches = new ArrayList<>();
     final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
     final BranchConfigurations branchConfig = new BranchConfigurations(config, currentBranch);
     final List<String> remotesNames = new ArrayList<>(GitAccess.getInstance().getRemotesFromConfig().keySet());
     
-    boolean foundBranchRemoteForCurrentLocalBranch = appendRemoteNames(remoteBranches, config, branchConfig,
+    boolean foundBranchRemoteForCurrentLocalBranch = appendRemoteNames(
+        remoteBranches,
+        config,
+        branchConfig,
         remotesNames);
-
     if(!foundBranchRemoteForCurrentLocalBranch) {
-      addUndefinedRemoteBranchForCurrentLocal(remoteBranchItems);
+      addUndefinedRemoteBranchForCurrentLocal(remoteBranchCombo);
     }
 
     if (remotesNames.isEmpty()) {
@@ -102,22 +104,23 @@ public class RemotesViewUtil {
       throw new RemoteNotFoundException(RemoteNotFoundException.STATUS_BRANCHES_NOT_EXIST);
     } else {
       sortBranchesAlphabetically(currentBranch, remoteBranches);
-      addRemoteBranchesInCombo(remoteBranchItems, remoteBranches);
+      addRemoteBranchesInCombo(remoteBranchCombo, remoteBranches);
     }
   }
 
   /**
    * Add the remote branches as items in the combobox.
    * 
-   * @param remoteBranchesComboItems  The remote branches items in the combobox.
-   * @param remoteBranches            The remote branches.  
+   * @param remoteBranchesCombo  The remote branches combobox.
+   * @param remoteBranches       The remote branches.  
    */
-  private static void addRemoteBranchesInCombo(final JComboBox<RemoteBranch> remoteBranchesComboItems,
+  private static void addRemoteBranchesInCombo(
+      final JComboBox<RemoteBranch> remoteBranchesCombo,
       final List<RemoteBranch> remoteBranches) {
     remoteBranches.forEach(branch -> {
-      remoteBranchesComboItems.addItem(branch);
+      remoteBranchesCombo.addItem(branch);
       if(branch.isCurrentBranch()) {
-        remoteBranchesComboItems.setSelectedIndex(remoteBranchesComboItems.getItemCount() - 1);
+        remoteBranchesCombo.setSelectedIndex(remoteBranchesCombo.getItemCount() - 1);
       }
     });
   }
@@ -130,10 +133,12 @@ public class RemotesViewUtil {
    */
   private static void sortBranchesAlphabetically(final String currentBranch, final List<RemoteBranch> remoteBranches) {
     remoteBranches.sort((b1, b2) -> {
-      int comparasionResult = !b1.isUndefined() && !b2.isUndefined() ? 
-          Boolean.compare(b2.getBranchFullName().endsWith(currentBranch), b1.getBranchFullName().endsWith(currentBranch)) 
-            : 0;
-      if(comparasionResult == 0) {
+      int comparasionResult;
+      if (!b1.isUndefined() && !b2.isUndefined()) {
+        comparasionResult = Boolean.compare(
+            b2.getBranchFullName().endsWith(currentBranch),
+            b1.getBranchFullName().endsWith(currentBranch)); 
+      } else {
         comparasionResult = b1.toString().compareTo(b2.toString());
       }
       return comparasionResult;
