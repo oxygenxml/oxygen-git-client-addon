@@ -33,6 +33,7 @@
             <li>When switching branches, merging branches, or restarting a merge, the progress of the operation is now shown when it takes more than two seconds to complete.</li>
             <li>When the "index.lock" file exists in the local repository, the operations that cannot be performed because of it now show error messages containing explanations and instructions.</li>
             <li>Fixed the vertical space in the progress dialog box so that messages do not get truncated.</li>
+            <li>The JGit component was updated to version 7.0.0.</li>
           </ol>
         </div>
         <div>
