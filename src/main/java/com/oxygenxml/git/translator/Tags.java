@@ -2095,5 +2095,10 @@ public class Tags {
    * English: merge.
    */
   public static final String MERGE_LOWERCASE = "Merge_Lowercase";
+  
+  /**
+   * The message when the remote branches cannot br obtained because repository has no remote or branches.
+   */
+  public static final String LOAD_REMOTE_BRANCHES_FAILED_MESSAGE = "Load_Remote_Branches_Failed_Message";
 }
 

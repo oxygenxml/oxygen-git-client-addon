@@ -8,6 +8,15 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Load_Remote_Branches_Failed_Message">
+		<comment>The message when the remote branches cannot br obtained because repository has no remote or branches.</comment>
+		<val lang="en_US">Unable to pull because no remote is configured or no remote branches are detected. Please add a remote or verify the remote has branches.</val>
+		<val lang="de_DE">Unable to pull because no remote is configured or no remote branches are detected. Please add a remote or verify the remote has branches.</val>
+		<val lang="fr_FR">Unable to pull because no remote is configured or no remote branches are detected. Please add a remote or verify the remote has branches.</val>
+		<val lang="ja_JP">Unable to pull because no remote is configured or no remote branches are detected. Please add a remote or verify the remote has branches.</val>
+		<val lang="nl_NL">Unable to pull because no remote is configured or no remote branches are detected. Please add a remote or verify the remote has branches.</val>
+		<val lang="zh_CN">Unable to pull because no remote is configured or no remote branches are detected. Please add a remote or verify the remote has branches.</val>
+	</key>
 	<key value="Stash_important_changes">
         <comment>Message to suggest stashing important changes before deleting branch</comment>
         <val lang="en_US">If the current changes are important, stash them so they can be applied to another branch

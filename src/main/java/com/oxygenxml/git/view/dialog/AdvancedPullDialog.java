@@ -261,7 +261,7 @@ public class AdvancedPullDialog extends OKCancelDialog {
           LOGGER.error(ex.getMessage(), ex);
         } catch(RemoteNotFoundException ex) {
           setVisible(false);
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.NO_REMOTE_EXCEPTION_MESSAGE));
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.LOAD_REMOTE_BRANCHES_FAILED_MESSAGE));
         }
       }
     };
