@@ -150,9 +150,14 @@ public class AuthUtil {
       treatAuthenticationHostProblem(ex, excMessPresenter, userCredentials);
     } else if (ex instanceof TransportException) {
       treatTransportException((TransportException)ex, excMessPresenter);
+    } else if(ex instanceof RefNotAdvertisedException) {
+      treatRefNotAdvertisedException((RefNotAdvertisedException) ex, excMessPresenter);
     } else {
-      // "Unhandled" exception
-      treatUnhandledException(ex, excMessPresenter);
+      if(excMessPresenter != null) {
+        excMessPresenter.presentMessage(ex.getClass().getName() + ": " + ex.getMessage());
+      } else {
+        LOGGER.error(ex.getMessage(), ex);
+      }
     }
     
     return tryAgainOutside;
@@ -182,18 +187,16 @@ public class AuthUtil {
   }
 
   /**
-   * This method is used to treat an unhandlead exception.
+   * This method is used to treat an exception that appear when a ref is not found in advertised refs.
    * 
    * @param ex                  The original Git exception.
    * @param excMessPresenter    The presenter message presenter.
    */
-  private static void treatUnhandledException(
-      @NonNull final GitAPIException ex, 
+  private static void treatRefNotAdvertisedException(
+      @NonNull final RefNotAdvertisedException ex, 
       @Nullable final AuthExceptionMessagePresenter excMessPresenter) {
     if (excMessPresenter != null) {
-      excMessPresenter.presentMessage(ex instanceof RefNotAdvertisedException ? 
-          TRANSLATOR.getTranslation(Tags.NO_REMOTE_EXCEPTION_MESSAGE) : 
-        ex.getClass().getName() + ": " + ex.getMessage());
+      excMessPresenter.presentMessage(TRANSLATOR.getTranslation(Tags.NO_REMOTE_EXCEPTION_MESSAGE));
     } else {
       LOGGER.error(ex.getMessage(), ex);
     }
