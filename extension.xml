@@ -27,13 +27,16 @@
             <li>Added the possibility to sign commits using GPG keys.</li>
             <li>If there are unpulled changes detected when creating a new branch, a
               confirmation dialog box is displayed where you can choose whether or not to pull the
-              changes before processing the branch creation.
-            </li>
-            <li>When trying to commit while having unsaved changes in the local repository files you are currently editing, a warning message is presented.</li>
-            <li>When switching branches, merging branches, or restarting a merge, the progress of the operation is now shown when it takes more than two seconds to complete.</li>
-            <li>When the "index.lock" file exists in the local repository, the operations that cannot be performed because of it now show error messages containing explanations and instructions.</li>
-            <li>Fixed the vertical space in the progress dialog box so that messages do not get truncated.</li>
+              changes before processing the branch creation.</li>
+            <li>Local branches that are linked to remote branches that no longer exist are now detected and reported.</li>
+            <li>When trying to commit while having unsaved changes in the local repository files you are currently editing,
+              a warning message is presented.</li>
+            <li>When switching branches, merging branches, or restarting a merge, the progress of the operation is now shown
+              when it takes more than two seconds to complete.</li>
+            <li>When the "index.lock" file exists in the local repository, the operations that cannot be performed
+              because of it now show error messages containing explanations and instructions.</li>
             <li>The JGit component was updated to version 7.0.0.</li>
+            <li>Fixed a bug where the messages in progress dialog boxes were truncated vertically.</li>
           </ol>
         </div>
         <div>
