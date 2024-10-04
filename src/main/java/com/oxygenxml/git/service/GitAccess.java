@@ -282,12 +282,13 @@ public class GitAccess {
 	      git = cloneCommand.setBranch(branchName).call();
 	    } else {
 	      git = cloneCommand.call();
-	    } 
-	    fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+	    }
 	    monitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	    fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+	    
 	  } catch (GitAPIException ex)  {
-	    fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
 	    monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
 	    throw ex;
 	  }
 
@@ -952,12 +953,13 @@ public class GitAccess {
     } 
 	  
 	  try {
-	    command.call();
-	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames));
+	    command.setProgressMonitor(pm.orElse(null)).call();
 	    pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames));
+	   
 	  } catch(GitAPIException e) {
-	    fireOperationFailed(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames), e);
 	    pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames), e);
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 	  }
 	}
@@ -1937,11 +1939,11 @@ public class GitAccess {
 	        git.reset().setMode(ResetType.HARD).call();
 	        git.merge().setProgressMonitor(progressMonitor.orElse(null)).include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 	      }
-	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
 	      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
 	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
-	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
 	      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
 	      LOGGER.error(e.getMessage(), e);
 	    } catch (IndexLockExistsException  e) {
 	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
@@ -2013,18 +2015,18 @@ public class GitAccess {
 	    
 	    RepoUtil.checkoutSubmodules(git, e -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e));
 	    
-	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  } catch(CanceledException | IndexLockExistsException e) {
-	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
 	    progressMonitor.ifPresent(pm -> pm.markAsFailed());
-	  } catch (GitAPIException e) {
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
+	  } catch (GitAPIException e) {
 	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
 	    throw e;
 	  } catch(JGitInternalException e) {
-	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
 	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
 	    if(!ExceptionHandlerUtil.hasCauseOfType(e, CanceledException.class)) {
 	      throw e;  
 	    } 
@@ -2048,17 +2050,18 @@ public class GitAccess {
       git.checkout()
           .setCreateBranch(true)
           .setName(newBranchName)
+          .setProgressMonitor(pm.orElse(null))
           .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
           .setStartPoint(remoteString + "/" + remoteBranchName)
           .call();
-      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
       pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
     } catch (IndexLockExistsException e) {
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName), e);
       pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName), e);
     } catch (GitAPIException e) {
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName), e);
       pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName), e);
       throw e;
     }
   }
@@ -2079,16 +2082,17 @@ public class GitAccess {
       git.checkout()
       .setCreateBranch(true)
       .setName(branchName)
+      .setProgressMonitor(pm.orElse(null))
       .setStartPoint(commitID)
       .call();
-      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName));
       pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName));
     } catch (IndexLockExistsException e) {
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName), e);
       pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName), e);
     } catch (GitAPIException e) {
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName), e);
       pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName), e);
       throw e;
     }
   }
@@ -2288,17 +2292,18 @@ public class GitAccess {
         repository.writeMergeHeads(null);
         
         // Reset the index and work directory to HEAD
-        git.reset().setMode(ResetType.HARD).call();
+        git.reset().setProgressMonitor(progressMonitor.orElse(null)).setMode(ResetType.HARD).call();
         
-        fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles));
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+        fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles));
+       
       } catch (GitAPIException | IOException | NoRepositorySelected e) {
-        fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+        fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
         LOGGER.error(e.getMessage(), e);
       } catch (IndexLockExistsException e) {
-        fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+        fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
       }
     });
   }
@@ -2313,16 +2318,16 @@ public class GitAccess {
       try {
         fireOperationAboutToStart(new GitEventInfo(GitOperation.ABORT_REBASE));
         progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
-        git.rebase().setOperation(Operation.ABORT).call();
-        fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.ABORT_REBASE));
+        git.rebase().setProgressMonitor(progressMonitor.orElse(null)).setOperation(Operation.ABORT).call();
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+        fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.ABORT_REBASE));
       } catch (GitAPIException e) {
-        fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+        fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
         LOGGER.error(e.getMessage(), e);
       } catch (IndexLockExistsException e) {
-        fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+        fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
       }
     });
   }
@@ -2337,21 +2342,21 @@ public class GitAccess {
       try {
         fireOperationAboutToStart(new GitEventInfo(GitOperation.CONTINUE_REBASE));
         progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
-        RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
+        RebaseResult result = git.rebase().setProgressMonitor(progressMonitor.orElse(null)).setOperation(Operation.CONTINUE).call();
         if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
           skipCommit();
         }
-        fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CONTINUE_REBASE));
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+        fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CONTINUE_REBASE));
       } catch (UnmergedPathsException e) {
-        fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+        fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e.getMessage(), e);
         PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage(TRANSLATOR.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
-        fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+        fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e.getMessage(), e);
         PluginWorkspaceProvider.getPluginWorkspace()
             .showErrorMessage(e.getMessage());
@@ -2617,8 +2622,8 @@ public class GitAccess {
               .setCancelButtonVisible(false)
               .buildAndShow()
         ); 
-        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if (mergeStatus.equals(MergeResult.MergeStatus.FAILED)) {
         Map<String, MergeFailureReason> failingPaths = res.getFailingPaths();
         LOGGER.debug("Failed because of this files: {}", failingPaths);
@@ -2632,25 +2637,26 @@ public class GitAccess {
               .setCancelButtonVisible(false)
               .setOkButtonName(TRANSLATOR.getTranslation(Tags.CLOSE))
               .buildAndShow()
-        );
-        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+            );
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       } else if(isSquash) {
-          fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
-          progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
-          final List<FileStatus> stagedFiles = getStagedFiles();
-          if(stagedFiles != null && !stagedFiles.isEmpty()) {
-            commit(message != null? message : "");
-          } else {
-            throw new NoChangesInSquashedCommitException(MessageFormat.format(
-                Translator.getInstance().getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_MESSAGE),
-                TextFormatUtil.shortenText(branchName, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
-          }
-      } else {
-        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+
+        final List<FileStatus> stagedFiles = getStagedFiles();
+        if(stagedFiles != null && !stagedFiles.isEmpty()) {
+          commit(message != null? message : "");
+        } else {
+          throw new NoChangesInSquashedCommitException(MessageFormat.format(
+              Translator.getInstance().getTranslation(Tags.SQUASH_NO_CHANGES_DETECTED_MESSAGE),
+              TextFormatUtil.shortenText(branchName, UIConstants.BRANCH_NAME_MAXIMUM_LENGTH, 0, "...")));
+        }
+      } else {
+        progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+        fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
       }
-      
+
     } catch(NoChangesInSquashedCommitException e) {
       progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
       throw e;
@@ -3265,14 +3271,14 @@ public class GitAccess {
 	    try {
 	      fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 	      pm.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
-	      checkoutCommand.call();
+	      checkoutCommand.setProgressMonitor(pm.orElse(null)).call();
 	    } catch(GitAPIException e) {
-	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	      pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	      throw e;
 	    } catch (IndexLockExistsException e) {
-	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	    }
 
 	    fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
