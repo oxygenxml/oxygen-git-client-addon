@@ -3273,7 +3273,7 @@ public class GitAccess {
 	      pm.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
 	      checkoutCommand.setProgressMonitor(pm.orElse(null)).call();
 	    } catch(GitAPIException e) {
-	      pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
 	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	      throw e;
 	    } catch (IndexLockExistsException e) {
@@ -3281,6 +3281,7 @@ public class GitAccess {
 	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	    }
 
+	    pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
 	    fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 	  }
 	}
