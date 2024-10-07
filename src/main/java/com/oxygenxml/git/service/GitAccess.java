@@ -255,7 +255,7 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException
 	 */
-	public void clone(URIish url, File directory, final Optional<IGitViewProgressMonitor> monitor, String branchName)
+	public void clone(URIish url, File directory, final Optional<IGitViewProgressMonitor> progressMonitor, String branchName)
 	    throws GitAPIException {
 	  try {
 	    fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
@@ -265,7 +265,7 @@ public class GitAccess {
 
 	  closeRepo();
 
-	  monitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+	  progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
 	  // Intercept all authentication requests. 
 	  String host = url.getHost();
 	  AuthenticationInterceptor.bind(host);
@@ -276,18 +276,18 @@ public class GitAccess {
 	      .setURI(url.toString())
 	      .setDirectory(directory)
 	      .setCredentialsProvider(AuthUtil.getCredentialsProvider(host))
-	      .setProgressMonitor(monitor.orElse(null));
+	      .setProgressMonitor(progressMonitor.orElse(null));
 	  try {
 	    if (branchName != null) {
 	      git = cloneCommand.setBranch(branchName).call();
 	    } else {
 	      git = cloneCommand.call();
 	    }
-	    monitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
 	    fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
 	    
 	  } catch (GitAPIException ex)  {
-	    monitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
 	    fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
 	    throw ex;
 	  }
@@ -937,28 +937,28 @@ public class GitAccess {
 	/**
 	 * Deletes the given local branches from the local repo.
 	 * 
-	 * @param branchName The names of the branches to be deleted.
-	 * @param pm         The optional progress monitor.
+	 * @param branchName        The names of the branches to be deleted.
+	 * @param progressMonitor   The optional progress monitor.
 	 */
-	public void deleteBranches(Collection<String> branchNames, Optional<IGitViewProgressMonitor> pm) {
+	public void deleteBranches(Collection<String> branchNames, Optional<IGitViewProgressMonitor> progressMonitor) {
 	  DeleteBranchCommand command = git.branchDelete();
 	  command.setBranchNames(branchNames);
 	  command.setForce(true);
 	  
 	  try {
       fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames));
-      pm.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
     } catch (IndexLockExistsException e) {
       // Ignore. Branch deletion works well even with index.lock existing.
-    } 
+    }
+	  
+	  progressMonitor.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
 	  
 	  try {
-	    command.setProgressMonitor(pm.orElse(null)).call();
-	    pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	    command.setProgressMonitor(progressMonitor.orElse(null)).call();
+	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
 	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames));
-	   
 	  } catch(GitAPIException e) {
-	    pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	    progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
 	    fireOperationFailed(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchNames), e);
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 	  }
@@ -1923,6 +1923,7 @@ public class GitAccess {
 	    try {
 	      fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	      progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+	      
 	      Repository repo = getRepository();
         RepositoryState repositoryState = repo.getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {
@@ -1939,6 +1940,7 @@ public class GitAccess {
 	        git.reset().setMode(ResetType.HARD).call();
 	        git.merge().setProgressMonitor(progressMonitor.orElse(null)).include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 	      }
+	      
 	      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
 	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
 	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
@@ -2038,29 +2040,33 @@ public class GitAccess {
    * 
    * @param newBranchName    The name of the new branch created at checkout.
    * @param remoteBranchName The branch to checkout (short name).
-   * @param pm               An optional progress monitor.
+   * @param progressMonitor  An optional progress monitor.
    * 
    * @throws GitAPIException 
    */
-  public void checkoutRemoteBranchWithNewName(String newBranchName, String remoteBranchName, Optional<IGitViewProgressMonitor> pm,  String...remote) throws GitAPIException{
+  public void checkoutRemoteBranchWithNewName(
+      String newBranchName,
+      String remoteBranchName,
+      Optional<IGitViewProgressMonitor> progressMonitor,
+      String...remote) throws GitAPIException{
     String remoteString = remote.length ==  0 ? Constants.DEFAULT_REMOTE_NAME : remote[0];
     try {
       fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
-      pm.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+      progressMonitor.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
       git.checkout()
           .setCreateBranch(true)
           .setName(newBranchName)
-          .setProgressMonitor(pm.orElse(null))
+          .setProgressMonitor(progressMonitor.orElse(null))
           .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
           .setStartPoint(remoteString + "/" + remoteBranchName)
           .call();
-      pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
     } catch (IndexLockExistsException e) {
-      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
       fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName), e);
     } catch (GitAPIException e) {
-      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
       fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName), e);
       throw e;
     }
@@ -2069,29 +2075,32 @@ public class GitAccess {
   /**
    * Check out a specific commit and create a branch with it.
    * 
-   * @param branchName The name of the new branch.
-   * @param commitID   The ID of the commit to be checked-out as a new branch.
-   * @param pm         An optional progress monitor.
+   * @param branchName      The name of the new branch.
+   * @param commitID        The ID of the commit to be checked-out as a new branch.
+   * @param progressMonitor An optional progress monitor.
    * 
    * @throws GitAPIException 
    */
-  public void checkoutCommitAndCreateBranch(String branchName, String commitID, Optional<IGitViewProgressMonitor> pm) throws GitAPIException {
+  public void checkoutCommitAndCreateBranch(
+      String branchName,
+      String commitID,
+      Optional<IGitViewProgressMonitor> progressMonitor) throws GitAPIException {
     try {
       fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName));
-      pm.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+      progressMonitor.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
       git.checkout()
       .setCreateBranch(true)
       .setName(branchName)
-      .setProgressMonitor(pm.orElse(null))
+      .setProgressMonitor(progressMonitor.orElse(null))
       .setStartPoint(commitID)
       .call();
-      pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName));
     } catch (IndexLockExistsException e) {
-      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
       fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName), e);
     } catch (GitAPIException e) {
-      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
       fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName), e);
       throw e;
     }
@@ -2296,7 +2305,6 @@ public class GitAccess {
         
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
         fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles));
-       
       } catch (GitAPIException | IOException | NoRepositorySelected e) {
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
         fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
@@ -2318,7 +2326,12 @@ public class GitAccess {
       try {
         fireOperationAboutToStart(new GitEventInfo(GitOperation.ABORT_REBASE));
         progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
-        git.rebase().setProgressMonitor(progressMonitor.orElse(null)).setOperation(Operation.ABORT).call();
+        
+        git.rebase()
+          .setProgressMonitor(progressMonitor.orElse(null))
+          .setOperation(Operation.ABORT)
+          .call();
+        
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.ABORT_REBASE));
       } catch (GitAPIException e) {
@@ -2342,10 +2355,15 @@ public class GitAccess {
       try {
         fireOperationAboutToStart(new GitEventInfo(GitOperation.CONTINUE_REBASE));
         progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
-        RebaseResult result = git.rebase().setProgressMonitor(progressMonitor.orElse(null)).setOperation(Operation.CONTINUE).call();
+        
+        RebaseResult result = git.rebase()
+            .setProgressMonitor(progressMonitor.orElse(null))
+            .setOperation(Operation.CONTINUE)
+            .call();
         if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
           skipCommit();
         }
+        
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CONTINUE_REBASE));
       } catch (UnmergedPathsException e) {
@@ -2594,7 +2612,11 @@ public class GitAccess {
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  private void internalMerge(final String branchName, boolean isSquash, final String message, final Optional<IGitViewProgressMonitor> progressMonitor)
+  private void internalMerge(
+      final String branchName,
+      final boolean isSquash,
+      final String message,
+      final Optional<IGitViewProgressMonitor> progressMonitor)
       throws IOException, NoRepositorySelected, GitAPIException, NoChangesInSquashedCommitException {
     
     try { 
@@ -2602,7 +2624,9 @@ public class GitAccess {
       progressMonitor.ifPresent(pm -> pm.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
      
       final ObjectId mergeBase = getRepository().resolve(branchName);
-      final MergeCommand mergeCommand = git.merge().setProgressMonitor(progressMonitor.orElse(null)).include(mergeBase);
+      final MergeCommand mergeCommand = git.merge()
+          .setProgressMonitor(progressMonitor.orElse(null))
+          .include(mergeBase);
       if(isSquash) {
         mergeCommand.setStrategy(MergeStrategy.RESOLVE).setSquash(isSquash).setCommit(true);
       }
@@ -2640,7 +2664,7 @@ public class GitAccess {
             );
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
-      } else if(isSquash) {
+      } else if (isSquash) {
         progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
         fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
 
@@ -3256,11 +3280,14 @@ public class GitAccess {
 	 * 
 	 * @param checkoutCommand         Checkout command to do the checkout.
 	 * @param branchName              The new branch name.
-	 * @param pm                      The optional progress monitor.
+	 * @param progressMonitor         The optional progress monitor.
 	 * 
 	 * @throws GitAPIException Errors while invoking git commands.
 	 */
-	private void doCheckoutCommit(CheckoutCommand checkoutCommand, String branchName, Optional<IGitViewProgressMonitor> pm) throws GitAPIException {
+	private void doCheckoutCommit(
+	    CheckoutCommand checkoutCommand,
+	    String branchName,
+	    Optional<IGitViewProgressMonitor> progressMonitor) throws GitAPIException {
 	  if(checkoutCommand != null) {
 	    checkoutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM);
 	    if(branchName != null) {
@@ -3270,19 +3297,20 @@ public class GitAccess {
 	    }
 	    try {
 	      fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
-	      pm.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
-	      checkoutCommand.setProgressMonitor(pm.orElse(null)).call();
+	      progressMonitor.ifPresent(progMon -> progMon.showWithDelay(IProgressUpdater.DEFAULT_OPERATION_DELAY));
+	      
+	      checkoutCommand.setProgressMonitor(progressMonitor.orElse(null)).call();
+	      
+	      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsCompleted);
+	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 	    } catch(GitAPIException e) {
-	      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
 	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	      throw e;
 	    } catch (IndexLockExistsException e) {
-	      pm.ifPresent(IGitViewProgressMonitor::markAsFailed);
+	      progressMonitor.ifPresent(IGitViewProgressMonitor::markAsFailed);
 	      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_COMMIT), e);
 	    }
-
-	    pm.ifPresent(IGitViewProgressMonitor::markAsCompleted);
-	    fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_COMMIT));
 	  }
 	}
 
