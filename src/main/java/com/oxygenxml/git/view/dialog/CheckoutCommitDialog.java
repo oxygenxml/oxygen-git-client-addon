@@ -316,27 +316,27 @@ public class CheckoutCommitDialog extends OKCancelDialog {
 
   @Override
   protected void doOK() {
+    if(createNewBranchRadio.isSelected() && branchNameTextField.getText().isBlank()) {
+      previousBranchNameUpdate = null;
+      updateUI("");
+      
+      return;
+    }
+    
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
         final Optional<IGitViewProgressMonitor> progMon = Optional.of(
-            new GitOperationProgressMonitor(new ProgressDialog(Translator.getInstance().getTranslation(Tags.CHECKOUT), false)));
-       
-        if(createNewBranchRadio.isSelected()) {
-          if("".equals(branchNameTextField.getText())) {
-            previousBranchNameUpdate = null;
-            updateUI("");
-            return;
-          } else if(commit != null) {
-            GitAccess.getInstance().checkoutCommit(commit, branchNameTextField.getText(), progMon);   
-          } else {
-            GitAccess.getInstance().checkoutCommit(commitPath, branchNameTextField.getText(), progMon);   
-          }
+            new GitOperationProgressMonitor(
+                new ProgressDialog(
+                    Translator.getInstance().getTranslation(Tags.CHECKOUT),
+                    false)));
+
+        GitAccess gitAccess = GitAccess.getInstance();
+        String branchName = createNewBranchRadio.isSelected() ? branchNameTextField.getText() : null;
+        if (commit != null) {
+          gitAccess.checkoutCommit(commit, branchName, progMon);
         } else {
-          if(commit != null) {
-            GitAccess.getInstance().checkoutCommit(commit, null, progMon);    
-          } else {
-            GitAccess.getInstance().checkoutCommit(commitPath, null, progMon);    
-          }
+          gitAccess.checkoutCommit(commitPath, branchName, progMon); 
         }
       } catch (GitAPIException e) {
         LOGGER.error(e.getMessage(),  e);
