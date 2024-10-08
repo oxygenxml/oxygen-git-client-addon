@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.swing.JFrame;
@@ -17,7 +18,9 @@ import javax.swing.JFrame;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +28,11 @@ import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
+import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.RevCommitUtilBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -37,8 +42,10 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 
+import ro.sync.basic.xml.BasicXmlUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -50,6 +57,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class DiffPresenter {
+
+  /**
+   * Max number of characters to be presented in commit message at the top of the diff.
+   */
+  private static final int MAX_COMMIT_MESSAGE_CHARS_IN_DIFF = 120;
 
   /**
    * i18n
@@ -151,7 +163,7 @@ public class DiffPresenter {
 	      LOGGER.debug(e.getMessage(), e);
 	    }
 	  }
-	  showDiffFrame(url, null, null, fileStatus.getFileLocation());
+	  showDiffFrame(url, null, null, null, null, fileStatus.getFileLocation());
 	}
 
 	/**
@@ -169,7 +181,7 @@ public class DiffPresenter {
 	      LOGGER.debug(e1.getMessage(), e1);
 	    }
 	  }
-	  showDiffFrame(null, lastCommitedFileURL, null, path);
+	  showDiffFrame(null, null, lastCommitedFileURL, null, null, path);
 	}
 
 	/**
@@ -180,10 +192,8 @@ public class DiffPresenter {
 	private static void showSubmoduleDiff(String path) {
 		try {
 			URL currentSubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.CURRENT_SUBMODULE, path);
-			URL previouslySubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.PREVIOUSLY_SUBMODULE,
-			    path);
-			
-			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, previouslySubmoduleCommit, path);
+			URL previouslySubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.PREVIOUSLY_SUBMODULE, path);
+			showDiffFrame(currentSubmoduleCommit, null, previouslySubmoduleCommit, null, previouslySubmoduleCommit, path);
 		} catch (MalformedURLException e) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(e.getMessage(), e);
@@ -217,7 +227,7 @@ public class DiffPresenter {
 		// time stamp used for detecting if the file was changed in the diff view
 		final long diffStartedTimeStamp = new File(fileURL.toURI()).lastModified(); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 
-		final Optional<JFrame> frame = showDiffFrame(fileURL, lastCommitedFileURL, lastCommitedFileURL, path);
+		final Optional<JFrame> frame = showDiffFrame(fileURL, null, lastCommitedFileURL, null, lastCommitedFileURL, path);
 		refreshIfFileWasModified(refreshSupport, diffStartedTimeStamp, frame, fileURL);
 	}
 
@@ -275,7 +285,7 @@ public class DiffPresenter {
       }
     }
 
-    showDiffFrame(leftSideURL, rightSideURL, rightSideURL, path);
+    showDiffFrame(leftSideURL, null, rightSideURL, null, rightSideURL, path);
   }
 
 	/**
@@ -286,31 +296,49 @@ public class DiffPresenter {
 	 */
 	private static void showConflictDiff(FileStatus file, GitControllerBase gitController) {
 		try {
-		  URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, file.getFileLocation());
-		  URL left = null;
-		  URL right = null;
+		  String fileLocation = file.getFileLocation();
+      URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, fileLocation);
+		  URL leftURL = null;
+		  String leftLabel = null;
+		  URL rightURL = null;
+		  String rightLabel = null;
+		  
 		  // builds the URL for the files depending if we are in rebasing state or not
-      RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
-      boolean isRebase = repositoryState.equals(RepositoryState.REBASING)
+      GitAccess gitAccess = GitAccess.getInstance();
+      RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
+      boolean isUnfinishedRebase = repositoryState.equals(RepositoryState.REBASING)
           || repositoryState.equals(RepositoryState.REBASING_INTERACTIVE)
           || repositoryState.equals(RepositoryState.REBASING_MERGE)
           || repositoryState.equals(RepositoryState.REBASING_REBASING);
-      if (isRebase) {
-        // An unfinished rebased. 
-        left = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_RESOLVED, file.getFileLocation());
-        right = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_ORIGINAL, file.getFileLocation());
+      // TODO EXM-54873: add commit info for rebase and merge
+      if (isUnfinishedRebase) {
+        leftURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_RESOLVED, fileLocation);
+        rightURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_ORIGINAL, fileLocation);
       } else {
-        left = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
-        right = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, file.getFileLocation());
+//        ObjectId myCommit = gitAccess.getCommit(Commit.MINE, fileLocation);
+//        ObjectId theirCommit = gitAccess.getCommit(Commit.THEIRS, fileLocation);
+//        
+//        try { // NOSONAR
+//          RevCommit mine = RevCommitUtil.getCommit(myCommit.getName());
+//          leftLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, mine);
+//          
+//          RevCommit theirs = RevCommitUtil.getCommit(theirCommit.getName());
+//          rightLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, theirs);
+//        } catch (IOException e) {
+//          LOGGER.error(e, e);
+//        }
+        
+        leftURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, fileLocation);
+        rightURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, fileLocation);
       }
 
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
-			final File localCopy = new File(selectedRepository, file.getFileLocation()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+			final File localCopy = new File(selectedRepository, fileLocation); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 
 			// time stamp used for detecting if the file was changed in the diff view
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
-			Optional<JFrame> diffFrame = showDiffFrame(left, right, base, file.getFileLocation());
+			Optional<JFrame> diffFrame = showDiffFrame(leftURL, leftLabel, rightURL, rightLabel, base, fileLocation);
 			// checks if the file in conflict has been resolved or not after the diff
 			// view was closed
 			diffFrame.ifPresent(d -> 
@@ -319,7 +347,7 @@ public class DiffPresenter {
 			    public void componentHidden(ComponentEvent e) {
 			      long diffClosedTimeStamp = localCopy.lastModified();
 			      if (diffClosedTimeStamp == diffStartedTimeStamp) {
-			        String message = isRebase ? TRANSLATOR.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
+			        String message = isUnfinishedRebase ? TRANSLATOR.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
 			            : TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
 			        final int response = MessagePresenterProvider.getBuilder(
 			            TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE), DialogType.WARNING)
@@ -353,38 +381,73 @@ public class DiffPresenter {
 	/**
 	 * Shows a two way diff between the two revisions of a file.
 	 * 
-	 * @param leftCommitID The first revision to compare.
-	 * @param leftPath The path of the file. Relative to the working tree.
-	 * @param rightCommitID The second revision to comapre.
+	 * @param commit1   The first revision to compare.
+	 * @param leftPath  The path of the file. Relative to the working tree.
+	 * @param commit2   The second revision to compare.
 	 * @param rightPath The path of the file. Relative to the working tree.
 	 * 
 	 * @throws MalformedURLException Unable to build the URL.
 	 */
 	public static void showTwoWayDiff(
-	    String leftCommitID,
+	    CommitCharacteristics commit1,
 	    String leftPath,
-	    String rightCommitID, 
+	    CommitCharacteristics commit2, 
 	    String rightPath) throws MalformedURLException {
-	  URL left = GitRevisionURLHandler.encodeURL(leftCommitID, leftPath);
-	  URL right = GitRevisionURLHandler.encodeURL(rightCommitID, rightPath);
+	  URL left = GitRevisionURLHandler.encodeURL(commit1.getCommitId(), leftPath);
+	  URL right = GitRevisionURLHandler.encodeURL(commit2.getCommitId(), rightPath);
 	  
-	  showDiffFrame(left, right, null, leftPath);
+	  String leftLabel = getCommitInfoLabelForDiffSidePanel(leftPath, commit1);
+    String rightLabel = getCommitInfoLabelForDiffSidePanel(rightPath, commit2);
+	  
+	  showDiffFrame(left, leftLabel, right, rightLabel, null, leftPath);
 	}
+	
+	/**
+   * Shows a two way diff between the two revisions of a file.
+   * 
+   * @param commit1   The first revision to compare.
+   * @param leftPath  The path of the file. Relative to the working tree.
+   * @param commit2   The second revision to compare.
+   * @param rightPath The path of the file. Relative to the working tree.
+   * 
+   * @throws MalformedURLException Unable to build the URL.
+   */
+  public static void showTwoWayDiff(
+      CommitCharacteristics commit1,
+      String leftPath,
+      RevCommit commit2, 
+      String rightPath) throws MalformedURLException {
+    URL left = GitRevisionURLHandler.encodeURL(commit1.getCommitId(), leftPath);
+    URL right = GitRevisionURLHandler.encodeURL(commit2.name(), rightPath);
+    
+    String leftLabel = getCommitInfoLabelForDiffSidePanel(leftPath, commit1);
+    String rightLabel = getCommitInfoLabelForDiffSidePanel(rightPath, commit2);
+    
+    showDiffFrame(left, leftLabel, right, rightLabel, null, leftPath);
+  }
 
 	/**
 	 * Create diff frame.
 	 * 
-	 * @param localURL  URL to the local resource.
-	 * @param remoteUL  URL to the remote resource.
-	 * @param baseURL   URL to the base version of the resource.
-	 * @param filePath The path of the file. Relative to the working tree.
+	 * @param leftURL     Left URL.
+	 * @param leftLabel   Left label.
+	 * @param rightURL    Right URL.
+	 * @param rightLabel  Right label.
+	 * @param baseURL     URL to the base version of the resource.
+	 * @param filePath    The path of the file. Relative to the working tree.
 	 * 
 	 * @return The DIFF frame.
 	 */
-	private static Optional<JFrame> showDiffFrame(URL localURL, URL remoteUL, URL baseURL, String filePath) {
+	private static Optional<JFrame> showDiffFrame(
+	    URL leftURL,
+	    String leftLabel,
+	    URL rightURL,
+	    String rightLabel,
+	    URL baseURL,
+	    String filePath) {
 	  if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug("Local:  {}", localURL);
-	    LOGGER.debug("Remote: {}", remoteUL);
+	    LOGGER.debug("Left:  {}", leftURL);
+	    LOGGER.debug("Right: {}", rightURL);
 	    LOGGER.debug("Base:   {}", baseURL);
 	  }
 	  
@@ -405,12 +468,11 @@ public class DiffPresenter {
 	  }
 
 	  JFrame diffFrame = null;
-	  if (threeWays) {
-      diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-	        .openDiffFilesApplication(localURL, remoteUL, baseURL);
+	  StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    if (threeWays) {
+      diffFrame = (JFrame) pluginWS.openDiffFilesApplication(leftLabel, leftURL, rightLabel, rightURL, baseURL, false);
 	  } else {
-	    diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-	        .openDiffFilesApplication(localURL, remoteUL);
+	    diffFrame = (JFrame) pluginWS.openDiffFilesApplication(leftLabel, leftURL, rightLabel, rightURL);
 	  }
 	  
 	  // The "openDiffFilesApplication()" API may return null
@@ -447,7 +509,7 @@ public class DiffPresenter {
     URL left = FileUtil.getFileURL(localFilePath);
     URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);
     
-    showDiffFrame(left, right, null, filePath);
+    showDiffFrame(left, null, right, null, null, filePath);
   }
   
   
@@ -463,7 +525,7 @@ public class DiffPresenter {
   
    URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);
    
-   showDiffFrame(null, right, null, filePath);
+   showDiffFrame(null, null, right, null, null, filePath);
  }
   
 
@@ -475,9 +537,104 @@ public class DiffPresenter {
    * @throws MalformedURLException Unable to build the URLs required to compare. 
    */
   public static void showTwoWayDiff(FileStatusOverDiffEntry fileStatus) throws MalformedURLException {
-    URL left = GitRevisionURLHandler.encodeURL(fileStatus.getNewRevId(), fileStatus.getDiffEntry().getNewPath());
-    URL right = GitRevisionURLHandler.encodeURL(fileStatus.getOldRevId(), fileStatus.getDiffEntry().getOldPath());
+    String newRevId = fileStatus.getNewRevId();
+    String newPath = fileStatus.getDiffEntry().getNewPath();
     
-    showDiffFrame(left, right, null, fileStatus.getDiffEntry().getNewPath());    
+    String oldRevId = fileStatus.getOldRevId();
+    String oldPath = fileStatus.getDiffEntry().getOldPath();
+    
+    URL left = GitRevisionURLHandler.encodeURL(newRevId, newPath);
+    URL right = GitRevisionURLHandler.encodeURL(oldRevId, oldPath);
+    
+    String leftLabel = null;
+    String rightLabel = null;
+    
+    try {
+      RevCommit newCommit = RevCommitUtil.getCommit(newRevId);
+      RevCommit oldCommit = RevCommitUtil.getCommit(oldRevId);
+      
+      leftLabel = getCommitInfoLabelForDiffSidePanel(newPath, newCommit);
+      rightLabel = getCommitInfoLabelForDiffSidePanel(oldPath, oldCommit);
+    } catch (NoRepositorySelected | IOException e) {
+      LOGGER.error(e, e);
+    }
+    
+    showDiffFrame(left, leftLabel, right, rightLabel, null, newPath);    
+  }
+  
+  /**
+   * Get a label about the given file and commit to be rendered above the editor in a diff side panel.
+   * 
+   * @param filePath The file path.
+   * @param commit   The commit.
+   * 
+   * @return the label.
+   */
+  private static String getCommitInfoLabelForDiffSidePanel(String filePath, CommitCharacteristics commit) {
+    return getCommitInfoLabelForDiffSidePanel(
+        filePath,
+        commit.getCommitAbbreviatedId(),
+        BasicXmlUtil.escape(commit.getAuthor()),
+        commit.getDate(),
+        getCommitMessageForCommitInfoLabel(commit.getCommitMessage()));
+  }
+
+  /**
+   * Get a label about the given file and commit to be rendered above the editor in a diff side panel.
+   * 
+   * @param filePath The file path.
+   * @param commit   The commit.
+   * 
+   * @return the label.
+   */
+  private static String getCommitInfoLabelForDiffSidePanel(String filePath, RevCommit commit) {
+    PersonIdent authorIdent = commit.getAuthorIdent();
+    
+    return getCommitInfoLabelForDiffSidePanel(
+        filePath,
+        commit.abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name(),
+        authorIdent.getName() + (authorIdent.getEmailAddress().isEmpty() ? "" : " <" + authorIdent.getEmailAddress() + ">"),
+        commit.getAuthorIdent().getWhen(),
+        getCommitMessageForCommitInfoLabel(commit.getShortMessage()));
+  }
+  
+  /**
+   * Get a label about the given file and commit to be rendered above the editor in a diff side panel.
+   * 
+   * @param filepath       The filepath.
+   * @param commitID       The abbreviated ID of the commit.
+   * @param author         The author of the commit.
+   * @param date           The commit date.
+   * @param commitMessage  The commit message.
+   * 
+   * @return the label.
+   */
+  @SuppressWarnings("java:S1192")
+  private static String getCommitInfoLabelForDiffSidePanel(
+      String filepath,
+      String commitID,
+      String author,
+      Date date,
+      String commitMessage) {
+    return "<html>"
+        + "<p><b>" + TRANSLATOR.getTranslation(Tags.FILE) + ":</b> " + filepath + "</p>"
+        + "<p><b>" + TRANSLATOR.getTranslation(Tags.COMMIT) + ":</b> " + commitID + "</p>"
+        + "<p><b>" + TRANSLATOR.getTranslation(Tags.AUTHOR) + ":</b> " + author +  "</p>"
+        + "<p><b>" + TRANSLATOR.getTranslation(Tags.DATE) + ":</b> " + date + "</p>"
+        + "<p><b>" + TRANSLATOR.getTranslation(Tags.MESSAGE_LABEL) + ":</b> " +  commitMessage + "</p>" 
+        + "</html>";
+  }
+  
+  /**
+   * Get the commit message to show in the commit info label at the top of a diff editor. May be truncated.
+   * 
+   * @param commitMessage The initial commit message, which may be long.
+   * 
+   * @return the updated message.
+   */
+  private static String getCommitMessageForCommitInfoLabel(String commitMessage) {
+    int maxNoOfMessageChars = Math.min(commitMessage.length(), MAX_COMMIT_MESSAGE_CHARS_IN_DIFF);
+    String suffix = commitMessage.length() > MAX_COMMIT_MESSAGE_CHARS_IN_DIFF ? " [...]" : "";
+    return commitMessage.substring(0, maxNoOfMessageChars).trim() + suffix;
   }
 }

@@ -21,6 +21,7 @@ import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,7 +168,6 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commit1,
       CommitCharacteristics commit2) {
 
-    // Create action
     Action compareWithEachOther = 
         new AbstractAction(TRANSLATOR.getTranslation(Tags.COMPARE_WITH_EACH_OTHER)) {
       @Override
@@ -180,9 +180,9 @@ public class HistoryViewContextualMenuPresenter {
           checkIfValidForOpen(filePath, commit2, fileStatus2);
 
           DiffPresenter.showTwoWayDiff(
-              commit1.getCommitId(),
+              commit1,
               filePath, 
-              commit2.getCommitId(),
+              commit2,
               filePath);
         } catch (IOException | GitAPIException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
@@ -387,7 +387,7 @@ public class HistoryViewContextualMenuPresenter {
         @Override
         public void actionPerformed(ActionEvent e) {
           try {
-            DiffPresenter.showTwoWayDiff(((FileStatusOverDiffEntry) fileStatus));
+            DiffPresenter.showTwoWayDiff((FileStatusOverDiffEntry) fileStatus);
           } catch (MalformedURLException e1) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
             LOGGER.error(e1.getMessage(), e1);
@@ -434,20 +434,24 @@ public class HistoryViewContextualMenuPresenter {
     List<String> parents = commitCharacteristics.getParentCommitId();
     if (parents != null && !parents.isEmpty()) {
       try {
-        RevCommit[] parentsRevCommits = RevCommitUtil.getParents(
-            GitAccess.getInstance().getRepository(),
-            commitCharacteristics.getCommitId());
-        boolean addParentID = parents.size() > 1;
-        for (RevCommit parentID : parentsRevCommits) {
-          actions.add(createCompareWithPrevVersionAction(
-              filePath, 
-              commitCharacteristics.getCommitId(),
-              filePath,
-              parentID, 
-              addParentID, 
-              addFileName));
-        }
-      } catch (IOException | NoRepositorySelected e2) {
+        Repository repository = GitAccess.getInstance().getRepository();
+        try (RevWalk rw = new RevWalk(repository)) {
+          RevCommit[] parentsRevCommits = RevCommitUtil.getParents(
+              repository,
+              commitCharacteristics.getCommitId());
+          boolean addParentIDInActionName = parents.size() > 1;
+          for (RevCommit parentCommit : parentsRevCommits) {
+            actions.add(
+                createCompareWithPrevVersionAction(
+                    filePath, 
+                    commitCharacteristics,
+                    filePath,
+                    rw.parseCommit(parentCommit), 
+                    addParentIDInActionName, 
+                    addFileName));
+          }
+        } 
+      } catch (NoRepositorySelected | IOException e2) {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e2.getMessage());
         LOGGER.error(e2.getMessage(), e2);
       }
@@ -493,7 +497,7 @@ public class HistoryViewContextualMenuPresenter {
    * Creates an action that invokes Oxygen's DIFF. It compares the current version with the previous.
    * 
    * @param filePath                File to compare. Path relative to the working tree.
-   * @param commitID                The current commit id. First version to compare.
+   * @param commit                  The current commit. First version to compare.
    * @param parentFilePath          The parent file path.
    * @param parentRevCommit         The parent revision. Second version to compare.
    * @param addParentIDInActionName <code>true</code> to put the ID of the parent version in the action's name.
@@ -503,7 +507,7 @@ public class HistoryViewContextualMenuPresenter {
    */
   private Action createCompareWithPrevVersionAction(
       String filePath,
-      String commitID,
+      CommitCharacteristics commit,
       String parentFilePath,
       RevCommit parentRevCommit,
       boolean addParentIDInActionName, 
@@ -520,7 +524,11 @@ public class HistoryViewContextualMenuPresenter {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          DiffPresenter.showTwoWayDiff(commitID, filePath, parentRevCommit.name(), parentFilePath);
+          DiffPresenter.showTwoWayDiff(
+              commit,
+              filePath,
+              parentRevCommit,
+              parentFilePath);
         } catch (MalformedURLException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
           LOGGER.debug(e1.getMessage(), e1);
