@@ -19,6 +19,7 @@ import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -28,7 +29,6 @@ import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
-import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.RevCommitUtil;
@@ -305,28 +305,40 @@ public class DiffPresenter {
 		  
 		  // builds the URL for the files depending if we are in rebasing state or not
       GitAccess gitAccess = GitAccess.getInstance();
-      RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
-      boolean isUnfinishedRebase = repositoryState.equals(RepositoryState.REBASING)
-          || repositoryState.equals(RepositoryState.REBASING_INTERACTIVE)
-          || repositoryState.equals(RepositoryState.REBASING_MERGE)
-          || repositoryState.equals(RepositoryState.REBASING_REBASING);
-      // TODO EXM-54873: add commit info for rebase and merge
-      if (isUnfinishedRebase) {
+      Repository repository = gitAccess.getRepository();
+      if (isUnfinishedRebase(repository)) {
+        try { // NOSONAR
+          ObjectId mineOriginal = RevCommitUtil.findMostRecentCommitForFileBeforeRebase(repository, fileLocation);
+          ObjectId mineResolved = RevCommitUtil.findLastLocalCommitForFileFromLog(gitAccess.getGit(), fileLocation);
+
+          if (mineOriginal != null && mineResolved != null) {
+            RevCommit original = RevCommitUtil.getCommit(mineOriginal.getName());
+            RevCommit resolved = RevCommitUtil.getCommit(mineResolved.getName());
+
+            leftLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, resolved);
+            rightLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, original);
+          }
+        } catch (Exception e) {
+          LOGGER.error(e, e);
+        }
+        
         leftURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_RESOLVED, fileLocation);
         rightURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_ORIGINAL, fileLocation);
       } else {
-//        ObjectId myCommit = gitAccess.getCommit(Commit.MINE, fileLocation);
-//        ObjectId theirCommit = gitAccess.getCommit(Commit.THEIRS, fileLocation);
-//        
-//        try { // NOSONAR
-//          RevCommit mine = RevCommitUtil.getCommit(myCommit.getName());
-//          leftLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, mine);
-//          
-//          RevCommit theirs = RevCommitUtil.getCommit(theirCommit.getName());
-//          rightLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, theirs);
-//        } catch (IOException e) {
-//          LOGGER.error(e, e);
-//        }
+        try { // NOSONAR
+          ObjectId myCommit = RevCommitUtil.findLastLocalCommitForFileFromLog(gitAccess.getGit(), fileLocation);
+          ObjectId theirCommit = RevCommitUtil.getTheirCommitFromMergeConflict(repository);
+
+          if (myCommit != null && theirCommit != null) {
+            RevCommit mine = RevCommitUtil.getCommit(myCommit.getName());
+            RevCommit theirs = RevCommitUtil.getCommit(theirCommit.getName());
+
+            leftLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, mine);
+            rightLabel = getCommitInfoLabelForDiffSidePanel(fileLocation, theirs);
+          }
+        } catch (Exception e) {
+          LOGGER.error(e, e);
+        }
         
         leftURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, fileLocation);
         rightURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, fileLocation);
@@ -339,36 +351,8 @@ public class DiffPresenter {
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
 			Optional<JFrame> diffFrame = showDiffFrame(leftURL, leftLabel, rightURL, rightLabel, base, fileLocation);
-			// checks if the file in conflict has been resolved or not after the diff
-			// view was closed
-			diffFrame.ifPresent(d -> 
-			  d.addComponentListener(new ComponentAdapter() {
-			    @Override
-			    public void componentHidden(ComponentEvent e) {
-			      long diffClosedTimeStamp = localCopy.lastModified();
-			      if (diffClosedTimeStamp == diffStartedTimeStamp) {
-			        String message = isUnfinishedRebase ? TRANSLATOR.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
-			            : TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
-			        final int response = MessagePresenterProvider.getBuilder(
-			            TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE), DialogType.WARNING)
-			            .setQuestionMessage(message)
-			            .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY))
-			            .setCancelButtonName(TRANSLATOR.getTranslation(Tags.KEEP_CONFLICT))
-			            .buildAndShow().getResult();
-			            
-			        if (response == OKCancelDialog.RESULT_OK) {
-			          gitController.asyncResolveUsingMine(Collections.singletonList(file));
-			        }
-			      } else {
-			        // Instead of requesting the file status again, we just mark it as modified.
-			        file.setChangeType(GitChangeType.MODIFIED);
-			        
-			        gitController.asyncAddToIndex(Collections.singletonList(file));
-			      }
-			      
-			      d.removeComponentListener(this);
-			    }
-			  })
+			diffFrame.ifPresent(frame -> 
+			  addDiffFrameComponentListener(frame, file, gitController, repository, localCopy, diffStartedTimeStamp)
 			);
 
 		} catch (MalformedURLException | NoRepositorySelected e1) {
@@ -377,6 +361,70 @@ public class DiffPresenter {
 			}
 		}
 	}
+
+	/**
+	 * Add component listener to diff frame.
+	 * Checks if the file in conflict has been resolved or not after the diff view was closed.
+	 * 
+	 * @param frame                  The frame.
+	 * @param fileStatus             Current file status.      
+	 * @param gitController          Git controller.
+	 * @param repository             The current repo.
+	 * @param localCopy              The local file.
+	 * @param diffStartedTimeStamp   The timestamp when diff started.
+	 */
+  private static void addDiffFrameComponentListener(
+      JFrame frame,
+      FileStatus fileStatus,
+      GitControllerBase gitController,
+      Repository repository,
+      final File localCopy,
+      final long diffStartedTimeStamp) {
+    // checks if the file in conflict has been resolved or not after the diff view was closed
+    
+    frame.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentHidden(ComponentEvent e) {
+        long diffClosedTimeStamp = localCopy.lastModified();
+        if (diffClosedTimeStamp == diffStartedTimeStamp) {
+          String message = isUnfinishedRebase(repository) ? TRANSLATOR.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
+              : TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
+          final int response = MessagePresenterProvider.getBuilder(
+              TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE), DialogType.WARNING)
+              .setQuestionMessage(message)
+              .setOkButtonName(TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY))
+              .setCancelButtonName(TRANSLATOR.getTranslation(Tags.KEEP_CONFLICT))
+              .buildAndShow().getResult();
+              
+          if (response == OKCancelDialog.RESULT_OK) {
+            gitController.asyncResolveUsingMine(Collections.singletonList(fileStatus));
+          }
+        } else {
+          // Instead of requesting the file status again, we just mark it as modified.
+          fileStatus.setChangeType(GitChangeType.MODIFIED);
+          
+          gitController.asyncAddToIndex(Collections.singletonList(fileStatus));
+        }
+        
+        frame.removeComponentListener(this);
+      }
+    });
+  }
+
+	/**
+	 * Check if we have an unfinished rebase.
+	 * 
+	 * @param repository the repo.
+	 * 
+	 * @return <code>true</code> if we are in the unfinished rebase state.
+	 */
+  private static boolean isUnfinishedRebase(Repository repository) {
+    RepositoryState repositoryState = repository.getRepositoryState();
+    return repositoryState.equals(RepositoryState.REBASING)
+        || repositoryState.equals(RepositoryState.REBASING_INTERACTIVE)
+        || repositoryState.equals(RepositoryState.REBASING_MERGE)
+        || repositoryState.equals(RepositoryState.REBASING_REBASING);
+  }
 	
 	/**
 	 * Shows a two way diff between the two revisions of a file.

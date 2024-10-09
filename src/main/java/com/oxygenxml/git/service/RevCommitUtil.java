@@ -1,8 +1,11 @@
 package com.oxygenxml.git.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,6 +44,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
@@ -1075,6 +1079,126 @@ public class RevCommitUtil {
     }
    
     return toReturn;
+  }
+    
+  /**
+   * Find in the log the last local commit for a file.
+   * 
+   * @param git       Git API.
+   * @param filePath  The filepath.
+   * 
+   * @return the commit or <code>null</code>.
+   * 
+   * @throws Exception
+   */
+  public static RevCommit findLastLocalCommitForFileFromLog(Git git, String filePath) throws GitAPIException {
+    Iterable<RevCommit> commits = git.log().addPath(filePath).call();
+    Iterator<RevCommit> iterator = commits.iterator();
+    return iterator.hasNext() ? iterator.next() : null;
+  }
+  
+  /**
+   * Get their commit from a merge conflict.
+   * 
+   * @param repository The current repo.
+   * 
+   * @return the commit or <code>null</code>.
+   * 
+   * @throws IOException 
+   */
+  public static ObjectId getTheirCommitFromMergeConflict(Repository repository) throws IOException {
+    File mergeHeadFile = new File(repository.getDirectory(), "MERGE_HEAD");
+    if (mergeHeadFile.exists()) {
+      List<String> lines = Files.readAllLines(Paths.get(mergeHeadFile.getPath()));
+      if (!lines.isEmpty()) {
+        String theirCommitId = lines.get(0);
+        return ObjectId.fromString(theirCommitId);
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Find the most recent commit that involves a file made by me before rebase was tried.
+   * 
+   * @param repository The current repo.
+   * @param filePath   The filepath.
+   * 
+   * @return the commit or <code>null</code>.
+   * 
+   * @throws IOException
+   */
+  public static ObjectId findMostRecentCommitForFileBeforeRebase(Repository repository, String filePath) throws IOException {
+    File rebaseMergeDirectory = new File(repository.getDirectory(), "rebase-merge");
+    if (!rebaseMergeDirectory.exists()) {
+      throw new IllegalStateException("No rebase conflict in progress.");
+    }
+
+    File originalCommitFile = new File(rebaseMergeDirectory, "orig-head");
+    if (!originalCommitFile.exists()) {
+      throw new IllegalStateException("Could not find the original commit. The repo might be corrupted.");
+    }
+
+    List<String> lines = Files.readAllLines(Paths.get(originalCommitFile.getPath()));
+    if (lines.isEmpty()) {
+      throw new IllegalStateException("orig-head file is empty.");
+    }
+
+    String originalHeadID = lines.get(0);
+
+    try (RevWalk revWalk = new RevWalk(repository)) {
+      ObjectId originalHead = ObjectId.fromString(originalHeadID);
+      RevCommit startCommit = revWalk.parseCommit(originalHead);
+
+      // Traverse the commit history from the original head
+      revWalk.markStart(startCommit);
+
+      for (RevCommit commit : revWalk) {
+        if (commit.getParentCount() > 0) {
+          AbstractTreeIterator parentTreeParser = prepareTreeParser(repository, commit.getParent(0));
+          AbstractTreeIterator commitTreeParser = prepareTreeParser(repository, commit);
+
+          try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+              DiffFormatter diffFormatter = new DiffFormatter(out)) {
+
+            diffFormatter.setRepository(repository);
+            List<DiffEntry> diffs = diffFormatter.scan(parentTreeParser, commitTreeParser);
+
+            for (DiffEntry diff : diffs) {
+              if (diff.getChangeType() != DiffEntry.ChangeType.DELETE
+                  && diff.getNewPath().equals(filePath)) {
+                return commit.getId();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Prepare tree parser for a commit.
+   * 
+   * @param repository The repo.
+   * @param commit     The commit.
+   * 
+   * @return the tree parser.
+   * 
+   * @throws IOException
+   */
+  private static AbstractTreeIterator prepareTreeParser(Repository repository, RevCommit commit) throws IOException {
+    try (RevWalk walk = new RevWalk(repository)) {
+      RevCommit parsedCommit = walk.parseCommit(commit.getId());
+      RevTree tree = parsedCommit.getTree();
+      CanonicalTreeParser treeParser = new CanonicalTreeParser();
+      try (ObjectReader reader = repository.newObjectReader()) {
+        treeParser.reset(reader, tree.getId());
+      }
+      walk.dispose();
+      return treeParser;
+    }
   }
 
   /**
