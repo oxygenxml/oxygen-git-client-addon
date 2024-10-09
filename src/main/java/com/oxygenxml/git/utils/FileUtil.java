@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -19,10 +20,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.annotations.NonNull;
 import org.eclipse.jgit.annotations.Nullable;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxygenxml.git.protocol.GitRevisionURLHandler;
+import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.service.exceptions.NoRepositorySelected;
@@ -519,6 +524,72 @@ public class FileUtil {
                       changeType == GitChangeType.MODIFIED;
     }
     return hasHistory;
+  }
+  
+  /**
+   * Used to verify if a file exists on local disk.
+   * 
+   * @param filePath the file path
+   * 
+   * @return <code>true</code> if the file exists 
+   */
+  public static boolean existsLocalFile(String filePath) {
+    String selectedRepository = "";
+    boolean toReturn = true;
+    try {
+      selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+      File file = new File(selectedRepository, filePath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false pozitive
+      toReturn = file.exists();
+    } catch (NoRepositorySelected e) {
+     toReturn = false;
+    }
+    return toReturn;
+  }
+  
+  /**
+   * Builds an URL that identifies a file at a specific revision.
+   * 
+   * @param revisionID Revision ID.
+   * @param fileStatus FIle info.
+   * 
+   * @return The URL, if one was built.
+   * 
+   * @throws NoRepositorySelected No repository is loaded.
+   * @throws IOException Problems identifying the revision.
+   */
+  public static Optional<URL> getFileURL(String revisionID, FileStatus fileStatus)
+      throws NoRepositorySelected, IOException {
+    URL fileURL = null;
+    String fileStatusLocation = fileStatus.getFileLocation();
+    if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
+      Repository repository = GitAccess.getInstance().getRepository();
+      RevCommit[] parentsRevCommits = RevCommitUtil.getParents(repository, revisionID);
+      
+      // If it's a merge, we look for the one parent with the actual file in it.
+      Optional<RevCommit> previousVersionCommit = Arrays.stream(parentsRevCommits).filter(revCommit -> {
+        try {
+          return RevCommitUtil.getObjectID(repository, revCommit.getId().getName(), fileStatusLocation) != null;
+        } catch (IOException e1) {
+          // Unable to find a parent with the given path.
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open file because of " + e1.getMessage());
+        }
+        return false;
+      }).findFirst();
+      
+      if (previousVersionCommit.isPresent()) {
+        fileURL = GitRevisionURLHandler.encodeURL(
+            previousVersionCommit.get().getId().getName(),
+            fileStatusLocation);  
+      }
+    } else if (fileStatus.getChangeType() == GitChangeType.MISSING) {
+      fileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, fileStatusLocation);
+    } else if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(revisionID)) {
+      fileURL = GitRevisionURLHandler.encodeURL(revisionID, fileStatusLocation);
+    } else {
+      fileURL = FileUtil.getFileURL(fileStatusLocation);
+    }
+    
+    return Optional.ofNullable(fileURL);
   }
 
   /**

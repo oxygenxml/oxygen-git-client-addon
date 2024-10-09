@@ -1,13 +1,11 @@
 package com.oxygenxml.git.view.history;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +23,6 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxygenxml.git.protocol.GitRevisionURLHandler;
-import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.RevCommitUtil;
@@ -135,7 +131,7 @@ public class HistoryViewContextualMenuPresenter {
             Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristic);
             checkIfValidForOpen(filePath, commitCharacteristic, fileStatus);
 
-            Optional<URL> fileURL = getFileURL(commitCharacteristic.getCommitId(), fileStatus.get());
+            Optional<URL> fileURL = FileUtil.getFileURL(commitCharacteristic.getCommitId(), fileStatus.get());
             fileURL.ifPresent(url -> PluginWorkspaceProvider.getPluginWorkspace().open(url));
           } catch (IOException | GitAPIException | NoRepositorySelected e1) {
             LOGGER.debug(e1.getMessage(), e1);
@@ -358,7 +354,7 @@ public class HistoryViewContextualMenuPresenter {
     if(fileStatusChangeType != GitChangeType.REMOVED
         && fileStatusChangeType != GitChangeType.UNTRACKED
         && !GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(currentCommitID)
-        && existsLocalFile(fileStatusLocation)) {
+        && FileUtil.existsLocalFile(fileStatusLocation)) {
       actions.add(null);
       actions.add(createCheckoutFileAction(currentCommitID, fileStatus, addFileName)); 
     }
@@ -466,7 +462,7 @@ public class HistoryViewContextualMenuPresenter {
    * @param addFileName <code>true</code> to also add the name of the file to the action name.
    * @param filePath Path of the resource to compare. Relative to the WC root.
    */
-  private void addCompareWithWorkingTreeAction(
+  private static void addCompareWithWorkingTreeAction(
       List<Action> actions, 
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
@@ -546,7 +542,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The name of the compare action.
    */
-  private String getCompareWithPreviousVersionActionName(String filePath, boolean addFileName) {
+  private static String getCompareWithPreviousVersionActionName(String filePath, boolean addFileName) {
     String actionName = TRANSLATOR.getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
     if (addFileName) {
       actionName = MessageFormat.format(
@@ -557,25 +553,7 @@ public class HistoryViewContextualMenuPresenter {
   }
   
   
-  /**
-   * Used to verify if a file exists on local disk.
-   * 
-   * @param filePath the file path
-   * 
-   * @return <code>true</code> if the file exists 
-   */
-  private boolean existsLocalFile(String filePath) {
-    String selectedRepository = "";
-    boolean toReturn = true;
-    try {
-      selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-      File file = new File(selectedRepository, filePath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false pozitive
-      toReturn = file.exists();
-    } catch (NoRepositorySelected e) {
-     toReturn = false;
-    }
-    return toReturn;
-  }
+  
 
   
   /**
@@ -589,7 +567,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that will open the file when invoked.
    */
-  private Action createCheckoutFileAction(String commitId, FileStatus fileStatus, boolean addFileName) {
+  private static Action createCheckoutFileAction(String commitId, FileStatus fileStatus, boolean addFileName) {
     return new AbstractAction(getCheckoutFileActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -610,7 +588,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that will open the file when invoked.
    */
-  protected Action createOpenWorkingCopyFileAction(
+  protected static Action createOpenWorkingCopyFileAction(
       FileStatus fileStatus,
       String commitID,
       boolean addFileName) {
@@ -656,13 +634,13 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that will open the file when invoked.
    */
-  private Action createOpenFileAction(String revisionID, FileStatus fileStatus, boolean addFileName) {
+  private static Action createOpenFileAction(String revisionID, FileStatus fileStatus, boolean addFileName) {
     String tooltipText = addFileName ? null : TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_OPEN_ACTION_TOOLTIP);
     AbstractAction openFileAction = new AbstractAction(getOpenFileActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          Optional<URL> fileURL = getFileURL(revisionID, fileStatus);
+          Optional<URL> fileURL = FileUtil.getFileURL(revisionID, fileStatus);
           fileURL.ifPresent(url -> PluginWorkspaceProvider.getPluginWorkspace().open(url));
         } catch (NoRepositorySelected | IOException e1) {
           LOGGER.error(e1.getMessage(), e1);
@@ -685,7 +663,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The name of the open file action.
    */
-  private String getOpenFileWorkingCopyActionName(FileStatus fileStatus, boolean addFileName) {
+  private static String getOpenFileWorkingCopyActionName(FileStatus fileStatus, boolean addFileName) {
     String actionName = TRANSLATOR.getTranslation(Tags.OPEN_WORKING_COPY);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
@@ -703,7 +681,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The name of the revert file action.
    */
-  private String getCheckoutFileActionName(FileStatus fileStatus, boolean addFileName) {
+  private static String getCheckoutFileActionName(FileStatus fileStatus, boolean addFileName) {
 
     String actionName = Translator.getInstance().getTranslation(Tags.RESET_FILE_TO_THIS_COMMIT);
     if (addFileName) {
@@ -713,8 +691,6 @@ public class HistoryViewContextualMenuPresenter {
     return actionName;
   }
   
-  
-  
   /**
    * Builds the name for the action that opens a file.
    * 
@@ -723,7 +699,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The name of the open file action.
    */
-  private String getOpenFileActionName(FileStatus fileStatus, boolean addFileName) {
+  private static String getOpenFileActionName(FileStatus fileStatus, boolean addFileName) {
     String actionName = TRANSLATOR.getTranslation(Tags.OPEN);
     if (fileStatus.getChangeType() == GitChangeType.REMOVED || fileStatus.getChangeType() == GitChangeType.MISSING) {
       // A removed file. We can only present the previous version.
@@ -734,53 +710,7 @@ public class HistoryViewContextualMenuPresenter {
     }
     return actionName;
   }
-  
-  /**
-   * Builds an URL that identifies a file at a specific revision.
-   * 
-   * @param revisionID Revision ID.
-   * @param fileStatus FIle info.
-   * 
-   * @return The URL, if one was built.
-   * 
-   * @throws NoRepositorySelected No repository is loaded.
-   * @throws IOException Problems identifying the revision.
-   */
-  private Optional<URL> getFileURL(String revisionID, FileStatus fileStatus)
-      throws NoRepositorySelected, IOException {
-    URL fileURL = null;
-    String fileStatusLocation = fileStatus.getFileLocation();
-    if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
-      Repository repository = GitAccess.getInstance().getRepository();
-      RevCommit[] parentsRevCommits = RevCommitUtil.getParents(repository, revisionID);
-      
-      // If it's a merge, we look for the one parent with the actual file in it.
-      Optional<RevCommit> previousVersionCommit = Arrays.stream(parentsRevCommits).filter(revCommit -> {
-        try {
-          return RevCommitUtil.getObjectID(repository, revCommit.getId().getName(), fileStatusLocation) != null;
-        } catch (IOException e1) {
-          // Unable to find a parent with the given path.
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open file because of " + e1.getMessage());
-        }
-        return false;
-      }).findFirst();
-      
-      if (previousVersionCommit.isPresent()) {
-        fileURL = GitRevisionURLHandler.encodeURL(
-            previousVersionCommit.get().getId().getName(),
-            fileStatusLocation);  
-      }
-    } else if (fileStatus.getChangeType() == GitChangeType.MISSING) {
-      fileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, fileStatusLocation);
-    } else if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(revisionID)) {
-      fileURL = GitRevisionURLHandler.encodeURL(revisionID, fileStatusLocation);
-    } else {
-      fileURL = FileUtil.getFileURL(fileStatusLocation);
-    }
-    
-    return Optional.ofNullable(fileURL);
-  }
-  
+   
   /**
    * Set the new commits ahead and behind.
    * 
