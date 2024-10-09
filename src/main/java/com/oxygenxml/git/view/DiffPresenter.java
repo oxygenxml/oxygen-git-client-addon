@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
@@ -44,6 +45,7 @@ import com.oxygenxml.git.view.dialog.MessagePresenterProvider;
 import com.oxygenxml.git.view.dialog.internal.DialogType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.basic.xml.BasicXmlUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -61,7 +63,7 @@ public class DiffPresenter {
   /**
    * Max number of characters to be presented in commit message at the top of the diff.
    */
-  private static final int MAX_COMMIT_MESSAGE_CHARS_IN_DIFF = 120;
+  private static final int MAX_COMMIT_MESSAGE_CHARS_IN_DIFF = 100;
 
   /**
    * i18n
@@ -641,7 +643,7 @@ public class DiffPresenter {
     return getCommitInfoLabelForDiffSidePanel(
         filePath,
         commit.abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name(),
-        authorIdent.getName() + (authorIdent.getEmailAddress().isEmpty() ? "" : " <" + authorIdent.getEmailAddress() + ">"),
+        authorIdent.getName() + BasicXmlUtil.escape(" <" + authorIdent.getEmailAddress() + ">"),
         commit.getAuthorIdent().getWhen(),
         getCommitMessageForCommitInfoLabel(commit.getShortMessage()));
   }
@@ -665,11 +667,8 @@ public class DiffPresenter {
       Date date,
       String commitMessage) {
     return "<html>"
-        + "<p><b>" + TRANSLATOR.getTranslation(Tags.FILE) + ":</b> " + filepath + "</p>"
-        + "<p><b>" + TRANSLATOR.getTranslation(Tags.COMMIT) + ":</b> " + commitID + "</p>"
-        + "<p><b>" + TRANSLATOR.getTranslation(Tags.AUTHOR) + ":</b> " + author +  "</p>"
-        + "<p><b>" + TRANSLATOR.getTranslation(Tags.DATE) + ":</b> " + date + "</p>"
-        + "<p><b>" + TRANSLATOR.getTranslation(Tags.MESSAGE_LABEL) + ":</b> " +  commitMessage + "</p>" 
+        + "<p>" + filepath + " – " + commitID + "</p>"
+        + "<p>" + author + " – " + commitMessage + " – " + new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN).format(date) + "</p>" 
         + "</html>";
   }
   
@@ -682,7 +681,7 @@ public class DiffPresenter {
    */
   private static String getCommitMessageForCommitInfoLabel(String commitMessage) {
     int maxNoOfMessageChars = Math.min(commitMessage.length(), MAX_COMMIT_MESSAGE_CHARS_IN_DIFF);
-    String suffix = commitMessage.length() > MAX_COMMIT_MESSAGE_CHARS_IN_DIFF ? " [...]" : "";
+    String suffix = commitMessage.length() > MAX_COMMIT_MESSAGE_CHARS_IN_DIFF ? "[...]" : "";
     return commitMessage.substring(0, maxNoOfMessageChars).trim() + suffix;
   }
 }
