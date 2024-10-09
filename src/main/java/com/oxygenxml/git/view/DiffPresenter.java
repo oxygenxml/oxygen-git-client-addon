@@ -26,6 +26,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -620,7 +621,8 @@ public class DiffPresenter {
    * 
    * @return the label.
    */
-  private static String getCommitInfoLabelForDiffSidePanel(String filePath, CommitCharacteristics commit) {
+  @VisibleForTesting
+  static String getCommitInfoLabelForDiffSidePanel(String filePath, CommitCharacteristics commit) {
     return getCommitInfoLabelForDiffSidePanel(
         filePath,
         commit.getCommitAbbreviatedId(),
@@ -637,7 +639,8 @@ public class DiffPresenter {
    * 
    * @return the label.
    */
-  private static String getCommitInfoLabelForDiffSidePanel(String filePath, RevCommit commit) {
+  @VisibleForTesting
+  static String getCommitInfoLabelForDiffSidePanel(String filePath, RevCommit commit) {
     PersonIdent authorIdent = commit.getAuthorIdent();
     
     return getCommitInfoLabelForDiffSidePanel(
