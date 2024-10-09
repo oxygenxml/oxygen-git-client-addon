@@ -15,9 +15,11 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
@@ -897,6 +899,174 @@ public class GitAccessConflictTest extends TestCase {
         gitStatus.getUnstagedFiles().toString());
     
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
+  }
+  
+  /**
+   * <p><b>Description:</b> check the commit info for the commits involved in rebase conflict.</p>
+   * <p><b>Bug ID:</b> EXM-54873</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testPullWithConflicts_Rebase_CheckCommitsInfo() throws Exception {
+    //----------------
+    // LOCAL 1
+    //----------------
+    gitAccess = GitAccess.getInstance();
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+    // Create a file in the remote.
+    File remoteParent = new File(FIRST_LOCAL_TEST_REPOSITPRY);
+    remoteParent.mkdirs();
+    File local1File = new File(FIRST_LOCAL_TEST_REPOSITPRY, "test.txt");
+    writeToFile(local1File, "original");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("Primul");
+    push("", "");
+    
+    
+    //----------------
+    // LOCAL 2
+    //----------------
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
+    assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
+    File local2File = new File(SECOND_LOCAL_TEST_REPOSITORY, "test.txt");
+    assertEquals("original", getFileContent(local2File));
+    
+    writeToFile(local2File, "changed in local 2");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("Al doilea");
+    push("", "");
+
+    //----------------
+    // LOCAL 1
+    //----------------
+    
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+    writeToFile(local1File, "changed in local 1");
+    
+    final StringBuilder pullWithConflictsSB = new StringBuilder();
+    boolean[] wasRebaseInterrupted = new boolean[1];
+    final String[] pullFailedMessage = new String[1];
+    GitController pc = new GitController(gitAccess) {
+      @Override
+      protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
+        pullFailedMessage[0] = message;
+      };
+      @Override
+      protected void showPullSuccessfulWithConflicts(PullResponse response) {
+        pullWithConflictsSB.append(response);
+      }
+      @Override
+      protected void showRebaseInProgressDialog() {
+        wasRebaseInterrupted[0] = true;
+      }
+    };
+    
+    final StringBuilder b = new StringBuilder();
+    TestUtil.collectPushPullEvents(pc, b);
+    
+    // Get conflict
+    assertEquals("changed in local 1", getFileContent(local1File));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("Another");
+    pc.pull(PullConfig.createSimplePullRebaseConfig(), Optional.empty()).get();
+    assertNull(pullFailedMessage[0]);
+    assertFalse(wasRebaseInterrupted[0]);
+    assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
+    assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
+    
+    ObjectId objectID = RevCommitUtil.findMostRecentCommitForFileBeforeRebase(gitAccess.getRepository(), "test.txt");
+    RevCommit mineOriginal = RevCommitUtil.getCommit(objectID.getName());
+    assertNotNull(mineOriginal);
+    assertEquals("Another", mineOriginal.getShortMessage());
+    
+    RevCommit mineResolved = RevCommitUtil.findLastLocalCommitForFileFromLog(gitAccess.getGit(), "test.txt");
+    assertNotNull(mineResolved);
+    assertEquals("Al doilea", mineResolved.getShortMessage());
+  }
+  
+  /**
+   * <p><b>Description:</b> check the commit info for the commits involved in merge conflict.</p>
+   * <p><b>Bug ID:</b> EXM-54873</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testPullWithConflicts_Merge_CheckCommitsInfo() throws Exception {
+    //----------------
+    // LOCAL 1
+    //----------------
+    gitAccess = GitAccess.getInstance();
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+    // Create a file in the remote.
+    File remoteParent = new File(FIRST_LOCAL_TEST_REPOSITPRY);
+    remoteParent.mkdirs();
+    File local1File = new File(FIRST_LOCAL_TEST_REPOSITPRY, "test.txt");
+    writeToFile(local1File, "original");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("Primul");
+    push("", "");
+    
+    
+    //----------------
+    // LOCAL 2
+    //----------------
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
+    assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
+    File local2File = new File(SECOND_LOCAL_TEST_REPOSITORY, "test.txt");
+    assertEquals("original", getFileContent(local2File));
+    
+    writeToFile(local2File, "changed in local 2");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("Al doilea");
+    push("", "");
+
+    //----------------
+    // LOCAL 1
+    //----------------
+    
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+    writeToFile(local1File, "changed in local 1");
+    
+    final StringBuilder pullWithConflictsSB = new StringBuilder();
+    final String[] pullFailedMessage = new String[1];
+    GitController pc = new GitController(gitAccess) {
+      @Override
+      protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
+        pullFailedMessage[0] = message;
+      };
+      @Override
+      protected void showPullSuccessfulWithConflicts(PullResponse response) {
+        pullWithConflictsSB.append(response);
+      }
+    };
+    
+    final StringBuilder b = new StringBuilder();
+    TestUtil.collectPushPullEvents(pc, b);
+    
+    // Get conflict
+    assertEquals("changed in local 1", getFileContent(local1File));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("Another");
+    pc.pull(PullConfig.createSimplePullMergeConfig(), Optional.empty()).get();
+    assertNull(pullFailedMessage[0]);
+    assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
+    
+    ObjectId mine = RevCommitUtil.findLastLocalCommitForFileFromLog(gitAccess.getGit(), "test.txt");
+    RevCommit myCommit = RevCommitUtil.getCommit(mine.getName());
+    assertNotNull(myCommit);
+    assertEquals("Another", myCommit.getShortMessage());
+    
+    ObjectId theirs = RevCommitUtil.getTheirCommitFromMergeConflict(gitAccess.getRepository());
+    RevCommit theirCommit = RevCommitUtil.getCommit(theirs.getName());
+    assertNotNull(theirCommit);
+    assertEquals("Al doilea", theirCommit.getShortMessage());
   }
 
   /**
