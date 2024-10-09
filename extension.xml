@@ -33,6 +33,8 @@
               a warning message is presented.</li>
             <li>When switching branches, merging branches, or restarting a merge, the progress of the operation is now shown
               when it takes more than two seconds to complete.</li>
+            <li>When comparing two revisions or opening the compare editor to resolve merge or rebase conflicts,
+              the comparison tool now provides more detailed information about the commits involved.</li>
             <li>When the "index.lock" file exists in the local repository, the operations that cannot be performed
               because of it now show error messages containing explanations and instructions.</li>
             <li>The JGit component was updated to version 7.0.0.</li>
