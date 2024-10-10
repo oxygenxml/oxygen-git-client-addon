@@ -72,12 +72,24 @@ public class DiffPresenterTest extends GitTestBase {
       Mockito.when(mock.openDiffFilesApplication((URL)Mockito.any(), (URL) Mockito.any())).thenAnswer(new Answer<Object>() {
         @Override
         public Object answer(InvocationOnMock invocation) throws Throwable {
-
+          
           leftDiff = (URL) invocation.getArguments()[0];
           rightDiff = (URL) invocation.getArguments()[1];
 
           return frame;
         }
+      });
+      
+      Mockito.when(mock.openDiffFilesApplication(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenAnswer(new Answer<Object>() {
+          @Override
+          public Object answer(InvocationOnMock invocation) throws Throwable {
+            
+            leftDiff = (URL) invocation.getArguments()[1];
+            rightDiff = (URL) invocation.getArguments()[3];
+  
+            return frame;
+          }
       });
       
       ProjectController projectManager = Mockito.mock(ProjectController.class);
