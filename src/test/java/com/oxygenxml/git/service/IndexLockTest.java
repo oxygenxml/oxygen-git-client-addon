@@ -93,6 +93,8 @@ public class IndexLockTest extends GitTestBase {
     gitAccess.revertCommit("");
     gitAccess.squashAndMergeBranch("", "", Optional.empty());
     
+    waitForScheduler();
+    
     assertEquals(17, errorMessages.size());
     assertEquals(17, errorMessages.stream().filter(msg -> msg.equals("Lock_failed_explanation")).count());
     

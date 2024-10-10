@@ -55,6 +55,16 @@ public class SourceFilesIteratorTest extends JFCTestCase {
    */
   private static final ImmutableSet<String> J_OPTION_PANE_EXCEPTIONS =
       ImmutableSet.of("HistoryViewContextualMenuPresenter.java");
+  
+  /**
+   * JOptionPane exceptions.
+   */
+  private static final ImmutableSet<String> NON_API_CLASSES_EXCEPTIONS =
+      ImmutableSet.of(
+          "ro.sync.exml.workspace.api.results.ResultsManager.ResultType",
+          "ro.sync.net.protocol.http.HttpExceptionWithDetails",
+          "ro.sync.ui.theme.SAThemeColorProvider",
+          "ro.sync.basic.xml.BasicXmlUtil");
 
   
   /**
@@ -100,9 +110,7 @@ public class SourceFilesIteratorTest extends JFCTestCase {
     ClassLoader classLoader = SourceFilesIteratorTest.class.getClassLoader();
     for (String importedClass : importedOxyClasses) {
       String importedClassQName = importedClass.substring(0, importedClass.indexOf(DELIMITER));
-      if("ro.sync.exml.workspace.api.results.ResultsManager.ResultType".equals(importedClassQName)
-          || "ro.sync.net.protocol.http.HttpExceptionWithDetails".equals(importedClassQName)
-          || "ro.sync.ui.theme.SAThemeColorProvider".equals(importedClassQName)) {
+      if(NON_API_CLASSES_EXCEPTIONS.contains(importedClassQName)) {
         continue;
       }
       Class<?> clazz = classLoader.loadClass(importedClassQName);

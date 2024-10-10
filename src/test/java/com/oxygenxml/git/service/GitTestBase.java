@@ -458,6 +458,18 @@ public abstract class GitTestBase extends JFCTestCase { // NOSONAR
       }
     }).when(pluginWSMock).openDiffFilesApplication(Mockito.any(), Mockito.any());
     
+    Mockito.doAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Object[] arguments = invocation.getArguments();
+        urls2compare.add((URL) arguments[1]);
+        urls2compare.add((URL) arguments[3]);
+        return null;
+      }
+    }).when(pluginWSMock).openDiffFilesApplication(Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.any());
+    
+    
+    
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
