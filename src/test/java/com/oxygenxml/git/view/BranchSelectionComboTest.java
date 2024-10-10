@@ -134,6 +134,7 @@ public class BranchSelectionComboTest extends GitTestBase {
       JButton yesButton = TestUtil.findButton(switchBranchDialog, translator.getTranslation(Tags.MOVE_CHANGES));
       SwingUtilities.invokeLater(() -> yesButton.doClick());
       flushAWT();
+      flushAWT();
 
       String currentBranchAfterSwitchFailed = (String) branchesCombo.getSelectedItem();
       assertEquals("main", currentBranchAfterSwitchFailed);
