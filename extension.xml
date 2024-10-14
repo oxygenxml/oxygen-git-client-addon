@@ -24,7 +24,8 @@
         <div>
           <h3>What's new in version 5.4.0</h3>
           <ol>
-            <li>Added the possibility to sign commits using GPG keys.</li>
+            <li>Added the ability to sign commits using GPG keys.</li>
+            <li>Added the ability to pull changes from a remote branch other than the one being tracked.</li>
             <li>If there are unpulled changes detected when creating a new branch, a
               confirmation dialog box is displayed where you can choose whether or not to pull the
               changes before processing the branch creation.</li>
