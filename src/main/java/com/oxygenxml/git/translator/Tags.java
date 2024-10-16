@@ -2097,8 +2097,18 @@ public class Tags {
   public static final String MERGE_LOWERCASE = "Merge_Lowercase";
   
   /**
-   * The message when the remote branches cannot br obtained because repository has no remote or branches.
+   * The message when the remote branches cannot be obtained because repository has no remote or branches.
    */
   public static final String LOAD_REMOTE_BRANCHES_FAILED_MESSAGE = "Load_Remote_Branches_Failed_Message";
+
+  /**
+   * Tooltip shown on the button that creates a custom commit message using AI Positron.
+   */
+  public static final String AI_COMMIT_MESSAGE_TOOLTIP = "AI_Commit_Message_ToolTip";
+  
+  /**
+   * Name shown on the button that creates a custom commit message using AI Positron.
+   */
+  public static final String AI_COMMIT_MESSAGE_NAME = "AI_Commit_Message_Name";
 }
 
