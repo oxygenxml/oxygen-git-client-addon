@@ -546,7 +546,7 @@ public class CommitAndStatusPanel extends JPanel {
     JButton createAICommitButton = null;
     if (System.getProperty("oxygen.ai.positron.enterprise") != null
         || System.getProperty("oxygen.ai.positron.subscription") != null) {
-      abstractAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP),
+      abstractAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME),
           Icons.getIcon(Icons.TAG)) {
 
         /**
