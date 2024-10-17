@@ -124,6 +124,11 @@ public class CommitAndStatusPanel extends JPanel {
   private final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
   
   /**
+   * Executor to create commit message on separate thread.
+   */
+  private static final ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
+  
+  /**
    * Commit action.
    */
   private final class CommitAction extends AbstractAction {
@@ -547,10 +552,7 @@ public class CommitAndStatusPanel extends JPanel {
              */
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Executor to create commit message on separate thread.
-         */
-        private final ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
+        
         
         @Override
         public void actionPerformed(ActionEvent event) {
