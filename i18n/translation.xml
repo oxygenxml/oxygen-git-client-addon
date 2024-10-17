@@ -10,21 +10,21 @@
 	</languageList>
 	<key value="AI_Commit_Message_Name">
 		<comment>The message displayed on the create commit message using AI button</comment>
-		<val lang="en_US">Create a commit message using AI Positron.</val>
-		<val lang="de_DE">Create a commit message using AI Positron.</val>
-		<val lang="fr_FR">Create a commit message using AI Positron.</val>
-		<val lang="ja_JP">Create a commit message using AI Positron.</val>
-		<val lang="nl_NL">Create a commit message using AI Positron.</val>
-		<val lang="zh_CN">Create a commit message using AI Positron.</val>
+		<val lang="en_US">Create a commit message using AI Positron Assistant.</val>
+		<val lang="de_DE">Create a commit message using AI Positron Assistant.</val>
+		<val lang="fr_FR">Create a commit message using AI Positron Assistant.</val>
+		<val lang="ja_JP">Create a commit message using AI Positron Assistant.</val>
+		<val lang="nl_NL">Create a commit message using AI Positron Assistant.</val>
+		<val lang="zh_CN">Create a commit message using AI Positron Assistant.</val>
 	</key>
 	<key value="AI_Commit_Message_ToolTip">
 		<comment>The message displayed as a tooltip on the create commit message using AI button</comment>
-		<val lang="en_US">Creates a commit message using AI Positron. To use this option the AI-Positron Plugin must be installed and have an active subscription for this software.</val>
-		<val lang="de_DE">Creates a commit message using AI Positron. To use this option the AI-Positron Plugin must be installed and have an active subscription for this software.</val>
-		<val lang="fr_FR">Creates a commit message using AI Positron. To use this option the AI-Positron Plugin must be installed and have an active subscription for this software.</val>
-		<val lang="ja_JP">Creates a commit message using AI Positron. To use this option the AI-Positron Plugin must be installed and have an active subscription for this software.</val>
-		<val lang="nl_NL">Creates a commit message using AI Positron. To use this option the AI-Positron Plugin must be installed and have an active subscription for this software.</val>
-		<val lang="zh_CN">Creates a commit message using AI Positron. To use this option the AI-Positron Plugin must be installed and have an active subscription for this software.</val>
+		<val lang="en_US">Creates a commit message using AI Positron Assistant. To use this option the AI Positron Assistant add-on must be installed.</val>
+		<val lang="de_DE">Creates a commit message using AI Positron Assistant. To use this option the AI Positron Assistant add-on must be installed.</val>
+		<val lang="fr_FR">Creates a commit message using AI Positron Assistant. To use this option the AI Positron Assistant add-on must be installed.</val>
+		<val lang="ja_JP">Creates a commit message using AI Positron Assistant. To use this option the AI Positron Assistant add-on must be installed.</val>
+		<val lang="nl_NL">Creates a commit message using AI Positron Assistant. To use this option the AI Positron Assistant add-on must be installed.</val>
+		<val lang="zh_CN">Creates a commit message using AI Positron Assistant. To use this option the AI Positron Assistant add-on must be installed.</val>
 	</key>
 	<key value="Load_Remote_Branches_Failed_Message">
 		<comment>The message when the remote branches cannot br obtained because repository has no remote or branches.</comment>
