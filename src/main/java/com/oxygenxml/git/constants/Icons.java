@@ -137,6 +137,11 @@ public class Icons {
    */
   public static final String GIT_STAGING_MORE = "/images/GitStagingMore16.png";
   
+  /**
+   * Positron icon.
+   */
+  public static final String POSITRON = "/images/DockableFramePositron16.png";
+  
   //=============== These icons are loaded from Oxygen =================
   /**
    * Tag icon.

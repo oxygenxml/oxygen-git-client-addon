@@ -500,7 +500,10 @@ public class CommitAndStatusPanel extends JPanel {
 		commitToolbar.setOpaque(false);
 		commitToolbar.setFloatable(false);
 		
-		addCreateCommitMessageWithAIPositron(commitToolbar);
+    if (System.getProperty("oxygen.ai.positron.enterprise") != null
+        || System.getProperty("oxygen.ai.positron.subscription") != null) {
+      addCreateCommitMessageWithAIPositron(commitToolbar);
+    }
 		addPreviouslyMessagesComboBox(commitToolbar);
 		addAutoPushOnCommitToggle(commitToolbar);
 		addAmendLastCommitToggle(commitToolbar);
@@ -526,42 +529,22 @@ public class CommitAndStatusPanel extends JPanel {
    * @param toolbar The toolbar to add to.
    */
   private void addCreateCommitMessageWithAIPositron(JToolBar toolbar) {
-    AbstractAction abstractAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP),
-        Icons.getIcon(Icons.TAG)) {
-
-      /**
-           * 
-           */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        // this button is not available by default.
-        // this button has an action associated only if the Positron Plugin is enabled
-      }
-    };
-    
-    JButton createAICommitButton = null;
-    if (System.getProperty("oxygen.ai.positron.enterprise") != null
-        || System.getProperty("oxygen.ai.positron.subscription") != null) {
-      abstractAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME),
-          Icons.getIcon(Icons.TAG)) {
+      AbstractAction abstractAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME),
+          Icons.getIcon(Icons.POSITRON)) {
 
         /**
              * 
              */
         private static final long serialVersionUID = 1L;
 
-        
-        
         @Override
         public void actionPerformed(ActionEvent event) {
-          
+
           Callable<Optional<String>> createCommitTask = () -> CommitAIWizard.performAICommitCreation(gitAccess);
-          
-          //call the transform on a separate thread 
+
+          // call the transform on a separate thread
           Future<Optional<String>> futureResult = threadExecutor.submit(createCommitTask);
-          
+
           try {
             SwingUtilities
                 .invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
@@ -574,20 +557,14 @@ public class CommitAndStatusPanel extends JPanel {
           } catch (ExecutionException | InterruptedException e) {
             logger.error("Error in executing AI commit creation task", e);
           }
-          
+
         }
 
-      
       };
-      createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(abstractAction, false);
-    }
-    else {
-      createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(abstractAction, false);
-      createAICommitButton.setEnabled(false);      
-    }
-    createAICommitButton.setToolTipText(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP));
-    toolbar.add(createAICommitButton);
-
+      JButton createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(abstractAction, false);
+      createAICommitButton.setToolTipText(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP));
+      toolbar.add(createAICommitButton);
+    
   }
   /**
    * Add the toggle that allows amending the last commit.
