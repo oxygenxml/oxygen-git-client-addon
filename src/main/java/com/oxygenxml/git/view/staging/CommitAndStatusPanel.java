@@ -24,11 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -113,20 +108,10 @@ public class CommitAndStatusPanel extends JPanel {
   private static final int PREV_MESS_MAX_WIDTH = 100;
   
   /**
-   * Logger.
-   */
-  private static final Logger logger = LoggerFactory.getLogger(CommitAndStatusPanel.class);
-  
-  
-  /**
    * The plugin workspace.
    */
   private final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
   
-  /**
-   * Executor to create commit message on separate thread.
-   */
-  private static final ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
   
   /**
    * Commit action.
@@ -529,7 +514,7 @@ public class CommitAndStatusPanel extends JPanel {
    * @param toolbar The toolbar to add to.
    */
   private void addCreateCommitMessageWithAIPositron(JToolBar toolbar) {
-      AbstractAction abstractAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME),
+      AbstractAction createCommitMessageAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME),
           Icons.getIcon(Icons.POSITRON)) {
 
         /**
@@ -539,29 +524,14 @@ public class CommitAndStatusPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-
-          Callable<Optional<String>> createCommitTask = () -> CommitAIWizard.performAICommitCreation(gitAccess);
-
-          // call the transform on a separate thread
-          Future<Optional<String>> futureResult = threadExecutor.submit(createCommitTask);
-
-          try {
-            SwingUtilities
-                .invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
-
-            Optional<String> result = futureResult.get();
-            commitMessageArea.setText(result.orElse("Error"));
-
-            SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getDefaultCursor()));
-
-          } catch (ExecutionException | InterruptedException e) {
-            logger.error("Error in executing AI commit creation task", e);
-          }
+          SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
+          SwingUtilities.invokeLater(() -> commitMessageArea.setText(CommitAIWizard.createCommitMessage(gitAccess)));
+          SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getDefaultCursor()));
 
         }
 
       };
-      JButton createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(abstractAction, false);
+      JButton createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(createCommitMessageAction, false);
       createAICommitButton.setToolTipText(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP));
       toolbar.add(createAICommitButton);
     

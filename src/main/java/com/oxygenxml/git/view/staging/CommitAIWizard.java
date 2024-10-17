@@ -6,6 +6,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -31,6 +36,26 @@ public class CommitAIWizard {
   private static final Logger logger = LoggerFactory.getLogger(CommitAIWizard.class);
   
   /**
+   * The root element ending used by the transformer.
+   */
+  private static final String ROOT_ELEMENT = "<root/>";
+
+  /**
+   * The user prompt parameter.
+   */
+  private static final String USER_PROMPT = "user";
+
+  /**
+   * The system prompt parameter.
+   */
+  private static final String SYSTEM_PROMPT = "system";
+
+  /**
+   * The transform function used by the AI to access Positron functionalities.
+   */
+  private static final String AI_TRANSFORM_CONTENT_FUNCTION = "com.oxygenxml.positron.functions.AITransformContentFunction";
+  
+  /**
    * The maximum context info for LLMs.
    */
   private static final int MAXIMUM_CONTEXT_WINDOW = 200000;
@@ -53,6 +78,12 @@ public class CommitAIWizard {
    */
   private static final String GENERATE_COMMIT_MESSAGE = "# Context: #\n\n You are an AI specialized in software development workflows and version control systems. Your task is to analyze changes and draft precise and meaningful commit messages.\n\n # Observation: #\n\n You have access to the following information:\n- The code diff, which highlights changes between the current state and the previous commit.\n- Standard practices for creating commit messages, including format, clarity, and purpose.\n\n# Structure:#\n\n Commit messages typically include:\n- A brief summary of the changes (50 characters or less, if possible).\n- A more detailed explanation or rationale behind the changes.\n- Any relevant issue or task identifiers (e.g., \"Fixes #123\").\n- Separate title and body by a blank line.\n\n# Task: #\n\n Analyze the given code diff and generate a commit message that:\n- Clearly summarizes the changes made.\n- Follows conventional commit format.\n- Is informative yet concise.\n- Conforms to established best practices in commit messaging.\n\n#Action:#\n\nDraft the commit message suitable for use in a professional software development environment.\n\n#Result:#\nProvide the commit message in the following format:\n\n<Short Title>\n<Longer Description>\n\nDO NOT ADD markdown markers like ``` to wrap the output, only return it as is.\n\nIf no changes were reported, then return the message \"No changes are currently staged\".\n\nExample Input:\n```\n--- a/sample.txt\n+++ b/sample.txt\n@@ -1,3 +1,3 @@\n-Old line of text\n+New line of modified text\n```\n\n";
 
+  
+  /**
+   * Executor to create commit message on separate thread.
+   */
+  private static final ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
+  
   /**
    * Private constructor
    */
@@ -67,8 +98,8 @@ public class CommitAIWizard {
    * @return The commit message.
    */
   @SuppressWarnings("deprecation")
-  public static Optional<String> performAICommitCreation(GitAccess gitAccess) {
-    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); StringWriter wr = new StringWriter()){
+  private static Optional<String> performAICommitCreation(GitAccess gitAccess) {
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); StringWriter result = new StringWriter()){
       gitAccess.getGit().diff().setCached(true).setOutputStream(outputStream).call();
       String diffs = outputStream.toString(StandardCharsets.UTF_8);
       diffs = diffs.trim();
@@ -83,14 +114,14 @@ public class CommitAIWizard {
       ExtensionFunctionDefinition def;
 
       def = (ExtensionFunctionDefinition) Class
-          .forName("com.oxygenxml.positron.functions.AITransformContentFunction").newInstance();
+          .forName(AI_TRANSFORM_CONTENT_FUNCTION).newInstance();
 
       Transformer transformer = PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess()
           .createSaxon9HEXSLTTransformerWithExtensions(ss, new ExtensionFunctionDefinition[] { def });
-      transformer.setParameter("system", GENERATE_COMMIT_MESSAGE);
-      transformer.setParameter("user", diffs);
-      transformer.transform(new StreamSource(new StringReader("<root/>")), new StreamResult(wr));
-      return Optional.of(wr.toString());
+      transformer.setParameter(SYSTEM_PROMPT, GENERATE_COMMIT_MESSAGE);
+      transformer.setParameter(USER_PROMPT, diffs);
+      transformer.transform(new StreamSource(new StringReader(ROOT_ELEMENT)), new StreamResult(result));
+      return Optional.of(result.toString());
 
     } catch (TransformerException | GitAPIException ex) {
       logger.error("Could not execute diff", ex);
@@ -102,5 +133,26 @@ public class CommitAIWizard {
     return Optional.empty();
     
   
+  }
+  
+  /**
+   * Creates a commit message from the differences in the staged changes. This
+   * will be accessed on a separate thread.
+   * 
+   * @param gitAccess the git access to the repo.
+   * @return The message to display to the user.
+   */
+  public static String createCommitMessage(GitAccess gitAccess) {
+    Callable<Optional<String>> createCommitTask = () -> performAICommitCreation(gitAccess);
+    // call the transform on a separate thread
+    Future<Optional<String>> futureResult = threadExecutor.submit(createCommitTask);
+    try {
+      return futureResult.get().orElse("Error");
+    } catch (InterruptedException | ExecutionException e) {
+      logger.error("Thread exception", e);
+    } finally {
+      futureResult.cancel(true);
+    }
+    return "Threading error";
   }
 }
