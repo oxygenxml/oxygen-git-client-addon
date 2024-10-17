@@ -31,6 +31,11 @@ public class CommitAIWizard {
   private static final Logger logger = LoggerFactory.getLogger(CommitAIWizard.class);
   
   /**
+   * The maximum context info for LLMs.
+   */
+  private static final int MAXIMUM_CONTEXT_WINDOW = 200000;
+  
+  /**
    * The XSLT string used to call the AI on.
    */
   private static final String AI_XSLT = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n"
@@ -63,10 +68,14 @@ public class CommitAIWizard {
    */
   @SuppressWarnings("deprecation")
   public static Optional<String> performAICommitCreation(GitAccess gitAccess) {
-    try {
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); StringWriter wr = new StringWriter()){
       gitAccess.getGit().diff().setCached(true).setOutputStream(outputStream).call();
       String diffs = outputStream.toString(StandardCharsets.UTF_8);
+      diffs = diffs.trim();
+
+      if (diffs.length() > MAXIMUM_CONTEXT_WINDOW) {
+        diffs = diffs.substring(0, MAXIMUM_CONTEXT_WINDOW);
+      }
 
       StreamSource ss = new StreamSource(
           new StringReader(AI_XSLT));
@@ -80,10 +89,7 @@ public class CommitAIWizard {
           .createSaxon9HEXSLTTransformerWithExtensions(ss, new ExtensionFunctionDefinition[] { def });
       transformer.setParameter("system", GENERATE_COMMIT_MESSAGE);
       transformer.setParameter("user", diffs);
-      StringWriter wr = new StringWriter();
       transformer.transform(new StreamSource(new StringReader("<root/>")), new StreamResult(wr));
-      wr.close();
-
       return Optional.of(wr.toString());
 
     } catch (TransformerException | GitAPIException ex) {
