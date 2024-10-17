@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.staging;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -12,14 +13,10 @@ import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -45,10 +47,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -89,7 +87,6 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.util.UIUtil;
 
-import net.sf.saxon.lib.ExtensionFunctionDefinition;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -114,6 +111,11 @@ public class CommitAndStatusPanel extends JPanel {
    * Max number of characters for the previous messages. 
    */
   private static final int PREV_MESS_MAX_WIDTH = 100;
+  
+  /**
+   * Logger.
+   */
+  private static final Logger logger = LoggerFactory.getLogger(CommitAndStatusPanel.class);
   
   
   /**
@@ -545,17 +547,35 @@ public class CommitAndStatusPanel extends JPanel {
              */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * Executor to create commit message on separate thread.
+         */
+        private final ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
+        
         @Override
         public void actionPerformed(ActionEvent event) {
-          SwingUtilities.invokeLater(this::performAICommitCreation);
+          
+          Callable<Optional<String>> createCommitTask = () -> CommitAIWizard.performAICommitCreation(gitAccess);
+          
+          //call the transform on a separate thread 
+          Future<Optional<String>> futureResult = threadExecutor.submit(createCommitTask);
+          
+          try {
+            SwingUtilities
+                .invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
+
+            Optional<String> result = futureResult.get();
+            commitMessageArea.setText(result.orElse("Error"));
+
+            SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getDefaultCursor()));
+
+          } catch (ExecutionException | InterruptedException e) {
+            logger.error("Error in executing AI commit creation task", e);
+          }
+          
         }
 
-        /**
-         * Creates a commit message using AI.
-         */
-        private void performAICommitCreation() {
-          commitMessageArea.setText(CommitAIWizard.performAICommitCreation(gitAccess).orElse(""));
-        }
+      
       };
       createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(abstractAction, false);
     }
