@@ -145,17 +145,15 @@ public class CommitAIWizard {
       return Optional.of(result.toString());
 
     } catch (TransformerException ex) {
-      logger.error("Could not execute diff", ex);
-      DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_FATAL,
-          translator.getTranslation(Tags.POSITRON_NOT_CONFIGURED));
-      PluginWorkspaceProvider.getPluginWorkspace().getResultsManager().addResults("AI Positron Assistant",
-          Arrays.asList(error), ResultType.PROBLEM, false);
+      logger.error("Transformer error", ex);
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.POSITRON_NOT_CONFIGURED));
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
       logger.error("Could not find the AI class to generate message", ex);
     } catch (IOException ex) {
       logger.error("Could not close output stream of the AI generator", ex);
     } catch (GitAPIException ex) {
-      DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_FATAL,
+      logger.error("Could not execute diff", ex);
+      DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR,
           translator.getTranslation(Tags.CANNOT_PERFORM_DIFF));
       PluginWorkspaceProvider.getPluginWorkspace().getResultsManager().addResults("AI Positron Assistant",
           Arrays.asList(error), ResultType.PROBLEM, false);
@@ -180,9 +178,7 @@ public class CommitAIWizard {
       return futureResult.get().orElse("Error");
     } catch (InterruptedException | ExecutionException e) {
       logger.error("Thread exception", e);
-    } finally {
-      futureResult.cancel(true);
-    }
+    } 
     return "Threading error";
   }
   
