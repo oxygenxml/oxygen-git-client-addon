@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -24,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -88,7 +86,6 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
@@ -515,46 +512,7 @@ public class CommitAndStatusPanel extends JPanel {
    * @param toolbar The toolbar to add to.
    */
   private void addCreateCommitMessageWithAIPositron(JToolBar toolbar) {
-      AbstractAction createCommitMessageAction = new AbstractAction(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME),
-          Icons.getIcon(Icons.POSITRON)) {
-
-        /**
-             * 
-             */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public void actionPerformed(ActionEvent event) {
-          SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
-
-          SwingWorker<String, Void> aiCommitWorker = new SwingWorker<>() {
-            @Override
-            protected String doInBackground() throws Exception {
-              return CommitAIWizard.createCommitMessage(gitAccess);
-            }
-
-            @Override
-            protected void done() {
-              try {
-                commitMessageArea.append((String) get());
-              } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Error occurred while fetching commit message.", e);
-                commitMessageArea.setText("Error");
-              } finally {
-                commitMessageArea.setCursor(Cursor.getDefaultCursor());
-              }
-
-            }
-          };
-
-          aiCommitWorker.execute();
-        }
-
-      };
-      JButton createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(createCommitMessageAction, false);
-      createAICommitButton.setToolTipText(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP));
-      toolbar.add(createAICommitButton);
-    
+      CommitAIWizard.createCommitAction(gitAccess, toolbar, commitMessageArea);
   }
   /**
    * Add the toggle that allows amending the last commit.

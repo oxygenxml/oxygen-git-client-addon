@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.staging;
 
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -13,6 +15,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JTextArea;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
@@ -22,7 +30,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.icl.saxon.functions.Translate;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -31,6 +39,7 @@ import net.sf.saxon.lib.ExtensionFunctionDefinition;
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
  * A Wizard that creates commit messages using AI Positron.
@@ -40,6 +49,12 @@ public class CommitAIWizard {
    * Logger.
    */
   private static final Logger logger = LoggerFactory.getLogger(CommitAIWizard.class);
+  
+  /**
+   * The translator object.
+   */
+  private static Translator translator = Translator.getInstance();
+
   
   /**
    * The root element ending used by the transformer.
@@ -132,7 +147,7 @@ public class CommitAIWizard {
     } catch (TransformerException ex) {
       logger.error("Could not execute diff", ex);
       DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_FATAL,
-          Translator.getInstance().getTranslation(Tags.POSITRON_NOT_CONFIGURED));
+          translator.getTranslation(Tags.POSITRON_NOT_CONFIGURED));
       PluginWorkspaceProvider.getPluginWorkspace().getResultsManager().addResults("AI Positron Assistant",
           Arrays.asList(error), ResultType.PROBLEM, false);
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
@@ -141,7 +156,7 @@ public class CommitAIWizard {
       logger.error("Could not close output stream of the AI generator", ex);
     } catch (GitAPIException ex) {
       DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_FATAL,
-          Translator.getInstance().getTranslation(Tags.CANNOT_PERFORM_DIFF));
+          translator.getTranslation(Tags.CANNOT_PERFORM_DIFF));
       PluginWorkspaceProvider.getPluginWorkspace().getResultsManager().addResults("AI Positron Assistant",
           Arrays.asList(error), ResultType.PROBLEM, false);
     }
@@ -157,7 +172,7 @@ public class CommitAIWizard {
    * @param gitAccess the git access to the repo.
    * @return The message to display to the user.
    */
-  public static String createCommitMessage(GitAccess gitAccess) {
+  private static String createCommitMessage(GitAccess gitAccess) {
     Callable<Optional<String>> createCommitTask = () -> performAICommitCreation(gitAccess);
     // call the transform on a separate thread
     Future<Optional<String>> futureResult = threadExecutor.submit(createCommitTask);
@@ -169,5 +184,54 @@ public class CommitAIWizard {
       futureResult.cancel(true);
     }
     return "Threading error";
+  }
+  
+  /**
+   * Creates the AI Commit action and adds it to the toolbar
+   * 
+   * @param gitAccess         the git access to the repo.
+   * @param toolbar           the toolbar to add to.
+   * @param commitMessageArea the message area to display the commit.
+   */
+  public static void createCommitAction(GitAccess gitAccess, JToolBar toolbar, JTextArea commitMessageArea) {
+    AbstractAction createCommitMessageAction = new AbstractAction(
+        translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME), Icons.getIcon(Icons.POSITRON)) {
+
+      /**
+           * 
+           */
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(ActionEvent event) {
+        SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
+
+        SwingWorker<String, Void> aiCommitWorker = new SwingWorker<>() {
+          @Override
+          protected String doInBackground() throws Exception {
+            return CommitAIWizard.createCommitMessage(gitAccess);
+          }
+
+          @Override
+          protected void done() {
+            try {
+              commitMessageArea.append((String) get());
+            } catch (InterruptedException | ExecutionException e) {
+              logger.error("Error occurred while fetching commit message.", e);
+              commitMessageArea.setText("Error");
+            } finally {
+              commitMessageArea.setCursor(Cursor.getDefaultCursor());
+            }
+
+          }
+        };
+
+        aiCommitWorker.execute();
+      }
+
+    };
+    JButton createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(createCommitMessageAction, false);
+    createAICommitButton.setToolTipText(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP));
+    toolbar.add(createAICommitButton);
   }
 }
