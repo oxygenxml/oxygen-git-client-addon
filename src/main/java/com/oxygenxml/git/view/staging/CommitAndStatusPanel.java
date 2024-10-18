@@ -536,7 +536,7 @@ public class CommitAndStatusPanel extends JPanel {
           @Override
           protected void done() {
             try {
-              commitMessageArea.append((String) get());
+              commitMessageArea.append(get());
             } catch (InterruptedException | ExecutionException e) {
               LOGGER.error("Error occurred while fetching commit message.", e);
               commitMessageArea.setText("Error");
