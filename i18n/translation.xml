@@ -8,6 +8,24 @@
 		<language description="Dutch" lang="nl_NL" localeDescription="Nederlands"/>
 		<language description="Chinese" lang="zh_CN" localeDescription="中文"/>
 	</languageList>
+	<key value="Cannot_Perform_Diff">
+		<comment>The error displayed if the git actions cannot perform</comment>
+		<val lang="en_US">Can't diff the staged files.</val>
+		<val lang="de_DE">Can't diff the staged files.</val>
+		<val lang="fr_FR">Can't diff the staged files.</val>
+		<val lang="ja_JP">Can't diff the staged files.</val>
+		<val lang="nl_NL">Can't diff the staged files.</val>
+		<val lang="zh_CN">Can't diff the staged files.</val>
+	</key>
+	<key value="Positron_Not_Configured">
+		<comment>The error displayed if the AI Positron was not configured properly.</comment>
+		<val lang="en_US">The AI Positron Assistant add-on was not configured properly.</val>
+		<val lang="de_DE">The AI Positron Assistant add-on was not configured properly.</val>
+		<val lang="fr_FR">The AI Positron Assistant add-on was not configured properly.</val>
+		<val lang="ja_JP">The AI Positron Assistant add-on was not configured properly.</val>
+		<val lang="nl_NL">The AI Positron Assistant add-on was not configured properly.</val>
+		<val lang="zh_CN">The AI Positron Assistant add-on was not configured properly.</val>
+	</key>
 	<key value="AI_Commit_Message_Name">
 		<comment>The message displayed on the create commit message using AI button</comment>
 		<val lang="en_US">Create a commit message using AI Positron Assistant.</val>

@@ -2110,5 +2110,13 @@ public class Tags {
    * Name shown on the button that creates a custom commit message using AI Positron.
    */
   public static final String AI_COMMIT_MESSAGE_NAME = "AI_Commit_Message_Name";
+  /**
+   * Error shown if the transform fails.
+   */
+  public static final String POSITRON_NOT_CONFIGURED = "Positron_Not_Configured";
+  /**
+   * Error shown if the diff operation throws an error.
+   */
+  public static final String CANNOT_PERFORM_DIFF = "Cannot_Perform_Diff";
 }
 

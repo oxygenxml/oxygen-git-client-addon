@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -21,10 +22,15 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.icl.saxon.functions.Translate;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 
 import net.sf.saxon.lib.ExtensionFunctionDefinition;
+import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 
 /**
  * A Wizard that creates commit messages using AI Positron.
@@ -123,13 +129,22 @@ public class CommitAIWizard {
       transformer.transform(new StreamSource(new StringReader(ROOT_ELEMENT)), new StreamResult(result));
       return Optional.of(result.toString());
 
-    } catch (TransformerException | GitAPIException ex) {
+    } catch (TransformerException ex) {
       logger.error("Could not execute diff", ex);
+      DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_FATAL,
+          Translator.getInstance().getTranslation(Tags.POSITRON_NOT_CONFIGURED));
+      PluginWorkspaceProvider.getPluginWorkspace().getResultsManager().addResults("AI Positron Assistant",
+          Arrays.asList(error), ResultType.PROBLEM, false);
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
       logger.error("Could not find the AI class to generate message", ex);
     } catch (IOException ex) {
       logger.error("Could not close output stream of the AI generator", ex);
-    } 
+    } catch (GitAPIException ex) {
+      DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_FATAL,
+          Translator.getInstance().getTranslation(Tags.CANNOT_PERFORM_DIFF));
+      PluginWorkspaceProvider.getPluginWorkspace().getResultsManager().addResults("AI Positron Assistant",
+          Arrays.asList(error), ResultType.PROBLEM, false);
+    }
     return Optional.empty();
     
   
