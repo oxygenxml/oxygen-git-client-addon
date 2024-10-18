@@ -170,7 +170,7 @@ public class CommitAIWizard {
    * @param gitAccess the git access to the repo.
    * @return The message to display to the user.
    */
-  private static String createCommitMessage(GitAccess gitAccess) {
+  public static String createCommitMessage(GitAccess gitAccess) {
     Callable<Optional<String>> createCommitTask = () -> performAICommitCreation(gitAccess);
     // call the transform on a separate thread
     Future<Optional<String>> futureResult = threadExecutor.submit(createCommitTask);
@@ -180,54 +180,5 @@ public class CommitAIWizard {
       logger.error("Thread exception", e);
     } 
     return "Threading error";
-  }
-  
-  /**
-   * Creates the AI Commit action and adds it to the toolbar
-   * 
-   * @param gitAccess         the git access to the repo.
-   * @param toolbar           the toolbar to add to.
-   * @param commitMessageArea the message area to display the commit.
-   */
-  public static void createCommitAction(GitAccess gitAccess, JToolBar toolbar, JTextArea commitMessageArea) {
-    AbstractAction createCommitMessageAction = new AbstractAction(
-        translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME), Icons.getIcon(Icons.POSITRON)) {
-
-      /**
-           * 
-           */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(ActionEvent event) {
-        SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
-
-        SwingWorker<String, Void> aiCommitWorker = new SwingWorker<>() {
-          @Override
-          protected String doInBackground() throws Exception {
-            return CommitAIWizard.createCommitMessage(gitAccess);
-          }
-
-          @Override
-          protected void done() {
-            try {
-              commitMessageArea.append((String) get());
-            } catch (InterruptedException | ExecutionException e) {
-              logger.error("Error occurred while fetching commit message.", e);
-              commitMessageArea.setText("Error");
-            } finally {
-              commitMessageArea.setCursor(Cursor.getDefaultCursor());
-            }
-
-          }
-        };
-
-        aiCommitWorker.execute();
-      }
-
-    };
-    JButton createAICommitButton = OxygenUIComponentsFactory.createToolbarButton(createCommitMessageAction, false);
-    createAICommitButton.setToolTipText(translator.getTranslation(Tags.AI_COMMIT_MESSAGE_TOOLTIP));
-    toolbar.add(createAICommitButton);
   }
 }
