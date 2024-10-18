@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -525,9 +526,28 @@ public class CommitAndStatusPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent event) {
           SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
-          SwingUtilities.invokeLater(() -> commitMessageArea.setText(CommitAIWizard.createCommitMessage(gitAccess)));
-          SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getDefaultCursor()));
 
+          SwingWorker<String, Void> aiCommitWorker = new SwingWorker<>() {
+            @Override
+            protected String doInBackground() throws Exception {
+              return CommitAIWizard.createCommitMessage(gitAccess);
+            }
+
+            @Override
+            protected void done() {
+              try {
+                commitMessageArea.append((String) get());
+              } catch (InterruptedException | ExecutionException e) {
+                LOGGER.error("Error occurred while fetching commit message.", e);
+                commitMessageArea.setText("Error");
+              } finally {
+                commitMessageArea.setCursor(Cursor.getDefaultCursor());
+              }
+
+            }
+          };
+
+          aiCommitWorker.execute();
         }
 
       };
