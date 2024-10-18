@@ -486,8 +486,7 @@ public class CommitAndStatusPanel extends JPanel {
 		commitToolbar.setOpaque(false);
 		commitToolbar.setFloatable(false);
 		
-    if (System.getProperty("oxygen.ai.positron.enterprise") != null
-        || System.getProperty("oxygen.ai.positron.subscription") != null) {
+    if (CommitAIWizard.isAIAddonPresent()) {
       addCreateCommitMessageWithAIPositron(commitToolbar);
     }
 		addPreviouslyMessagesComboBox(commitToolbar);
@@ -518,25 +517,23 @@ public class CommitAndStatusPanel extends JPanel {
     AbstractAction createCommitMessageAction = new AbstractAction(
         translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME), Icons.getIcon(Icons.POSITRON)) {
 
-      /**
-           * 
-           */
       private static final long serialVersionUID = 1L;
 
       @Override
       public void actionPerformed(ActionEvent event) {
-        SwingUtilities.invokeLater(() -> commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
+        commitMessageArea.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         SwingWorker<String, Void> aiCommitWorker = new SwingWorker<>() {
           @Override
           protected String doInBackground() throws Exception {
-            return CommitAIWizard.createCommitMessage(gitAccess);
+            return CommitAIWizard.performAICommitCreation(gitAccess).orElse("");
           }
 
           @Override
           protected void done() {
             try {
-              commitMessageArea.append(get());
+              int caretPosition = commitMessageArea.getCaretPosition();
+              commitMessageArea.insert(get(), caretPosition);
             } catch (InterruptedException | ExecutionException e) {
               LOGGER.error("Error occurred while fetching commit message.", e);
               commitMessageArea.setText("Error");

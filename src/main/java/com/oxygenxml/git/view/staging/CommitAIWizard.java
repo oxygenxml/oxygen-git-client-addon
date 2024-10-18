@@ -1,7 +1,5 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.Cursor;
-import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -15,12 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
@@ -30,7 +22,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -39,7 +30,6 @@ import net.sf.saxon.lib.ExtensionFunctionDefinition;
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
-import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
  * A Wizard that creates commit messages using AI Positron.
@@ -53,7 +43,7 @@ public class CommitAIWizard {
   /**
    * The translator object.
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
 
   
   /**
@@ -74,12 +64,12 @@ public class CommitAIWizard {
   /**
    * The transform function used by the AI to access Positron functionalities.
    */
-  private static final String AI_TRANSFORM_CONTENT_FUNCTION = "com.oxygenxml.positron.functions.AITransformContentFunction";
+  private static final String AI_TRANSFORM_CONTENT_FUNCTION_CLASS_NAME = "com.oxygenxml.positron.functions.AITransformContentFunction";
   
   /**
-   * The maximum context info for LLMs.
+   * The maximum context info for LLMs ~ 15k tokens.
    */
-  private static final int MAXIMUM_CONTEXT_WINDOW = 200000;
+  private static final int MAXIMUM_CONTEXT_WINDOW = 50000;
   
   /**
    * The XSLT string used to call the AI on.
@@ -119,7 +109,7 @@ public class CommitAIWizard {
    * @return The commit message.
    */
   @SuppressWarnings("deprecation")
-  private static Optional<String> performAICommitCreation(GitAccess gitAccess) {
+  public static Optional<String> performAICommitCreation(GitAccess gitAccess) {
     try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); StringWriter result = new StringWriter()){
       gitAccess.getGit().diff().setCached(true).setOutputStream(outputStream).call();
       String diffs = outputStream.toString(StandardCharsets.UTF_8);
@@ -135,7 +125,7 @@ public class CommitAIWizard {
       ExtensionFunctionDefinition def;
 
       def = (ExtensionFunctionDefinition) Class
-          .forName(AI_TRANSFORM_CONTENT_FUNCTION).newInstance();
+          .forName(AI_TRANSFORM_CONTENT_FUNCTION_CLASS_NAME).newInstance();
 
       Transformer transformer = PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess()
           .createSaxon9HEXSLTTransformerWithExtensions(ss, new ExtensionFunctionDefinition[] { def });
@@ -146,39 +136,25 @@ public class CommitAIWizard {
 
     } catch (TransformerException ex) {
       logger.error("Transformer error", ex);
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.POSITRON_NOT_CONFIGURED));
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.POSITRON_NOT_CONFIGURED));
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
       logger.error("Could not find the AI class to generate message", ex);
     } catch (IOException ex) {
       logger.error("Could not close output stream of the AI generator", ex);
     } catch (GitAPIException ex) {
       logger.error("Could not execute diff", ex);
-      DocumentPositionedInfo error = new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR,
-          translator.getTranslation(Tags.CANNOT_PERFORM_DIFF));
-      PluginWorkspaceProvider.getPluginWorkspace().getResultsManager().addResults("AI Positron Assistant",
-          Arrays.asList(error), ResultType.PROBLEM, false);
     }
     return Optional.empty();
     
   
   }
-  
+
   /**
-   * Creates a commit message from the differences in the staged changes. This
-   * will be accessed on a separate thread.
    * 
-   * @param gitAccess the git access to the repo.
-   * @return The message to display to the user.
+   * @return <b>true</b> if the AI Positron addon is installed, or <b>false</b>otherwise.
    */
-  public static String createCommitMessage(GitAccess gitAccess) {
-    Callable<Optional<String>> createCommitTask = () -> performAICommitCreation(gitAccess);
-    // call the transform on a separate thread
-    Future<Optional<String>> futureResult = threadExecutor.submit(createCommitTask);
-    try {
-      return futureResult.get().orElse("Error");
-    } catch (InterruptedException | ExecutionException e) {
-      logger.error("Thread exception", e);
-    } 
-    return "Threading error";
+  public static boolean isAIAddonPresent() {
+    return System.getProperty("oxygen.ai.positron.enterprise") != null
+        || System.getProperty("oxygen.ai.positron.subscription") != null;
   }
 }
