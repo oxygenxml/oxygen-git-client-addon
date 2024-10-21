@@ -5,13 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -27,9 +21,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
 import net.sf.saxon.lib.ExtensionFunctionDefinition;
-import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 
 /**
  * A Wizard that creates commit messages using AI Positron.
@@ -130,7 +122,18 @@ public class CommitAIWizard {
 
     } catch (TransformerException ex) {
       logger.error("Transformer error", ex);
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.POSITRON_NOT_CONFIGURED));
+      Throwable cause = ex.getCause();
+      if(cause != null)
+      {
+        if("InvalidUserConfigurationException".equals(cause.getClass().getSimpleName())){
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.POSITRON_NOT_CONFIGURED),ex);
+        } else {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(cause.getMessage());
+
+        }
+
+      }
+      
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
       logger.error("Could not find the AI class to generate message", ex);
     } catch (IOException ex) {
