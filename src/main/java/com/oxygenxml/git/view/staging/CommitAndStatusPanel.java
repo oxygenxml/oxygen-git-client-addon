@@ -515,7 +515,7 @@ public class CommitAndStatusPanel extends JPanel {
    */
   private void addCreateCommitMessageWithAIPositron(JToolBar toolbar) {
     AbstractAction createCommitMessageAction = new AbstractAction(
-        translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME), Icons.getIcon(Icons.POSITRON)) {
+        translator.getTranslation(Tags.AI_COMMIT_MESSAGE_NAME), Icons.getIcon(Icons.GENERATE_AI_COMMIT_ICON)) {
 
       private static final long serialVersionUID = 1L;
 

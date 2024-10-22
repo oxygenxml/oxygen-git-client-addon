@@ -138,9 +138,9 @@ public class Icons {
   public static final String GIT_STAGING_MORE = "/images/GitStagingMore16.png";
   
   /**
-   * Positron icon.
+   * Wand for generating commit messages with positron.
    */
-  public static final String POSITRON = "/images/DockableFramePositron16.png";
+  public static final String GENERATE_AI_COMMIT_ICON = "/images/GenerateAttributeValue16.png";
   
   //=============== These icons are loaded from Oxygen =================
   /**
