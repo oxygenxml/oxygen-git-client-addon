@@ -40,6 +40,7 @@
               because of it now show error messages containing explanations and instructions.</li>
             <li>The JGit component was updated to version 7.0.0.</li>
             <li>Fixed a bug where the messages in progress dialog boxes were truncated vertically.</li>
+            <li>The 'Diff Files' comparison dialog presented when comparing resources in various places now presents more information about each revision (commit id, author, commit message).</li>
           </ol>
         </div>
         <div>
