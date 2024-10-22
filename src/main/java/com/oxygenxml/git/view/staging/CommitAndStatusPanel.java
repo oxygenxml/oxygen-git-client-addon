@@ -532,11 +532,13 @@ public class CommitAndStatusPanel extends JPanel {
           @Override
           protected void done() {
             try {
-              int caretPosition = commitMessageArea.getCaretPosition();
-              commitMessageArea.insert(get(), caretPosition);
+              String aiCommitMessage = get();
+              if (aiCommitMessage != null && "".equals(aiCommitMessage)) {
+                int caretPosition = commitMessageArea.getCaretPosition();
+                commitMessageArea.insert(aiCommitMessage, caretPosition);
+              }
             } catch (InterruptedException | ExecutionException e) {
               LOGGER.error("Error occurred while fetching commit message.", e);
-              commitMessageArea.setText("Error");
             } finally {
               commitMessageArea.setCursor(Cursor.getDefaultCursor());
             }
