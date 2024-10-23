@@ -533,7 +533,7 @@ public class CommitAndStatusPanel extends JPanel {
           protected void done() {
             try {
               String aiCommitMessage = get();
-              if (aiCommitMessage != null && "".equals(aiCommitMessage)) {
+              if (aiCommitMessage != null && !"".equals(aiCommitMessage)) {
                 int caretPosition = commitMessageArea.getCaretPosition();
                 commitMessageArea.insert(aiCommitMessage, caretPosition);
               }
